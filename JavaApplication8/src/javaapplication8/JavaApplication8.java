@@ -17,6 +17,7 @@ public class JavaApplication8 {
         // TODO code application logic heredfdfdfdfsdsdsdsdvvvvvvvvvvvvvvv
         int aaaaa;
         int bbbbbbbbbbb;
+        int c;
     }
     
 }
