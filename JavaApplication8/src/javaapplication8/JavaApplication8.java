@@ -18,6 +18,7 @@ public class JavaApplication8 {
         int aaaaa;
         int bbbbbbbbbbb;
         int c;
+        int d;
     }
     
 }
