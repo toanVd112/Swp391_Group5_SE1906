@@ -34,7 +34,7 @@ public class DBConnect {
             if (conn != null && !conn.isClosed())
                 conn.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //hello
         }
     }
 }
