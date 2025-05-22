@@ -24,6 +24,7 @@ public class JavaApplication8 {
         int dog;
         long arw;
         double ah;
+        int b;
     }
     
 }
