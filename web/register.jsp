@@ -1,6 +1,12 @@
+<%-- 
+    Document   : register
+    Created on : May 22, 2025, 3:28:45 PM
+    Author     : Admin
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
-
 
 <head>
 
@@ -59,52 +65,92 @@
 		<div class="account-form-inner">
 			<div class="account-container">
 				<div class="heading-bx left">
-					<h2 class="title-head">Login to your <span>Account</span></h2>
-					<p>Don't have an account? <a href="register.html">Create one here</a></p>
+					<h2 class="title-head">Sign Up <span>Now</span></h2>
+					<p>Already have an account? <a href="login.jsp">Click here</a></p>
 				</div>	
-				<form class="contact-bx">
+				<form class="contact-bx" method="post" action="RegisterServlet">
 					<div class="row placeani">
+
+						<!-- Username -->
 						<div class="col-lg-12">
 							<div class="form-group">
 								<div class="input-group">
-									<label>Your Name</label>
-									<input name="dzName" type="text" required="" class="form-control">
+									<label>Username</label>
+									<input name="username" type="text" required class="form-control">
 								</div>
 							</div>
 						</div>
+
+						<!-- Email -->
+						<div class="col-lg-12">
+							<div class="form-group">
+								<div class="input-group">
+									<label>Email Address</label>
+									<input name="email" type="email" required class="form-control">
+								</div>
+							</div>
+						</div>
+
+						<!-- Password -->
 						<div class="col-lg-12">
 							<div class="form-group">
 								<div class="input-group"> 
-									<label>Your Password</label>
-								<input name="dzEmail" type="password" class="form-control" required="">
+									<label>Password</label>
+									<input name="password" type="password" required class="form-control">
 								</div>
 							</div>
 						</div>
+
+						<!-- Role -->
 						<div class="col-lg-12">
-							<div class="form-group form-forget">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="customControlAutosizing">
-									<label class="custom-control-label" for="customControlAutosizing">Remember me</label>
+							<div class="form-group">
+								<div class="input-group">
+									<label>Role</label>
+									<select name="role" class="form-control" required>
+										<option value="Customer">Customer</option>
+										<option value="Admin">Admin</option>
+										<option value="Manager">Manager</option>
+										<option value="Receptionist">Receptionist</option>
+										<option value="Staff">Staff</option>
+									</select>
 								</div>
-								<a href="forget-password.html" class="ml-auto">Forgot Password?</a>
 							</div>
 						</div>
+
+						<!-- IsActive -->
+						<div class="col-lg-12">
+							<div class="form-group">
+								<div class="input-group">
+									<label>Active</label>
+									<select name="isActive" class="form-control" required>
+										<option value="1">Yes</option>
+										<option value="0">No</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<!-- Submit Button -->
 						<div class="col-lg-12 m-b30">
-							<button name="submit" type="submit" value="Submit" class="btn button-md">Login</button>
+							<button name="submit" type="submit" value="Submit" class="btn button-md">Sign Up</button>
 						</div>
+
+						<!-- Social Buttons -->
 						<div class="col-lg-12">
-							<h6>Login with Social media</h6>
+							<h6>Sign Up with Social media</h6>
 							<div class="d-flex">
 								<a class="btn flex-fill m-r5 facebook" href="#"><i class="fa fa-facebook"></i>Facebook</a>
 								<a class="btn flex-fill m-l5 google-plus" href="#"><i class="fa fa-google-plus"></i>Google Plus</a>
 							</div>
 						</div>
+
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
+
 <!-- External JavaScripts -->
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
