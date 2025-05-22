@@ -23,6 +23,7 @@ public class JavaApplication8 {
         int g;
         int dog;
         long arw;
+        double ah;
     }
     
 }
