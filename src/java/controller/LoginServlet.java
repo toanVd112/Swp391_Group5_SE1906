@@ -12,14 +12,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Account;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "RegisterServlet", urlPatterns = {"/Register"})
-public class RegisterServlet extends HttpServlet {
+@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
+public class LoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +39,10 @@ public class RegisterServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet RegisterServlet</title>");
+            out.println("<title>Servlet LoginServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet RegisterServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -73,39 +74,20 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        AccountDAO dao = new AccountDAO();
-        Validation val = new Validation();
+
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String email = request.getParameter("email");
 
-        Account account = new Account();
-        account.setUsername(username);
-        account.setPassword(password);
-        account.setEmail(email);
-        account.setRole("Customer");
+        AccountDAO dao = new AccountDAO();
+        Account account = dao.login(username, password);
 
-        if (!val.validateUsername(username)) {
-            request.setAttribute("result", "user ít nhất 4 kí tự");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-        }
-        if (!val.validatePassword(password)) {
-            request.setAttribute("result", "  Pass ít nhất 6 kí tự,Có ít nhất một chữ hoa, một chữ thường, một số, ký tự đặc biệt");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-        }
-        if (dao.isDuplicateAccount(username, email) || !val.validateUsername(username) || !val.validatePassword(password)) {
-            request.setAttribute("result", "Đăng ký thất bại, trùng username hoặc mail!");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-
-        }
-        boolean result = dao.insertAccount(account);
-
-        if (result) {
-            response.sendRedirect("login.jsp"); // Redirect nếu thành công
+        if (account != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("user", account);
+            response.sendRedirect("index.jsp");
         } else {
-            request.setAttribute("result", "Đăng ký thất bại!");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            request.setAttribute("result", "Invalid username or password");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 

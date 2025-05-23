@@ -88,30 +88,28 @@
                                         <input name="email" type="email" required class="form-control">
                                     </div>
                                 </div>
-                               
+
                                 <div class="col-lg-12 m-b30">
                                     <button type="submit" class="btn button-md">Sign Up</button>
                                 </div>
                             </div>
                         </form>
+                        <%
+                          String result = (String) request.getAttribute("result");
+                        %>
+
+                        <% if (result != null) { %>
+                        <div class="alert alert-info">
+                            <%= result %>
+                        </div>
+                        <% } %>
 
                     </div>
                 </div>
             </div>
         </div>
-        <h2>Nhập 2 số để tính tổng:</h2>
-    <form action="SumServlet" method="post">
-        Số thứ nhất: <input type="number" name="num1" required><br><br>
-        Số thứ hai: <input type="number" name="num2" required><br><br>
-        <input type="submit" value="Tính Tổng">
-    </form>
 
-    <% 
-        String result = (String) request.getAttribute("result");
-        if (result != null) {
-    %>
-        <h3>Kết quả: <%= result %></h3>
-    <% } %>
+
 
         <!-- External JavaScripts -->
         <script src="assets/js/jquery.min.js"></script>
