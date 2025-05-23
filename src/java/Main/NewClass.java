@@ -29,7 +29,7 @@ public class NewClass {
         if (result) {
             System.out.println("✅ Insert account thành công!");
         } else {
-            System.out.println("❌ Insert account thất bại!");
+            System.out.println("❌ Insert account thất bại!.....");
         }
     }
 
