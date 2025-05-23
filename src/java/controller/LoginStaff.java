@@ -4,24 +4,20 @@
  */
 package controller;
 
-import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.Account;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LoginStaff", urlPatterns = {"/LoginStaff"})
+public class LoginStaff extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +36,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet LoginStaff</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoginStaff at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -76,27 +72,6 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String remember = request.getParameter("rememberMe");
-
-        AccountDAO dao = new AccountDAO();
-        Account account = dao.login(username, password);
-
-        if (account != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("user", account);
-
-            if (remember != null && remember.equals("on")) {
-                Cookie cookie = new Cookie("userName", account.getUsername());
-                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
-                response.addCookie(cookie);
-            }
-            response.sendRedirect("index.jsp");
-        } else {
-            request.setAttribute("result", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
     }
 
     /**

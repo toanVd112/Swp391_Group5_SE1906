@@ -62,25 +62,25 @@
     </head>
     <%
     // Kiểm tra session
-    HttpSession session = request.getSession(false);
-    if (session == null || session.getAttribute("user") == null) {
-        // Nếu chưa có session, kiểm tra cookie
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("userName".equals(cookie.getName())) {
-                    String username = cookie.getValue();
-                    AccountDAO dao = new AccountDAO();
-                    Account account = dao.findByUsername(username);
-                    if (account != null) {
-                        session = request.getSession();
-                        session.setAttribute("user", account);
-                        break; // thoát vòng lặp sau khi tìm thấy
-                    }
-                }
-            }
-        }
-    }
+//    HttpSession session = request.getSession(false);
+//    if (session == null || session.getAttribute("user") == null) {
+//        // Nếu chưa có session, kiểm tra cookie
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if ("userName".equals(cookie.getName())) {
+//                    String username = cookie.getValue();
+//                    AccountDAO dao = new AccountDAO();
+//                    Account account = dao.findByUsername(username);
+//                    if (account != null) {
+//                        session = request.getSession();
+//                        session.setAttribute("user", account);
+//                        break; // thoát vòng lặp sau khi tìm thấy
+//                    }
+//                }
+//            }
+//        }
+    
     %>
     <body id="bg">
         <div class="page-wraper">

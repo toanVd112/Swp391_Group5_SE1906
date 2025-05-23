@@ -19,7 +19,7 @@ import model.Account;
  * @author Admin
  */
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/Register"})
-public class RegisterServlet extends HttpServlet {
+public class RegisterCustomerServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
