@@ -18,11 +18,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="EduChamp : Education HTML Template" />
+        <meta name="description" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="EduChamp : Education HTML Template" />
-        <meta property="og:description" content="EduChamp : Education HTML Template" />
+        <meta property="og:title" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
+        <meta property="og:description" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -31,7 +31,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
 
         <!-- PAGE TITLE HERE ============================================= -->
-        <title>EduChamp : Education HTML Template </title>
+        <title>Hoang Nam Hotel</title>
 
         <!-- MOBILE SPECIFIC ============================================= -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -61,10 +61,10 @@
         <!-- REVOLUTION SLIDER END -->	
     </head>
     <%
-    // Kiá»ƒm tra session
+    // Ki?m tra session
 //    HttpSession session = request.getSession(false);
 //    if (session == null || session.getAttribute("user") == null) {
-//        // Náº¿u chÆ°a cÃ³ session, kiá»ƒm tra cookie
+//        // N?u ch?a có session, ki?m tra cookie
 //        Cookie[] cookies = request.getCookies();
 //        if (cookies != null) {
 //            for (Cookie cookie : cookies) {
@@ -75,7 +75,7 @@
 //                    if (account != null) {
 //                        session = request.getSession();
 //                        session.setAttribute("user", account);
-//                        break; // thoÃ¡t vÃ²ng láº·p sau khi tÃ¬m tháº¥y
+//                        break; // thoát vòng l?p sau khi tìm th?y
 //                    }
 //                }
 //            }
@@ -254,12 +254,12 @@
             <!-- Content -->
             <div class="page-content bg-white">
                 <!-- Main Slider -->
-                <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(assets/images/background/bg1.jpg);">
+                <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-12 text-center text-white">
-                                <h2>Online Courses To Learn</h2>
-                                <h5>Own Your Feature Learning New Skills Online</h5>
+                                <h2>Welcome to Hoang Nam Hotel</h2>
+                                <h5>A Best Place To Stay</h5>
                                 <form class="cours-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control" placeholder="What do you want to learn today?	">
@@ -307,7 +307,7 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12 heading-bx left">
-                                    <h2 class="title-head">Popular <span>Courses</span></h2>
+                                    <h2 class="title-head">Popular <span>Rooms</span></h2>
                                     <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
                                 </div>
                             </div>
@@ -316,12 +316,12 @@
                                     <div class="item">
                                         <div class="cours-bx">
                                             <div class="action-box">
-                                                <img src="assets/images/courses/pic1.jpg" alt="">
+                                                <img src="https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg" alt="">
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
-                                                <h5><a href="#">Introduction EduChamp â€“ LMS plugin</a></h5>
-                                                <span>Programming</span>
+                                                <h5><a href="#">Presidential Room</a></h5>
+                                                
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">
@@ -344,12 +344,12 @@
                                     <div class="item">
                                         <div class="cours-bx">
                                             <div class="action-box">
-                                                <img src="assets/images/courses/pic2.jpg" alt="">
+                                                <img src="https://themewagon.github.io/sogo/images/img_1.jpg" alt="">
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
-                                                <h5><a href="#">Introduction EduChamp â€“ LMS plugin</a></h5>
-                                                <span>Programming</span>
+                                                <h5><a href="#">Single Room</a></h5>
+                                                
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">
@@ -376,7 +376,7 @@
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
-                                                <h5><a href="#">Introduction EduChamp â€“ LMS plugin</a></h5>
+                                                <h5><a href="#">Introduction EduChamp ? LMS plugin</a></h5>
                                                 <span>Programming</span>
                                             </div>
                                             <div class="cours-more-info">
@@ -400,12 +400,12 @@
                                     <div class="item">
                                         <div class="cours-bx">
                                             <div class="action-box">
-                                                <img src="assets/images/courses/pic4.jpg" alt="">
+                                                <img src="https://themewagon.github.io/sogo/images/img_2.jpg" alt="">
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
-                                                <h5><a href="#">Introduction EduChamp â€“ LMS plugin</a></h5>
-                                                <span>Programming</span>
+                                                <h5><a href="#">Family Room</a></h5>
+                                                
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">

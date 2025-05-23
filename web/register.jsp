@@ -18,11 +18,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="EduChamp : Education HTML Template" />
+        <meta name="description" content="Hoang Nam Hotel" />
 
         <!-- OG -->
-        <meta property="og:title" content="EduChamp : Education HTML Template" />
-        <meta property="og:description" content="EduChamp : Education HTML Template" />
+        <meta property="og:title" content="Hoang Nam Hotel" />
+        <meta property="og:description" content="Hoang Nam Hotel" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -31,7 +31,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
 
         <!-- PAGE TITLE HERE ============================================= -->
-        <title>EduChamp : Education HTML Template </title>
+        <title>Hoang Nam Hotel </title>
 
         <!-- MOBILE SPECIFIC ============================================= -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,7 +60,7 @@
             <div id="loading-icon-bx"></div>
             <div class="account-form">
                 <div class="account-head" style="background-image:url(assets/images/background/bg2.jpg);">
-                    <a href="index.html"><img src="assets/images/logo-white-2.png" alt=""></a>
+                    <a href="index.html"><img src="https://sdmntprcentralus.oaiusercontent.com/files/00000000-d6e4-61f5-b8f5-ed132ce8136d/raw?se=2025-05-23T18%3A54%3A16Z&sp=r&sv=2024-08-04&sr=b&scid=d42d4d8a-3666-5c1c-aed3-eecb2c5f8c56&skoid=add8ee7d-5fc7-451e-b06e-a82b2276cf62&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-22T19%3A19%3A10Z&ske=2025-05-23T19%3A19%3A10Z&sks=b&skv=2024-08-04&sig=P147Fz%2B1AhPFYZ2ShbDI9hITzNLLl17opDMuAL%2B9dcI%3D" alt=""></a>
                 </div>
                 <div class="account-form-inner">
                     <div class="account-container">
