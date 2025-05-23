@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -77,6 +78,7 @@ public class LoginServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String remember = request.getParameter("rememberMe");
 
         AccountDAO dao = new AccountDAO();
         Account account = dao.login(username, password);
@@ -84,6 +86,12 @@ public class LoginServlet extends HttpServlet {
         if (account != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", account);
+
+            if (remember != null && remember.equals("on")) {
+                Cookie cookie = new Cookie("userName", account.getUsername());
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
+                response.addCookie(cookie);
+            }
             response.sendRedirect("index.jsp");
         } else {
             request.setAttribute("result", "Invalid username or password");
