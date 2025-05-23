@@ -12,7 +12,7 @@ public class Account {
     private Timestamp createdAt;
     private String email;
 
-    // Getters và Setters
+    // Getters và Setters////////////////////////////////
     public int getAccountID() {
         return accountID;
     }
