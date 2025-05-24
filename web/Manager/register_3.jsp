@@ -1,8 +1,12 @@
-<%-- 
-    Document   : register
-    Created on : May 22, 2025, 3:28:45 PM
-    Author     : Admin
---%>
+<%@ page import="model.Account" %>
+<%
+    Account account = (Account) session.getAttribute("account");
+    if (account == null || !"Manager".equals(account.getRole())) {
+        response.sendRedirect("login_2.jsp"); // chuyển về trang đăng nhập
+        return;
+    }
+%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -68,7 +72,7 @@
                             <h2 class="title-head">Sign Up <span>Now</span></h2>
                             <p>Already have an account? <a href="login_2.jsp">Click here</a></p>
                         </div>	
-                        <form action="Register" method="post" class="contact-bx">
+                        <form action="RegisterStaff" method="post" class="contact-bx">
                             <div class="row placeani">
                                 <div class="col-lg-12">
                                     <div class="form-group">
@@ -88,6 +92,16 @@
                                         <input name="email" type="email" required class="form-control">
                                     </div>
                                 </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <select name="role" class="form-control" required>
+                                            <option value="Receptionist">Receptionist</option>
+                                            <option value="Staff">Staff</option>
+                                        </select>
+                                    </div>
+                                </div>
+
 
                                 <div class="col-lg-12 m-b30">
                                     <button type="submit" class="btn button-md">Sign Up</button>

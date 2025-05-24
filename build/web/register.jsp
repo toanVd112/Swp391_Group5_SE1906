@@ -66,7 +66,7 @@
                     <div class="account-container">
                         <div class="heading-bx left">
                             <h2 class="title-head">Sign Up <span>Now</span></h2>
-                            <p>Already have an account? <a href="login.jsp">Click here</a></p>
+                            <p>Already have an account? <a href="login_2.jsp">Click here</a></p>
                         </div>	
                         <form action="Register" method="post" class="contact-bx">
                             <div class="row placeani">
