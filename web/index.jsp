@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,11 +19,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
+        <meta name="description" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
-        <meta property="og:description" content="Khách s?n Hoàng Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:description" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -64,7 +65,7 @@
     // Ki?m tra session
 //    HttpSession session = request.getSession(false);
 //    if (session == null || session.getAttribute("user") == null) {
-//        // N?u ch?a có session, ki?m tra cookie
+//        // N?u ch?a cï¿½ session, ki?m tra cookie
 //        Cookie[] cookies = request.getCookies();
 //        if (cookies != null) {
 //            for (Cookie cookie : cookies) {
@@ -75,7 +76,7 @@
 //                    if (account != null) {
 //                        session = request.getSession();
 //                        session.setAttribute("user", account);
-//                        break; // thoát vòng l?p sau khi tìm th?y
+//                        break; // thoï¿½t vï¿½ng l?p sau khi tï¿½m th?y
 //                    }
 //                }
 //            }
@@ -104,8 +105,24 @@
                                             <option data-icon="flag flag-us">English US</option>
                                         </select>
                                     </li>
-                                    <li><a href="login.jsp">Login</a></li>
-                                    <li><a href="register.jsp">Register</a></li>
+                                    
+                                    <c:if test="${sessionScope.user != null}">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Hello, ${sessionScope.user.username}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="Logout">Logout</a>
+                                        </li>
+                                    </c:if>
+                                    <c:if test="${sessionScope.user == null}">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="login.jsp">Login</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="register.jsp">Register</a>
+                                        </li>
+                                    </c:if>
+                                       
                                 </ul>
                             </div>
                         </div>
@@ -321,7 +338,7 @@
                                             </div>
                                             <div class="info-bx text-center">
                                                 <h5><a href="#">Presidential Room</a></h5>
-                                                
+
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">
@@ -349,7 +366,7 @@
                                             </div>
                                             <div class="info-bx text-center">
                                                 <h5><a href="#">Single Room</a></h5>
-                                                
+
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">
@@ -405,7 +422,7 @@
                                             </div>
                                             <div class="info-bx text-center">
                                                 <h5><a href="#">Family Room</a></h5>
-                                                
+
                                             </div>
                                             <div class="cours-more-info">
                                                 <div class="review">
