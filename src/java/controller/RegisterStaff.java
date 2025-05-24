@@ -83,7 +83,7 @@ public class RegisterStaff extends HttpServlet {
             return;
         }
 
-        // Lấy dữ liệu từ form
+        // Lấy dữ liệu từ form////////////////
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String email = request.getParameter("email");
