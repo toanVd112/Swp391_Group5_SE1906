@@ -4,6 +4,7 @@
  */
 package controller;
 
+import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.Account;
 
 /**
  *
@@ -72,16 +75,44 @@ public class LoginStaff extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Lấy dữ liệu từ form
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String selectedRole = request.getParameter("role");
+
+        AccountDAO dao = new AccountDAO();
+        Account account = dao.login(username, password);
+
+        if (account != null && account.getRole().equalsIgnoreCase(selectedRole)) {
+            // Đăng nhập thành công, lưu thông tin vào session
+            HttpSession session = request.getSession();
+            session.setAttribute("account", account);
+
+            // Phân quyền: Chuyển hướng đến trang phù hợp với vai trò
+            switch (selectedRole) {
+                case "Manager":
+                    response.sendRedirect("Manager/manager.jsp");
+                    break;
+                case "Receptionist":
+                    response.sendRedirect("Receptionist/reception.jsp");
+                    break;
+                case "Staff":
+                    response.sendRedirect("Staff/staff.jsp");
+                    break;
+                default:
+                    response.sendRedirect("error-404.html");
+            }
+        } else {
+            // Sai thông tin hoặc role không đúng
+            request.setAttribute("result", "Invalid username, password, or role.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+
+        }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
+
+/**
+ * Returns a short description of the servlet.
+ *
+ * @return a String containing servlet description
+ */

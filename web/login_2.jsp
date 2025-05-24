@@ -33,12 +33,12 @@
                 <div class="account-form-inner">
                     <div class="account-container">
                         <div class="heading-bx left">
-                            <h2 class="title-head">Staff Login <span>Portal</span></h2>
+                            <h2 class="title-head">Manager,Staff,Receptionist Login <span>Portal</span></h2>
                             <p>Return to main login? <a href="login.jsp">Click here</a></p>
                         </div>
 
                         <!-- FORM -->
-                        <form action="StaffLoginServlet" method="post" class="contact-bx">
+                        <form action="LoginStaff" method="post" class="contact-bx">
                             <div class="row placeani">
                                 <div class="col-lg-12">
                                     <div class="form-group">
