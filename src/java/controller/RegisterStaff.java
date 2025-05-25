@@ -112,7 +112,7 @@ public class RegisterStaff extends HttpServlet {
             request.setAttribute("result", success ? "Account registered successfully." : "Failed to register account.");
         }
 
-        request.getRequestDispatcher("register.jsp").forward(request, response);
+        request.getRequestDispatcher("register_2.jsp").forward(request, response);
     }
 
     /**

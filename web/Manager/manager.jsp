@@ -99,7 +99,7 @@
             <h2>Staff Management</h2>
             <ul>
                 <li><a href="staffList.jsp">View Staff List</a></li>
-                <li><a href="register.jsp">Add New Staff/Receptionist</a></li>
+                <li><a href="${pageContext.request.contextPath}/register_2.jsp">Add New Staff/Receptionist</a></li>
             </ul>
 
             <h2>Service & Feedback</h2>
@@ -114,7 +114,8 @@
             </ul>
 
             <br>
-            <a class="nav-link" href="/HotelManagement/Logout">Logout</a>
+            <a href="${pageContext.request.contextPath}/Logout">
+
         </div>
     </body>
 </html>
