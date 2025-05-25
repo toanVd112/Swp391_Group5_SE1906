@@ -111,7 +111,8 @@
                                             <a class="nav-link" href="#">Hello, ${sessionScope.user.username}</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="Logout">Logout</a>
+                                           <a class="nav-link" href="Logout">Logout</a>
+
                                         </li>
                                     </c:if>
                                     <c:if test="${sessionScope.user == null}">

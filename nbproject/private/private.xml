@@ -3,16 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
             <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/register.jsp</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/controller/Logout.java</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/model/Account.java</file>
             <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/login_2.jsp</file>
-            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/controller/LoginCustomerServlet.java</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/controller/RegisterStaff.java</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/Staff/staff.jsp</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/Manager/manager.jsp</file>
             <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/login.jsp</file>
-            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/controller/LoginStaff.java</file>
-            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/src/java/DAO/AccountDAO.java</file>
-=======
-            <file>file:/C:/Users/MyPC/OneDrive/NetBeansProjects/Swp391_Group5_SE1906/src/java/DAO/DBConnect.java</file>
->>>>>>> origin/main
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/index.jsp</file>
+            <file>file:/G:/OneDrive/Desktop/Swp391_Group5_SE1906/web/register_2.jsp</file>
         </group>
     </open-files>
 </project-private>

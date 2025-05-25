@@ -1,14 +1,17 @@
-<%@ page import="model.Account" %>
-<%
-    Account account = (Account) session.getAttribute("account");
-    if (account == null || !"Manager".equals(account.getRole())) {
-        response.sendRedirect("login_2.jsp"); // chuyển về trang đăng nhập
-        return;
-    }
-%>
+<%-- 
+    Document   : register_2
+    Created on : May 25, 2025, 10:17:10 AM
+    Author     : Admin
+--%>
 
+Document   : register
+Created on : May 22, 2025, 3:28:45 PM
+Author     : Admin
+--%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -60,6 +63,15 @@
 
     </head>
     <body id="bg">
+        <%@ page import="model.Account" %>
+        <%
+            Account account = (Account) session.getAttribute("account");
+            if (account == null || !"Manager".equals(account.getRole())) {
+                response.sendRedirect("login_2.jsp"); // chuyển về trang đăng nhập
+                return;
+            }
+        %>
+
         <div class="page-wraper">
             <div id="loading-icon-bx"></div>
             <div class="account-form">
@@ -72,7 +84,7 @@
                             <h2 class="title-head">Sign Up <span>Now</span></h2>
                             <p>Already have an account? <a href="login_2.jsp">Click here</a></p>
                         </div>	
-                        <form action="RegisterStaff" method="post" class="contact-bx">
+                        <form action="Register" method="post" class="contact-bx">
                             <div class="row placeani">
                                 <div class="col-lg-12">
                                     <div class="form-group">
@@ -144,3 +156,5 @@
     </body>
 
 </html>
+
+
