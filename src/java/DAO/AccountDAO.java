@@ -70,7 +70,7 @@ public class AccountDAO {
                 return account;
             } //////////////
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();//////////
         }
         return null; // không tìm thấy tài khoản
     }
