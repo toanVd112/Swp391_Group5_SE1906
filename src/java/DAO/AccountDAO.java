@@ -68,7 +68,7 @@ public class AccountDAO {
                 account.setRole(rs.getString("Role"));
                 account.setEmail(rs.getString("Email"));
                 return account;
-            }
+            } //////////////
         } catch (SQLException e) {
             e.printStackTrace();
         }
