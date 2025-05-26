@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import model.Account;
 /**
  *
  * @author MyPC
@@ -66,7 +66,7 @@ public class Logout extends HttpServlet {
             Object accObj = session.getAttribute("account");
 
             if (accObj != null && accObj instanceof model.Account) {
-                model.Account acc = (model.Account) accObj;
+            Account acc = (model.Account) accObj;
                 String role = acc.getRole();
 
                 if (role != null && (role.equals("Manager") || role.equals("Staff") || role.equals("Receptionist"))) {

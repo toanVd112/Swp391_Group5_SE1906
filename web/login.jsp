@@ -90,24 +90,24 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
-                                    <div class="form-group form-forget">
+<!--                                    <div class="form-group form-forget">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="customControlAutosizing" name="rememberMe">
                                             <label class="custom-control-label" for="customControlAutosizing">Remember me</label>
                                         </div>
                                         <a href="forget-password.html" class="ml-auto">Forgot Password?</a>
-                                    </div>
+                                    </div>-->
                                 </div>
                                 <div class="col-lg-12 m-b30">
                                     <button name="submit" type="submit" value="Submit" class="btn button-md">Login</button>
                                 </div>
-                                <div class="col-lg-12">
+<!--                                <div class="col-lg-12">
                                     <h6>Login with Social media</h6>
                                     <div class="d-flex">
                                         <a class="btn flex-fill m-r5 facebook" href="#"><i class="fa fa-facebook"></i>Facebook</a>
                                         <a class="btn flex-fill m-l5 google-plus" href="#"><i class="fa fa-google-plus"></i>Google Plus</a>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
                         </form>
                          <%

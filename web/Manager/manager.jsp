@@ -114,7 +114,7 @@
             </ul>
 
             <br>
-            <a href="${pageContext.request.contextPath}/Logout">
+            <a href="${pageContext.request.contextPath}/Logout">Logout</a>
 
         </div>
     </body>

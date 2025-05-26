@@ -111,7 +111,7 @@
                 <li><a href="notifications.jsp">Receive Service Notifications</a></li>
             </ul>
 
-            <a href="${pageContext.request.contextPath}/LogoutServlet">Logout</a>
+            <a href="${pageContext.request.contextPath}/Logout">Logout</a>
         </div>
     </body>
 </html>
