@@ -17,7 +17,7 @@ public class DBConnect {
 
     private static final String URL = "jdbc:mysql://localhost:3306/hotel"; // đổi tên DB nếu cần
     private static final String USER = "root"; // đổi user nếu khác
-    private static final String PASSWORD = "1234"; // thay bằng password thật
+    private static final String PASSWORD = "123456"; // thay bằng password thật
 
     public static Connection getConnection() throws SQLException {
         try {

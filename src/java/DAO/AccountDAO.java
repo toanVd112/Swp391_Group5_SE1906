@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import model.Account;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountDAO {
 
@@ -73,6 +75,63 @@ public class AccountDAO {
             e.printStackTrace();//////////
         }////
         return null; // không tìm thấy tài khoản
+    }
+
+    public List<Account> getAccountStaff() {
+        List<Account> list = new ArrayList<>();
+        String sql = "SELECT * FROM accounts\n"
+                + "WHERE Role IN ('Receptionist', 'Staff')";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Account(rs.getInt("AccountID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Role"),
+                        rs.getBoolean("IsActive"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getString("Email")
+                ));
+            }
+        } catch (SQLException e) {
+        }
+        return list;
+    }
+
+    public void deleteAccount(String aid) {
+        String sql = "DELETE FROM Accounts WHERE AccountID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, aid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addAccount(String username, String password, String role, boolean isActive, String email) {
+        String sql = "INSERT INTO Accounts (Username, Password, Role, IsActive, Email)\n"
+                + "VALUES (?,?,?,?,?)";
+        try(Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ps.setString(3, role);
+            ps.setBoolean(4, isActive);
+            ps.setString(5, email);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        AccountDAO dao = new AccountDAO();
+        List<Account> list = dao.getAccountStaff();
+        for (Account account : list) {
+            System.out.println(account);
+        }
     }
 
 }

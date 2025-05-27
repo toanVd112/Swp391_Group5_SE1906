@@ -11,6 +11,18 @@ public class Account {
     private boolean isActive;
     private Timestamp createdAt;
     private String email;
+    
+    public Account(){}
+
+    public Account(int accountID, String username, String password, String role, boolean isActive, Timestamp createdAt, String email) {
+        this.accountID = accountID;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.email = email;
+    }
 
     // Getters và Setters////////////////////////////////
     public int getAccountID() {
@@ -49,6 +61,15 @@ public class Account {
         return isActive;
     }
 
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
