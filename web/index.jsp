@@ -206,10 +206,10 @@
                                             <li><a href="error-404.html">404 Page</a></li>
                                         </ul>
                                     </li>
-                                    <li class="add-mega-menu"><a href="javascript:;">Our Courses <i class="fa fa-chevron-down"></i></a>
+                                    <li class="add-mega-menu"><a href="javascript:;">Our Hotel <i class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu add-menu">
                                             <li class="add-menu-left">
-                                                <h5 class="menu-adv-title">Our Courses</h5>
+                                                <h5 class="menu-adv-title">Our Hotel</h5>
                                                 <ul>
                                                     <li><a href="courses.html">Courses </a></li>
                                                     <li><a href="courses-details.html">Courses Details</a></li>
@@ -277,7 +277,7 @@
                         <div class="row">
                             <div class="col-md-12 text-center text-white">
                                 <h2>Welcome to Hoang Nam Hotel</h2>
-                                <h5>A Best Place To Stay</h5>
+                                <h5>The Best Place To Stay</h5>
                                 <form class="cours-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control" placeholder="What do you want to learn today?	">
@@ -295,15 +295,15 @@
                                         <div class="icon-box">
                                             <h3><i class="ti-user"></i><span class="counter">5</span>M</h3>
                                         </div>
-                                        <span class="cours-search-text">Over 5 million student</span>
+                                        <span class="cours-search-text">Over 5 million customer</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-6">
                                     <div class="cours-search-bx m-b30">
                                         <div class="icon-box">
-                                            <h3><i class="ti-book"></i><span class="counter">30</span>K</h3>
+                                            <h3><i class="ti-book"></i><span class="counter">50</span></h3>
                                         </div>
-                                        <span class="cours-search-text">30,000 Courses.</span>
+                                        <span class="cours-search-text"> 50 Room</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-sm-12">
@@ -311,7 +311,7 @@
                                         <div class="icon-box">
                                             <h3><i class="ti-layout-list-post"></i><span class="counter">20</span>K</h3>
                                         </div>
-                                        <span class="cours-search-text">Learn Anythink Online.</span>
+                                        <span class="cours-search-text">View Anythink Online.</span>
                                     </div>
                                 </div>
                             </div>
@@ -453,10 +453,10 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="join-content-bx text-white">
-                                        <h2>Learn a new skill online on <br> your time</h2>
-                                        <h4><span class="counter">57,000</span> Online Courses</h4>
+                                        <h2>Book a room online on <br> your time</h2>
+                                        <h4><span class="counter">50</span> Rooms </h4>
                                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                                        <a href="#" class="btn button-md">Join Now</a>
+                                        <a href="#" class="btn button-md">Book Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -467,10 +467,10 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-lg-6 m-b30">
-                                    <h2 class="title-head ">Learn a new skill online<br> <span class="text-primary"> on your time</span></h2>
-                                    <h4><span class="counter">57,000</span> Online Courses</h4>
+                                    <h2 class="title-head ">Book a new room online<br> <span class="text-primary"> on your time</span></h2>
+                                    <h4><span class="counter">50</span> Rooms</h4>
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.</p>
-                                    <a href="#" class="btn button-md">Join Now</a>
+                                    <a href="#" class="btn button-md">Book Now</a>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="row">
