@@ -211,8 +211,8 @@
                                             <li class="add-menu-left">
                                                 <h5 class="menu-adv-title">Our Hotel</h5>
                                                 <ul>
-                                                    <li><a href="courses.html">Courses </a></li>
-                                                    <li><a href="courses-details.html">Courses Details</a></li>
+                                                    <li><a href="rooms.html">Rooms </a></li>
+                                                    <li><a href="rooms-details.html">Rooms Details</a></li>
                                                     <li><a href="profile.html">Instructor Profile</a></li>
                                                     <li><a href="event.html">Upcoming Event</a></li>
                                                     <li><a href="membership.html">Membership</a></li>
@@ -237,7 +237,7 @@
                                             <li><a href="admin/index.html">Dashboard</a></li>
                                             <li><a href="admin/add-listing.html">Add Listing</a></li>
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
-                                            <li><a href="admin/courses.html">Courses</a></li>
+                                            <li><a href="admin/rooms.html">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
                                             <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
                                             <li><a href="admin/user-profile.html">User Profile</a></li>
@@ -320,8 +320,8 @@
                 </div>
                 <!-- Main Slider -->
                 <div class="content-block">
-                    <!-- Popular Courses -->
-                    <div class="section-area section-sp2 popular-courses-bx">
+                    <!-- Popular Rooms -->
+                    <div class="section-area section-sp2 popular-rooms-bx">
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12 heading-bx left">
@@ -330,7 +330,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="courses-carousel owl-carousel owl-btn-1 col-12 p-lr0">
+                                <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
                                     <div class="item">
                                         <div class="cours-bx">
                                             <div class="action-box">
@@ -390,7 +390,7 @@
                                     <div class="item">
                                         <div class="cours-bx">
                                             <div class="action-box">
-                                                <img src="assets/images/courses/pic3.jpg" alt="">
+                                                <img src="assets/images/rooms/pic3.jpg" alt="">
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
@@ -447,7 +447,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Popular Courses END -->
+                    <!-- Popular Rooms END -->
                     <div class="section-area section-sp2 bg-fix ovbl-dark join-bx text-center" style="background-image:url(assets/images/background/bg1.jpg);">
                         <div class="container">
                             <div class="row">
@@ -678,10 +678,10 @@
                                     </div>
                                     <div class="col-4 col-lg-4 col-md-4 col-sm-4">
                                         <div class="widget footer_widget">
-                                            <h5 class="footer-title">Courses</h5>
+                                            <h5 class="footer-title">Rooms</h5>
                                             <ul>
-                                                <li><a href="courses.html">Courses</a></li>
-                                                <li><a href="courses-details.html">Details</a></li>
+                                                <li><a href="rooms.html">Rooms</a></li>
+                                                <li><a href="rooms-details.html">Details</a></li>
                                                 <li><a href="membership.html">Membership</a></li>
                                                 <li><a href="profile.html">Profile</a></li>
                                             </ul>

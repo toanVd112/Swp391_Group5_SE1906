@@ -18,8 +18,8 @@ Theme Version:	1.0.0
 				};
 				
 				var setCourseCarousel = function() {
-					if(!checkSelectorExistence('.courses-carousel')){return;}
-					jQuery('.courses-carousel').owlCarousel({
+					if(!checkSelectorExistence('.rooms-carousel')){return;}
+					jQuery('.rooms-carousel').owlCarousel({
 						loop:true,
 						autoplay:true,
 						margin:0,

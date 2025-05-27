@@ -1046,19 +1046,19 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fd8515', endColorstr='#db4b24',GradientType=1 ); /* IE6-9 */
 }
 
-/* Card Courses List */
-.card-courses-list{
+/* Card Rooms List */
+.card-rooms-list{
 	display: flex;
 	border-bottom: 1px solid rgba(0,0,0,0.1);
 	padding-bottom: 30px;
 	margin-bottom: 30px;
 }
-.card-courses-list:last-child{
+.card-rooms-list:last-child{
 	border-bottom: 0;
 	padding-bottom: 0;
 	margin-bottom: 0;
 }
-.card-courses-media{
+.card-rooms-media{
 	width: 250px;
 	min-width: 250px;
 	height: 250px;
@@ -1066,12 +1066,12 @@
 	border-radius: 4px;
 	overflow: hidden;
 }
-.card-courses-media img{
+.card-rooms-media img{
 	width: 100%;
 	object-fit:cover;
 	height: 250px;
 }
-.card-courses-view{
+.card-rooms-view{
 	margin:0;
 	padding:0;
 	list-style:none;
@@ -1079,58 +1079,58 @@
 	align-items: center;
 	width: 100%;
 }
-.card-courses-user{
+.card-rooms-user{
 	display:flex;
 	align-items:center;
 }
-.card-courses-user-pic{
+.card-rooms-user-pic{
 	width: 50px;
 	height: 50px;
 	border-radius: 50px;
 	overflow: hidden;
 	margin-right: 10px;
 }
-.card-courses-view > li{
+.card-rooms-view > li{
 	position:relative;
 	padding-right:30px;
 }
-.card-courses-view > li:last-child{
+.card-rooms-view > li:last-child{
 	padding-right:0;
 }
-.card-courses-stats h5,
-.card-courses-price del,
-.card-courses-review h5,
-.card-courses-categories h5,
-.card-courses-user-info h5{
+.card-rooms-stats h5,
+.card-rooms-price del,
+.card-rooms-review h5,
+.card-rooms-categories h5,
+.card-rooms-user-info h5{
 	font-size: 12px;
 	color: #C0C0C0;
 	margin: 0;
 	line-height: 18px;
 }
-.card-courses-categories h4,
-.card-courses-user-info h4{
+.card-rooms-categories h4,
+.card-rooms-user-info h4{
 	font-size: 14px;
 	margin: 0;
 	line-height: 22px;
 	color: #606060;
 	text-transform: uppercase;
 }
-.card-courses-price{
+.card-rooms-price{
 	margin-left:auto;
 }
-.card-courses-list-bx{
+.card-rooms-list-bx{
 	margin-bottom:20px;
 }
-.card-courses-dec p{
+.card-rooms-dec p{
 	font-size:14px;
 	line-height:22px;
 }
-.card-courses-dec-list{
+.card-rooms-dec-list{
 	margin:0;
 	padding:0;
 	list-style:none;
 }
-.card-courses-dec-list li{
+.card-rooms-dec-list li{
 	display: flex;
 	font-size: 14px;
 	color: #606060;
@@ -1139,7 +1139,7 @@
 	float: left;
 }
 
-.card-courses-dec-list li strong{
+.card-rooms-dec-list li strong{
 	 margin-right:10px;
 	 color:#000;
 	 width: 40%;
@@ -1148,7 +1148,7 @@
 .review-bx-reply .form-control{
 	height:150px;
 }
-.bookmarks-bx .card-courses-list-bx{
+.bookmarks-bx .card-rooms-list-bx{
 	margin-bottom:10px;
 }
 /* User Profile */
@@ -1551,7 +1551,7 @@
 	display: inline-block;
 	padding: 0 20px;
 }
-.courses-approve {
+.rooms-approve {
     width: 150px;
     height: 150px;
     color: #30af93;
@@ -1577,16 +1577,16 @@
 	}
 }
 @media only screen and (max-width: 991px) {
-	.admin-courses .card-courses-media {
+	.admin-rooms .card-rooms-media {
 		width: 140px;
 		min-width: 140px;
 		height: 140px;
 		margin-right: 15px;
 	}
-	.admin-courses .card-courses-media img{
+	.admin-rooms .card-rooms-media img{
 		height: 140px;
 	}
-	.admin-courses .card-courses-view > li{
+	.admin-rooms .card-rooms-view > li{
 		padding-right: 10px;
 	}
 	.mail-rateing, 
@@ -1615,36 +1615,36 @@
 		padding-left: 0px;
 		padding-right: 0px;
 	}
-	.card-courses-media {
+	.card-rooms-media {
 		width: 140px;
 		min-width: 140px;
 		height: 140px;
 	}
-	.card-courses-title h4 {
+	.card-rooms-title h4 {
 		font-size: 18px;		
 	}
-	.card-courses-media img{
+	.card-rooms-media img{
 		height: 140px;
 	}
-	.admin-courses .card-courses-view{
+	.admin-rooms .card-rooms-view{
 		display: table;
 	}
-	.admin-courses .card-courses-view > li {
+	.admin-rooms .card-rooms-view > li {
 		padding-right: 10px;
 		width: 100%;
 		float: left;
 		margin-bottom: 10px;
 	}
-	.admin-courses .card-courses-view > li.card-courses-categories,
-	.admin-courses .card-courses-view > li.card-courses-review,
-	.admin-courses .card-courses-view > li.card-courses-stats,
-	.admin-courses .card-courses-view > li.card-courses-price {
+	.admin-rooms .card-rooms-view > li.card-rooms-categories,
+	.admin-rooms .card-rooms-view > li.card-rooms-review,
+	.admin-rooms .card-rooms-view > li.card-rooms-stats,
+	.admin-rooms .card-rooms-view > li.card-rooms-price {
 		width:25%;	
 	}
-	.admin-courses .card-courses-list-bx {
+	.admin-rooms .card-rooms-list-bx {
 		margin-bottom: 0px;
 	}
-	.admin-courses .card-courses-view > li.card-courses-price {
+	.admin-rooms .card-rooms-view > li.card-rooms-price {
 		text-align:right;
 		padding-right: 0;
 	}
@@ -1683,53 +1683,53 @@
 	.db-breadcrumb-list li {
 		font-size: 12px;
 	}
-	.admin-courses .card-courses-media,
-	.bookmarks-bx .card-courses-media {
+	.admin-rooms .card-rooms-media,
+	.bookmarks-bx .card-rooms-media {
 		width: 100%;
 		min-width: 100%;
 		height: auto;
 		margin-bottom:15px;
 	}
-	.admin-courses.card-courses-list,
-	.bookmarks-bx.card-courses-list {
+	.admin-rooms.card-rooms-list,
+	.bookmarks-bx.card-rooms-list {
 		display: block;
 	}
-	.bookmarks-bx .card-courses-view > li {
+	.bookmarks-bx .card-rooms-view > li {
 		position: relative;
 		padding-right: 10px;
 		float:left;
 	}
-	.bookmarks-bx  .card-courses-view {
+	.bookmarks-bx  .card-rooms-view {
 		display: table;
 		clear: both;
 	}
-	.admin-courses   .card-courses-categories,
-	.bookmarks-bx  .card-courses-categories{
+	.admin-rooms   .card-rooms-categories,
+	.bookmarks-bx  .card-rooms-categories{
 		width:100%;
 		margin-bottom:10px;
 	}
-	.bookmarks-bx  .card-courses-review,
-	.bookmarks-bx  .card-courses-price{
+	.bookmarks-bx  .card-rooms-review,
+	.bookmarks-bx  .card-rooms-price{
 		width:50%;
 	}
-	.bookmarks-bx  .card-courses-price{
+	.bookmarks-bx  .card-rooms-price{
 		text-align:right;
 	}
-	.admin-courses .card-courses-view > li.card-courses-categories,
-	.admin-courses .card-courses-view > li.card-courses-review,
-	.admin-courses .card-courses-view > li.card-courses-price {
+	.admin-rooms .card-rooms-view > li.card-rooms-categories,
+	.admin-rooms .card-rooms-view > li.card-rooms-review,
+	.admin-rooms .card-rooms-view > li.card-rooms-price {
 		width:33.33%;	
 	}
-	.admin-courses .card-courses-view > li.card-courses-price h5{
+	.admin-rooms .card-rooms-view > li.card-rooms-price h5{
 		margin-bottom:0;
 	}
-	.admin-courses .card-courses-view > li.card-courses-stats{
+	.admin-rooms .card-rooms-view > li.card-rooms-stats{
 		display:none;
 	}
-	.card-courses-dec p {
+	.card-rooms-dec p {
 		margin-bottom: 10px;
 	}
-	.card-courses-list {
+	.card-rooms-list {
 		padding-bottom: 15px;
 		margin-bottom: 15px;
 	}
@@ -1764,26 +1764,26 @@
 	.send-mail-full-info{
 		margin-top: 10px;
 	}
-	.admin-review .card-courses-view {
+	.admin-review .card-rooms-view {
 		display: table;
 		clear: both;
 	}
-	.admin-review .card-courses-view > li {
+	.admin-review .card-rooms-view > li {
 		padding-right: 0;
 		float: left;
 	}
-	.admin-review .card-courses-view > li.card-courses-review,
-	.admin-review .card-courses-view > li.card-courses-categories{
+	.admin-review .card-rooms-view > li.card-rooms-review,
+	.admin-review .card-rooms-view > li.card-rooms-categories{
 		width:50%;
 	}
-	.admin-review .card-courses-view > li.card-courses-categories{
+	.admin-review .card-rooms-view > li.card-rooms-categories{
 		text-align:right;
 	}
-	.admin-review .card-courses-view > li.card-courses-user{
+	.admin-review .card-rooms-view > li.card-rooms-user{
 		width:100%;
 		margin-bottom: 15px;
 	}
-	.admin-review .card-courses-list-bx {
+	.admin-review .card-rooms-list-bx {
 		margin-bottom: 10px;
 	}
 }
