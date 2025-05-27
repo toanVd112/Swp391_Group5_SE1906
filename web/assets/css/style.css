@@ -1998,7 +1998,7 @@ button.back-to-top {
 	font-size: 14px;
 	color:#242424;
 }
-/* Popular Courses */
+/* Popular Rooms */
 .cours-bx .info-bx{
 	padding:15px;
 	font-size: 13px;
@@ -2063,13 +2063,13 @@ button.back-to-top {
 .cours-more-info .price h5{
 	margin-bottom:0;
 }
-.courses-carousel{
+.rooms-carousel{
 	margin-top:-15px;
 }
-.courses-carousel .item{
+.rooms-carousel .item{
 	padding:15px;
 }
-.courses-carousel .owl-nav{
+.rooms-carousel .owl-nav{
 	position: absolute;
     top: -70px;
     right: 10px;
@@ -2084,8 +2084,8 @@ button.back-to-top {
     top: -80px;
     right: -5px;
 }
-.courses-carousel .owl-nav .owl-next,
-.courses-carousel .owl-nav .owl-prev,
+.rooms-carousel .owl-nav .owl-next,
+.rooms-carousel .owl-nav .owl-prev,
 .recent-news-carousel .owl-nav .owl-next,
 .recent-news-carousel .owl-nav .owl-prev,
 .testimonial-carousel .owl-nav .owl-next,
@@ -2093,8 +2093,8 @@ button.back-to-top {
 	background-color:var(--primary);
 	margin: 0 5px !important;
 }
-.courses-carousel .owl-nav .owl-next:hover,
-.courses-carousel .owl-nav .owl-prev:hover,
+.rooms-carousel .owl-nav .owl-next:hover,
+.rooms-carousel .owl-nav .owl-prev:hover,
 .recent-news-carousel .owl-nav .owl-next:hover,
 .recent-news-carousel .owl-nav .owl-prev:hover,
 .testimonial-carousel .owl-nav .owl-next:hover,
@@ -2427,18 +2427,18 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	padding-bottom:0;
 	margin-bottom:20px;
 }
-.courses-search-bx .input-group,
+.rooms-search-bx .input-group,
 .contact-bx .input-group {
 	display:block;
 	position:relative;
 }
-.courses-search-bx .input-group .form-control,
+.rooms-search-bx .input-group .form-control,
 .contact-bx .input-group .form-control,
-.courses-search-bx .input-group label,
+.rooms-search-bx .input-group label,
 .contact-bx .input-group label{
 	width:100%;
 }
-.courses-search-bx .input-group label,
+.rooms-search-bx .input-group label,
 .contact-bx .input-group label{
 	font-size: 14px;
 	font-weight: 400;
@@ -2452,7 +2452,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	-ms-transition:all 0.5s;
 	-o-transition:all 0.5s;
 }
-.courses-search-bx .focused .input-group label,
+.rooms-search-bx .focused .input-group label,
 .contact-bx .focused .input-group label{
 	top: -8px;
 	font-size: 10px;
@@ -2461,7 +2461,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 .contact-bx .input-group textarea.form-control{
 	height:120px;
 }
-.courses-search-bx .input-group .form-control,
+.rooms-search-bx .input-group .form-control,
 .contact-bx .input-group .form-control{
 	border-width: 0 0 1px 0;
 	background-color:rgba(0,0,0,0);
@@ -2470,7 +2470,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 .contact-bx .heading-bx {
     margin-bottom: 30px;
 }
-.courses-search-bx .input-group .form-control{
+.rooms-search-bx .input-group .form-control{
 	border-width: 0 0 2px 0;
 	border-color:#E0E0E0;
 }
@@ -2529,23 +2529,23 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 .portfolio-bx:hover .media-ov2:after{
 	opacity:0.7;
 }
-.widget-courses .ttr-post-meta .price del,
-.widget-courses .ttr-post-meta .price h5{
+.widget-rooms .ttr-post-meta .price del,
+.widget-rooms .ttr-post-meta .price h5{
 	display:inline-block;
 	font-weight: 400;
 }
-.widget-courses .ttr-post-meta .price del{
+.widget-rooms .ttr-post-meta .price del{
 	font-size:10px;
 }
-.widget-courses .ttr-post-meta .price h5{
+.widget-rooms .ttr-post-meta .price h5{
 	font-size: 13px;
 	font-weight: 500;
 	margin: 0;
 }
-.widget-courses .ttr-post-meta .price .free{
+.widget-rooms .ttr-post-meta .price .free{
 	color:#1fd36b;
 }
-.widget-courses .ttr-post-meta .review{
+.widget-rooms .ttr-post-meta .review{
 	font-size: 13px;
 	font-weight: 400;
 }
@@ -2651,7 +2651,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	margin-right:10px;
 	font-size:20px;
 }
-.courses-post .post-title{
+.rooms-post .post-title{
 	font-size:35px;
 	font-weight:500;
 }
@@ -2937,10 +2937,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 .profile-head .feature-filters{
 	margin-bottom:0;
 }
-.courses-filter .action-card{
+.rooms-filter .action-card{
 	margin-bottom:30px;
 }
-.courses-filter{
+.rooms-filter{
 	padding:30px 30px 0 30px;
 }
 .profile-head .feature-filters.style1 li a{
@@ -3208,7 +3208,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	}
 }
 @media only screen and (max-width: 767px) {
-	.courses-carousel .owl-nav{
+	.rooms-carousel .owl-nav{
 		position: unset;
 		top: auto;
 		right: auto;
@@ -3345,7 +3345,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	.edit-profile{
 		padding:15px;
 	}
-	.courses-filter {
+	.rooms-filter {
 		padding: 15px 15px 0 15px;
 	}
 	.online-cours h5 {
