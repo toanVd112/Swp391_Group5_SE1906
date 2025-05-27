@@ -23,7 +23,7 @@ public class NewClass {
 
         // Gọi DAO
         AccountDAO dao = new AccountDAO();
-        boolean result = dao.insertAccount(acc);
+        boolean result = dao.insertAccount(acc); 
 
         // In kết quả
         if (result) {
