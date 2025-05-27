@@ -245,9 +245,17 @@
         </div>
 
         <!-- Modal -->
+        <c:if test="${showAddModal}">
+            <script>
+                window.onload = function () {
+                    document.getElementById("addAccountModal").style.display = "block";
+                }
+            </script>
+        </c:if>
+
         <div id="addAccountModal" class="modal">
             <div class="modal-dialog">
-                <form action="addAccount" method="post">
+                <form action="addAccount" >
                     <div class="modal-header">
                         <h4 class="modal-title">Add New Account</h4>
                     </div>
@@ -289,6 +297,10 @@
                         <input type="submit" class="btn-success" value="Add Account">
                     </div>
                 </form>
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
+
             </div>
         </div>
 
