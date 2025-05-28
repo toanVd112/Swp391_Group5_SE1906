@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.ActivityLog;
+
 /**
  *
  * @author Admin
@@ -35,7 +36,12 @@ public class ActivityLogDAO {
 
     public List<ActivityLog> getAllLogs() {
         List<ActivityLog> logs = new ArrayList<>();
-        String sql = "SELECT * FROM activitylogs ORDER BY ActionTime DESC";
+        String sql = """
+        SELECT l.LogID, l.ActorID, a.Username, l.ActionType, l.TargetTable, l.TargetID, l.ActionTime
+        FROM activitylogs l
+        JOIN accounts a ON l.ActorID = a.AccountID
+        ORDER BY l.ActionTime DESC
+    """;
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
@@ -43,6 +49,7 @@ public class ActivityLogDAO {
                 ActivityLog log = new ActivityLog();
                 log.setLogID(rs.getInt("LogID"));
                 log.setActorID(rs.getInt("ActorID"));
+                log.setUsername(rs.getString("Username")); // Phải có setUsername trong model
                 log.setActionType(rs.getString("ActionType"));
                 log.setTargetTable(rs.getString("TargetTable"));
                 log.setTargetID(rs.getInt("TargetID"));

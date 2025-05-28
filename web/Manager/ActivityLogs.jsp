@@ -74,6 +74,7 @@
                 <tr>
                     <th>Log ID</th>
                     <th>Actor ID</th>
+                    <th>Username </th>
                     <th>Action Type</th>
                     <th>Target Table</th>
                     <th>Target ID</th>
@@ -85,6 +86,7 @@
                     <tr>
                         <td>${log.logID}</td>
                         <td>${log.actorID}</td>
+                        <td>${log.username}</td>
                         <td>${log.actionType}</td>
                         <td>${log.targetTable}</td>
                         <td>${log.targetID}</td>

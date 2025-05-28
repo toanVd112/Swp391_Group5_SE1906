@@ -8,14 +8,13 @@ package model;
  *
  * @author Admin
  */
-
-
 import java.sql.Timestamp;
 
 public class ActivityLog {
+
     private int logID;
     private int actorID;
-    private String actionType;
+    private String actionType, username;
     private String targetTable;
     private int targetID;
     private Timestamp actionTime;
@@ -23,13 +22,14 @@ public class ActivityLog {
     public ActivityLog() {
     }
 
-    public ActivityLog(int logID, int actorID, String actionType, String targetTable, int targetID, Timestamp actionTime) {
+    public ActivityLog(int logID, int actorID, String actionType, String targetTable, int targetID, Timestamp actionTime, String username) {
         this.logID = logID;
         this.actorID = actorID;
         this.actionType = actionType;
         this.targetTable = targetTable;
         this.targetID = targetID;
         this.actionTime = actionTime;
+        this.username = username;
     }
 
     public int getLogID() {
@@ -79,4 +79,14 @@ public class ActivityLog {
     public void setActionTime(Timestamp actionTime) {
         this.actionTime = actionTime;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+   
 }
