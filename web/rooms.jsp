@@ -261,16 +261,16 @@
 									</div>
 								</div>
 							</div>
-							<div class="widget widget_archive">
-                                <h5 class="widget-title style-1">All Rooms</h5>
-                                <ul>
-                                    <li class="active"><a href="#">General</a></li>
-                                    <li><a href="#">IT & Software</a></li>
-                                    <li><a href="#">Photography</a></li>
-                                    <li><a href="#">Programming Language</a></li>
-                                    <li><a href="#">Technology</a></li>
-                                </ul>
-                            </div>
+                                                    <div class="widget widget_archive">
+                                                        <h5 class="widget-title style-1">All Room Types</h5>
+                                                        <ul>
+                                                            <c:forEach var="room" items="${roomTypes}">
+                                                                <li>
+                                                                    <a href="#">${room.name}</a>
+                                                                </li>
+                                                            </c:forEach>
+                                                        </ul>
+                                                    </div>
 							<div class="widget">
 								<a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
 							</div>

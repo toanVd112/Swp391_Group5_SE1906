@@ -64,4 +64,28 @@ public class RoomDAO {
 
         return list;
     }
+    
+    public Room getLatestRoom() {
+        String sql = "SELECT * FROM rooms ORDER BY roomID DESC LIMIT 1";
+        try {
+            Connection conn = DBConnect.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Room(
+                        rs.getInt("roomID"),
+                        rs.getInt("roomtypeID"),
+                        rs.getString("roomnumber"),
+                        rs.getInt("floor"),
+                        rs.getString("status")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    
+    
 }

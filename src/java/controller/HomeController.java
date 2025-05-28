@@ -23,8 +23,8 @@ import model.RoomType;
  *
  * @author Arcueid
  */
-@WebServlet(name = "RoomTypes", urlPatterns = {"/RoomTypes"})
-public class RoomTypes extends HttpServlet {
+@WebServlet(name = "HomeController", urlPatterns = {"/Home"})
+public class HomeController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,12 +69,16 @@ public class RoomTypes extends HttpServlet {
         try {
             roomTypes = dao.getAllRoomTypes();
         } catch (SQLException ex) {
-            Logger.getLogger(RoomTypes.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-            // Gửi danh sách về JSP
+         
             request.setAttribute("roomTypes", roomTypes);
+            
+               // Gửi danh sách về JSP
+          
             request.getRequestDispatcher("index.jsp").forward(request, response);
+            
 
 
     }

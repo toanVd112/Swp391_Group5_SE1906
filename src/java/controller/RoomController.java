@@ -13,8 +13,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Room;
+import model.RoomType;
 
 /**
  *
@@ -61,12 +65,34 @@ public class RoomController extends HttpServlet {
           response.setContentType("text/html;charset=UTF-8");
           
         //lay danh sach phong
+        
           RoomDAO rl = new RoomDAO();
-           List<Room> list = rl.getAllroom();
+          List<Room> list = rl.getAllroom();
            
-        // Truyền dữ liệu vào request
-        request.setAttribute("listR", list);
+        // lay  list type
+        RoomDAO dao =new RoomDAO();
+               List<RoomType> roomTypes = null;
+        try {
+            roomTypes = dao.getAllRoomTypes();
+        } catch (SQLException ex) {
+           
+        }
+        
+        //lay phong moi nhat
+        try
+        { RoomDAO nr = new RoomDAO();
+            Room latestRoom = nr.getLatestRoom();
+        request.setAttribute("latestRoom",latestRoom);
+        } catch (Exception e) {
+        }
+         
+        
           
+        // Truyền dữ liệu vào request
+      
+        request.setAttribute("listR", list);
+        request.setAttribute("roomTypes", roomTypes);
+            
         // Chuyển hướng đến trang JSP
         request.getRequestDispatcher("rooms.jsp").forward(request, response);
      
