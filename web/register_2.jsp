@@ -45,7 +45,7 @@
         <div id="loading-icon-bx"></div>
         <div class="account-form">
             <div class="account-head" style="background-image:url(assets/images/background/bg2.jpg);">
-                <a href="index.html">
+                <a href="Home">
                     <img src="assets/images/logo.png" alt="Hoang Nam Hotel Logo">
                 </a>
             </div>

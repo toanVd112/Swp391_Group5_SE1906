@@ -15,8 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import model.Room;
 import model.RoomType;
 
@@ -59,44 +58,50 @@ public class RoomController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-          response.setContentType("text/html;charset=UTF-8");
-          
-        //lay danh sach phong
-        
-          RoomDAO rl = new RoomDAO();
-          List<Room> list = rl.getAllroom();
-           
-        // lay  list type
-        RoomDAO dao =new RoomDAO();
-               List<RoomType> roomTypes = null;
-        try {
-            roomTypes = dao.getAllRoomTypes();
-        } catch (SQLException ex) {
-           
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    response.setContentType("text/html;charset=UTF-8");
+
+    RoomDAO dao = new RoomDAO();
+
+    // Lấy danh sách phòng
+    List<Room> list = dao.getAllroom();
+
+    // Lấy danh sách loại phòng
+    List<RoomType> roomTypes = null;
+    try {
+        roomTypes = dao.getAllRoomTypes();
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+
+    // Lấy phòng mới nhất → phải khai báo ngoài try
+    Room latestRoom = null;
+    try {
+        latestRoom = dao.getLatestRoom();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    // Tạo map RoomTypeID → RoomType (để tra giá, ảnh, tên loại phòng...)
+    Map<Integer, RoomType> roomTypeMap = new HashMap<>();
+    if (roomTypes != null) {
+        for (RoomType rt : roomTypes) {
+            roomTypeMap.put(rt.getRoomtypeID(), rt);
         }
-        
-        //lay phong moi nhat
-        try
-        { RoomDAO nr = new RoomDAO();
-            Room latestRoom = nr.getLatestRoom();
-        request.setAttribute("latestRoom",latestRoom);
-        } catch (Exception e) {
-        }
-         
-        
-          
-        // Truyền dữ liệu vào request
-      
-        request.setAttribute("listR", list);
-        request.setAttribute("roomTypes", roomTypes);
-            
-        // Chuyển hướng đến trang JSP
-        request.getRequestDispatcher("rooms.jsp").forward(request, response);
-     
-    } 
+    }
+
+    // Truyền dữ liệu qua request
+    request.setAttribute("listR", list);
+    request.setAttribute("roomTypes", roomTypes);
+    request.setAttribute("latestRoom", latestRoom);
+    request.setAttribute("roomTypeMap", roomTypeMap); // ✅ thêm dòng này
+
+    // Chuyển tới JSP
+    request.getRequestDispatcher("rooms.jsp").forward(request, response);
+}
 
     /** 
      * Handles the HTTP <code>POST</code> method.
