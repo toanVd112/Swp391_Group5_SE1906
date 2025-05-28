@@ -98,6 +98,7 @@
 
             <h2>Staff Management</h2>
             <ul>
+                 <li><a href="${pageContext.request.contextPath}/activityLogs">ActivityLog</a></li>
                 <li><a href="staffList.jsp">View Staff List</a></li>
                 <li><a href="${pageContext.request.contextPath}/managerAccount">Manager Staff/Receptionist</a></li>
             </ul>

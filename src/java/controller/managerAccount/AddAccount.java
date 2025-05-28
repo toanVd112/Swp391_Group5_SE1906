@@ -5,6 +5,7 @@
 package controller.managerAccount;
 
 import DAO.AccountDAO;
+import DAO.ActivityLogDAO;
 import controller.Validation;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Account;
 
 /**
  *
@@ -94,6 +99,14 @@ public class AddAccount extends HttpServlet {
 
         // Nếu hợp lệ, thêm tài khoản
         ad.addAccount(user, pass, role, isActive, email);
+        Account currentUser = (Account) request.getSession().getAttribute("account");
+        int newID = new AccountDAO().getLatestAccountID();
+        ActivityLogDAO logDAO = new ActivityLogDAO();
+        try {
+            logDAO.logAction(currentUser.getAccountID(), "Add", "accounts", newID);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
+        }
         response.sendRedirect("managerAccount");
     }
 

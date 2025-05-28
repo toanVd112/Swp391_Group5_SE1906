@@ -113,8 +113,8 @@ public class AccountDAO {
     public void addAccount(String username, String password, String role, boolean isActive, String email) {
         String sql = "INSERT INTO Accounts (Username, Password, Role, IsActive, Email)\n"
                 + "VALUES (?,?,?,?,?)";
-        try(Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, username);
             ps.setString(2, password);
             ps.setString(3, role);
@@ -124,6 +124,23 @@ public class AccountDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public int getLatestAccountID() {
+        int latestID = -1;
+        String sql = "SELECT AccountID FROM accounts ORDER BY AccountID DESC LIMIT 1";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                latestID = rs.getInt("AccountID");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Hoặc log lỗi ra hệ thống
+        }
+
+        return latestID;
     }
 
     public static void main(String[] args) {
