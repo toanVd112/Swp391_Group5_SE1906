@@ -211,7 +211,7 @@
                                             <li class="add-menu-left">
                                                 <h5 class="menu-adv-title">Our Hotel</h5>
                                                 <ul>
-                                                    <li><a href="rooms.html">Rooms </a></li>
+                                                    <li><a href="roomlist">Rooms </a></li>
                                                     <li><a href="rooms-details.html">Rooms Details</a></li>
                                                     <li><a href="profile.html">Instructor Profile</a></li>
                                                     <li><a href="event.html">Upcoming Event</a></li>
@@ -237,7 +237,7 @@
                                             <li><a href="admin/index.html">Dashboard</a></li>
                                             <li><a href="admin/add-listing.html">Add Listing</a></li>
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
-                                            <li><a href="admin/rooms.html">Rooms</a></li>
+                                            <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
                                             <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
                                             <li><a href="admin/user-profile.html">User Profile</a></li>
@@ -680,7 +680,7 @@
                                         <div class="widget footer_widget">
                                             <h5 class="footer-title">Rooms</h5>
                                             <ul>
-                                                <li><a href="rooms.html">Rooms</a></li>
+                                                <li><a href="roomlist">Rooms</a></li>
                                                 <li><a href="rooms-details.html">Details</a></li>
                                                 <li><a href="membership.html">Membership</a></li>
                                                 <li><a href="profile.html">Profile</a></li>

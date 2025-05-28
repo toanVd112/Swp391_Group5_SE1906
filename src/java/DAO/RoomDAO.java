@@ -11,20 +11,21 @@ import model.Room;
  *
  * @author Arcueid
  */
-public class RoomsDAO {
+public class RoomDAO {
+    
     public List<Room> getAllroom(){
     List<Room> list = new ArrayList<>();
-     String sql = "SELECT * FROM Product WHERE cateID = ?";
+     String sql = "SELECT * FROM rooms ";
         try {
             Connection conn = DBConnect.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new Room(rs.getInt("RoomID"), 
-                            rs.getInt("RoomTypeID"),
-                            rs.getString("RoomNumber"),
-                            rs.getInt("Floor"),
-                            rs.getString("Status")));
+                list.add(new Room(rs.getInt("roomID"), 
+                            rs.getInt("roomtypeID"),
+                            rs.getString("roomnumber"),
+                            rs.getInt("floor"),
+                            rs.getString("status")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -34,5 +35,11 @@ public class RoomsDAO {
     } 
     
     
-    
+     public static void main(String[] args) {
+        RoomDAO dao = new RoomDAO();
+        List<Room> list = dao.getAllroom();
+        for (Room Room : list) {
+            System.out.println(Room);
+        }
+    }
 }
