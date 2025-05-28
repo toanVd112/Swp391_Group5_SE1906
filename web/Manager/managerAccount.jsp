@@ -196,7 +196,7 @@
         <div class="container">
             <div class="table-title">
                 <h2>Manage <b>Accounts</b></h2>
-                <a href="#addAccountModal" onclick="openModal()">+ Add New Account</a>
+                <a  onclick="openModal()">+ Add New Account</a>
             </div>
 
             <table>
