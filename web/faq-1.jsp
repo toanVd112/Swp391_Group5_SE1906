@@ -1,3 +1,11 @@
+<%-- 
+    Document   : faq-1.jsp
+    Created on : May 28, 2025, 9:57:21 PM
+    Author     : Admin
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -386,15 +394,6 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <%
-                                    String result = (String) request.getAttribute("message");
-                                    %>
-
-                                    <% if (message != null) { %>
-                                    <div>
-                                        <%= message %>
-                                    </div>
-                                    <% } %>
 
                                 </div>
                             </div>

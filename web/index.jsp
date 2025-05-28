@@ -191,7 +191,7 @@
                                             </li>
                                             <li><a href="javascript:;">FAQ's<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
-                                                    <li><a href="faq-1.html">FAQ's 1</a></li>
+                                                    <li><a href="faq-1.jsp">FAQ's 1</a></li>
                                                     <li><a href="faq-2.html">FAQ's 2</a></li>
                                                 </ul>
                                             </li>

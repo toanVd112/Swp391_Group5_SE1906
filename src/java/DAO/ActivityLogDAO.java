@@ -64,4 +64,63 @@ public class ActivityLogDAO {
         return logs;
     }
 
+    public List<ActivityLog> getFilteredLogs(String username, String actionType, String targetTable,
+            String fromDate, String toDate, String targetID) {
+        List<ActivityLog> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT al.*, a.Username FROM activitylogs al "
+                + "JOIN accounts a ON al.ActorID = a.AccountID WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (username != null && !username.isEmpty()) {
+            sql.append(" AND a.Username LIKE ?");
+            params.add("%" + username + "%");
+        }
+        if (actionType != null && !actionType.isEmpty()) {
+            sql.append(" AND al.ActionType = ?");
+            params.add(actionType);
+        }
+        if (targetTable != null && !targetTable.isEmpty()) {
+            sql.append(" AND al.TargetTable LIKE ?");
+            params.add("%" + targetTable + "%");
+        }
+        if (fromDate != null && toDate != null && !fromDate.isEmpty() && !toDate.isEmpty()) {
+            sql.append(" AND al.ActionTime BETWEEN ? AND ?");
+            params.add(fromDate + " 00:00:00");
+            params.add(toDate + " 23:59:59");
+        }
+        if (targetID != null && !targetID.isEmpty()) {
+            sql.append(" AND al.TargetID = ?");
+            params.add(Integer.parseInt(targetID));
+        }
+
+        sql.append(" ORDER BY al.ActionTime DESC");
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ActivityLog log = new ActivityLog();
+                log.setLogID(rs.getInt("LogID"));
+                log.setActorID(rs.getInt("ActorID"));
+                log.setActionType(rs.getString("ActionType"));
+                log.setTargetTable(rs.getString("TargetTable"));
+                log.setTargetID(rs.getInt("TargetID"));
+                log.setActionTime(rs.getTimestamp("ActionTime"));
+                log.setUsername(rs.getString("Username"));
+                list.add(log);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
 }

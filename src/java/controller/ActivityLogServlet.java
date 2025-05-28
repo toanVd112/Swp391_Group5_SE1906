@@ -19,12 +19,26 @@ import model.ActivityLog;
 public class ActivityLogServlet extends HttpServlet {
 
     @Override
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ActivityLogDAO dao = new ActivityLogDAO();
-        List<ActivityLog> logs = dao.getAllLogs();
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
 
+        // Lấy các tham số từ form lọc
+        String username = request.getParameter("username");
+        String actionType = request.getParameter("actionType");
+        String targetTable = request.getParameter("targetTable");
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
+        String targetID = request.getParameter("targetID");
+
+        ActivityLogDAO dao = new ActivityLogDAO();
+        List<ActivityLog> logs = dao.getFilteredLogs(username, actionType, targetTable, from, to, targetID);
+
+        // Gửi dữ liệu và giữ nguyên các giá trị filter
         request.setAttribute("logList", logs);
         request.getRequestDispatcher("Manager/ActivityLogs.jsp").forward(request, response);
     }
+
 }

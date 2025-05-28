@@ -98,13 +98,14 @@
 
             <h2>Staff Management</h2>
             <ul>
-                 <li><a href="${pageContext.request.contextPath}/activityLogs">ActivityLog</a></li>
+                <li><a href="${pageContext.request.contextPath}/activityLogs">ActivityLog</a></li>
                 <li><a href="staffList.jsp">View Staff List</a></li>
                 <li><a href="${pageContext.request.contextPath}/managerAccount">Manager Staff/Receptionist</a></li>
             </ul>
-            
+
             <h2>Service & Feedback</h2>
             <ul>
+                <li><a href="manageQuestions.jsp">View Question</a></li>
                 <li><a href="services.jsp">View Service List</a></li>
                 <li><a href="feedbacks.jsp">View Feedback</a></li>
             </ul>
@@ -116,7 +117,6 @@
 
             <br>
             <a href="${pageContext.request.contextPath}/Logout">Logout</a>
-
         </div>
     </body>
 </html>

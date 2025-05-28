@@ -66,6 +66,33 @@
         </style>
     </head>
     <body>
+        <!-- Add ngay sau <h1>Activity Logs</h1> -->
+        <form action="activityLogs" method="get" style="width: 90%; margin: 20px auto;">
+            <label>Username:</label>
+            <input type="text" name="username" value="${param.username}" />
+
+            <label>Action Type:</label>
+            <select name="actionType">
+                <option value="">All</option>
+                <option value="Add" ${param.actionType == 'Add' ? 'selected' : ''}>Add</option>
+                <option value="Delete" ${param.actionType == 'Delete' ? 'selected' : ''}>Delete</option>
+                <option value="Update" ${param.actionType == 'Update' ? 'selected' : ''}>Update</option>
+            </select>
+
+            <label>Target Table:</label>
+            <input type="text" name="targetTable" value="${param.targetTable}" />
+
+            <label>From:</label>
+            <input type="date" name="from" value="${param.from}" />
+
+            <label>To:</label>
+            <input type="date" name="to" value="${param.to}" />
+
+            <label>Target ID:</label>
+            <input type="number" name="targetID" value="${param.targetID}" />
+
+            <button type="submit" style="margin-left:10px; padding:6px 14px;">Filter</button>
+        </form>
 
         <h1>Activity Logs</h1>
 
