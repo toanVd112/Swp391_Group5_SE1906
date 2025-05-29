@@ -103,6 +103,51 @@ public class RoomDAO {
 
     return null;
 }
+    
+    //lay phong theo roomtype
+    public List<Room> getRoomsByType(int typeId) {
+    List<Room> list = new ArrayList<>();
+
+    String sql = "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage " +
+                 "FROM rooms r " +
+                 "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID " +
+                 "WHERE r.RoomTypeID = ?";
+
+    try (Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, typeId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            RoomType roomType = new RoomType(
+                rs.getInt("RoomTypeID"),
+                rs.getString("Name"),
+                rs.getString("Description"),
+                rs.getDouble("BasePrice"),
+                rs.getString("RoomTypeImage")
+            );
+
+            Room room = new Room(
+                rs.getInt("RoomID"),
+                rs.getString("RoomNumber"),
+                rs.getInt("Floor"),
+                rs.getString("Status"),
+                roomType
+            );
+
+            list.add(room);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
+    
+    
     }
     
     

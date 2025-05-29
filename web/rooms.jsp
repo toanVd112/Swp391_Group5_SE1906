@@ -57,173 +57,173 @@
 	
 </head>
 <body id="bg">
-<div class="page-wraper">
-<div id="loading-icon-bx"></div>
+    <div class="page-wraper">
+        <div id="loading-icon-bx"></div>
 
-    <!-- Header Top ==== -->
-    <header class="header rs-nav">
-		<div class="top-bar">
-			<div class="container">
-				<div class="row d-flex justify-content-between">
-					<div class="topbar-left">
-						<ul>
-							<li><a href="faq-1.jsp"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
-							<li><a href="javascript:;"><i class="fa fa-envelope-o"></i>Support@website.com</a></li>
-						</ul>
-					</div>
-					<div class="topbar-right">
-						<ul>
-							<li>
-								<select class="header-lang-bx">
-									<option data-icon="flag flag-uk">English UK</option>
-									<option data-icon="flag flag-us">English US</option>
-								</select>
-							</li>
-							<li><a href="login.jsp">Login</a></li>
-							<li><a href="register.html">Register</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="sticky-header navbar-expand-lg">
-            <div class="menu-bar clearfix">
-                <div class="container clearfix">
-					<!-- Header Logo ==== -->
-					<div class="menu-logo">
-						<a href="Home"><img src="assets/images/logo.png" alt=""></a>
-					</div>
-					<!-- Mobile Nav Button ==== -->
-                    <button class="navbar-toggler collapsed menuicon justify-content-end" type="button" data-toggle="collapse" data-target="#menuDropdown" aria-controls="menuDropdown" aria-expanded="false" aria-label="Toggle navigation">
-						<span></span>
-						<span></span>
-						<span></span>
-					</button>
-					<!-- Author Nav ==== -->
-                    <div class="secondary-menu">
-                        <div class="secondary-inner">
+        <!-- Header Top ==== -->
+        <header class="header rs-nav">
+            <div class="top-bar">
+                <div class="container">
+                    <div class="row d-flex justify-content-between">
+                        <div class="topbar-left">
                             <ul>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-								<!-- Search Button ==== -->
-								<li class="search-btn"><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
-							</ul>
-						</div>
+                                <li><a href="faq-1.jsp"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
+                                <li><a href="javascript:;"><i class="fa fa-envelope-o"></i>Support@website.com</a></li>
+                            </ul>
+                        </div>
+                        <div class="topbar-right">
+                            <ul>
+                                <li>
+                                    <select class="header-lang-bx">
+                                        <option data-icon="flag flag-uk">English UK</option>
+                                        <option data-icon="flag flag-us">English US</option>
+                                    </select>
+                                </li>
+                                <li><a href="login.jsp">Login</a></li>
+                                <li><a href="register.html">Register</a></li>
+                            </ul>
+                        </div>
                     </div>
-					<!-- Search Box ==== -->
+                </div>
+            </div>
+                <div class="sticky-header navbar-expand-lg">
+                    <div class="menu-bar clearfix">
+                        <div class="container clearfix">
+                            <!-- Header Logo ==== -->
+                            <div class="menu-logo">
+                                <a href="Home"><img src="assets/images/logo.png" alt=""></a>
+                            </div>
+                            <!-- Mobile Nav Button ==== -->
+                            <button class="navbar-toggler collapsed menuicon justify-content-end" type="button" data-toggle="collapse" data-target="#menuDropdown" aria-controls="menuDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+                            <!-- Author Nav ==== -->
+                            <div class="secondary-menu">
+                                <div class="secondary-inner">
+                            <ul>
+                                <li><a href="javascript:;" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="javascript:;" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                                <li><a href="javascript:;" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                <!-- Search Button ==== -->
+                                <li class="search-btn"><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Search Box ==== -->
                     <div class="nav-search-bar">
                         <form action="#">
                             <input name="search" value="" type="text" class="form-control" placeholder="Type to search">
                             <span><i class="ti-search"></i></span>
                         </form>
-						<span id="search-remove"><i class="ti-close"></i></span>
+                        <span id="search-remove"><i class="ti-close"></i></span>
                     </div>
-					<!-- Navigation Menu ==== -->
+                    <!-- Navigation Menu ==== -->
                     <div class="menu-links navbar-collapse collapse justify-content-start" id="menuDropdown">
-						<div class="menu-logo">
-							<a href="Home"><img src="assets/images/logo.png" alt=""></a>
-						</div>
+                        <div class="menu-logo">
+                            <a href="Home"><img src="assets/images/logo.png" alt=""></a>
+                        </div>
                         <ul class="nav navbar-nav">	
-							<li class="active"><a href="javascript:;">Home <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu">
-									<li><a href="Home">Home 1</a></li>
-									<li><a href="Home">Home 2</a></li>
-								</ul>
-							</li>
-							<li><a href="javascript:;">Pages <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu">
-									<li><a href="javascript:;">About<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="about-1.html">About 1</a></li>
-											<li><a href="about-2.html">About 2</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">Event<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="event.html">Event</a></li>
-											<li><a href="events-details.html">Events Details</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">FAQ's<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="faq-1.jsp">FAQ's 1</a></li>
-											<li><a href="faq-2.html">FAQ's 2</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">Contact Us<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="contact-1.html">Contact Us 1</a></li>
-											<li><a href="contact-2.html">Contact Us 2</a></li>
-										</ul>
-									</li>
-									<li><a href="portfolio.html">Portfolio</a></li>
-									<li><a href="profile.html">Profile</a></li>
-									<li><a href="membership.html">Membership</a></li>
-									<li><a href="error-404.html">404 Page</a></li>
-								</ul>
-							</li>
-							<li class="add-mega-menu"><a href="javascript:;">Our Rooms <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu add-menu">
-									<li class="add-menu-left">
-										<h5 class="menu-adv-title">Our Rooms</h5>
-										<ul>
-											<li><a href="roomlist">Rooms </a></li>
-											<li><a href="rooms-details.html">Rooms Details</a></li>
-											<li><a href="profile.html">Instructor Profile</a></li>
-											<li><a href="event.html">Upcoming Event</a></li>
-											<li><a href="membership.html">Membership</a></li>
-										</ul>
-									</li>
-									<li class="add-menu-right">
-										<img src="assets/images/adv/adv.jpg" alt=""/>
-									</li>
-								</ul>
-							</li>
-							<li><a href="javascript:;">Blog <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu">
-									<li><a href="blog-classic-grid.html">Blog Classic</a></li>
-									<li><a href="blog-classic-sidebar.html">Blog Classic Sidebar</a></li>
-									<li><a href="blog-list-sidebar.html">Blog List Sidebar</a></li>
-									<li><a href="blog-standard-sidebar.html">Blog Standard Sidebar</a></li>
-									<li><a href="blog-details.html">Blog Details</a></li>
-								</ul>
-							</li>
-							<li class="nav-dashboard"><a href="javascript:;">Dashboard <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu">
-									<li><a href="admin/Home">Dashboard</a></li>
-									<li><a href="admin/add-listing.html">Add Listing</a></li>
-									<li><a href="admin/bookmark.html">Bookmark</a></li>
-									<li><a href="admin/roomlist">Rooms</a></li>
-									<li><a href="admin/review.html">Review</a></li>
-									<li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
-									<li><a href="admin/user-profile.html">User Profile</a></li>
-									<li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
-											<li><a href="admin/list-view-calendar.html">List View Calendar</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">Mailbox<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="admin/mailbox.html">Mailbox</a></li>
-											<li><a href="admin/mailbox-compose.html">Compose</a></li>
-											<li><a href="admin/mailbox-read.html">Mail Read</a></li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
-						<div class="nav-social-link">
-							<a href="javascript:;"><i class="fa fa-facebook"></i></a>
-							<a href="javascript:;"><i class="fa fa-google-plus"></i></a>
-							<a href="javascript:;"><i class="fa fa-linkedin"></i></a>
-						</div>
+                            <li class="active"><a href="javascript:;">Home <i class="fa fa-chevron-down"></i></a>
+                                <ul class="sub-menu">
+                                    <li><a href="Home">Home 1</a></li>
+                                    <li><a href="Home">Home 2</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:;">Pages <i class="fa fa-chevron-down"></i></a>
+                                <ul class="sub-menu">
+                                    <li><a href="javascript:;">About<i class="fa fa-angle-right"></i></a>
+                                        <ul class="sub-menu">
+                                            <li><a href="about-1.html">About 1</a></li>
+                                            <li><a href="about-2.html">About 2</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="javascript:;">Event<i class="fa fa-angle-right"></i></a>
+                                        <ul class="sub-menu">
+                                            <li><a href="event.html">Event</a></li>
+                                                                                <li><a href="events-details.html">Events Details</a></li>
+                                                                            </ul>
+                                                                        </li>
+                                                                        <li><a href="javascript:;">FAQ's<i class="fa fa-angle-right"></i></a>
+                                                                            <ul class="sub-menu">
+                                                                                <li><a href="faq-1.jsp">FAQ's 1</a></li>
+                                                                                <li><a href="faq-2.html">FAQ's 2</a></li>
+                                                                            </ul>
+                                                                        </li>
+                                                                        <li><a href="javascript:;">Contact Us<i class="fa fa-angle-right"></i></a>
+                                                                            <ul class="sub-menu">
+                                                                                <li><a href="contact-1.html">Contact Us 1</a></li>
+                                                                                <li><a href="contact-2.html">Contact Us 2</a></li>
+                                                                            </ul>
+                                                                        </li>
+                                                                        <li><a href="portfolio.html">Portfolio</a></li>
+                                                                        <li><a href="profile.html">Profile</a></li>
+                                                                        <li><a href="membership.html">Membership</a></li>
+                                                                        <li><a href="error-404.html">404 Page</a></li>
+                                                                </ul>
+                                                        </li>
+                                                        <li class="add-mega-menu"><a href="javascript:;">Our Rooms <i class="fa fa-chevron-down"></i></a>
+                                                            <ul class="sub-menu add-menu">
+                                                                <li class="add-menu-left">
+                                                                    <h5 class="menu-adv-title">Our Rooms</h5>
+                                                                    <ul>
+                                                                        <li><a href="roomlist">Rooms </a></li>
+                                                                        <li><a href="rooms-details.html">Rooms Details</a></li>
+                                                                        <li><a href="profile.html">Instructor Profile</a></li>
+                                                                        <li><a href="event.html">Upcoming Event</a></li>
+                                                                        <li><a href="membership.html">Membership</a></li>
+                                                                    </ul>
+                                                                </li>
+                                                                <li class="add-menu-right">
+                                                                    <img src="assets/images/adv/adv.jpg" alt=""/>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li><a href="javascript:;">Blog <i class="fa fa-chevron-down"></i></a>
+                                                            <ul class="sub-menu">
+                                                                <li><a href="blog-classic-grid.html">Blog Classic</a></li>
+                                                                <li><a href="blog-classic-sidebar.html">Blog Classic Sidebar</a></li>
+                                                                <li><a href="blog-list-sidebar.html">Blog List Sidebar</a></li>
+                                                                <li><a href="blog-standard-sidebar.html">Blog Standard Sidebar</a></li>
+                                                                <li><a href="blog-details.html">Blog Details</a></li>
+                                                            </ul>
+                                                        </li>
+                                                        <li class="nav-dashboard"><a href="javascript:;">Dashboard <i class="fa fa-chevron-down"></i></a>
+                                                            <ul class="sub-menu">
+                                                                <li><a href="admin/Home">Dashboard</a></li>
+                                                                <li><a href="admin/add-listing.html">Add Listing</a></li>
+                                                                <li><a href="admin/bookmark.html">Bookmark</a></li>
+                                                                <li><a href="admin/roomlist">Rooms</a></li>
+                                                                <li><a href="admin/review.html">Review</a></li>
+                                                                <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
+                                                                <li><a href="admin/user-profile.html">User Profile</a></li>
+                                                                <li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
+                                                                    <ul class="sub-menu">
+                                                                        <li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
+                                                                        <li><a href="admin/list-view-calendar.html">List View Calendar</a></li>
+                                                                    </ul>
+                                                                </li>
+                                                                <li><a href="javascript:;">Mailbox<i class="fa fa-angle-right"></i></a>
+                                                                    <ul class="sub-menu">
+                                                                        <li><a href="admin/mailbox.html">Mailbox</a></li>
+                                                                        <li><a href="admin/mailbox-compose.html">Compose</a></li>
+                                                                        <li><a href="admin/mailbox-read.html">Mail Read</a></li>
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                        </ul>
+                        <div class="nav-social-link">
+                            <a href="javascript:;"><i class="fa fa-facebook"></i></a>
+                            <a href="javascript:;"><i class="fa fa-google-plus"></i></a>
+                            <a href="javascript:;"><i class="fa fa-linkedin"></i></a>
+                        </div>
                     </div>
-					<!-- Navigation Menu END ==== -->
+                    <!-- Navigation Menu END ==== -->
                 </div>
             </div>
-        </div>
+                </div>
     </header>
     <!-- header END ==== -->
     <!-- Content -->
@@ -233,223 +233,226 @@
             <div class="container">
                 <div class="page-banner-entry">
                     <h1 class="text-white">Our Rooms</h1>
-				 </div>
+                </div>
             </div>
         </div>
-		<!-- Breadcrumb row -->
-		<div class="breadcrumb-row">
-			<div class="container">
-				<ul class="list-inline">
-					<li><a href="#">Home</a></li>
-					<li>Our Rooms</li>
-				</ul>
-			</div>
-		</div>
-		<!-- Breadcrumb row END -->
+        <!-- Breadcrumb row -->
+        <div class="breadcrumb-row">
+            <div class="container">
+                <ul class="list-inline">
+                    <li><a href="#">Home</a></li>
+                    <li>Our Rooms</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Breadcrumb row END -->
         <!-- inner page banner END -->
-		<div class="content-block">
+        <div class="content-block">
             <!-- About Us -->
-			<div class="section-area section-sp1">
+            <div class="section-area section-sp1">
                 <div class="container">
-					 <div class="row">
-						<div class="col-lg-3 col-md-4 col-sm-12 m-b30">
-							<div class="widget rooms-search-bx placeani">
-								<div class="form-group">
-									<div class="input-group">
-										<label>Search Rooms</label>
-										<input name="dzName" type="text" required class="form-control">
-									</div>
-								</div>
-							</div>
-                                                    <div class="widget widget_archive">
-                                                        <h5 class="widget-title style-1">All Room Types</h5>
-                                                        <ul>
-                                                            <c:forEach var="room" items="${roomTypes}">
-                                                                <li>
-                                                                    <a href="#">${room.name}</a>
-                                                                </li>
-                                                            </c:forEach>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-12 m-b30">
+                            <div class="widget rooms-search-bx placeani">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label>Search Rooms</label>
+                                        <input name="dzName" type="text" required class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget widget_archive">
+                                <h5 class="widget-title style-1">All Room Types</h5>
+                                <ul>
+                                    <li><a href="roomlist">All</a></li> <!-- Tuỳ chọn để xem tất cả -->
+                                        <c:forEach var="room" items="${roomTypes}">
+                                        <li>
+                                            <a href="TypeListController?typeId=${room.roomtypeID}">${room.name}</a>
+
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+
+                            </div>
+                            <div class="widget">
+                                <a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
+                            </div>
+                            <div class="widget recent-posts-entry widget-rooms">
+                                <h5 class="widget-title style-1">Recent Rooms</h5>
+                                <div class="widget-post-bx">
+                                    <div class="widget-post clearfix">
+                                        <div class="ttr-post-media">
+                                            <img src="assets/images/blog/recent-blog/pic1.jpg" width="200" height="143" alt="">
+                                        </div>
+                                        <div class="ttr-post-info">
+                                            <div class="ttr-post-header">
+                                                <h6 class="post-title">
+                                                    <a href="#">${latestRoom.roomnumber} - Floor ${latestRoom.floor}</a>
+                                                </h6>
+                                            </div>
+                                            <div class="ttr-post-meta">
+                                                <ul>
+                                                    <li class="price">
+                                                        <h5>
+                                                            ${latestRoom.status}<br/>
+                                                            $ ${latestRoom.roomType.basePrice}
+                                                        </h5>
+                                                    </li>
+                                                    <li class="review">03 Review</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-9 col-md-8 col-sm-12">
+                            <div class="row">
+                                <c:forEach items="${listR}" var="r">
+                                    <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
+                                        <div class="cours-bx">
+                                            <div class="action-box">
+                                                <img src="assets/images/rooms/pic1.jpg" alt="">
+                                                <a href="#" class="btn">Read More</a>
+                                            </div>
+                                            <div class="info-bx text-center">
+                                                <h5><a href="#">Room ${r.roomnumber}</a></h5>
+                                                <h5>Floor ${r.floor}</h5>
+                                                <span>${r.roomType.name}</span> <!-- Loại phòng -->
+                                            </div>
+                                                <div class="cours-more-info">
+                                                    <div class="review">
+                                                        <span>3 Review</span>
+                                                        <ul class="cours-star">
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li><i class="fa fa-star"></i></li>
+                                                            <li><i class="fa fa-star"></i></li>
                                                         </ul>
                                                     </div>
-							<div class="widget">
-								<a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
-                                                        </div>
-                                                        <div class="widget recent-posts-entry widget-rooms">
-                                                            <h5 class="widget-title style-1">Recent Rooms</h5>
-                                                            <div class="widget-post-bx">
-                                                                <div class="widget-post clearfix">
-                                                                    <div class="ttr-post-media">
-                                                                        <img src="assets/images/blog/recent-blog/pic1.jpg" width="200" height="143" alt="">
-                                                                    </div>
-                                                                    <div class="ttr-post-info">
-                                                                        <div class="ttr-post-header">
-                                                                            <h6 class="post-title">
-                                                                                <a href="#">${latestRoom.roomnumber} - Floor ${latestRoom.floor}</a>
-                                                                            </h6>
-                                                                        </div>
-                                                                        <div class="ttr-post-meta">
-                                                                            <ul>
-                                                                                <li class="price">
-                                                                                    <h5>
-                                                                                        ${latestRoom.status}<br/>
-                                                                                       $ ${latestRoom.roomType.basePrice}
-                                                                                    </h5>
-                                                                                </li>
-                                                                                <li class="review">03 Review</li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-						</div>
-						<div class="col-lg-9 col-md-8 col-sm-12">
-							<div class="row">
-                                                            <c:forEach items="${listR}" var="r">
-                                                                <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
-                                                                    <div class="cours-bx">
-                                                                        <div class="action-box">
-                                                                            <img src="assets/images/rooms/pic1.jpg" alt="">
-                                                                            <a href="#" class="btn">Read More</a>
-                                                                        </div>
-                                                                        <div class="info-bx text-center">
-                                                                            <h5><a href="#">Room ${r.roomnumber}</a></h5>
-                                                                            <h5>Floor ${r.floor}</h5>
-                                                                            <span>${r.roomType.name}</span> <!-- Loại phòng -->
-                                                                        </div>
-                                                                        <div class="cours-more-info">
-                                                                            <div class="review">
-                                                                                <span>3 Review</span>
-                                                                                <ul class="cours-star">
-                                                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                                                    <li><i class="fa fa-star"></i></li>
-                                                                                    <li><i class="fa fa-star"></i></li>
-                                                                                </ul>
-                                                                            </div>
-                                                                            <div class="price">
-                                                                                <h4>${r.status}</h4>
-                                                                                <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </c:forEach>								
-								<div class="col-lg-12 m-b20">
-									<div class="pagination-bx rounded-sm gray clearfix">
-										<ul class="pagination">
-											<li class="previous"><a href="#"><i class="ti-arrow-left"></i> Prev</a></li>
-											<li class="active"><a href="#">1</a></li>
-											<li><a href="#">2</a></li>
-											<li><a href="#">3</a></li>
-											<li class="next"><a href="#">Next <i class="ti-arrow-right"></i></a></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-            </div>
-        </div>
-		<!-- contact area END -->
-		
-    </div>
-    <!-- Content END-->
-	<!-- Footer ==== -->
-    <footer>
-        <div class="footer-top">
-			<div class="pt-exebar">
-				<div class="container">
-					<div class="d-flex align-items-stretch">
-						<div class="pt-logo mr-auto">
-							<a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
-						</div>
-						<div class="pt-social-link">
-							<ul class="list-inline m-a0">
-								<li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-								<li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-								<li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-							</ul>
-						</div>
-						<div class="pt-btn-join">
-							<a href="#" class="btn ">Join Now</a>
-						</div>
-					</div>
-				</div>
-			</div>
-            <div class="container">
-                <div class="row">
-					<div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                        <div class="widget">
-                            <h5 class="footer-title">Sign Up For A Newsletter</h5>
-							<p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                            <div class="subscribe-form m-b20">
-								<form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-									<div class="ajax-message"></div>
-									<div class="input-group">
-										<input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-										<span class="input-group-btn">
-											<button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-										</span> 
-									</div>
-								</form>
-							</div>
+                                                    <div class="price">
+                                                        <h4>${r.status}</h4>
+                                                        <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>								
+                                <div class="col-lg-12 m-b20">
+                                    <div class="pagination-bx rounded-sm gray clearfix">
+                                        <ul class="pagination">
+                                            <li class="previous"><a href="#"><i class="ti-arrow-left"></i> Prev</a></li>
+                                            <li class="active"><a href="#">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#">3</a></li>
+                                            <li class="next"><a href="#">Next <i class="ti-arrow-right"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-					<div class="col-12 col-lg-5 col-md-7 col-sm-12">
-						<div class="row">
-							<div class="col-4 col-lg-4 col-md-4 col-sm-4">
-								<div class="widget footer_widget">
-									<h5 class="footer-title">Company</h5>
-									<ul>
-										<li><a href="Home">Home</a></li>
-										<li><a href="about-1.html">About</a></li>
-										<li><a href="faq-1.jsp">FAQs</a></li>
-										<li><a href="contact-1.html">Contact</a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="col-4 col-lg-4 col-md-4 col-sm-4">
-								<div class="widget footer_widget">
-									<h5 class="footer-title">Get In Touch</h5>
-									<ul>
-										<li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-										<li><a href="blog-classic-grid.html">Blog</a></li>
-										<li><a href="portfolio.html">Portfolio</a></li>
-										<li><a href="event.html">Event</a></li>
-									</ul>
-								</div>
-							</div>
-							<div class="col-4 col-lg-4 col-md-4 col-sm-4">
-								<div class="widget footer_widget">
-									<h5 class="footer-title">Rooms</h5>
-									<ul>
-										<li><a href="roomlist">Rooms</a></li>
-										<li><a href="rooms-details.html">Details</a></li>
-										<li><a href="membership.html">Membership</a></li>
-										<li><a href="profile.html">Profile</a></li>
-									</ul>
-								</div>
-							</div>
-						</div>
+                </div>
+            </div>
+        </div>
+        <!-- contact area END -->
+
+    </div>
+    <!-- Content END-->
+    <!-- Footer ==== -->
+    <footer>
+        <div class="footer-top">
+            <div class="pt-exebar">
+                <div class="container">
+                    <div class="d-flex align-items-stretch">
+                        <div class="pt-logo mr-auto">
+                            <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                        </div>
+                        <div class="pt-social-link">
+                            <ul class="list-inline m-a0">
+                                <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pt-btn-join">
+                            <a href="#" class="btn ">Join Now</a>
+                        </div>
                     </div>
-					<div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                        <div class="widget">
+                            <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                            <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                            <div class="subscribe-form m-b20">
+                                <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                    <div class="ajax-message"></div>
+                                    <div class="input-group">
+                                        <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                        <span class="input-group-btn">
+                                            <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                        </span> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                        <div class="row">
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Company</h5>
+                                    <ul>
+                                        <li><a href="Home">Home</a></li>
+                                        <li><a href="about-1.html">About</a></li>
+                                        <li><a href="faq-1.jsp">FAQs</a></li>
+                                        <li><a href="contact-1.html">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Get In Touch</h5>
+                                    <ul>
+                                        <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                        <li><a href="blog-classic-grid.html">Blog</a></li>
+                                        <li><a href="portfolio.html">Portfolio</a></li>
+                                        <li><a href="event.html">Event</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Rooms</h5>
+                                    <ul>
+                                        <li><a href="roomlist">Rooms</a></li>
+                                        <li><a href="rooms-details.html">Details</a></li>
+                                        <li><a href="membership.html">Membership</a></li>
+                                        <li><a href="profile.html">Profile</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
                         <div class="widget widget_gallery gallery-grid-4">
                             <h5 class="footer-title">Our Gallery</h5>
                             <ul class="magnific-image">
-								<li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-								<li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-							</ul>
+                                <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
