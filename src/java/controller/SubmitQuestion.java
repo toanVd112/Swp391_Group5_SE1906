@@ -12,16 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import model.CustomerQuestion;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ReplyQuestionServlet", urlPatterns = {"/ReplyQuestionServlet"})
-public class ReplyQuestionServlet extends HttpServlet {
+@WebServlet(name = "SubmitQuestion", urlPatterns = {"/submitQuestion"})
+public class SubmitQuestion extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +37,10 @@ public class ReplyQuestionServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ReplyQuestionServlet</title>");
+            out.println("<title>Servlet SubmitQuestion</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ReplyQuestionServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SubmitQuestion at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,11 +58,7 @@ public class ReplyQuestionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CustomerQuestionDAO o = new CustomerQuestionDAO();
-        List<CustomerQuestion> questions = new ArrayList<>();
-        questions = o.getAllQuestions();
-        request.setAttribute("questions", questions);
-        request.getRequestDispatcher("Manager/manageQuestions.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -80,12 +73,27 @@ public class ReplyQuestionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int questionID = Integer.parseInt(request.getParameter("questionID"));
-        String adminReply = request.getParameter("adminReply");
+        request.setCharacterEncoding("UTF-8");
+
+        String name = request.getParameter("name");
+        String phone = String.valueOf(request.getParameter("phone"));
+        String question = request.getParameter("question");
 
         CustomerQuestionDAO dao = new CustomerQuestionDAO();
-        dao.replyToQuestion(questionID, adminReply);
+        dao.insertQuestion(name, phone, question);
 
-        response.sendRedirect("ReplyQuestionServlet");
+        // Sau khi gửi xong, redirect về trang cảm ơn hoặc thông báo thành công
+        response.sendRedirect("faq-1.jsp");
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

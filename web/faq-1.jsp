@@ -369,15 +369,22 @@
                                                 <div class="form-group">
                                                     <div class="input-group">
                                                         <label>Your Name</label>
-                                                        <input name="customerName" type="text" required class="form-control">
+                                                        <input name="name" type="text" required class="form-control">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="form-group">
                                                     <div class="input-group"> 
-                                                        <label>Your Email Address</label>
-                                                        <input name="email" type="email" class="form-control" required>
+                                                        <label>Your Phone</label>
+                                                        <input type="text" name="phone" 
+                                                               inputmode="numeric" 
+                                                               pattern="^\d{10}$" 
+                                                               maxlength="10" 
+                                                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                                                               class="form-control" 
+                                                               required
+                                                               title="Số điện thoại phải gồm đúng 10 chữ số">
                                                     </div>
                                                 </div>
                                             </div>

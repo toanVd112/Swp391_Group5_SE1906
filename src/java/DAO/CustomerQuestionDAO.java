@@ -23,15 +23,15 @@ public class CustomerQuestionDAO {
 
     public List<CustomerQuestion> getAllQuestions() {
         List<CustomerQuestion> list = new ArrayList<>();
-        String sql = "SELECT * FROM CustomerQuestions ORDER BY CreatedAt DESC";
+        String sql = "SELECT * FROM CustomerQuestions ORDER BY SubmittedAt DESC";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 CustomerQuestion q = new CustomerQuestion();
                 q.setQuestionID(rs.getInt("QuestionID"));
                 q.setCustomerName(rs.getString("CustomerName"));
-                q.SetEmail(rs.getString("Email"));
-                q.SetQuestion(rs.getString("Question"));
-                q.setCreateAt(rs.getTimestamp("CreatedAt"));
+                q.setPhone(rs.getString("Phone"));
+                q.setQuestion(rs.getString("Message"));
+                q.setCreatedAt(rs.getTimestamp("SubmittedAt"));
                 q.setAdminReply(rs.getString("AdminReply"));
                 q.setRepliedAt(rs.getTimestamp("RepliedAt"));
                 list.add(q);
@@ -53,11 +53,11 @@ public class CustomerQuestionDAO {
         }
     }
 
-    public void insertQuestion(String name, String email, String question) {
-        String sql = "INSERT INTO CustomerQuestions (CustomerName, Email, Question, CreatedAt) VALUES (?, ?, ?, NOW())";
+    public void insertQuestion(String name, String phone, String question) {
+        String sql = "INSERT INTO CustomerQuestions (CustomerName, Phone, Message, SubmittedAt) VALUES (?, ?, ?, NOW())";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, name);
-            ps.setString(2, email);
+            ps.setString(2, phone);
             ps.setString(3, question);
             ps.executeUpdate();
         } catch (Exception e) {
@@ -65,4 +65,10 @@ public class CustomerQuestionDAO {
         }
     }
 
+    public static void main(String[] args) {
+        CustomerQuestionDAO o = new CustomerQuestionDAO();
+        List<CustomerQuestion> questions = new ArrayList<>();
+        questions = o.getAllQuestions();
+        System.out.println(questions);
+    }
 }

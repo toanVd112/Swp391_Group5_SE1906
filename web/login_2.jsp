@@ -34,6 +34,7 @@
                     <div class="account-container">
                         <div class="heading-bx left">
                             <h2 class="title-head">Manager,Staff,Receptionist Login <span>Portal</span></h2>
+                              <p>Manager, Staff? <a href="login.jsp">Customer Login here</a></p>
 <!--                            <p>Return to main login? <a href="login.jsp">Click here</a></p>-->
                         </div>
 

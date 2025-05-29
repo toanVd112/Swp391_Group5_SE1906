@@ -1,88 +1,49 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.sql.Timestamp;
 
-/**
- *
- * @author Admin
- */
 public class CustomerQuestion {
 
-    int QuestionID;
-    String CustomerName, Email, setQuestion, AdminReply;
-    Timestamp CreateAt, RepliedAt;
+    private int questionID;
+    private String customerName;
+    private String phone;
+    private String question;
+    private String adminReply;
+    private Timestamp createdAt;
+    private Timestamp repliedAt;
 
-    public int getQuestionID() {
-        return QuestionID;
+    /* ----- GETTERS & SETTERS ----- */
+    public int getQuestionID()                { return questionID; }
+    public void setQuestionID(int questionID) { this.questionID = questionID; }
+
+    public String getCustomerName()                 { return customerName; }
+    public void setCustomerName(String customerName){ this.customerName = customerName; }
+
+    public String getPhone()               { return phone; }
+    public void setPhone(String phone)     { this.phone = phone; }
+
+    public String getQuestion()            { return question; }
+    public void setQuestion(String question){ this.question = question; }
+
+    public String getAdminReply()                { return adminReply; }
+    public void setAdminReply(String adminReply)  { this.adminReply = adminReply; }
+
+    public Timestamp getCreatedAt()              { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt){ this.createdAt = createdAt; }
+
+    public Timestamp getRepliedAt()               { return repliedAt; }
+    public void setRepliedAt(Timestamp repliedAt) { this.repliedAt = repliedAt; }
+
+    @Override
+    public String toString() {
+        return "CustomerQuestion{" +
+               "questionID=" + questionID +
+               ", customerName='" + customerName + '\'' +
+               ", phone='" + phone + '\'' +
+               ", question='" + question + '\'' +
+               ", adminReply='" + adminReply + '\'' +
+               ", createdAt=" + createdAt +
+               ", repliedAt=" + repliedAt +
+               '}';
     }
-
-    public void setQuestionID(int QuestionID) {
-        this.QuestionID = QuestionID;
-    }
-
-    public String getCustomerName() {
-        return CustomerName;
-    }
-
-    public void setCustomerName(String CustomerName) {
-        this.CustomerName = CustomerName;
-    }
-
-    public String getEmail() {
-        return Email;
-    }
-
-    public void SetEmail(String setEmail) {
-        this.Email = setEmail;
-    }
-
-    public String getQuestion() {
-        return setQuestion;
-    }
-
-    public void SetQuestion(String setQuestion) {
-        this.setQuestion = setQuestion;
-    }
-
-    public String getAdminReply() {
-        return AdminReply;
-    }
-
-    public void setAdminReply(String AdminReply) {
-        this.AdminReply = AdminReply;
-    }
-
-    public Timestamp getCreateAt() {
-        return CreateAt;
-    }
-
-    public void setCreateAt(Timestamp CreateAt) {
-        this.CreateAt = CreateAt;
-    }
-
-    public Timestamp getRepliedAt() {
-        return RepliedAt;
-    }
-
-    public void setRepliedAt(Timestamp RepliedAt) {
-        this.RepliedAt = RepliedAt;
-    }
-
-    public CustomerQuestion() {
-    }
-
-    public CustomerQuestion(int QuestionID, String CustomerName, String setEmail, String setQuestion, String AdminReply, Timestamp CreateAt, Timestamp RepliedAt) {
-        this.QuestionID = QuestionID;
-        this.CustomerName = CustomerName;
-        this.Email = setEmail;
-        this.setQuestion = setQuestion;
-        this.AdminReply = AdminReply;
-        this.CreateAt = CreateAt;
-        this.RepliedAt = RepliedAt;
-    }
-
 }

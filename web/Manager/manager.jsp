@@ -105,7 +105,7 @@
 
             <h2>Service & Feedback</h2>
             <ul>
-                <li><a href="manageQuestions.jsp">View Question</a></li>
+                <li><a href="${pageContext.request.contextPath}/ReplyQuestionServlet">View Question</a></li>
                 <li><a href="services.jsp">View Service List</a></li>
                 <li><a href="feedbacks.jsp">View Feedback</a></li>
             </ul>
