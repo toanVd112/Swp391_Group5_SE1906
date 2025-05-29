@@ -85,6 +85,10 @@ public class LoginCustomerServlet extends HttpServlet {
 
         if (account != null) {
             HttpSession session = request.getSession();
+            // 60 phút (3600 giây)
+
+            session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
+
             session.setAttribute("user", account);
 
             if (remember != null && remember.equals("on")) {
@@ -92,7 +96,7 @@ public class LoginCustomerServlet extends HttpServlet {
                 cookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
                 response.addCookie(cookie);
             }
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("Home");
         } else {
             request.setAttribute("result", "Invalid username or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);

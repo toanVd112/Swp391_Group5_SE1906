@@ -62,28 +62,7 @@
         <!-- REVOLUTION SLIDER END -->	
 
     </head>
-    <%
-    // Ki?m tra session
-//    HttpSession session = request.getSession(false);
-//    if (session == null || session.getAttribute("user") == null) {
-//        // N?u ch?a c� session, ki?m tra cookie
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("userName".equals(cookie.getName())) {
-//                    String username = cookie.getValue();
-//                    AccountDAO dao = new AccountDAO();
-//                    Account account = dao.findByUsername(username);
-//                    if (account != null) {
-//                        session = request.getSession();
-//                        session.setAttribute("user", account);
-//                        break; // tho�t v�ng l?p sau khi t�m th?y
-//                    }
-//                }
-//            }
-//        }
-    
-    %>
+
     <body id="bg">
         <div class="page-wraper">
             <div id="loading-icon-bx"></div>
@@ -109,7 +88,7 @@
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.user.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
@@ -197,7 +176,7 @@
                                             </li>
                                             <li><a href="javascript:;">Contact Us<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
-                                                    <li><a href="contact-1.html">Contact Us 1</a></li>
+                                                    <li><a href="contact-1.jsp">Contact Us 1</a></li>
                                                     <li><a href="contact-2.html">Contact Us 2</a></li>
                                                 </ul>
                                             </li>
@@ -213,7 +192,7 @@
                                                 <h5 class="menu-adv-title">Our Hotel</h5>
                                                 <ul>
                                                     <li><a href="roomlist">Rooms </a></li>
-                                                    <li><a href="rooms-details.html">Rooms Details</a></li>
+                                                    <li><a href="rooms-details.jsp">Rooms Details</a></li>
                                                     <li><a href="profile.html">Instructor Profile</a></li>
                                                     <li><a href="event.html">Upcoming Event</a></li>
                                                     <li><a href="membership.html">Membership</a></li>
@@ -240,8 +219,7 @@
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
                                             <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
-                                            <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
-                                            <li><a href="admin/user-profile.html">User Profile</a></li>
+                                            <li><a href="admin/user-profile.jsp">User Profile</a></li>
                                             <li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
                                                     <li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
@@ -600,7 +578,7 @@
                                             <h5 class="footer-title">Rooms</h5>
                                             <ul>
                                                 <li><a href="roomlist">Rooms</a></li>
-                                                <li><a href="rooms-details.html">Details</a></li>
+                                                <li><a href="rooms-details.jsp">Details</a></li>
                                                 <li><a href="membership.html">Membership</a></li>
                                                 <li><a href="profile.html">Profile</a></li>
                                             </ul>

@@ -86,6 +86,7 @@ public class LoginStaff extends HttpServlet {
         if (account != null && account.getRole().equalsIgnoreCase(selectedRole)) {
             // Đăng nhập thành công, lưu thông tin vào session
             HttpSession session = request.getSession();
+            session.setMaxInactiveInterval(60 * 60);
             session.setAttribute("account", account);
 
             // Phân quyền: Chuyển hướng đến trang phù hợp với vai trò
