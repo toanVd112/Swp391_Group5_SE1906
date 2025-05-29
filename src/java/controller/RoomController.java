@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.Room;
 import model.RoomType;
@@ -66,40 +68,31 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
     RoomDAO dao = new RoomDAO();
 
-    // Lấy danh sách phòng
-    List<Room> list = dao.getAllroom();
+    // Lấy danh sách phòng (đã tích hợp RoomType)
+    List<Room> list = null;
+        try {
+            list = dao.getAllRooms();
+        } catch (SQLException ex) {
+            Logger.getLogger(RoomController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     // Lấy danh sách loại phòng
-    List<RoomType> roomTypes = null;
+    List<RoomType> roomTypes = new ArrayList<>();
     try {
         roomTypes = dao.getAllRoomTypes();
     } catch (SQLException ex) {
         ex.printStackTrace();
     }
 
-    // Lấy phòng mới nhất → phải khai báo ngoài try
-    Room latestRoom = null;
-    try {
-        latestRoom = dao.getLatestRoom();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+    // Lấy phòng mới nhất
+    Room latestRoom = dao.getLatestRoom();
 
-    // Tạo map RoomTypeID → RoomType (để tra giá, ảnh, tên loại phòng...)
-    Map<Integer, RoomType> roomTypeMap = new HashMap<>();
-    if (roomTypes != null) {
-        for (RoomType rt : roomTypes) {
-            roomTypeMap.put(rt.getRoomtypeID(), rt);
-        }
-    }
-
-    // Truyền dữ liệu qua request
+    // Truyền dữ liệu sang JSP
     request.setAttribute("listR", list);
     request.setAttribute("roomTypes", roomTypes);
     request.setAttribute("latestRoom", latestRoom);
-    request.setAttribute("roomTypeMap", roomTypeMap); // ✅ thêm dòng này
 
-    // Chuyển tới JSP
+    // Forward đến trang rooms.jsp
     request.getRequestDispatcher("rooms.jsp").forward(request, response);
 }
 

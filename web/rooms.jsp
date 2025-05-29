@@ -273,80 +273,70 @@
                                                     </div>
 							<div class="widget">
 								<a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
-							</div>
-							<div class="widget recent-posts-entry widget-rooms">
-                                <h5 class="widget-title style-1">Recent Rooms</h5>
-                                <div class="widget-post-bx">
-                                    <div class="widget-post clearfix">
-                                        <div class="ttr-post-media"> <img src="assets/images/blog/recent-blog/pic1.jpg" width="200" height="143" alt=""> </div>
-                                        <div class="ttr-post-info">
-                                            <div class="ttr-post-header">
-                                                <h6 class="post-title"><a href="#">Introduction EduChamp</a></h6>
-                                            </div>
-                                            <div class="ttr-post-meta">
-                                                <ul>
-                                                    <li class="price">
-														<del>$190</del>
-														<h5>$120</h5>
-													</li>
-                                                    <li class="review">03 Review</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="widget-post clearfix">
-                                        <div class="ttr-post-media"> <img src="assets/images/blog/recent-blog/pic3.jpg" width="200" height="160" alt=""> </div>
-                                        <div class="ttr-post-info">
-                                            <div class="ttr-post-header">
-                                                <h6 class="post-title"><a href="#">English For Tommorow</a></h6>
-                                            </div>
-                                            <div class="ttr-post-meta">
-                                                <ul>
-                                                    <li class="price">
-														<h5 class="free">Free</h5>
-													</li>
-                                                    <li class="review">07 Review</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                                        </div>
+                                                        <div class="widget recent-posts-entry widget-rooms">
+                                                            <h5 class="widget-title style-1">Recent Rooms</h5>
+                                                            <div class="widget-post-bx">
+                                                                <div class="widget-post clearfix">
+                                                                    <div class="ttr-post-media">
+                                                                        <img src="assets/images/blog/recent-blog/pic1.jpg" width="200" height="143" alt="">
+                                                                    </div>
+                                                                    <div class="ttr-post-info">
+                                                                        <div class="ttr-post-header">
+                                                                            <h6 class="post-title">
+                                                                                <a href="#">${latestRoom.roomnumber} - Floor ${latestRoom.floor}</a>
+                                                                            </h6>
+                                                                        </div>
+                                                                        <div class="ttr-post-meta">
+                                                                            <ul>
+                                                                                <li class="price">
+                                                                                    <h5>
+                                                                                        ${latestRoom.status}<br/>
+                                                                                       $ ${latestRoom.roomType.basePrice}
+                                                                                    </h5>
+                                                                                </li>
+                                                                                <li class="review">03 Review</li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
 						</div>
 						<div class="col-lg-9 col-md-8 col-sm-12">
 							<div class="row">
-                                                             <c:forEach items="${listR}" var="r">
-								<div class="col-md-6 col-lg-4 col-sm-6 m-b30">
-									<div class="cours-bx">
-										<div class="action-box">
-											<img src="assets/images/rooms/pic1.jpg" alt="">
-											<a href="#" class="btn">Read More</a>
-										</div>
-										<div class="info-bx text-center">
-											<h5><a href="#">Room ${r.roomnumber}  Floor ${r.floor}</a></h5>
-                                                                                        
-											<span>loai phong</span>
-										</div>
-										<div class="cours-more-info">
-											<div class="review">
-												<span>3 Review</span>
-												<ul class="cours-star">
-													<li class="active"><i class="fa fa-star"></i></li>
-													<li class="active"><i class="fa fa-star"></i></li>
-													<li class="active"><i class="fa fa-star"></i></li>
-													<li><i class="fa fa-star"></i></li>
-													<li><i class="fa fa-star"></i></li>
-												</ul>
-											</div>
-											<div class="price">
-												<h4>${r.status}</h4>
-												<h5>$120</h5>
-											</div>
-										</div>
-									</div>
-								</div>
-                                                                </c:forEach>
-								
+                                                            <c:forEach items="${listR}" var="r">
+                                                                <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
+                                                                    <div class="cours-bx">
+                                                                        <div class="action-box">
+                                                                            <img src="assets/images/rooms/pic1.jpg" alt="">
+                                                                            <a href="#" class="btn">Read More</a>
+                                                                        </div>
+                                                                        <div class="info-bx text-center">
+                                                                            <h5><a href="#">Room ${r.roomnumber}</a></h5>
+                                                                            <h5>Floor ${r.floor}</h5>
+                                                                            <span>${r.roomType.name}</span> <!-- Loại phòng -->
+                                                                        </div>
+                                                                        <div class="cours-more-info">
+                                                                            <div class="review">
+                                                                                <span>3 Review</span>
+                                                                                <ul class="cours-star">
+                                                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                                                    <li><i class="fa fa-star"></i></li>
+                                                                                    <li><i class="fa fa-star"></i></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                            <div class="price">
+                                                                                <h4>${r.status}</h4>
+                                                                                <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </c:forEach>								
 								<div class="col-lg-12 m-b20">
 									<div class="pagination-bx rounded-sm gray clearfix">
 										<ul class="pagination">
