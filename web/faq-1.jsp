@@ -66,7 +66,7 @@
                         <div class="row d-flex justify-content-between">
                             <div class="topbar-left">
                                 <ul>
-                                    <li><a href="faq-1.html"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
+                                    <li><a href="faq-1.jsp"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
                                     <li><a href="javascript:;"><i class="fa fa-envelope-o"></i>Support@website.com</a></li>
                                 </ul>
                             </div>
@@ -90,7 +90,7 @@
                         <div class="container clearfix">
                             <!-- Header Logo ==== -->
                             <div class="menu-logo">
-                                <a href="index.html"><img src="assets/images/logo.png" alt=""></a>
+                                <a href="index.jsp"><img src="assets/images/logo.png" alt=""></a>
                             </div>
                             <!-- Mobile Nav Button ==== -->
                             <button class="navbar-toggler collapsed menuicon justify-content-end" type="button" data-toggle="collapse" data-target="#menuDropdown" aria-controls="menuDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -121,13 +121,13 @@
                             <!-- Navigation Menu ==== -->
                             <div class="menu-links navbar-collapse collapse justify-content-start" id="menuDropdown">
                                 <div class="menu-logo">
-                                    <a href="index.html"><img src="assets/images/logo.png" alt=""></a>
+                                    <a href="index.jsp"><img src="assets/images/logo.png" alt=""></a>
                                 </div>
                                 <ul class="nav navbar-nav">	
                                     <li class="active"><a href="javascript:;">Home <i class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu">
-                                            <li><a href="index.html">Home 1</a></li>
-                                            <li><a href="index.html">Home 2</a></li>
+                                            <li><a href="index.jsp">Home 1</a></li>
+                                            <li><a href="index.jsp">Home 2</a></li>
                                         </ul>
                                     </li>
                                     <li><a href="javascript:;">Pages <i class="fa fa-chevron-down"></i></a>
@@ -146,7 +146,7 @@
                                             </li>
                                             <li><a href="javascript:;">FAQ's<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
-                                                    <li><a href="faq-1.html">FAQ's 1</a></li>
+                                                    <li><a href="faq-1.jsp">FAQ's 1</a></li>
                                                     <li><a href="faq-2.html">FAQ's 2</a></li>
                                                 </ul>
                                             </li>
@@ -190,7 +190,7 @@
                                     </li>
                                     <li class="nav-dashboard"><a href="javascript:;">Dashboard <i class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu">
-                                            <li><a href="admin/index.html">Dashboard</a></li>
+                                            <li><a href="admin/index.jsp">Dashboard</a></li>
                                             <li><a href="admin/add-listing.html">Add Listing</a></li>
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
                                             <li><a href="admin/roomlist">Rooms</a></li>
@@ -425,7 +425,7 @@
                         <div class="container">
                             <div class="d-flex align-items-stretch">
                                 <div class="pt-logo mr-auto">
-                                    <a href="index.html"><img src="assets/images/logo-white.png" alt=""/></a>
+                                    <a href="index.jsp"><img src="assets/images/logo-white.png" alt=""/></a>
                                 </div>
                                 <div class="pt-social-link">
                                     <ul class="list-inline m-a0">
@@ -466,9 +466,9 @@
                                         <div class="widget footer_widget">
                                             <h5 class="footer-title">Company</h5>
                                             <ul>
-                                                <li><a href="index.html">Home</a></li>
+                                                <li><a href="index.jsp">Home</a></li>
                                                 <li><a href="about-1.html">About</a></li>
-                                                <li><a href="faq-1.html">FAQs</a></li>
+                                                <li><a href="faq-1.jsp">FAQs</a></li>
                                                 <li><a href="contact-1.html">Contact</a></li>
                                             </ul>
                                         </div>
@@ -477,7 +477,7 @@
                                         <div class="widget footer_widget">
                                             <h5 class="footer-title">Get In Touch</h5>
                                             <ul>
-                                                <li><a href="http://educhamp.themetrades.com/admin/index.html">Dashboard</a></li>
+                                                <li><a href="http://educhamp.themetrades.com/admin/index.jsp">Dashboard</a></li>
                                                 <li><a href="blog-classic-grid.html">Blog</a></li>
                                                 <li><a href="portfolio.html">Portfolio</a></li>
                                                 <li><a href="event.html">Event</a></li>

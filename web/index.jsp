@@ -60,7 +60,7 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
         <!-- REVOLUTION SLIDER END -->	
-   
+
     </head>
     <%
     // Ki?m tra session
@@ -94,7 +94,7 @@
                         <div class="row d-flex justify-content-between">
                             <div class="topbar-left">
                                 <ul>
-                                    <li><a href="faq-1.html"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
+                                    <li><a href="faq-1.jsp"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
                                     <li><a href="javascript:;"><i class="fa fa-envelope-o"></i>Support@website.com</a></li>
                                 </ul>
                             </div>
@@ -579,7 +579,7 @@
                                             <ul>
                                                 <li><a href="Home">Home</a></li>
                                                 <li><a href="about-1.html">About</a></li>
-                                                <li><a href="faq-1.html">FAQs</a></li>
+                                                <li><a href="faq-1.jsp">FAQs</a></li>
                                                 <li><a href="contact-1.html">Contact</a></li>
                                             </ul>
                                         </div>
