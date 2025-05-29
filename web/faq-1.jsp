@@ -400,6 +400,12 @@
                                                 <button name="submit" type="submit" value="Submit" class="btn button-md">Send Question</button>
                                             </div>
                                         </div>
+                                        <p style="margin-top:15px">
+                                            <a href="CheckReplyServlet">
+                                                🔎 Xem phản hồi của bạn bằng số điện thoại
+                                            </a>
+                                        </p>
+
                                     </form>
 
                                 </div>
