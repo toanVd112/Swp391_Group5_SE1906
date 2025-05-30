@@ -19,11 +19,11 @@
 	<meta name="robots" content="" />
 	
 	<!-- DESCRIPTION -->
-	<meta name="description" content="EduChamp : Education HTML Template" />
+	<meta name="description" content="HoangNam Hotel" />
 	
 	<!-- OG -->
-	<meta property="og:title" content="EduChamp : Education HTML Template" />
-	<meta property="og:description" content="EduChamp : Education HTML Template" />
+	<meta property="og:title" content="HoangNam Hotel" />
+	<meta property="og:description" content="HoangNam Hotel" />
 	<meta property="og:image" content="" />
 	<meta name="format-detection" content="telephone=no">
 	
@@ -32,7 +32,7 @@
 	<link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
 	
 	<!-- PAGE TITLE HERE ============================================= -->
-	<title>EduChamp : Education HTML Template </title>
+	<title>HoangNam Hotel </title>
 	
 	<!-- MOBILE SPECIFIC ============================================= -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -313,7 +313,8 @@
                                     <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
                                         <div class="cours-bx">
                                             <div class="action-box">
-                                                <img src="assets/images/rooms/pic1.jpg" alt="">
+                                                <!-- Dùng ảnh từ roomType -->
+                                                <img src="${pageContext.request.contextPath}/${r.roomType.imageUrl}" alt="">
                                                 <a href="#" class="btn">Read More</a>
                                             </div>
                                             <div class="info-bx text-center">
@@ -321,25 +322,26 @@
                                                 <h5>Floor ${r.floor}</h5>
                                                 <span>${r.roomType.name}</span> <!-- Loại phòng -->
                                             </div>
-                                                <div class="cours-more-info">
-                                                    <div class="review">
-                                                        <span>3 Review</span>
-                                                        <ul class="cours-star">
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="price">
-                                                        <h4>${r.status}</h4>
-                                                        <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
-                                                    </div>
+                                            <div class="cours-more-info">
+                                                <div class="review">
+                                                    <span>3 Review</span>
+                                                    <ul class="cours-star">
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></i></li>
+                                                    </ul>
                                                 </div>
+                                                <div class="price">
+                                                    <h4>${r.status}</h4>
+                                                    <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </c:forEach>								
+                                </c:forEach>
+
                                 <div class="col-lg-12 m-b20">
                                     <div class="pagination-bx rounded-sm gray clearfix">
                                         <ul class="pagination">

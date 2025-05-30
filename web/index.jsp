@@ -315,10 +315,14 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
                                                     <img src="${pageContext.request.contextPath}/${room.imageUrl}" alt="">
-                                                    <a href="#" class="btn">Read More</a>
+                                                    <!-- Chuyển hướng đến TypeListController theo typeId -->
+                                                    <a href="TypeListController?typeId=${room.roomtypeID}" class="btn">Xem phòng</a>
                                                 </div>
                                                 <div class="info-bx text-center">
-                                                    <h5><a href="#">${room.name}</a></h5>
+                                                    <h5>
+                                                        <!-- Bấm vào tên cũng chuyển -->
+                                                        <a href="TypeListController?typeId=${room.roomtypeID}">${room.name}</a>
+                                                    </h5>
                                                     <span>${room.description}</span>
                                                 </div>
                                                 <div class="cours-more-info">
@@ -340,6 +344,7 @@
                                             </div>
                                         </div>
                                     </c:forEach>
+
                                 </div>
                             </div>
                         </div>
