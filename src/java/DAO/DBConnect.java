@@ -8,7 +8,6 @@ package DAO;
  *
  * @author Admin
  */
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,7 +18,16 @@ public class DBConnect {
     private static final String USER = "root"; // đổi user nếu khác
     private static final String PASSWORD = "1234"; // thay bằng password thật
 
-    public static Connection getConnection() throws SQLException {
+//    public static Connection getConnection() throws SQLException {
+//        String url = "jdbc:mysql://localhost:3306/hotel"
+//                + "?useSSL=false"
+//                + "&allowPublicKeyRetrieval=true"
+//                + "&serverTimezone=UTC";
+//        String user = "root";
+//        String pass = "1234";
+//        return DriverManager.getConnection(url, user, pass);
+    //}
+     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // Đảm bảo driver MySQL đã được load
             return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -31,12 +39,14 @@ public class DBConnect {
     // (Optional) đóng kết nối nếu cần
     public static void close(Connection conn) {
         try {
-            if (conn != null && !conn.isClosed())
+            if (conn != null && !conn.isClosed()) {
                 conn.close();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public static void main(String[] args) {
         try (Connection conn = DBConnect.getConnection()) {
             if (conn != null) {
@@ -48,6 +58,6 @@ public class DBConnect {
             System.out.println("Lỗi khi kết nối đến MySQL:");
             e.printStackTrace();
         }
-    
-}
+
+    }
 }

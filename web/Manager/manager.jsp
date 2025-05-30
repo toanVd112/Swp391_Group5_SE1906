@@ -91,8 +91,8 @@
             <h1>Welcome, <%= account.getUsername() %> (Manager)</h1>
             <h2>Room Management</h2>
             <ul>
-                <li><a href="roomTypes.jsp">View Room Type List</a></li>
-                <li><a href="rooms.jsp">View Room List</a></li>
+               
+                <li><a href="${pageContext.request.contextPath}/ListRoomsServlet">View Room List</a></li>
                 <li><a href="roomStatus.jsp">View Room Status</a></li>
             </ul>
 
