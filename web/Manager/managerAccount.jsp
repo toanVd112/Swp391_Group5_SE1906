@@ -225,7 +225,7 @@
                             <td>${a.createdAt}</td>
                             <td>${a.email}</td>
                             <td>
-                                <a href="#" class="edit" title="Edit">&#x270E;</a>
+                                <a href="loadAccount?aid=${a.accountID}" class="edit" title="Edit">&#x270E;</a>
                                 <a href="deleteAccount?aid=${a.accountID}" class="delete" title="Delete">&#x1F5D1;</a>
                             </td>
                         </tr>
