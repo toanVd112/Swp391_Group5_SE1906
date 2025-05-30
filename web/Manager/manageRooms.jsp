@@ -69,7 +69,7 @@
                         <td><span class="status ${r.status}">${r.status}</span></td>
                     </tr>
                 </c:forEach>
-                <c:if test="${rooms.empty}">
+               <%--  <c:if test="${rooms.empty}"> --%>
                     <tr><td colspan="6" style="text-align:center">Không có phòng</td></tr>
                 </c:if>
             </tbody>

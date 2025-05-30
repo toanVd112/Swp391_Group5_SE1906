@@ -90,7 +90,7 @@ public class AddAccount extends HttpServlet {
 
         {
             if (!Validation.validatePassword(pass)) {
-                request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự, chứa chữ hoa, chữ thường, số và ký tự đặc biệt.");
+                request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự");
                 request.setAttribute("showAddModal", true);
                 request.getRequestDispatcher("managerAccount").forward(request, response);
                 return;
