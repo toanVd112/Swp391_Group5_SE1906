@@ -6,8 +6,6 @@
 package controller.managerAccount;
 
 import DAO.AccountDAO;
-import DAO.ActivityLogDAO;
-import controller.Validation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,17 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.Account;
 
 /**
  *
  * @author MyPC
  */
-@WebServlet(name="EditAccount", urlPatterns={"/editAccount"})
-public class EditAccount extends HttpServlet {
+@WebServlet(name="LoadAccount", urlPatterns={"/loadAccount"})
+public class LoadAccount extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -42,10 +37,10 @@ public class EditAccount extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditAccount</title>");  
+            out.println("<title>Servlet LoadAccount</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EditAccount at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet LoadAccount at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,7 +57,7 @@ public class EditAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        doPost(request, response);
     } 
 
     /** 
@@ -75,19 +70,12 @@ public class EditAccount extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
+        String id = request.getParameter("aid");
         AccountDAO ad = new AccountDAO();
-        String user = request.getParameter("username");
-        String pass = request.getParameter("password");
-        String role = request.getParameter("role");
-        String active = request.getParameter("isActive");
-        String email = request.getParameter("email");
-        String aid = request.getParameter("aid");
-
-        boolean isActive = Boolean.parseBoolean(active);
-        ad.editAccount(user, pass, role, isActive, email, aid);
-        response.sendRedirect("managerAccount");
+        Account a = ad.getAccountByID(id);
+        
+        request.setAttribute("account", a);
+        request.getRequestDispatcher("Manager/editAccount.jsp").forward(request, response);
     }
 
     /** 

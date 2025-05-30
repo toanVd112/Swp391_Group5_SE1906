@@ -86,7 +86,7 @@
     <div class="container">
         <h2>Edit Account</h2>
         <form action="editAccount" method="post">
-            <input type="hidden" name="accountID" value="${account.accountID}" />
+            <input type="hidden" name="aid" value="${account.accountID}" />
 
             <div class="form-group">
                 <label for="username">Username</label>
@@ -120,7 +120,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="manageAccounts.jsp"><button type="button" class="btn btn-cancel">Cancel</button></a>
+                <a href="manageAccount"><button type="button" class="btn btn-cancel">Cancel</button></a>
                 <input type="submit" class="btn btn-update" value="Update">
             </div>
         </form>
