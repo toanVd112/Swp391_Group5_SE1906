@@ -27,7 +27,7 @@
                         <h2 class="title-head">Forget <span>Password</span></h2>
                         <p>Login Your Account <a href="login.jsp">Click here</a></p>
                     </div>
-                    <form method="post" action="${pageContext.request.contextPath}/forget-password" class="contact-bx">
+                    <form method="post" action="${pageContext.request.contextPath}/requestPassword" class="contact-bx">
                         <div class="row placeani">
                             <div class="col-lg-12">
                                 <div class="form-group">
