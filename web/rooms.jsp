@@ -27,9 +27,9 @@
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
-        <!-- FAVICONS ICON ============================================= -->
-        <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
+        <!-- FAVICON1S ICON ============================================= -->
+        <link rel="icon" href="assets/images/favicon1.ico" type="image/x-icon" />
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
 
         <!-- PAGE TITLE HERE ============================================= -->
         <title>HoangNam Hotel </title>
@@ -279,18 +279,57 @@
                                         </div>
                                     </div>
                                     <div class="widget widget_archive">
+                                        <!-- Bộ lọc theo loại phòng -->
                                         <h5 class="widget-title style-1">All Room Types</h5>
                                         <ul>
-                                            <li><a href="roomlist">All</a></li> <!-- Tuỳ chọn để xem tất cả -->
-                                                <c:forEach var="room" items="${roomTypes}">
+                                            <li>
+                                                <c:url var="urlAllTypes" value="roomlist">
+                                                    <c:if test="${selectedFloor != null}">
+                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                    </c:if>
+                                                </c:url>
+                                                <a href="${urlAllTypes}">All</a>
+                                            </li>
+                                            <c:forEach var="room" items="${roomTypes}">
+                                                <c:url var="urlRoomType" value="roomlist">
+                                                    <c:param name="typeId" value="${room.roomtypeID}" />
+                                                    <c:if test="${selectedFloor != null}">
+                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                    </c:if>
+                                                </c:url>
                                                 <li>
-                                                    <a href="TypeListController?typeId=${room.roomtypeID}">${room.name}</a>
-
+                                                    <a href="${urlRoomType}">${room.name}</a>
                                                 </li>
                                             </c:forEach>
                                         </ul>
 
+                                                <!-- Bộ lọc theo tầng -->
+                                                <h5 class="widget-title style-1">Floor</h5>
+                                                <ul>
+                                                    <li>
+                                                        <c:url var="urlAllFloors" value="roomlist">
+                                                            <c:if test="${selectedType != null}">
+                                                                <c:param name="typeId" value="${selectedType}" />
+                                                            </c:if>
+                                                        </c:url>
+                                                        <a href="${urlAllFloors}">All</a>
+                                                    </li>
+                                                    <c:forEach var="floor" items="${floors}">
+                                                        <c:url var="urlFloor" value="roomlist">
+                                                            <c:param name="floor" value="${floor}" />
+                                                            <c:if test="${selectedType != null}">
+                                                                <c:param name="typeId" value="${selectedType}" />
+                                                            </c:if>
+                                                        </c:url>
+                                                        <li>
+                                                            <a href="${urlFloor}">Floor ${floor}</a>
+                                                        </li>
+                                                    </c:forEach>
+                                                </ul>
+
                                     </div>
+
+
                                     <div class="widget">
                                         <a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
                                     </div>
@@ -299,7 +338,7 @@
                                         <div class="widget-post-bx">
                                             <div class="widget-post clearfix">
                                                 <div class="ttr-post-media">
-                                                    <img src="assets/images/blog/recent-blog/pic1.jpg" width="200" height="143" alt="">
+                                                    <img src="${pageContext.request.contextPath}/${latestRoom.roomType.imageUrl}" width="200" height="143" alt="">
                                                 </div>
                                                 <div class="ttr-post-info">
                                                     <div class="ttr-post-header">

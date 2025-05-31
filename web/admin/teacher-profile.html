@@ -20,9 +20,9 @@
 	<meta property="og:image" content="" />
 	<meta name="format-detection" content="telephone=no">
 	
-	<!-- FAVICONS ICON ============================================= -->
+	<!-- FAVICON1S ICON ============================================= -->
 	<link rel="icon" href="../error-404.html" type="image/x-icon" />
-	<link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
 	
 	<!-- PAGE TITLE HERE ============================================= -->
 	<title>EduChamp : Education HTML Template </title>

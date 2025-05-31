@@ -20,8 +20,8 @@
     <meta property="og:title" content="Hoang Nam Hotel" />
     <meta property="og:description" content="Hoang Nam Hotel" />
     <meta name="format-detection" content="telephone=no">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png" />
+    <link rel="icon" href="assets/images/favicon1.ico" type="image/x-icon" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
     <title>Hoang Nam Hotel - Register Staff</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSS -->

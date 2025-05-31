@@ -5,117 +5,73 @@
 
 package controller;
 
+
 import DAO.RoomDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import java.io.PrintWriter;
 import model.Room;
 import model.RoomType;
-
 /**
  *
  * @author Arcueid
  */
 @WebServlet(name="RoomController", urlPatterns={"/roomlist"})
 public class RoomController extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RoomController</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RoomController at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
 
     @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    response.setContentType("text/html;charset=UTF-8");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    RoomDAO dao = new RoomDAO();
+        RoomDAO dao = new RoomDAO();
+        List<Room> filteredRooms;
+        List<RoomType> roomTypes;
+        List<Integer> floors;
+        Room latestRoom;
 
-    // Lấy danh sách phòng (đã tích hợp RoomType)
-    List<Room> list = null;
         try {
-            list = dao.getAllRooms();
-        } catch (SQLException ex) {
-            Logger.getLogger(RoomController.class.getName()).log(Level.SEVERE, null, ex);
+            roomTypes = dao.getAllRoomTypes();
+            floors = dao.getAllFloors();
+            latestRoom = dao.getLatestRoom();
+        } catch (Exception e) {
+            e.printStackTrace();
+            roomTypes = null;
+            floors = null;
+            latestRoom = null;
         }
 
-    // Lấy danh sách loại phòng
-    List<RoomType> roomTypes = new ArrayList<>();
-    try {
-        roomTypes = dao.getAllRoomTypes();
-    } catch (SQLException ex) {
-        ex.printStackTrace();
+        String typeParam = request.getParameter("typeId");
+        String floorParam = request.getParameter("floor");
+
+        Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.parseInt(typeParam) : null;
+        Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.parseInt(floorParam) : null;
+
+        filteredRooms = dao.filterRooms(floor, typeId);
+
+        request.setAttribute("listR", filteredRooms);
+        request.setAttribute("roomTypes", roomTypes);
+        request.setAttribute("floors", floors);
+        request.setAttribute("latestRoom", latestRoom);
+        request.setAttribute("selectedType", typeId);
+        request.setAttribute("selectedFloor", floor);
+
+        request.getRequestDispatcher("rooms.jsp").forward(request, response);
     }
 
-    // Lấy phòng mới nhất
-    Room latestRoom = dao.getLatestRoom();
-
-    // Truyền dữ liệu sang JSP
-    request.setAttribute("listR", list);
-    request.setAttribute("roomTypes", roomTypes);
-    request.setAttribute("latestRoom", latestRoom);
-
-    // Forward đến trang rooms.jsp
-    request.getRequestDispatcher("rooms.jsp").forward(request, response);
-}
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurspppppp
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
+            throws ServletException, IOException {
+        doGet(request, response); 
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "FilterRoomController handles room filtering based on type and floor.";
+    }
 }

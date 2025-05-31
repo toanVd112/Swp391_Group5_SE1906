@@ -7,7 +7,7 @@
     <meta name="description" content="Hoang Nam Hotel" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hoang Nam Hotel - Forget Password</title>
-    <link rel="shortcut icon" href="assets/images/favicon.png" />
+    <link rel="shortcut icon" href="assets/images/favicon1.png" />
     <link rel="stylesheet" href="assets/css/assets.css">
     <link rel="stylesheet" href="assets/css/typography.css">
     <link rel="stylesheet" href="assets/css/shortcodes/shortcodes.css">
