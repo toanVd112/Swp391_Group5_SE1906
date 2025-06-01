@@ -91,9 +91,18 @@
             <h1>Welcome, <%= account.getUsername() %> (Manager)</h1>
             <h2>Room Management</h2>
             <ul>
-               
+
                 <li><a href="${pageContext.request.contextPath}/ListRoomsServlet">View Room List</a></li>
-                <li><a href="roomStatus.jsp">View Room Status</a></li>
+                <li><a href="#">CRUD rooms</a></li>
+                <li><a href="#">Add rooms images</a></li>
+                <li><a href="#">Amenities</a></li>
+                <li><a href="#">Update Status and routine clean rooms</a></li>
+                <li><a href="#">List room is booking and lock room if dirty or maintains</a></li>
+                <li><a href="#">Maintain request</a></li>
+                <li><a href="#">Report and statistic</a></li>
+                <li><a href="#">Role permissions</a></li>
+
+
             </ul>
 
             <h2>Staff Management</h2>
