@@ -93,7 +93,7 @@
             <ul>
 
                 <li><a href="${pageContext.request.contextPath}/ListRoomsServlet">View Room List</a></li>
-                <li><a href="#">CRUD rooms</a></li>
+                <li><a href="${pageContext.request.contextPath}/managerR">CRUD rooms</a></li>
                 <li><a href="#">Add rooms images</a></li>
                 <li><a href="#">Amenities</a></li>
                 <li><a href="#">Update Status and routine clean rooms</a></li>
