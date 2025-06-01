@@ -5,12 +5,14 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
 
     <head>
-
+        
         <!-- META ============================================= -->
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -55,6 +57,20 @@
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
 
+        <style>
+    .status-available {
+        color: green;
+        font-weight: bold;
+    }
+    .status-occupied {
+        color: orange;
+        font-weight: bold;
+    }
+    .status-maintenance {
+        color: red;
+        font-weight: bold;
+    }
+        </style>
     </head>
     <body id="bg">
 
@@ -333,6 +349,7 @@
                                     <div class="widget">
                                         <a href="#"><img src="assets/images/adv/adv.jpg" alt=""/></a>
                                     </div>
+                                                    
                                     <div class="widget recent-posts-entry widget-rooms">
                                         <h5 class="widget-title style-1">Recent Rooms</h5>
                                         <div class="widget-post-bx">
@@ -350,7 +367,7 @@
                                                         <ul>
                                                             <li class="price">
                                                                 <h5>
-                                                                    ${latestRoom.status}<br/>
+                                                                    <span class="status-${fn:toLowerCase(latestRoom.status)}">${latestRoom.status}</span><br/>
                                                                     $ ${latestRoom.roomType.basePrice}
                                                                 </h5>
                                                             </li>
@@ -360,8 +377,9 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
+                                                                
+                                                               
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-12">
                                     <div class="row">
@@ -390,7 +408,7 @@
                                                             </ul>
                                                         </div>
                                                         <div class="price">
-                                                            <h4>${r.status}</h4>
+                                                           <h4><span class="status-${fn:toLowerCase(r.status)}">${r.status}</span></h4>
                                                             <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
                                                         </div>
                                                     </div>
@@ -401,14 +419,55 @@
                                         <div class="col-lg-12 m-b20">
                                             <div class="pagination-bx rounded-sm gray clearfix">
                                                 <ul class="pagination">
-                                                    <li class="previous"><a href="#"><i class="ti-arrow-left"></i> Prev</a></li>
-                                                    <li class="active"><a href="#">1</a></li>
-                                                    <li><a href="#">2</a></li>
-                                                    <li><a href="#">3</a></li>
-                                                    <li class="next"><a href="#">Next <i class="ti-arrow-right"></i></a></li>
+
+                                                    <!-- Phân trang -->
+                                                    <c:if test="${currentPage > 1}">
+                                                        <c:url var="prevUrl" value="roomlist">
+                                                            <c:param name="page" value="${currentPage - 1}" />
+                                                            <c:if test="${selectedType != null}">
+                                                                <c:param name="typeId" value="${selectedType}" />
+                                                            </c:if>
+                                                            <c:if test="${selectedFloor != null}">
+                                                                <c:param name="floor" value="${selectedFloor}" />
+                                                            </c:if>
+                                                        </c:url>
+                                                        <li class="previous"><a href="${prevUrl}"><i class="ti-arrow-left"></i> Prev</a></li>
+                                                        </c:if>
+
+                                                    <!-- Page numbers -->
+                                                    <c:forEach var="i" begin="1" end="${totalPages}">
+                                                        <c:url var="pageUrl" value="roomlist">
+                                                            <c:param name="page" value="${i}" />
+                                                            <c:if test="${selectedType != null}">
+                                                                <c:param name="typeId" value="${selectedType}" />
+                                                            </c:if>
+                                                            <c:if test="${selectedFloor != null}">
+                                                                <c:param name="floor" value="${selectedFloor}" />
+                                                            </c:if>
+                                                        </c:url>
+                                                        <li class="${i == currentPage ? 'active' : ''}">
+                                                            <a href="${pageUrl}">${i}</a>
+                                                        </li>
+                                                    </c:forEach>
+
+                                                    <!-- Next button -->
+                                                    <c:if test="${currentPage < totalPages}">
+                                                        <c:url var="nextUrl" value="roomlist">
+                                                            <c:param name="page" value="${currentPage + 1}" />
+                                                            <c:if test="${selectedType != null}">
+                                                                <c:param name="typeId" value="${selectedType}" />
+                                                            </c:if>
+                                                            <c:if test="${selectedFloor != null}">
+                                                                <c:param name="floor" value="${selectedFloor}" />
+                                                            </c:if>
+                                                        </c:url>
+                                                        <li class="next"><a href="${nextUrl}">Next <i class="ti-arrow-right"></i></a></li>
+                                                            </c:if>
+
                                                 </ul>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

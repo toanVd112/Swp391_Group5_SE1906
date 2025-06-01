@@ -15,7 +15,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import model.Room;
 import model.RoomType;
 /**
@@ -30,7 +29,6 @@ public class RoomController extends HttpServlet {
             throws ServletException, IOException {
 
         RoomDAO dao = new RoomDAO();
-        List<Room> filteredRooms;
         List<RoomType> roomTypes;
         List<Integer> floors;
         Room latestRoom;
@@ -39,8 +37,7 @@ public class RoomController extends HttpServlet {
             roomTypes = dao.getAllRoomTypes();
             floors = dao.getAllFloors();
             latestRoom = dao.getLatestRoom();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
             roomTypes = null;
             floors = null;
             latestRoom = null;
@@ -49,17 +46,39 @@ public class RoomController extends HttpServlet {
         String typeParam = request.getParameter("typeId");
         String floorParam = request.getParameter("floor");
 
-        Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.parseInt(typeParam) : null;
-        Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.parseInt(floorParam) : null;
+        Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.valueOf(typeParam) : null;
+        Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.valueOf(floorParam) : null;
 
-        filteredRooms = dao.filterRooms(floor, typeId);
+        List<Room> filteredRooms = dao.filterRooms(floor, typeId);
 
-        request.setAttribute("listR", filteredRooms);
+        // Xử lý phân trang
+        int pageSize = 12;
+        int page = 1;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
+        int totalRooms = filteredRooms.size();
+        int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalRooms);
+
+        List<Room> paginatedRooms = filteredRooms.subList(start, end);
+
+        // Truyền dữ liệu sang JSP
+        request.setAttribute("listR", paginatedRooms);
         request.setAttribute("roomTypes", roomTypes);
         request.setAttribute("floors", floors);
         request.setAttribute("latestRoom", latestRoom);
         request.setAttribute("selectedType", typeId);
         request.setAttribute("selectedFloor", floor);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
 
         request.getRequestDispatcher("rooms.jsp").forward(request, response);
     }
