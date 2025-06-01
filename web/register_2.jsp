@@ -68,7 +68,7 @@
                             <h2 class="title-head">Sign Up <span>Now</span></h2>
                             <p>Already have an account? <a href="login_2.jsp">Click here</a></p>
                         </div>	
-                        <form action="Register" method="post" class="contact-bx">
+                        <form action="${pageContext.request.contextPath}/add-employee" method="post" class="contact-bx">
                             <div class="row placeani">
                                 <div class="col-lg-12">
                                     <div class="form-group">
@@ -94,7 +94,7 @@
                                     <div class="form-group">
                                         <label>Role</label>
                                         <select name="role" class="form-control" required>
-                                            <option value="Manager">Manager</option>
+<!--                                            <option value="Manager">Manager</option>-->
                                             <option value="Receptionist">Receptionist</option>
                                             <option value="Staff">Staff</option>
                                         </select>
