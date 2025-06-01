@@ -60,7 +60,7 @@
 .ovpr-middle:after,
 .ovpr-dark:after,
 .ovpr:after {
-    background: ;
+    background: #FFF;
 }
 .ovbl-light:after {
     opacity: 0.3;
