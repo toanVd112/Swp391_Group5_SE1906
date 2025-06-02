@@ -1,10 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %><%@ page import="model.Account" %>
+<%
+    Account account = (Account) session.getAttribute("account");
+    if (account == null || !"Manager".equals(account.getRole())) {
+        response.sendRedirect("../login_2.jsp");
+        return;
+    }
+%>
 <html>
 <head>
     <title>Danh sách dịch vụ</title>
 </head>
 <body>
+    
     <h2>Danh sách dịch vụ</h2>
     <a href="services?action=add">➕ Thêm dịch vụ</a>
     <br><br>

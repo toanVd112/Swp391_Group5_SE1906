@@ -1,4 +1,4 @@
-package controller;
+package controller.tuan;
 
 import DAO.ServiceDAO;
 import java.io.IOException;
@@ -25,13 +25,13 @@ public class ServiceServlet extends HttpServlet {
 
             switch (action) {
                 case "add":
-                    request.getRequestDispatcher("addService.jsp").forward(request, response);
+                    request.getRequestDispatcher("Manager/addService.jsp").forward(request, response);
                     break;
                 case "edit":
                     int id = Integer.parseInt(request.getParameter("id"));
                     Service s = dao.getById(id);
                     request.setAttribute("service", s);
-                    request.getRequestDispatcher("editService.jsp").forward(request, response);
+                    request.getRequestDispatcher("Manager/editService.jsp").forward(request, response);
                     break;
                 case "delete":
                     int deleteId = Integer.parseInt(request.getParameter("id"));
@@ -41,7 +41,7 @@ public class ServiceServlet extends HttpServlet {
                 default:
                     List<Service> list = dao.getAll();
                     request.setAttribute("services", list);
-                    request.getRequestDispatcher("listServices.jsp").forward(request, response);
+                    request.getRequestDispatcher("Manager/listServices.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             throw new ServletException("SQL Error: " + e.getMessage(), e);
