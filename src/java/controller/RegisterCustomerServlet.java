@@ -89,7 +89,7 @@ public class RegisterCustomerServlet extends HttpServlet {
         if (dao.isDuplicateAccount(username, email) || !val.validateUsername(username) || !val.validatePassword(password)) {
             request.setAttribute("result", "Đăng ký thất bại, trùng username hoặc mail!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
-
+            return;
         }
         boolean result = dao.insertAccount(account);
 

@@ -9,6 +9,63 @@
 %>
 <html>
 <head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        a:hover {
+            color: #003366;
+        }
+
+        .add-btn {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .action-links a {
+            margin: 0 5px;
+            color: #007bff;
+        }
+
+        .action-links a:hover {
+            color: red;
+        }
+    </style>
     <title>Danh sách dịch vụ</title>
 </head>
 <body>

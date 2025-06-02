@@ -3,9 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DAO;
+
 import java.sql.*;
 import java.util.*;
 import model.Service;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
  *
  * @author admin
@@ -14,7 +18,7 @@ public class ServiceDAO {
     private Connection conn;
 
     public ServiceDAO() throws SQLException {
-        conn = DBConnect.getConnection(); // viết riêng DBUtil.getConnection()
+        conn = DBConnect.getConnection(); // Assumes DBConnect.getConnection() is defined elsewhere
     }
 
     public List<Service> getAll() throws SQLException {
@@ -26,21 +30,33 @@ public class ServiceDAO {
             list.add(new Service(
                 rs.getInt("ServiceID"),
                 rs.getString("ServiceName"),
+                rs.getBigDecimal("Price"),
                 rs.getString("Description"),
-                rs.getDouble("Price"),
-                rs.getBoolean("Status")
+                rs.getString("AvailabilityStatus"),
+                rs.getString("ServiceType"),
+                rs.getObject("CreatedDate", LocalDateTime.class),
+                rs.getObject("LastUpdatedDate", LocalDateTime.class),
+                rs.getString("CreatedBy"),
+                rs.getString("LastUpdatedBy"),
+                rs.getString("ServiceImage")
             ));
         }
         return list;
     }
 
     public void insert(Service s) throws SQLException {
-        String sql = "INSERT INTO services (ServiceName, Description, Price, Status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO services (ServiceName, Price, Description, AvailabilityStatus, ServiceType, CreatedDate, LastUpdatedDate, CreatedBy, LastUpdatedBy, ServiceImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, s.getServiceName());
-        ps.setString(2, s.getDescription());
-        ps.setDouble(3, s.getPrice());
-        ps.setBoolean(4, s.isStatus());
+        ps.setBigDecimal(2, s.getPrice());
+        ps.setString(3, s.getDescription());
+        ps.setString(4, s.getAvailabilityStatus());
+        ps.setString(5, s.getServiceType());
+        ps.setObject(6, s.getCreatedDate());
+        ps.setObject(7, s.getLastUpdatedDate());
+        ps.setString(8, s.getCreatedBy());
+        ps.setString(9, s.getLastUpdatedBy());
+        ps.setString(10, s.getServiceImage());
         ps.executeUpdate();
     }
 
@@ -53,22 +69,34 @@ public class ServiceDAO {
             return new Service(
                 rs.getInt("ServiceID"),
                 rs.getString("ServiceName"),
+                rs.getBigDecimal("Price"),
                 rs.getString("Description"),
-                rs.getDouble("Price"),
-                rs.getBoolean("Status")
+                rs.getString("AvailabilityStatus"),
+                rs.getString("ServiceType"),
+                rs.getObject("CreatedDate", LocalDateTime.class),
+                rs.getObject("LastUpdatedDate", LocalDateTime.class),
+                rs.getString("CreatedBy"),
+                rs.getString("LastUpdatedBy"),
+                rs.getString("ServiceImage")
             );
         }
         return null;
     }
-//////s
+
     public void update(Service s) throws SQLException {
-        String sql = "UPDATE services SET ServiceName=?, Description=?, Price=?, Status=? WHERE ServiceID=?";
+        String sql = "UPDATE services SET ServiceName=?, Price=?, Description=?, AvailabilityStatus=?, ServiceType=?, CreatedDate=?, LastUpdatedDate=?, CreatedBy=?, LastUpdatedBy=?, ServiceImage=? WHERE ServiceID=?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, s.getServiceName());
-        ps.setString(2, s.getDescription());
-        ps.setDouble(3, s.getPrice());
-        ps.setBoolean(4, s.isStatus());
-        ps.setInt(5, s.getServiceID());
+        ps.setBigDecimal(2, s.getPrice());
+        ps.setString(3, s.getDescription());
+        ps.setString(4, s.getAvailabilityStatus());
+        ps.setString(5, s.getServiceType());
+        ps.setObject(6, s.getCreatedDate());
+        ps.setObject(7, s.getLastUpdatedDate());
+        ps.setString(8, s.getCreatedBy());
+        ps.setString(9, s.getLastUpdatedBy());
+        ps.setString(10, s.getServiceImage());
+        ps.setInt(11, s.getServiceID());
         ps.executeUpdate();
     }
 
@@ -79,4 +107,3 @@ public class ServiceDAO {
         ps.executeUpdate();
     }
 }
-

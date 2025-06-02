@@ -1,4 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %><%@ page import="model.Account" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="model.Account" %>
 <%
   Account account = (Account) session.getAttribute("account");
   if (account == null || !"Manager".equals(account.getRole())) {
@@ -13,7 +14,7 @@
     <body>
 
         <h2>Thêm Dịch vụ mới</h2>
-        <form action="services" method="post">
+        <form action="${pageContext.request.contextPath}/addService">
             <label>Tên dịch vụ:</label><br>
             <input type="text" name="name" required><br><br>
 
@@ -32,6 +33,6 @@
             <input type="submit" value="Lưu">
         </form>
         <br>
-        <a href="services">← Quay lại danh sách</a>
+        <a href="${pageContext.request.contextPath}/Manager/ServiceList.jsp">← Quay lại danh sách</a>
     </body>
 </html>
