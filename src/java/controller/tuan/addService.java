@@ -12,7 +12,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+<<<<<<< HEAD
 import java.math.BigDecimal;
+=======
+>>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
 import java.sql.SQLException;
 import model.Service;
 
@@ -69,6 +72,7 @@ public class addService extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             boolean status = "1".equals(request.getParameter("status"));
 
+<<<<<<< HEAD
             Service service = new Service();
             service.setServiceID(Integer.parseInt(request.getParameter("serviceID")));
             service.setServiceName(request.getParameter("serviceName"));
@@ -86,6 +90,19 @@ public class addService extends HttpServlet {
             } else {
                 service.setServiceID(Integer.parseInt(idStr));
                 dao.update(service);
+=======
+            Service s = new Service();
+            s.setServiceName(name);
+            s.setDescription(description);
+            s.setPrice(price);
+            s.setStatus(status);
+
+            if (idStr == null || idStr.isEmpty()) {
+                dao.insert(s);
+            } else {
+                s.setServiceID(Integer.parseInt(idStr));
+                dao.update(s);
+>>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
             }
 
             response.sendRedirect("services");
@@ -107,7 +124,11 @@ public class addService extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+<<<<<<< HEAD
 
+=======
+        processRequest(request, response);
+>>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
     }
 
     /**

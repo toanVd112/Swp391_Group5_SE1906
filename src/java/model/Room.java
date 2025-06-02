@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author Arcueid
@@ -14,10 +16,17 @@ public class Room {
     private String roomnumber;
     private int floor;
     private String status;
+    private RoomType roomType; // Liên kết với RoomType
 
-    private RoomType roomType; // Thay cho roomtypeID
+     private List<Amenity> amenities;         // Danh sách tiện ích
+    private List<PageContent> contents;      // Danh sách nội dung trang
 
-    // Constructor đầy đủ
+    // Constructor chỉ với RoomID (nên dùng cho DAO khi chưa có đủ dữ liệu)
+    public Room(int roomID) {
+        this.roomID = roomID;
+    }
+
+    // Constructor đầy đủ (có thể mở rộng nếu muốn)
     public Room(int roomID, String roomnumber, int floor, String status, RoomType roomType) {
         this.roomID = roomID;
         this.roomnumber = roomnumber;
@@ -26,7 +35,6 @@ public class Room {
         this.roomType = roomType;
     }
 
-    // Constructor rút gọn nếu cần
     public Room() {}
 
     public int getRoomID() {
@@ -69,6 +77,22 @@ public class Room {
         this.roomType = roomType;
     }
 
+    public List<Amenity> getAmenities() {
+        return amenities;
+    }
+
+    public void setAmenities(List<Amenity> amenities) {
+        this.amenities = amenities;
+    }
+
+    public List<PageContent> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<PageContent> contents) {
+        this.contents = contents;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
@@ -77,6 +101,8 @@ public class Room {
                 ", floor=" + floor +
                 ", status='" + status + '\'' +
                 ", roomType=" + (roomType != null ? roomType.getName() : "null") +
+                ", amenitiesCount=" + (amenities != null ? amenities.size() : 0) +
+                ", contentsCount=" + (contents != null ? contents.size() : 0) +
                 '}';
     }
 }

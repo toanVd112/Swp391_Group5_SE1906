@@ -47,6 +47,13 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
+<<<<<<< HEAD
+=======
+                    <file>${file.reference.javax.mail.jar-1}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+>>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
                     <file>${file.reference.mysql-connector-j-9.3.0.jar-3}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>

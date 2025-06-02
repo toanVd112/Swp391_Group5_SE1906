@@ -14,7 +14,11 @@
     <body>
 
         <h2>Thêm Dịch vụ mới</h2>
+<<<<<<< HEAD
         <form action="${pageContext.request.contextPath}/addService">
+=======
+        <form action="addService" method="post">
+>>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
             <label>Tên dịch vụ:</label><br>
             <input type="text" name="name" required><br><br>
 

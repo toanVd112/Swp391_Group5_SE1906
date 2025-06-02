@@ -6,6 +6,7 @@ package DAO;
 
 import java.util.*;
 import java.sql.*;
+import model.PageContent;
 import model.Room;
 import model.RoomType;
 
@@ -85,12 +86,7 @@ public class RoomDAO {
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
-                );
+                    rs.getInt("RoomID"));
 
                 return room;
             }
@@ -126,12 +122,7 @@ public class RoomDAO {
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
-                );
+                    rs.getInt("RoomID"));
 
                 list.add(room);
             }
@@ -195,12 +186,7 @@ public class RoomDAO {
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
-                );
+                    rs.getInt("RoomID"));
 
                 list.add(room);
             }
@@ -211,6 +197,42 @@ public class RoomDAO {
 
         return list;
     }
+    
+   public Room getRoomById(int roomId) {
+    String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage " +
+                 "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
+    try (Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, roomId);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            RoomType roomType = new RoomType(
+                rs.getInt("RoomTypeID"),
+                rs.getString("TypeName"),
+                rs.getString("Description"),
+                rs.getDouble("BasePrice"),
+                rs.getString("RoomTypeImage")
+            );
+
+            Room room = new Room(
+                rs.getInt("RoomID"),
+                rs.getString("RoomNumber"),
+                rs.getInt("Floor"),
+                rs.getString("Status"),
+                roomType
+            );
+            return room;
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
+    
 }
     
     
