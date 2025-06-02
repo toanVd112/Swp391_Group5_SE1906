@@ -53,33 +53,7 @@ public class ServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            ServiceDAO dao = new ServiceDAO();
-            String idStr = request.getParameter("id");
-            String name = request.getParameter("name");
-            String description = request.getParameter("description");
-            double price = Double.parseDouble(request.getParameter("price"));
-            boolean status = "1".equals(request.getParameter("status"));
-
-            Service s = new Service();
-            s.setServiceName(name);
-            s.setDescription(description);
-            s.setPrice(price);
-            s.setStatus(status);
-
-            if (idStr == null || idStr.isEmpty()) {
-                dao.insert(s);
-            } else {
-                s.setServiceID(Integer.parseInt(idStr));
-                dao.update(s);
-            }
-
-            response.sendRedirect("services");
-        } catch (SQLException e) {
-            throw new ServletException("SQL Error: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new ServletException("Error: " + e.getMessage(), e);
-        }
+     
     }
 
     @Override

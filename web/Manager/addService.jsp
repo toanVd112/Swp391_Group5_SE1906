@@ -13,7 +13,7 @@
     <body>
 
         <h2>Thêm Dịch vụ mới</h2>
-        <form action="services" method="post">
+        <form action="addService" method="post">
             <label>Tên dịch vụ:</label><br>
             <input type="text" name="name" required><br><br>
 
