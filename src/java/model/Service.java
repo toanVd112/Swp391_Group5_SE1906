@@ -1,26 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// src/main/java/com/example/model/Service.java
 package model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Timestamp; // Hoặc java.util.Date nếu bạn không cần độ chính xác cao
 
-/**
- *
- * @author admin
- */
 public class Service {
-
     private int serviceID;
     private String serviceName;
     private BigDecimal price;
     private String description;
     private String availabilityStatus;
     private String serviceType;
-    private LocalDateTime createdDate;
-    private LocalDateTime lastUpdatedDate;
+    private Timestamp createdDate; // Sử dụng Timestamp cho datetime
+    private Timestamp lastUpdatedDate;
     private String createdBy;
     private String lastUpdatedBy;
     private String serviceImage;
@@ -29,10 +21,7 @@ public class Service {
     public Service() {
     }
 
-    public Service(int serviceID, String serviceName, BigDecimal price, String description,
-            String availabilityStatus, String serviceType, LocalDateTime createdDate,
-            LocalDateTime lastUpdatedDate, String createdBy, String lastUpdatedBy,
-            String serviceImage) {
+    public Service(int serviceID, String serviceName, BigDecimal price, String description, String availabilityStatus, String serviceType, Timestamp createdDate, Timestamp lastUpdatedDate, String createdBy, String lastUpdatedBy, String serviceImage) {
         this.serviceID = serviceID;
         this.serviceName = serviceName;
         this.price = price;
@@ -46,7 +35,7 @@ public class Service {
         this.serviceImage = serviceImage;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public int getServiceID() {
         return serviceID;
     }
@@ -95,19 +84,19 @@ public class Service {
         this.serviceType = serviceType;
     }
 
-    public LocalDateTime getCreatedDate() {
+    public Timestamp getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
     }
 
-    public LocalDateTime getLastUpdatedDate() {
+    public Timestamp getLastUpdatedDate() {
         return lastUpdatedDate;
     }
 
-    public void setLastUpdatedDate(LocalDateTime lastUpdatedDate) {
+    public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
         this.lastUpdatedDate = lastUpdatedDate;
     }
 
@@ -135,8 +124,14 @@ public class Service {
         this.serviceImage = serviceImage;
     }
 
-    public void setStatus(boolean status) {
-        this.availabilityStatus = status ? "Available" : "Unavailable";
+    @Override
+    public String toString() {
+        return "Service{" +
+               "serviceID=" + serviceID +
+               ", serviceName='" + serviceName + '\'' +
+               ", price=" + price +
+               ", availabilityStatus='" + availabilityStatus + '\'' +
+               ", serviceType='" + serviceType + '\'' +
+               '}';
     }
-
 }

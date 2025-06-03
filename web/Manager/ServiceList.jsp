@@ -1,264 +1,182 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%-- src/main/webapp/services.jsp --%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%@ page import="model.Account" %>
-<%@ page import="model.Service" %>
-<%@ page import="DAO.ServiceDAO" %>
-<%@ page import="java.util.List" %>
-<%
-    Account account = (Account) session.getAttribute("account");
-    if (account == null || !"Manager".equals(account.getRole())) {
-        response.sendRedirect("../login_2.jsp");
-        return;
-    }
-    List<Service> services = new ServiceDAO().getAll();
-    request.setAttribute("serviceList", services);
-%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> <%-- Để định dạng số, ngày tháng --%>
 
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Service List</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            html, body {
-                height: 100%;
-                margin: 0;
-                overflow-x: hidden;
-            }
-            body {
-                background-color: #fff;
-                color: #333;
-                padding-top: 56px; /* Khoảng cách cho navbar cố định */
-                display: flex;
-                flex-direction: column;
-            }
-            .table {
-                color: #333;
-                background-color: #fff;
-            }
-            .table th {
-                background-color: #f8f9fa;
-                color: #333;
-            }
-            .table td {
-                vertical-align: middle;
-            }
-            .pagination {
-                justify-content: center;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: #fff;
-                padding: 10px 0;
-                border-top: 1px solid #dee2e6;
-                z-index: 1000;
-            }
-            .pagination .active .page-link {
-                background-color: #007bff;
-                border-color: #007bff;
-            }
-            .page-link {
-                color: #333;
-                background-color: #fff;
-                border-color: #dee2e6;
-            }
-            .page-link:hover {
-                background-color: #e9ecef;
-            }
-            .sidebar {
-                width: 250px;
-                background-color: #f8f9fa;
-                height: calc(100vh - 56px); /* Chiều cao toàn màn hình trừ navbar */
-                position: fixed;
-                top: 56px;
-                left: 0;
-                overflow-y: auto;
-            }
-            .sidebar .nav-link {
-                color: #333;
-            }
-            .sidebar .nav-link.active {
-                color: #fff;
-                background-color: #007bff;
-            }
-            .filter-section {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .filter-section select,
-            .filter-section input {
-                background-color: #fff;
-                color: #333;
-                border: 1px solid #dee2e6;
-            }
-            .filter-section select:focus,
-            .filter-section input:focus {
-                background-color: #fff;
-                color: #333;
-                border-color: #007bff;
-                box-shadow: none;
-            }
-            .navbar {
-                background-color: #f8f9fa !important;
-            }
-            .navbar .navbar-brand,
-            .navbar .nav-link {
-                color: #333 !important;
-            }
-            .main-content {
-                margin-left: 250px; /* Khoảng cách bên trái để sidebar không đè nội dung */
-                padding-bottom: 60px; /* Khoảng cách dưới để không bị pagination che */
-                flex: 1;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/HotelManagement/services">Hotel Management</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Welcome, Admin
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Profile</a></li>
-                                <li><a class="dropdown-item" href="#">Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="../Logout">Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Dịch Vụ</title>
+    <%-- Thêm Bootstrap CSS (ví dụ, hoặc CSS của bạn) --%>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .filter-form .form-group { margin-right: 15px; }
+        .pagination { margin-top: 20px; }
+        .service-image-thumbnail { max-width: 100px; max-height: 70px; object-fit: cover; }
+        .action-buttons a, .action-buttons button { margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="mb-4">Danh Sách Dịch Vụ</h1>
 
-        <!-- Nội dung chính với Sidebar và Main Content -->
-        <div class="d-flex">
-            <!-- Sidebar -->
-            <div class="sidebar flex-shrink-0 p-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Rooms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Bookings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Customers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Settings</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content p-3">
-                <div class="container">
-                    <div class="d-flex justify-content-between mb-3 align-items-center">
-                        <!-- Search and Filters -->
-                        <div class="filter-section">
-                            <input type="text" class="form-control" placeholder="Search..." style="width: 200px;">
-                            <select class="form-select" style="width: 150px;">
-                                <option value="">Filter by Type</option>
-                                <option value="everyone">Mọi người</option>
-                                <option value="vip">VIP</option>
-                            </select>
-                            <select class="form-select" style="width: 150px;">
-                                <option value="">Filter by Status</option>
-                                <option value="available">Available</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <!-- Create Data Button -->
-                        <button class="btn btn-success btn-sm" onclick="window.location.href='addService.jsp'">Create Data</button>
-                    </div>
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <!--                                <th>#</th>-->
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Created By</th>
-                                <th>Create Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach items="${serviceList}" var="s">
-                                <tr>
-                                    <!--<td></td>-->
-                                    <td>${s.serviceID}</td>
-                                    <td>${s.serviceName}</td>
-                                    <td>${s.price}</td>
-                                    <td>${empty s.serviceType ? "Null" : s.serviceType}</td>
-                                    <td>${s.availabilityStatus == 1 ? "Available" : "Not Available"}</td>
-                                    <td>${empty s.createdBy ? "Null" : s.createdBy}</td>
-                                    <td>${s.createdDate}</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm me-1" onclick="window.location
-                                                .href = '/HotelManagement/Manager/editService.jsp?id=${s.serviceID}'">Edit</button>
-                                        <button class="btn btn-danger btn-sm" onclick="window.location
-                                                .href = '/HotelManagement/Manager/toggleService.jsp?id=${s.serviceID}'">Inactive</button>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <%-- Nút thêm mới dịch vụ --%>
+        <div class="mb-3">
+            <a href="${pageContext.request.contextPath}/services?action=new" class="btn btn-success">Thêm Dịch Vụ Mới</a>
         </div>
 
-        <!-- Pagination cố định dưới cùng -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">««</a></li>
-                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item active"><a class="page-link" href="#">4</a></li>
-                <li class="page-item"><a class="page-link" href="#">5</a></li>
-                <li class="page-item"><a class="page-link" href="#">6</a></li>
-                <li class="page-item"><a class="page-link" href="#">7</a></li>
-                <li class="page-item"><a class="page-link" href="#">8</a></li>
-                <li class="page-item"><a class="page-link" href="#">9</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-                <li class="page-item"><a class="page-link" href="#">11</a></li>
-                <li class="page-item"><a class="page-link" href="#">12</a></li>
-                <li class="page-item"><a class="page-link" href="#">13</a></li>
-                <li class="page-item"><a class="page-link" href="#">14</a></li>
-                <li class="page-item"><a class="page-link" href="#">15</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item"><a class="page-link" href="#">17</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
-                <li class="page-item"><a class="page-link" href="#">»»</a></li>
-            </ul>
-        </nav>
+        <%-- Form tìm kiếm và lọc --%>
+        <form action="${pageContext.request.contextPath}/services" method="get" class="form-inline mb-4 filter-form">
+            <input type="hidden" name="action" value="list"> <%-- Luôn gửi action=list khi submit form này --%>
+            <div class="form-group">
+                <label for="search" class="sr-only">Tìm kiếm:</label>
+                <input type="text" class="form-control" id="search" name="search" value="<c:out value='${searchTerm}'/>" placeholder="Tên dịch vụ...">
+            </div>
+            <div class="form-group">
+                <label for="serviceType" class="sr-only">Loại Dịch Vụ:</label>
+                <select class="form-control" id="serviceType" name="serviceType">
+                    <option value="">-- Tất cả loại --</option>
+                    <c:forEach var="type" items="${serviceTypes}">
+                        <option value="${type}" ${type == selectedServiceType ? 'selected' : ''}>
+                            <c:out value="${type}"/>
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="status" class="sr-only">Trạng Thái:</label>
+                <select class="form-control" id="status" name="status">
+                    <option value="">-- Tất cả trạng thái --</option>
+                     <c:forEach var="st" items="${statuses}">
+                        <option value="${st}" ${st == selectedStatus ? 'selected' : ''}>
+                            <c:out value="${st}"/>
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Lọc / Tìm</button>
+            <a href="${pageContext.request.contextPath}/services?action=list" class="btn btn-secondary ml-2">Xóa Lọc</a>
+        </form>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+        <%-- Bảng hiển thị dịch vụ --%>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Hình Ảnh</th>
+                    <th>Tên Dịch Vụ</th>
+                    <th>Giá</th>
+                    <th>Loại Dịch Vụ</th>
+                    <th>Trạng Thái</th>
+                    <th>Mô Tả</th>
+                    <th>Ngày Tạo</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:choose>
+                    <c:when test="${not empty listService}">
+                        <c:forEach var="service" items="${listService}" varStatus="loop">
+                            <tr>
+                                <td><c:out value="${service.serviceID}"/></td>
+                                <td>
+                                    <c:if test="${not empty service.serviceImage}">
+                                        <img src="<c:url value='${service.serviceImage}'/>" alt="<c:out value='${service.serviceName}'/>" class="service-image-thumbnail img-thumbnail">
+                                    </c:if>
+                                    <c:if test="${empty service.serviceImage}">
+                                        <span class="text-muted">N/A</span>
+                                    </c:if>
+                                </td>
+                                <td><c:out value="${service.serviceName}"/></td>
+                                <td>
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <fmt:formatNumber value="${service.price}" type="currency" currencyCode="VND" maxFractionDigits="0"/>
+                                </td>
+                                <td><c:out value="${service.serviceType}"/></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${service.availabilityStatus == 'Available'}">
+                                            <span class="badge badge-success">Available</span>
+                                        </c:when>
+                                        <c:when test="${service.availabilityStatus == 'Unavailable'}">
+                                            <span class="badge badge-danger">Unavailable</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge badge-secondary"><c:out value="${service.availabilityStatus}"/></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td><c:out value="${service.description}"/></td>
+                                <td>
+                                    <fmt:formatDate value="${service.createdDate}" pattern="dd/MM/yyyy HH:mm"/>
+                                </td>
+                                <td class="action-buttons">
+                                    <%-- Các nút CRUD (chưa có action cụ thể) --%>
+                                    <a href="${pageContext.request.contextPath}/services?action=view&id=${service.serviceID}" class="btn btn-info btn-sm" title="Xem Chi Tiết">👁️</a>
+                                    <a href="${pageContext.request.contextPath}/services?action=edit&id=${service.serviceID}" class="btn btn-warning btn-sm" title="Sửa">✏️</a>
+                                    <a href="${pageContext.request.contextPath}/services?action=delete&id=${service.serviceID}" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này?');">🗑️</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <tr>
+                            <td colspan="9" class="text-center">Không tìm thấy dịch vụ nào.</td>
+                        </tr>
+                    </c:otherwise>
+                </c:choose>
+            </tbody>
+        </table>
+
+        <%-- Phân trang --%>
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <%-- Nút Previous --%>
+                    <c:if test="${currentPage > 1}">
+                        <li class="page-item">
+                            <a class="page-link" href="${pageContext.request.contextPath}/services?action=list&page=${currentPage - 1}&search=${searchTerm}&serviceType=${selectedServiceType}&status=${selectedStatus}">Trước</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage <= 1}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Trước</a>
+                        </li>
+                    </c:if>
+
+                    <%-- Các nút số trang --%>
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <c:choose>
+                            <c:when test="${currentPage eq i}">
+                                <li class="page-item active"><a class="page-link" href="#">${i}</a></li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/services?action=list&page=${i}&search=${searchTerm}&serviceType=${selectedServiceType}&status=${selectedStatus}">${i}</a></li>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+
+                    <%-- Nút Next --%>
+                     <c:if test="${currentPage < totalPages}">
+                        <li class="page-item">
+                            <a class="page-link" href="${pageContext.request.contextPath}/services?action=list&page=${currentPage + 1}&search=${searchTerm}&serviceType=${selectedServiceType}&status=${selectedStatus}">Sau</a>
+                        </li>
+                    </c:if>
+                    <c:if test="${currentPage >= totalPages}">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Sau</a>
+                        </li>
+                    </c:if>
+                </ul>
+            </nav>
+        </c:if>
+    </div>
+
+    <%-- Thêm Bootstrap JS và Popper.js (nếu cần cho các component JS của Bootstrap) --%>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
