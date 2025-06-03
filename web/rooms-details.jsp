@@ -1,7 +1,22 @@
+<%-- 
+    Document   : rooms-details
+    Created on : Jun 3, 2025, 2:31:47 PM
+    Author     : Arcueid
+--%>
 <!DOCTYPE html>
 <html lang="en">
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
     <head>
+
+     <style>
+.status-available { color: green; font-weight: bold; }
+.status-occupied { color: orange; font-weight: bold; }
+.status-maintenance { color: red; font-weight: bold; }
+</style>
+
+
 
         <!-- META ============================================= -->
         <meta charset="utf-8">
@@ -233,7 +248,7 @@
                         <ul class="list-inline">
                             <li><a href="#">Home</a></li>
                             <li>Rooms Details</li>
-                        </ul>
+                        </ul>   
                     </div>
                 </div>
                 <!-- Breadcrumb row END -->
@@ -247,36 +262,35 @@
                                     <div class="course-detail-bx">
                                         <div class="course-price">
                                             <del>$190</del>
-                                            <h4 class="price">$120</h4>
+                                            <h4 class="price">$${room.roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
-                                            <a href="#" class="btn radius-xl text-uppercase">Buy Now This Rooms</a>
+                                            <a href="#" class="btn radius-xl text-uppercase">BOOK NOW</a>
                                         </div>
-                                        <div class="teacher-bx">
-                                            <div class="teacher-info">
-                                                <div class="teacher-thumb">
-                                                    <img src="assets/images/testimonials/pic1.jpg" alt=""/>
-                                                </div>
-                                                <div class="teacher-name">
-                                                    <h5>Hinata Hyuga</h5>
-                                                    <span>Science Teacher</span>
+                                            <div class="teacher-bx">
+                                                <div class="teacher-info">
+                                                    <div class="teacher-thumb">
+
+                                                    </div>
+                                                    <h5>
+                                                        <span class="status-${room.status.toLowerCase()}">${room.status}</span>
+                                                    </h5>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="cours-more-info">
-                                            <div class="review">
-                                                <span>3 Review</span>
-                                                <ul class="cours-star">
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                </ul>
-                                            </div>
-                                            <div class="price categories">
-                                                <span>Categories</span>
-                                                <h5 class="text-primary">Frontend</h5>
+                                            <div class="cours-more-info">
+                                                <div class="review">
+                                                    <span>3 Review</span>
+                                                    <ul class="cours-star">
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="categories">
+                                                    <span> Room Type</span>
+                                                    <h6 class="text-primary"> ${room.roomType.name}</h6>
                                             </div>
                                         </div>
                                         <div class="course-info-list scroll-page">
@@ -293,17 +307,22 @@
                                 <div class="col-lg-9 col-md-8 col-sm-12">
                                     <div class="rooms-post">
                                         <div class="ttr-post-media media-effect">
-                                            <a href="#"><img src="assets/images/blog/default/thum1.jpg" alt=""></a>
+                                            <a href="#">
+                                                <img src="${room.roomType.imageUrl}" alt="${room.roomType.name}" />
+                                            </a>
                                         </div>
+
                                         <div class="ttr-post-info">
-                                            <div class="ttr-post-title ">
-                                                <h2 class="post-title">Room Name</h2>
+                                            <div class="ttr-post-title">
+                                                <h2 class="post-title"> Phòng ${room.roomnumber}</h2>
                                             </div>
+
                                             <div class="ttr-post-text">
-                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                                                <p>${room.roomType.roomDetail}</p>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
@@ -319,21 +338,33 @@
                                                 </ul>
                                             </div>
                                             <div class="col-md-12 col-lg-8">
-                                                <h5 class="m-b5">Policy</h5>
-                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry?s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
-                                                <h5 class="m-b5">Important Information</h5>
-                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry?s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
-                                                <h5 class="m-b5">FAQ</h5>
-                                                <ul class="list-checked primary">
-                                                    <li>Over 37 lectures and 55.5 hours of content!</li>
-                                                    <li>LIVE PROJECT End to End Software Testing Training Included.</li>
-                                                    <li>Learn Software Testing and Automation basics from a professional trainer from your own desk.</li>
-                                                    <li>Information packed practical training starting from basics to advanced testing techniques.</li>
-                                                    <li>Best suitable for beginners to advanced level users and who learn faster when demonstrated.</li>
-                                                    <li>Course content designed by considering current software testing technology and the job market.</li>
-                                                    <li>Practical assignments at the end of every session.</li>
-                                                    <li>Practical learning experience with live project work and examples.cv</li>
-                                                </ul>
+                                                <!-- Chính sách -->
+                                                <c:if test="${not empty policies}">
+                                                    <h5 class="m-b5">Policy</h5>
+                                                    <c:forEach var="item" items="${policies}">
+                                                        <h6>${item.title}</h6>
+                                                        <p>${item.content}</p>
+                                                    </c:forEach>
+                                                </c:if>
+
+                                                <!-- Thông tin quan tr?ng -->
+                                                <c:if test="${not empty importantInfos}">
+                                                    <h5 class="m-b5">Important Information</h5>
+                                                    <c:forEach var="item" items="${importantInfos}">
+                                                        <h6>${item.title}</h6>
+                                                        <p>${item.content}</p>
+                                                    </c:forEach>
+                                                </c:if>
+
+                                                <!-- Câu h?i th??ng g?p -->
+                                                <c:if test="${not empty faqs}">
+                                                    <h5 class="m-b5">FAQ</h5>
+                                                    <ul class="list-checked primary">
+                                                        <c:forEach var="item" items="${faqs}">
+                                                            <li><strong>${item.title}</strong><br/>${item.content}</li>
+                                                                </c:forEach>
+                                                    </ul>
+                                                </c:if>
                                             </div>
                                         </div>
                                     </div>

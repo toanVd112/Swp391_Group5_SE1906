@@ -378,8 +378,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                                                
-                                                               
+
+
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-12">
                                     <div class="row">
@@ -389,12 +389,18 @@
                                                     <div class="action-box">
                                                         <!-- Dùng ảnh từ roomType -->
                                                         <img src="${pageContext.request.contextPath}/${r.roomType.imageUrl}" alt="">
-                                                        <a href="#" class="btn">Read More</a>
+                                                        <!-- Nút dẫn tới trang chi tiết phòng -->
+                                                        <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}" class="btn">Read More</a>
                                                     </div>
                                                     <div class="info-bx text-center">
-                                                        <h5><a href="#">Room ${r.roomnumber}</a></h5>
+                                                        <!-- Link tên phòng cũng chuyển tới trang chi tiết -->
+                                                        <h5>
+                                                            <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}">
+                                                                Room ${r.roomnumber}
+                                                            </a>
+                                                        </h5>
                                                         <h5>Floor ${r.floor}</h5>
-                                                        <span>${r.roomType.name}</span> <!-- Loại phòng -->
+                                                        <span>${r.roomType.name}</span> <!-- Tên loại phòng -->
                                                     </div>
                                                     <div class="cours-more-info">
                                                         <div class="review">
@@ -404,11 +410,13 @@
                                                                 <li class="active"><i class="fa fa-star"></i></li>
                                                                 <li class="active"><i class="fa fa-star"></i></li>
                                                                 <li><i class="fa fa-star"></i></li>
-                                                                <li><i class="fa fa-star"></i></i></li>
+                                                                <li><i class="fa fa-star"></i></li>
                                                             </ul>
                                                         </div>
                                                         <div class="price">
-                                                           <h4><span class="status-${fn:toLowerCase(r.status)}">${r.status}</span></h4>
+                                                            <h4>
+                                                                <span class="status-${fn:toLowerCase(r.status)}">${r.status}</span>
+                                                            </h4>
                                                             <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
                                                         </div>
                                                     </div>

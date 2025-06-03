@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import model.PageContent;
-import model.Room;
 import java.sql.ResultSet;
 
 /**
@@ -16,31 +15,29 @@ import java.sql.ResultSet;
  */
 public class PageContentDAO {
 
-    public List<PageContent> getPageContentsByRoomId(int roomId) {
-        List<PageContent> list = new ArrayList<>();
-        String sql = "SELECT * FROM pagecontents WHERE RoomID = ?";
+    public List<PageContent> getPageContentsForGeneralUse() {
+    List<PageContent> list = new ArrayList<>();
+    String sql = "SELECT * FROM pagecontents WHERE RoomID IS NULL";
 
-        try (java.sql.Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setInt(1, roomId);
-            ResultSet rs = ps.executeQuery();
+    try (java.sql.Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                PageContent pc = new PageContent(
-                    rs.getInt("ContentID"),
-                    new Room(roomId),
-                    rs.getString("PageSection"),
-                    rs.getString("Title"),
-                    rs.getString("Content")
-                );
-                list.add(pc);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            PageContent pc = new PageContent(
+                rs.getInt("ContentID"),
+                null,
+                rs.getString("PageSection"),
+                rs.getString("Title"),
+                rs.getString("Content")
+            );
+            list.add(pc);
         }
 
-        return list;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    return list;
+}
 }
