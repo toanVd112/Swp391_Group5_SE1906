@@ -198,6 +198,28 @@
                 <h2>Manage <b>Accounts</b></h2>
                 <a  onclick="openModal()">+ Add New Account</a>
             </div>
+            <form method="get" action="managerAccount">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <input type="text" name="search" placeholder="Search by username..." value="${param.search}" 
+                               style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
+                        <a href="managerAccount" 
+                           style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
+                            Reset
+                        </a>
+                    </div>
+                    <div>
+                        <select name="sort" onchange="this.form.submit()" 
+                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <option value="">Sort by Created Date</option>
+                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest First</option>
+                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest First</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
 
             <table>
                 <thead>
@@ -234,12 +256,21 @@
             </table>
 
             <ul class="pagination">
-                <li><a href="#">Prev</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li class="active"><a href="#">3</a></li>
-                <li><a href="#">Next</a></li>
+                <c:if test="${currentPage > 1}">
+                    <li><a href="managerAccount?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
+                    </c:if>
+
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <li class="${i == currentPage ? 'active' : ''}">
+                        <a href="managerAccount?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
+                    </li>
+                </c:forEach>
+
+                <c:if test="${currentPage < totalPages}">
+                    <li><a href="managerAccount?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
+                    </c:if>
             </ul>
+
 
             <a href="Manager/manager.jsp"><button type="button" class="btn-primary">Back to home</button></a>
         </div>

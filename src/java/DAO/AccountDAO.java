@@ -16,7 +16,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountDAO extends DBConnect{
+public class AccountDAO extends DBConnect {
 
     public boolean insertAccount(Account account) {
         String sql = "INSERT INTO accounts (Username, Password, Role, IsActive, CreatedAt, Email) VALUES (?, ?, ?, ?, NOW(), ?)";
@@ -165,7 +165,7 @@ public class AccountDAO extends DBConnect{
         return null;
     }
 
-    public void editAccount(String username, String password, String role, boolean isActive, String email,String aid) {
+    public void editAccount(String username, String password, String role, boolean isActive, String email, String aid) {
         String sql = "Update accounts\n"
                 + "Set Username = ?,"
                 + "Password = ?,"
@@ -181,10 +181,76 @@ public class AccountDAO extends DBConnect{
             ps.setString(5, email);
             ps.setString(6, aid);
             ps.executeUpdate();
-            
-        
+
         } catch (SQLException e) {
         }
+    }
+
+    public List<Account> getFilteredAccountsWithPage(String search, String sort, int offset, int limit) {
+        List<Account> list = new ArrayList<>();
+        String sql = "SELECT * FROM accounts WHERE Role IN ('Staff', 'Receptionist')";
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND Username LIKE ?";
+        }
+
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY CreatedAt ASC";
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY CreatedAt DESC";
+        }
+
+        sql += " LIMIT ? OFFSET ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int index = 1;
+            if (hasSearch) {
+                ps.setString(index++, "%" + search.trim() + "%");
+            }
+            ps.setInt(index++, limit);
+            ps.setInt(index, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Account(
+                        rs.getInt("AccountID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Role"),
+                        rs.getBoolean("IsActive"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getString("Email")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countFilteredAccounts(String search) {
+        String sql = "SELECT COUNT(*) FROM accounts WHERE Role IN ('Staff', 'Receptionist')";
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND Username LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (hasSearch) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     public static void main(String[] args) {

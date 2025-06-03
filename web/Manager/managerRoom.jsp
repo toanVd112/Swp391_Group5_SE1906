@@ -202,8 +202,33 @@
         <div class="container">
             <div class="table-title">
                 <h2>Manage <b>Rooms</b></h2>
-                <a onclick="openModal()">+ Add New Room</a>
+                <a href="#">+ Add New Room</a>
             </div>
+            <form method="get" action="managerR">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <input type="text" name="search" placeholder="Search by Room Number..." value="${param.search}" 
+                               style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button type="submit" 
+                                style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">
+                            Search
+                        </button>
+                        <a href="managerR" 
+                           style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
+                            Reset
+                        </a>
+                    </div>
+                    <div>
+                        <select name="sort" onchange="this.form.submit()" 
+                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <option value="">Sort by Price</option>
+                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Low to High</option>
+                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
 
             <table>
                 <thead>
@@ -225,9 +250,9 @@
                             <td>${r.roomID}</td>
                             <td>${r.roomnumber}</td>
                             <td>${r.floor}</td>
-                            <td>${r.roomType}</td>
+                            <td>${r.roomType.name}</td> 
                             <td>${r.status}</td>
-                            <td>${r.basePrice}</td>
+                            <td>${r.roomType.basePrice}</td> 
                             <td>
                                 <a href="loadRoom?rid=${r.roomID}" class="edit" title="Edit">&#x270E;</a>
                                 <a href="deleteRoom?rid=${r.roomID}" class="delete" title="Delete">&#x1F5D1;</a>
@@ -238,79 +263,25 @@
             </table>
 
             <ul class="pagination">
-                <li><a href="#">Prev</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li class="active"><a href="#">3</a></li>
-                <li><a href="#">Next</a></li>
+                <c:if test="${currentPage > 1}">
+                    <li><a href="managerR?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
+                    </c:if>
+
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <li class="${i == currentPage ? 'active' : ''}">
+                        <a href="managerR?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
+                    </li>
+                </c:forEach>
+
+                <c:if test="${currentPage < totalPages}">
+                    <li><a href="managerR?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
+                    </c:if>
             </ul>
+
 
             <a href="Manager/manager.jsp"><button type="button" class="btn-primary">Back to home</button></a>
         </div>
 
-        <!-- Modal Add Room -->
-        <c:if test="${showAddModal}">
-            <script>
-                window.onload = function () {
-                    document.getElementById("addRoomModal").style.display = "block";
-                }
-            </script>
-        </c:if>
-
-        <div id="addRoomModal" class="modal">
-            <div class="modal-dialog">
-                <form action="addRoom">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add New Room</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="roomNumber">Room Number</label>
-                            <input id="roomNumber" name="roomNumber" type="text" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="roomType">Room Type</label>
-                            <select id="roomType" name="roomType" required>
-                                <option value="Single">Single</option>
-                                <option value="Double">Double</option>
-                                <option value="Suite">Suite</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="status">Status</label>
-                            <select id="status" name="status" required>
-                                <option value="Available">Available</option>
-                                <option value="Occupied">Occupied</option>
-                                <option value="Maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">Price</label>
-                            <input id="price" name="price" type="number" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn-default" value="Cancel" onclick="closeModal()">
-                        <input type="submit" class="btn-success" value="Add Room">
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <script>
-            function openModal() {
-                document.getElementById("addRoomModal").style.display = "block";
-            }
-            function closeModal() {
-                document.getElementById("addRoomModal").style.display = "none";
-            }
-            window.onclick = function (event) {
-                var modal = document.getElementById("addRoomModal");
-                if (event.target === modal) {
-                    modal.style.display = "none";
-                }
-            };
-        </script>
     </body>
 </html>
 

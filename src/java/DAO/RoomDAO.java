@@ -18,30 +18,28 @@ public class RoomDAO {
 
     public List<Room> getAllRooms() throws SQLException {
         List<Room> list = new ArrayList<>();
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail " +
-                     "FROM rooms r " +
-                     "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID";
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r "
+                + "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID";
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("TypeName"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
                 );
 
                 list.add(room);
@@ -54,18 +52,16 @@ public class RoomDAO {
     public List<RoomType> getAllRoomTypes() throws SQLException {
         List<RoomType> list = new ArrayList<>();
         String sql = "SELECT * FROM roomtypes";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomtypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomtypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
                 list.add(roomType);
             }
@@ -75,31 +71,29 @@ public class RoomDAO {
     }
 
     public Room getLatestRoom() {
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail " +
-                     "FROM rooms r " +
-                     "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID " +
-                     "ORDER BY r.RoomID DESC LIMIT 1";
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r "
+                + "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
+                + "ORDER BY r.RoomID DESC LIMIT 1";
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
                 );
 
                 return room;
@@ -114,33 +108,32 @@ public class RoomDAO {
 
     public List<Room> getRoomsByType(int typeId) {
         List<Room> list = new ArrayList<>();
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail " +
-                     "FROM rooms r " +
-                     "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID " +
-                     "WHERE r.RoomTypeID = ?";
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r "
+                + "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
+                + "WHERE r.RoomTypeID = ?";
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, typeId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
                 );
 
                 list.add(room);
@@ -157,9 +150,7 @@ public class RoomDAO {
         List<Integer> floors = new ArrayList<>();
         String sql = "SELECT DISTINCT Floor FROM rooms ORDER BY Floor";
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 floors.add(rs.getInt("Floor"));
@@ -172,8 +163,8 @@ public class RoomDAO {
     public List<Room> filterRooms(Integer floor, Integer typeId) {
         List<Room> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail " +
-            "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+                "SELECT r.*, rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
         );
 
         if (floor != null) {
@@ -183,8 +174,7 @@ public class RoomDAO {
             sql.append(" AND r.RoomTypeID = ?");
         }
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             int paramIndex = 1;
             if (floor != null) {
@@ -197,20 +187,20 @@ public class RoomDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
                 );
 
                 list.add(room);
@@ -224,31 +214,30 @@ public class RoomDAO {
     }
 
     public Room getRoomById(int roomId) {
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail " +
-                     "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
 
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, roomId);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("TypeName"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail")
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
                 );
 
                 Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
                 );
 
                 return room;
@@ -260,7 +249,87 @@ public class RoomDAO {
 
         return null;
     }
-}
-    
-    
 
+    public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
+        List<Room> list = new ArrayList<>();
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1";
+
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND r.RoomNumber LIKE ?";
+        }
+
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY rt.BasePrice ASC";
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY rt.BasePrice DESC";
+        }
+
+        sql += " LIMIT ? OFFSET ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+            if (hasSearch) {
+                ps.setString(paramIndex++, "%" + search.trim() + "%");
+            }
+            ps.setInt(paramIndex++, limit);
+            ps.setInt(paramIndex, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RoomType roomType = new RoomType(
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
+                );
+
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
+                );
+
+                list.add(room);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countRooms(String search) {
+        String sql = "SELECT COUNT(*) FROM rooms WHERE 1=1";
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND RoomNumber LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+}
