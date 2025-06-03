@@ -252,12 +252,21 @@
             </table>
 
             <ul class="pagination">
-                <li><a href="#">Prev</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li class="active"><a href="#">3</a></li>
-                <li><a href="#">Next</a></li>
+                <c:if test="${currentPage > 1}">
+                    <li><a href="managerAccount?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
+                    </c:if>
+
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <li class="${i == currentPage ? 'active' : ''}">
+                        <a href="managerAccount?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
+                    </li>
+                </c:forEach>
+
+                <c:if test="${currentPage < totalPages}">
+                    <li><a href="managerAccount?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
+                    </c:if>
             </ul>
+
 
             <a href="Manager/manager.jsp"><button type="button" class="btn-primary">Back to home</button></a>
         </div>

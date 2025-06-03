@@ -186,28 +186,30 @@ public class AccountDAO extends DBConnect {
         }
     }
 
-    public List<Account> getFilteredAccounts(String search, String sort) {
+    public List<Account> getFilteredAccountsWithPage(String search, String sort, int offset, int limit) {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM accounts WHERE 1=1 AND Role IN ('Staff', 'Receptionist')";
-
+        String sql = "SELECT * FROM accounts WHERE Role IN ('Staff', 'Receptionist')";
         boolean hasSearch = search != null && !search.trim().isEmpty();
 
         if (hasSearch) {
-            sql += " AND username LIKE ?";
+            sql += " AND Username LIKE ?";
         }
 
         if ("asc".equalsIgnoreCase(sort)) {
-            sql += " ORDER BY createdAt ASC";
+            sql += " ORDER BY CreatedAt ASC";
         } else if ("desc".equalsIgnoreCase(sort)) {
-            sql += " ORDER BY createdAt DESC";
+            sql += " ORDER BY CreatedAt DESC";
         }
 
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        sql += " LIMIT ? OFFSET ?";
 
-            // Chỉ set parameter nếu có `search`
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int index = 1;
             if (hasSearch) {
-                ps.setString(1, "%" + search.trim() + "%");
+                ps.setString(index++, "%" + search.trim() + "%");
             }
+            ps.setInt(index++, limit);
+            ps.setInt(index, offset);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -226,6 +228,29 @@ public class AccountDAO extends DBConnect {
         }
 
         return list;
+    }
+
+    public int countFilteredAccounts(String search) {
+        String sql = "SELECT COUNT(*) FROM accounts WHERE Role IN ('Staff', 'Receptionist')";
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND Username LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (hasSearch) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     public static void main(String[] args) {

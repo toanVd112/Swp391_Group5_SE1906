@@ -63,12 +63,31 @@ public class ManagerAccount extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String search = request.getParameter("search");
         String sort = request.getParameter("sort");
-        AccountDAO ad = new AccountDAO();
-        List<Account> list = ad.getFilteredAccounts(search, sort);
+
+        // Lấy trang hiện tại từ request, mặc định là 1
+        int page = 1;
+        int recordsPerPage = 10;
+
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        AccountDAO dao = new AccountDAO();
+        List<Account> list = dao.getFilteredAccountsWithPage(search, sort, (page - 1) * recordsPerPage, recordsPerPage);
+        int totalRecords = dao.countFilteredAccounts(search);
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
         request.setAttribute("listA", list);
         request.setAttribute("search", search);
         request.setAttribute("sort", sort);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+
         request.getRequestDispatcher("Manager/managerAccount.jsp").forward(request, response);
     }
 
