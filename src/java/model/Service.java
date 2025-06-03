@@ -1,103 +1,66 @@
-// src/main/java/com/example/model/Service.java
 package model;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp; // Hoặc java.util.Date nếu bạn không cần độ chính xác cao
+import java.time.LocalDateTime;
 
 public class Service {
-    private int serviceID;
-    private String serviceName;
-    private BigDecimal price;
-    private String description;
-    private String availabilityStatus;
-    private String serviceType;
-    private Timestamp createdDate; // Sử dụng Timestamp cho datetime
-    private Timestamp lastUpdatedDate;
+    private int id;
+    private String name;
+    private int price;
+    private String type;
+    private String status;
     private String createdBy;
-    private String lastUpdatedBy;
-    private String serviceImage;
+    private LocalDateTime createDate;
 
-    // Constructors
-    public Service() {
-    }
-
-    public Service(int serviceID, String serviceName, BigDecimal price, String description, String availabilityStatus, String serviceType, Timestamp createdDate, Timestamp lastUpdatedDate, String createdBy, String lastUpdatedBy, String serviceImage) {
-        this.serviceID = serviceID;
-        this.serviceName = serviceName;
+    // Constructor
+    public Service(int id, String name, int price, String type, String status, String createdBy, LocalDateTime createDate) {
+        this.id = id;
+        this.name = name;
         this.price = price;
-        this.description = description;
-        this.availabilityStatus = availabilityStatus;
-        this.serviceType = serviceType;
-        this.createdDate = createdDate;
-        this.lastUpdatedDate = lastUpdatedDate;
+        this.type = type;
+        this.status = status;
         this.createdBy = createdBy;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.serviceImage = serviceImage;
+        this.createDate = createDate;
     }
 
     // Getters and Setters
-    public int getServiceID() {
-        return serviceID;
+    public int getId() {
+        return id;
     }
 
-    public void setServiceID(int serviceID) {
-        this.serviceID = serviceID;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getName() {
+        return name;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public BigDecimal getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public String getDescription() {
-        return description;
+    public String getType() {
+        return type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getAvailabilityStatus() {
-        return availabilityStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setAvailabilityStatus(String availabilityStatus) {
-        this.availabilityStatus = availabilityStatus;
-    }
-
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
-    }
-
-    public Timestamp getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Timestamp getLastUpdatedDate() {
-        return lastUpdatedDate;
-    }
-
-    public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
-        this.lastUpdatedDate = lastUpdatedDate;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getCreatedBy() {
@@ -108,30 +71,11 @@ public class Service {
         this.createdBy = createdBy;
     }
 
-    public String getLastUpdatedBy() {
-        return lastUpdatedBy;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
-    public void setLastUpdatedBy(String lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
-    }
-
-    public String getServiceImage() {
-        return serviceImage;
-    }
-
-    public void setServiceImage(String serviceImage) {
-        this.serviceImage = serviceImage;
-    }
-
-    @Override
-    public String toString() {
-        return "Service{" +
-               "serviceID=" + serviceID +
-               ", serviceName='" + serviceName + '\'' +
-               ", price=" + price +
-               ", availabilityStatus='" + availabilityStatus + '\'' +
-               ", serviceType='" + serviceType + '\'' +
-               '}';
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 }
