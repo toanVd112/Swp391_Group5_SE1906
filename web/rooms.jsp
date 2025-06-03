@@ -273,7 +273,7 @@
                 <div class="breadcrumb-row">
                     <div class="container">
                         <ul class="list-inline">
-                            <li><a href="#">Home</a></li>
+                            <li><a href="Home">Home</a></li>
                             <li>Our Rooms</li>
                         </ul>
                     </div>
