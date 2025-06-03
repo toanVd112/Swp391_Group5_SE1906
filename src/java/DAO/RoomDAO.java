@@ -250,16 +250,36 @@ public class RoomDAO {
         return null;
     }
 
-    public Room getAllRoomById(int roomId) {
+    public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
+        List<Room> list = new ArrayList<>();
         String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
-                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1";
+
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND r.RoomNumber LIKE ?";
+        }
+
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY rt.BasePrice ASC";
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY rt.BasePrice DESC";
+        }
+
+        sql += " LIMIT ? OFFSET ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, roomId);
-            ResultSet rs = ps.executeQuery();
+            int paramIndex = 1;
+            if (hasSearch) {
+                ps.setString(paramIndex++, "%" + search.trim() + "%");
+            }
+            ps.setInt(paramIndex++, limit);
+            ps.setInt(paramIndex, offset);
 
-            if (rs.next()) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 RoomType roomType = new RoomType(
                         rs.getInt("RoomTypeID"),
                         rs.getString("TypeName"),
@@ -277,13 +297,39 @@ public class RoomDAO {
                         roomType
                 );
 
-                return room;
+                list.add(room);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return list;
     }
+
+    public int countRooms(String search) {
+        String sql = "SELECT COUNT(*) FROM rooms WHERE 1=1";
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND RoomNumber LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
 }

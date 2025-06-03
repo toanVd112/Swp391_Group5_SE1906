@@ -204,6 +204,10 @@
                         <input type="text" name="search" placeholder="Search by username..." value="${param.search}" 
                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
                         <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
+                        <a href="managerAccount" 
+                           style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
+                            Reset
+                        </a>
                     </div>
                     <div>
                         <select name="sort" onchange="this.form.submit()" 
