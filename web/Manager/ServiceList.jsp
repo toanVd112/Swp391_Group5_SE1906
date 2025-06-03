@@ -140,31 +140,7 @@
         <!-- Nội dung chính với Sidebar và Main Content -->
         <div class="d-flex">
             <!-- Sidebar -->
-            <div class="sidebar flex-shrink-0 p-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Rooms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Bookings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Customers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Settings</a>
-                    </li>
-                </ul>
-            </div>
+            <%@ include file="sidebar.jsp" %>   
 
             <!-- Main Content -->
             <div class="main-content p-3">

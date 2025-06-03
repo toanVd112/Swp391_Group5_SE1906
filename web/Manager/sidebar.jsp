@@ -113,9 +113,9 @@
     <ul>
         <li><strong>Service & Feedback</strong></li>
         <li><a href="${pageContext.request.contextPath}/ReplyQuestionServlet">View Questions</a></li>
-        <li><a href="addService.jsp">Add Service</a></li>
-        <li><a href="editService.jsp">Edit Service</a></li>
-        <li><a href="${pageContext.request.contextPath}/Manager/ServiceList.jsp">Service List</a></li>
+        <li><a href="../Manager/addService.jsp">Add Service</a></li>
+        <!--<li><a href="editService.jsp">Edit Service</a></li>-->
+        <li><a href="${pageContext.request.contextPath}/services/list">Service List</a></li>
         <li><a href="feedbacks.jsp">View Feedback</a></li>
     </ul>
 
