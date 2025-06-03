@@ -264,17 +264,17 @@
 
             <ul class="pagination">
                 <c:if test="${currentPage > 1}">
-                    <li><a href="managerRoom?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
+                    <li><a href="managerR?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
                     </c:if>
 
                 <c:forEach begin="1" end="${totalPages}" var="i">
                     <li class="${i == currentPage ? 'active' : ''}">
-                        <a href="managerRoom?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
+                        <a href="managerR?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
                     </li>
                 </c:forEach>
 
                 <c:if test="${currentPage < totalPages}">
-                    <li><a href="managerRoom?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
+                    <li><a href="managerR?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
                     </c:if>
             </ul>
 
