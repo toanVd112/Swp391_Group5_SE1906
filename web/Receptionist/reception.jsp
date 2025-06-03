@@ -97,13 +97,17 @@
 
             <h2>Room & Booking</h2>
             <ul>
-                <li><a href="roomList.jsp">View Room List</a></li>
+               <li><a href="${pageContext.request.contextPath}/ListRoomsServlet">View Room List</a></li>
                 <li><a href="bookingList.jsp">View Booking List</a></li>
                 <li><a href="addBooking.jsp">Add Booking</a></li>
                 <li><a href="editBooking.jsp">Edit Booking</a></li>
                 <li><a href="searchGuests.jsp">Search Guests</a></li>
             </ul>
-
+            <h2>ManageProfileCustomer</h2>
+            <ul>
+                <li><a href="#">ProfileCustomer</a></li>
+               
+            </ul>
             <h2>Services</h2>
             <ul>
                 <li><a href="services.jsp">Services</a></li>
