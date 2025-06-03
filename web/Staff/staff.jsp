@@ -102,7 +102,7 @@
                 <li><a href="updateRoomStatus.jsp">Update Room Status</a></li>
                 <li><a href="roomReport.jsp">Send Room Status Report</a></li>
             </ul>
-
+           
             <h2>Service Tasks</h2>
             <ul>
                 <li><a href="viewServices.jsp">View Services</a></li>

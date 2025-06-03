@@ -1,9 +1,3 @@
-<%-- 
-    Document   : managerRoom
-    Created on : 1 thg 6, 2025, 19:08:55
-    Author     : hieppm76
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -13,24 +7,26 @@
         <title>Manage Rooms</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
-            * {
+            body, .main-content, .container, table, input, select, button {
                 box-sizing: border-box;
                 font-family: 'Roboto', sans-serif;
             }
 
-            body {
-                background-color: #f4f7f9;
-                margin: 0;
-                padding: 20px;
+            /* KHÔNG ảnh hưởng layout tổng thể hay sidebar */
+            .main-content {
+                margin-left: 260px;
+                padding: 30px;
+                width: calc(100% - 260px);
+                box-sizing: border-box;
             }
 
             .container {
                 max-width: 1100px;
-                margin: auto;
                 background-color: #fff;
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 0 12px rgba(0,0,0,0.1);
+                margin: auto;
             }
 
             .table-title {
@@ -76,11 +72,6 @@
             .custom-checkbox input[type="checkbox"] {
                 width: 16px;
                 height: 16px;
-            }
-
-            .material-icons {
-                font-size: 18px;
-                vertical-align: middle;
             }
 
             a.edit, a.delete {
@@ -199,89 +190,89 @@
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="table-title">
-                <h2>Manage <b>Rooms</b></h2>
-                <a href="#">+ Add New Room</a>
-            </div>
-            <form method="get" action="managerR">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <div>
-                        <input type="text" name="search" placeholder="Search by Room Number..." value="${param.search}" 
-                               style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                        <button type="submit" 
-                                style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">
-                            Search
-                        </button>
-                        <a href="managerR" 
-                           style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
-                            Reset
-                        </a>
-                    </div>
-                    <div>
-                        <select name="sort" onchange="this.form.submit()" 
-                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                            <option value="">Sort by Price</option>
-                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Low to High</option>
-                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>High to Low</option>
-                        </select>
-                    </div>
+        <%@ include file="sidebar.jsp" %>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="table-title">
+                    <h2>Manage <b>Rooms</b></h2>
+                    <a href="#">+ Add New Room</a>
                 </div>
-            </form>
+                <form method="get" action="managerR">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <div>
+                            <input type="text" name="search" placeholder="Search by Room Number..." value="${param.search}" 
+                                   style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <button type="submit" 
+                                    style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">
+                                Search
+                            </button>
+                            <a href="managerR" 
+                               style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
+                                Reset
+                            </a>
+                        </div>
+                        <div>
+                            <select name="sort" onchange="this.form.submit()" 
+                                    style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <option value="">Sort by Price</option>
+                                <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Low to High</option>
+                                <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
 
-
-            <table>
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAll"></th>
-                        <th>ID</th>
-                        <th>Room Number</th>
-                        <th>Floor</th>
-                        <th>Room Type</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach items="${listR}" var="r">
+                <table>
+                    <thead>
                         <tr>
-                            <td><input type="checkbox" value="${r.roomID}" /></td>
-                            <td>${r.roomID}</td>
-                            <td>${r.roomnumber}</td>
-                            <td>${r.floor}</td>
-                            <td>${r.roomType.name}</td> 
-                            <td>${r.status}</td>
-                            <td>${r.roomType.basePrice}</td> 
-                            <td>
-                                <a href="loadRoom?rid=${r.roomID}" class="edit" title="Edit">&#x270E;</a>
-                                <a href="deleteRoom?rid=${r.roomID}" class="delete" title="Delete">&#x1F5D1;</a>
-                            </td>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>ID</th>
+                            <th>Room Number</th>
+                            <th>Floor</th>
+                            <th>Room Type</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Action</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach items="${listR}" var="r">
+                            <tr>
+                                <td><input type="checkbox" value="${r.roomID}" /></td>
+                                <td>${r.roomID}</td>
+                                <td>${r.roomnumber}</td>
+                                <td>${r.floor}</td>
+                                <td>${r.roomType.name}</td> 
+                                <td>${r.status}</td>
+                                <td>${r.roomType.basePrice}</td> 
+                                <td>
+                                    <a href="loadRoom?rid=${r.roomID}" class="edit" title="Edit">&#x270E;</a>
+                                    <a href="deleteRoom?rid=${r.roomID}" class="delete" title="Delete">&#x1F5D1;</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+
+                <ul class="pagination">
+                    <c:if test="${currentPage > 1}">
+                        <li><a href="managerR?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
+                        </c:if>
+
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <li class="${i == currentPage ? 'active' : ''}">
+                            <a href="managerR?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
+                        </li>
                     </c:forEach>
-                </tbody>
-            </table>
 
-            <ul class="pagination">
-                <c:if test="${currentPage > 1}">
-                    <li><a href="managerR?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
-                    </c:if>
+                    <c:if test="${currentPage < totalPages}">
+                        <li><a href="managerR?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
+                        </c:if>
+                </ul>
 
-                <c:forEach begin="1" end="${totalPages}" var="i">
-                    <li class="${i == currentPage ? 'active' : ''}">
-                        <a href="managerR?page=${i}&search=${param.search}&sort=${param.sort}">${i}</a>
-                    </li>
-                </c:forEach>
-
-                <c:if test="${currentPage < totalPages}">
-                    <li><a href="managerR?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
-                    </c:if>
-            </ul>
-
-
-            <a href="Manager/manager.jsp"><button type="button" class="btn-primary">Back to home</button></a>
+                <a href="Manager/manager.jsp"><button type="button" class="btn-primary">Back to home</button></a>
+            </div>
         </div>
-
     </body>
 </html>
-

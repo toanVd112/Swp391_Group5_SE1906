@@ -1,5 +1,13 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="model.Account" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    Account account = (Account) session.getAttribute("account");
+    if (account == null || !"Manager".equals(account.getRole())) {
+        response.sendRedirect("../login_2.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,20 +15,22 @@
         <title>Manage Accounts</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
-            * {
-                box-sizing: border-box;
+            body {
                 font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                background-color: #f4f7f9;
             }
 
-            body {
-                background-color: #f4f7f9;
-                margin: 0;
-                padding: 20px;
+            .main-content {
+                margin-left: 260px;
+                padding: 30px;
+                width: calc(100% - 260px);
+                box-sizing: border-box;
             }
 
             .container {
-                max-width: 1100px;
-                margin: auto;
                 background-color: #fff;
                 padding: 30px;
                 border-radius: 10px;
@@ -45,6 +55,7 @@
                 border-radius: 5px;
                 text-decoration: none;
                 font-weight: bold;
+                cursor: pointer;
             }
 
             table {
@@ -67,30 +78,10 @@
                 background-color: #f1f1f1;
             }
 
-            .custom-checkbox input[type="checkbox"] {
-                width: 16px;
-                height: 16px;
-            }
-
-            .material-icons {
-                font-size: 18px;
-                vertical-align: middle;
-            }
-
-            a.edit, a.delete {
-                margin: 0 5px;
-                color: #2980b9;
-                text-decoration: none;
-            }
-
-            a.delete {
-                color: #e74c3c;
-            }
-
             .pagination {
                 display: flex;
                 justify-content: center;
-                list-style-type: none;
+                list-style: none;
                 padding: 0;
                 margin-top: 20px;
             }
@@ -100,7 +91,6 @@
             }
 
             .pagination a {
-                display: block;
                 padding: 8px 12px;
                 text-decoration: none;
                 background-color: #ecf0f1;
@@ -144,11 +134,6 @@
                 border-radius: 10px;
             }
 
-            .modal-header h4 {
-                margin: 0;
-                color: #2c3e50;
-            }
-
             .form-group {
                 margin-top: 15px;
             }
@@ -190,38 +175,50 @@
                 background-color: #2ecc71;
                 color: white;
             }
+
+            a.edit, a.delete {
+                margin: 0 5px;
+                color: #2980b9;
+                text-decoration: none;
+            }
+
+            a.delete {
+                color: #e74c3c;
+            }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="table-title">
-                <h2>Manage <b>Accounts</b></h2>
-                <a  onclick="openModal()">+ Add New Account</a>
-            </div>
-            <form method="get" action="managerAccount">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <div>
-                        <input type="text" name="search" placeholder="Search by username..." value="${param.search}" 
-                               style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                        <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
-                        <a href="managerAccount" 
-                           style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
-                            Reset
-                        </a>
-                    </div>
-                    <div>
-                        <select name="sort" onchange="this.form.submit()" 
-                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                            <option value="">Sort by Created Date</option>
-                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest First</option>
-                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest First</option>
-                        </select>
-                    </div>
+
+        <%@ include file="sidebar.jsp" %>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="table-title">
+                    <h2>Manage <b>Accounts</b></h2>
+                    <a onclick="openModal()">+ Add New Account</a>
                 </div>
-            </form>
-
-
-            <table>
+                <form method="get" action="managerAccount">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <div>
+                            <input type="text" name="search" placeholder="Search by username..." value="${param.search}" 
+                                   style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
+                            <a href="managerAccount" 
+                               style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
+                                Reset
+                            </a>
+                        </div>
+                        <div>
+                            <select name="sort" onchange="this.form.submit()" 
+                                    style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <option value="">Sort by Created Date</option>
+                                <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest First</option>
+                                <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest First</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                            <table>
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="selectAll"></th>
@@ -334,7 +331,14 @@
 
             </div>
         </div>
+                <!-- Filter form, table and pagination here (không thay đổi) -->
+                <%-- giữ nguyên toàn bộ phần form, table, modal như bạn đã viết --%>
 
+                <!-- Copy phần còn lại ở đây... -->
+            </div>
+        </div>
+
+        <!-- Include your modal JS -->
         <script>
             function openModal() {
                 document.getElementById("addAccountModal").style.display = "block";
@@ -342,14 +346,13 @@
             function closeModal() {
                 document.getElementById("addAccountModal").style.display = "none";
             }
-
-            // Close modal when clicking outside
             window.onclick = function (event) {
-                var modal = document.getElementById("addAccountModal");
+                const modal = document.getElementById("addAccountModal");
                 if (event.target === modal) {
                     modal.style.display = "none";
                 }
             };
         </script>
+
     </body>
 </html>

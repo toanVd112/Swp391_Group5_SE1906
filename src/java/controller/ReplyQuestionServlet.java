@@ -4,7 +4,10 @@
  */
 package controller;
 
+import DAO.AccountDAO;
+import DAO.ActivityLogDAO;
 import DAO.CustomerQuestionDAO;
+import controller.managerAccount.AddAccount;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,8 +15,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Account;
 import model.CustomerQuestion;
 
 /**
@@ -85,7 +92,14 @@ public class ReplyQuestionServlet extends HttpServlet {
 
         CustomerQuestionDAO dao = new CustomerQuestionDAO();
         dao.replyToQuestion(questionID, adminReply);
-
+        Account currentUser = (Account) request.getSession().getAttribute("account");
+        int newID = new AccountDAO().getLatestAccountID();
+        ActivityLogDAO logDAO = new ActivityLogDAO();
+        try {
+            logDAO.logAction(currentUser.getAccountID(), "Answer", "accounts", newID);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
+        }
         response.sendRedirect("ReplyQuestionServlet");
     }
 }
