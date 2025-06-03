@@ -16,7 +16,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountDAO extends DBConnect{
+public class AccountDAO extends DBConnect {
 
     public boolean insertAccount(Account account) {
         String sql = "INSERT INTO accounts (Username, Password, Role, IsActive, CreatedAt, Email) VALUES (?, ?, ?, ?, NOW(), ?)";
@@ -165,7 +165,7 @@ public class AccountDAO extends DBConnect{
         return null;
     }
 
-    public void editAccount(String username, String password, String role, boolean isActive, String email,String aid) {
+    public void editAccount(String username, String password, String role, boolean isActive, String email, String aid) {
         String sql = "Update accounts\n"
                 + "Set Username = ?,"
                 + "Password = ?,"
@@ -181,10 +181,51 @@ public class AccountDAO extends DBConnect{
             ps.setString(5, email);
             ps.setString(6, aid);
             ps.executeUpdate();
-            
-        
+
         } catch (SQLException e) {
         }
+    }
+
+    public List<Account> getFilteredAccounts(String search, String sort) {
+        List<Account> list = new ArrayList<>();
+        String sql = "SELECT * FROM accounts WHERE 1=1 AND Role IN ('Staff', 'Receptionist')";
+
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+
+        if (hasSearch) {
+            sql += " AND username LIKE ?";
+        }
+
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY createdAt ASC";
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY createdAt DESC";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Chỉ set parameter nếu có `search`
+            if (hasSearch) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Account(
+                        rs.getInt("AccountID"),
+                        rs.getString("Username"),
+                        rs.getString("Password"),
+                        rs.getString("Role"),
+                        rs.getBoolean("IsActive"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getString("Email")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     public static void main(String[] args) {
