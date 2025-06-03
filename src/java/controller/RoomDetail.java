@@ -5,6 +5,8 @@
 
 package controller;
 
+import DAO.PageContentDAO;
+import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +14,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import model.PageContent;
+import model.Room;
 
 /**
  *
@@ -52,11 +58,55 @@ public class RoomDetail extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        
+        try {
+            String idRaw = request.getParameter("id");
+            
+            int roomId = Integer.parseInt(idRaw);
+
+            RoomDAO roomDAO = new RoomDAO();
+            PageContentDAO contentDAO = new PageContentDAO();
+//            AmenityDAO amenityDAO = new AmenityDAO();
+
+            // Lấy thông tin phòng
+            Room room = roomDAO.getRoomById(roomId);
+            
+
+            // Tiện ích theo loại phòng
+//            room.setAmenities(amenityDAO.getAmenitiesByRoomTypeId(room.getRoomType().getTypeId()));
+
+            // Nội dung chính sách dùng chung
+            List<PageContent> contents = contentDAO.getPageContentsForGeneralUse();
+
+            List<PageContent> policies = new ArrayList<>();
+            List<PageContent> importantInfos = new ArrayList<>();
+            List<PageContent> faqs = new ArrayList<>();
+
+            for (PageContent pc : contents) {
+                switch (pc.getPageSection().toLowerCase()) {
+                    case "policy": policies.add(pc); break;
+                    case "important_info": importantInfos.add(pc); break;
+                    case "faq": faqs.add(pc); break;
+                }
+            }
+
+            // Đưa dữ liệu sang JSP
+            request.setAttribute("room", room);
+            request.setAttribute("policies", policies);
+            request.setAttribute("importantInfos", importantInfos);
+            request.setAttribute("faqs", faqs);
+
+            request.getRequestDispatcher("/rooms-details.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý");
+        }
+    }
+
+
 
     /** 
      * Handles the HTTP <code>POST</code> method.

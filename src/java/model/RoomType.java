@@ -14,16 +14,18 @@ public class RoomType {
     private String description;
     private double basePrice;
     private String imageUrl;
+    private String roomDetail; // mới thêm
 
     public RoomType() {
     }
 
-    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl) {
+    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail) {
         this.roomtypeID = roomtypeID;
         this.name = name;
         this.description = description;
         this.basePrice = basePrice;
         this.imageUrl = imageUrl;
+        this.roomDetail = roomDetail;
     }
 
     public int getRoomtypeID() {
@@ -66,4 +68,11 @@ public class RoomType {
         this.imageUrl = imageUrl;
     }
 
-}    
+    public String getRoomDetail() {
+        return roomDetail;
+    }
+
+    public void setRoomDetail(String roomDetail) {
+        this.roomDetail = roomDetail;
+    }
+}
