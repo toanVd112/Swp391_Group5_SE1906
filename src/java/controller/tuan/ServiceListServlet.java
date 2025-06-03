@@ -5,13 +5,15 @@
 
 package controller.tuan;
 
+import DAO.ServiceDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import model.Service;
 
 /**
  *
@@ -30,8 +32,10 @@ public class ServiceListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        List<Service> services = new ServiceDAO().getAll();
         
-        
+        request.setAttribute("serviceList", services);
+        request.getRequestDispatcher("/Manager/ServiceList.jsp").forward(request, response);
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
