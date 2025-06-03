@@ -1,11 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="model.Account" %>
+<%@ page import="model.Service" %>
+<%@ page import="DAO.ServiceDAO" %>
+<%@ page import="java.util.List" %>
 <%
-  Account account = (Account) session.getAttribute("account");
-  if (account == null || !"Manager".equals(account.getRole())) {
-      response.sendRedirect("../login_2.jsp");
-      return;
-  }
+    Account account = (Account) session.getAttribute("account");
+    if (account == null || !"Manager".equals(account.getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+    
+    List<String> types = new ServiceDAO().getAllDistinctServiceType();
+    request.setAttribute("serviceTypes", types);
 %>
 <html>
 <head>
@@ -105,7 +113,7 @@
 <body>
     <div class="container">
         <h2>Thêm Dịch vụ mới</h2>
-        <form action="${pageContext.request.contextPath}/services" method="post">
+       <form action="${pageContext.request.contextPath}/addService" method="post">
             <div class="form-group">
                 <label for="name">Tên dịch vụ:</label>
                 <input type="text" id="name" name="name" required>
@@ -116,21 +124,22 @@
             </div>
             <div class="form-group">
                 <label for="price">Giá:</label>
-                <input type="number" id="price" step="0.01" name="price" required>
+                <input type="number" id="price" step="1" name="price" required>
             </div>
             <div class="form-group">
                 <label for="status">Trạng thái:</label>
                 <select id="status" name="status">
-                    <option value="Available" selected>Hoạt động</option>
-                    <option value="Not Available">Ngừng</option>
+                    <option value="1" selected>Hoạt động</option>
+                    <option value="0">Ngừng Hoạt động</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="serviceType">Loại dịch vụ:</label>
                 <select id="serviceType" name="serviceType">
                     <option value="">Chọn loại</option>
-                    <option value="everyone">Everyone</option>
-                    <option value="vip">VIP</option>
+                    <c:forEach var="type" items="${serviceTypes}">  <%-- items="${serviceTypes}" --%>
+            <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
+        </c:forEach>
                 </select>
             </div>
             <div class="form-group">
@@ -139,7 +148,7 @@
             </div>
             <input type="submit" value="Lưu">
         </form>
-        <a class="back-link" href="${pageContext.request.contextPath}/services">← Quay lại danh sách</a>
+        <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Quay lại danh sách</a>
     </div>
 </body>
 </html>

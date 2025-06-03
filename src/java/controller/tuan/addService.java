@@ -1,126 +1,156 @@
-///*
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-// * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
-// */
-//package controller.tuan;
-//
-//import DAO.ServiceDAO;
-//import java.io.IOException;
-//import java.io.PrintWriter;
-//import jakarta.servlet.ServletException;
-//import jakarta.servlet.annotation.WebServlet;
-//import jakarta.servlet.http.HttpServlet;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.HttpServletResponse;
-//
-//import java.math.BigDecimal;
-//
-//import java.sql.SQLException;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-//import model.Service;
-//
-///**
-// *
-// * @author admin
-// */
-//@WebServlet(name = "addService", urlPatterns = {"/addService"})
-//public class addService extends HttpServlet {
-//
-//    /**
-//     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-//     * methods.
-//     *
-//     * @param request servlet request
-//     * @param response servlet response
-//     * @throws ServletException if a servlet-specific error occurs
-//     * @throws IOException if an I/O error occurs
-//     */
-//    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        response.setContentType("text/html;charset=UTF-8");
-//        try (PrintWriter out = response.getWriter()) {
-//            /* TODO output your page here. You may use following sample code. */
-//            out.println("<!DOCTYPE html>");
-//            out.println("<html>");
-//            out.println("<head>");
-//            out.println("<title>Servlet addService</title>");
-//            out.println("</head>");
-//            out.println("<body>");
-//            out.println("<h1>Servlet addService at " + request.getContextPath() + "</h1>");
-//            out.println("</body>");
-//            out.println("</html>");
-//        }
-//    }
-//
-//    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-//    /**
-//     * Handles the HTTP <code>GET</code> method.
-//     *
-//     * @param request servlet request
-//     * @param response servlet response
-//     * @throws ServletException if a servlet-specific error occurs
-//     * @throws IOException if an I/O error occurs
-//     */
-//    
-//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        try {
-//            ServiceDAO dao = new ServiceDAO();
-//            String idStr = request.getParameter("id");
-//
-//            // Lấy các giá trị từ request
-//            String name = request.getParameter("serviceName");
-//            String description = request.getParameter("description");
-//            String priceStr = request.getParameter("price");
-//            String statusStr = request.getParameter("status");
-//            String serviceType = request.getParameter("serviceType");
-//            String createdBy = request.getParameter("createdBy");
-//            String lastUpdatedBy = request.getParameter("lastUpdatedBy");
-//            String serviceImage = request.getParameter("serviceImage");
-//
-//            // Khởi tạo đối tượng Service
-//            Service service = new Service();
-//            service.setServiceName(name);
-//            service.setDescription(description);
-//            service.setPrice(new BigDecimal(priceStr));
-//            service.setStatus("1".equals(statusStr)); // true nếu status = "1", false nếu khác
-//            service.setServiceType(serviceType);
-//            service.setCreatedBy(createdBy);
-//            service.setLastUpdatedBy(lastUpdatedBy);
-//            service.setServiceImage(serviceImage);
-//
-//            if (idStr == null || idStr.trim().isEmpty()) {
-//                // Insert mới
-//                dao.insert(service);
-//            } else {
-//                // Cập nhật
-//                service.setServiceID(Integer.parseInt(idStr));
-//                dao.update(service);
-//            }
-//
-//            // Chuyển hướng về trang danh sách
-//            response.sendRedirect("services");
-//
-//        } catch (SQLException e) {
-//            throw new ServletException("SQL Error: " + e.getMessage(), e);
-//        } catch (Exception e) {
-//            Logger.getLogger(addService.class.getName()).log(Level.SEVERE, null, e);
-//            throw new ServletException("Unexpected Error: " + e.getMessage(), e);
-//        }
-//    }
-//    /**
-//     * Handles the HTTP <code>POST</code> method.
-//     *
-//     * @param request servlet request
-//     * @param response servlet response
-//     * @throws ServletException if a servlet-specific error occurs
-//     * @throws IOException if an I/O error occurs
-//     */
-//
-//    /**
-//     * Returns a short description of the servlet.
-//     *
-//     * @return a String containing servlet description
-//     */
-//}
+package controller.tuan;
+
+import DAO.ServiceDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.Account; // Cần import model.Account
+import model.Service; // Cần import model.Service
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+// Đổi tên class và WebServlet name để tránh trùng với tên package và rõ ràng hơn
+@WebServlet(name = "AddServiceServlet", urlPatterns = {"/addService"})
+public class addService extends HttpServlet {
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * Chuyển hướng đến trang JSP để hiển thị form thêm dịch vụ.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        // Kiểm tra quyền truy cập của người dùng
+        if (session == null || session.getAttribute("account") == null) {
+            response.sendRedirect(request.getContextPath() + "/login_2.jsp"); // Chuyển đến trang đăng nhập
+            return;
+        }
+        Account account = (Account) session.getAttribute("account");
+        if (!"Manager".equals(account.getRole())) {
+            // Nếu không phải Manager, có thể chuyển hướng về trang chủ hoặc trang lỗi quyền
+            response.sendRedirect(request.getContextPath() + "/login_2.jsp");
+            return;
+        }
+
+        // Đường dẫn đến addService.jsp (giả sử nằm trong /manager/addService.jsp)
+        // Nếu JSP nằm ở thư mục gốc webapp, dùng "/addService.jsp"
+        request.getRequestDispatcher("../Manager/addService.jsp").forward(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * Xử lý dữ liệu từ form thêm dịch vụ và lưu vào cơ sở dữ liệu.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8"); // Đảm bảo xử lý đúng tiếng Việt
+        response.setContentType("text/html;charset=UTF-8");
+
+        HttpSession session = request.getSession(false);
+        Account currentAccount = null;
+        if (session != null) {
+            currentAccount = (Account) session.getAttribute("account");
+        }
+
+        // Kiểm tra đăng nhập và quyền
+        if (currentAccount == null || !"Manager".equals(currentAccount.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login_2.jsp");
+            return;
+        }
+        // Giả sử Account model có getUsername() hoặc một phương thức tương tự để lấy tên người dùng
+        String loggedInUser = currentAccount.getUsername();
+
+        // Lấy thông tin từ form
+        String name = request.getParameter("name");
+        String description = request.getParameter("description");
+        String priceStr = request.getParameter("price");
+        String status = request.getParameter("status");
+        String serviceType = request.getParameter("serviceType");
+        String serviceImage = request.getParameter("serviceImage");
+
+        String jspPath = "../manager/addService.jsp"; // Đường dẫn tới JSP để forward lại nếu có lỗi
+
+        // Validate đầu vào cơ bản
+        if (name == null || name.trim().isEmpty() || priceStr == null || priceStr.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Tên dịch vụ và giá là bắt buộc.");
+            request.getRequestDispatcher(jspPath).forward(request, response);
+            return;
+        }
+
+        int price;
+        try {
+            // JSP có step="0.01", nhưng DAO và model Service dùng int cho price.
+            // Nếu price có thể là số thập phân, cần sửa model và DAO (dùng BigDecimal).
+            // Hiện tại, chuyển đổi sang int (làm tròn xuống nếu có phần thập phân).
+            price = (int) Double.parseDouble(priceStr);
+            if (price < 0) {
+                 request.setAttribute("errorMessage", "Giá không được là số âm.");
+                 request.getRequestDispatcher(jspPath).forward(request, response);
+                 return;
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Giá không hợp lệ. Vui lòng nhập một số.");
+            request.getRequestDispatcher(jspPath).forward(request, response);
+            return;
+        }
+
+        // Tạo đối tượng Service
+        Service newService = new Service();
+        newService.setName(name);
+        newService.setDescription(description);
+        newService.setPrice(price);
+        newService.setStatus(status);
+        newService.setType(serviceType);
+        newService.setServiceImage(serviceImage); // URL hình ảnh
+        newService.setCreateDate(LocalDateTime.now());
+        newService.setLastUpdateDate(LocalDateTime.now());
+        newService.setCreatedBy(loggedInUser);
+        newService.setLastUpdateBy(loggedInUser);
+
+        ServiceDAO serviceDAO = new ServiceDAO();
+        boolean success = false;
+        try {
+            success = serviceDAO.addService(newService);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log lỗi server
+            request.setAttribute("errorMessage", "Lỗi hệ thống khi thêm dịch vụ: " + e.getMessage());
+            request.getRequestDispatcher(jspPath).forward(request, response);
+            return;
+        }
+
+        if (success) {
+            // Chuyển hướng đến trang danh sách dịch vụ với thông báo thành công
+            // Giả sử URL của trang danh sách là "/services/list" (theo link trong JSP)
+            response.sendRedirect(request.getContextPath() + "/services/list?addStatus=success");
+        } else {
+            request.setAttribute("errorMessage", "Thêm dịch vụ mới thất bại. Vui lòng thử lại.");
+            request.getRequestDispatcher(jspPath).forward(request, response);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Servlet để thêm dịch vụ mới";
+    }
+}

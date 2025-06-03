@@ -4,16 +4,19 @@
 <%@ page import="model.Account" %>
 <%@ page import="model.Service" %>
 <%@ page import="DAO.ServiceDAO" %>
+<%@ page import="java.util.List" %>
 <%
     Account account = (Account) session.getAttribute("account");
     if (account == null || !"Manager".equals(account.getRole())) {
-        response.sendRedirect("../login_2.jsp");
+        response.sendRedirect("../login.jsp");
         return;
     }
     
     int id = Integer.parseInt(request.getParameter("id"));
-    Service s = new ServiceDAO().getById(id);
+    Service s = new ServiceDAO().getServiceByID(id);
     request.setAttribute("service", s);
+    List<String> types = new ServiceDAO().getAllDistinctServiceType();
+    request.setAttribute("serviceTypes", types);
 %>
 <html>
 <head>
@@ -113,12 +116,12 @@
 <body>
     <div class="container">
         <h2>Sửa Dịch vụ</h2>
-        <form action="${pageContext.request.contextPath}/services" method="post">
-            <input type="hidden" name="action" value="update">
-            <input type="hidden" name="id" value="${service.serviceID}" />
+<form action="${pageContext.request.contextPath}/editService" method="post">
+    <input type="hidden" name="id" value="${service.id}" />
+            <input type="hidden" name="id" value="${service.id}" />
             <div class="form-group">
                 <label for="name">Tên dịch vụ:</label>
-                <input type="text" id="name" name="name" value="${service.serviceName}" required>
+                <input type="text" id="name" name="name" value="${service.name}" required>
             </div>
             <div class="form-group">
                 <label for="description">Mô tả:</label>
@@ -126,30 +129,31 @@
             </div>
             <div class="form-group">
                 <label for="price">Giá:</label>
-                <input type="number" id="price" step="0.01" name="price" value="<fmt:formatNumber value='${service.price}' pattern='#0.00'/>" required>
+                <input type="number" id="price" step="1" name="price" value="<fmt:formatNumber value='${service.price}' pattern='#0'/>" required>
             </div>
             <div class="form-group">
                 <label for="status">Trạng thái:</label>
                 <select id="status" name="status">
-                    <option value="Available" ${service.availabilityStatus == 'Available' ? 'selected' : ''}>Hoạt động</option>
-                    <option value="Not Available" ${service.availabilityStatus == 'Not Available' ? 'selected' : ''}>Ngừng</option>
+                    <option value="1" ${service.status == 1 ? 'selected' : ''}>Hoạt động</option>
+                    <option value="0" ${service.status == 0 ? 'selected' : ''}>Ngừng Hoạt Động</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="serviceType">Loại dịch vụ:</label>
-                <select id="serviceType" name="serviceType">
-                    <option value="">Chọn loại</option>
-                    <option value="everyone" ${service.serviceType == 'everyone' ? 'selected' : ''}>Everyone</option>
-                    <option value="vip" ${service.serviceType == 'vip' ? 'selected' : ''}>VIP</option>
-                </select>
-            </div>
+<div class="form-group">
+    <label for="serviceType">Loại dịch vụ:</label>
+    <select id="serviceType" name="serviceType" required>
+        <option value="">Chọn loại</option>
+        <c:forEach var="type" items="${serviceTypes}">  <%-- items="${serviceTypes}" --%>
+            <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
+        </c:forEach>
+    </select>
+</div>
             <div class="form-group">
                 <label for="serviceImage">Hình ảnh:</label>
                 <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}">
             </div>
             <input type="submit" value="Cập nhật">
         </form>
-        <a class="back-link" href="${pageContext.request.contextPath}/services">← Quay lại danh sách</a>
+        <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Quay lại danh sách</a>
     </div>
 </body>
 </html>

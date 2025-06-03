@@ -70,7 +70,7 @@ public class Logout extends HttpServlet {
                 String role = acc.getRole();
 
                 if (role != null && (role.equals("Manager") || role.equals("Staff") || role.equals("Receptionist"))) {
-                    redirectURL = "login_2.jsp";
+                    redirectURL = "login.jsp";
                 }
             }
 

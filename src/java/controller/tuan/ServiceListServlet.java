@@ -33,7 +33,9 @@ public class ServiceListServlet extends HttpServlet {
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         List<Service> services = new ServiceDAO().getAll();
+        List<String> types = new ServiceDAO().getAllDistinctServiceType();
         
+        request.setAttribute("serviceTypeList", types);
         request.setAttribute("serviceList", services);
         request.getRequestDispatcher("/Manager/ServiceList.jsp").forward(request, response);
     } 

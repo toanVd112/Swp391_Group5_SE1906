@@ -175,17 +175,18 @@
                             <input type="text" class="form-control" placeholder="Search..." style="width: 200px;">
                             <select class="form-select" style="width: 150px;">
                                 <option value="">Filter by Type</option>
-                                <option value="everyone">Mọi người</option>
-                                <option value="vip">VIP</option>
+                                <c:forEach items="${serviceTypeList}" var="t">
+                                    <option value="${t}">${t}</option>
+                                </c:forEach>
                             </select>
                             <select class="form-select" style="width: 150px;">
                                 <option value="">Filter by Status</option>
                                 <option value="available">Available</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="not available">Not Available</option>
                             </select>
                         </div>
                         <!-- Create Data Button -->
-                        <button class="btn btn-success btn-sm">Create Data</button>
+<button class="btn btn-success btn-sm" onclick="window.location.href = '../Manager/addService.jsp'">Add New </button>
                     </div>
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -206,13 +207,18 @@
                                     <td>${s.id}</td>
                                     <td>${s.name}</td>
                                     <td>${s.price}</td>
-                                    <td>${s.type}</td>
-                                    <td>${s.status}</td>
-                                    <td>${s.createdBy}</td>
+                                    <td>${s.type == null ? "Null" : s.type}</td>
+                                    <td>${s.status == 1 ? "Available" : "Not Available"}</td>
+                                    <td>${s.createdBy == null ? "Null" : s.createdBy}</td>
                                     <td>${s.createDate}</td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm me-1">Edit</button>
-                                        <button class="btn btn-danger btn-sm">Inactive</button>
+                                       <button class="btn btn-primary btn-sm me-1" onclick="window.location.href = '../Manager/editService.jsp?id=${s.id}'">Edit</button>
+                                        <c:if test="${s.status == 1}">
+                                            <button class="btn btn-danger btn-sm" onclick="toggleStatus(${s.id})">Inactive</button>
+                                        </c:if>
+                                        <c:if test="${s.status == 0}">
+                                            <button class="btn btn-success btn-sm" onclick="toggleStatus(${s.id})">Active</button>
+                                        </c:if>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -227,23 +233,23 @@
             <ul class="pagination">
                 <li class="page-item"><a class="page-link" href="#">««</a></li>
                 <li class="page-item"><a class="page-link" href="#">«</a></li>
-<!--                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+                <!--                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>-->
                 <li class="page-item active"><a class="page-link" href="#">1</a></li>
-<!--                <li class="page-item"><a class="page-link" href="#">5</a></li>
-                <li class="page-item"><a class="page-link" href="#">6</a></li>
-                <li class="page-item"><a class="page-link" href="#">7</a></li>
-                <li class="page-item"><a class="page-link" href="#">8</a></li>
-                <li class="page-item"><a class="page-link" href="#">9</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-                <li class="page-item"><a class="page-link" href="#">11</a></li>
-                <li class="page-item"><a class="page-link" href="#">12</a></li>
-                <li class="page-item"><a class="page-link" href="#">13</a></li>
-                <li class="page-item"><a class="page-link" href="#">14</a></li>
-                <li class="page-item"><a class="page-link" href="#">15</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item"><a class="page-link" href="#">17</a></li>-->
+                <!--                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                <li class="page-item"><a class="page-link" href="#">6</a></li>
+                                <li class="page-item"><a class="page-link" href="#">7</a></li>
+                                <li class="page-item"><a class="page-link" href="#">8</a></li>
+                                <li class="page-item"><a class="page-link" href="#">9</a></li>
+                                <li class="page-item"><a class="page-link" href="#">10</a></li>
+                                <li class="page-item"><a class="page-link" href="#">11</a></li>
+                                <li class="page-item"><a class="page-link" href="#">12</a></li>
+                                <li class="page-item"><a class="page-link" href="#">13</a></li>
+                                <li class="page-item"><a class="page-link" href="#">14</a></li>
+                                <li class="page-item"><a class="page-link" href="#">15</a></li>
+                                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                                <li class="page-item"><a class="page-link" href="#">17</a></li>-->
                 <li class="page-item"><a class="page-link" href="#">»</a></li>
                 <li class="page-item"><a class="page-link" href="#">»»</a></li>
             </ul>
@@ -251,4 +257,29 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
+    <script>
+function toggleStatus(serviceId) {
+
+    // Gửi request để cập nhật trạng thái
+    fetch('toggle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: serviceId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update status');
+        } else {
+            alert("Update Status Success");
+        }
+    });
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+</script>
 </html>
