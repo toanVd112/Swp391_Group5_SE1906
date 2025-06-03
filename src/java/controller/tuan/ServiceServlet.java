@@ -58,7 +58,7 @@ public class ServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-<<<<<<< HEAD
+
         String action = request.getParameter("action");
         try {
             Service service = new Service();
@@ -84,8 +84,6 @@ public class ServiceServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             throw new ServletException("Invalid number format", e);
         }
-=======
-     
->>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
+
     }
 }

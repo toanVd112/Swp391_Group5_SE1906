@@ -12,11 +12,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-<<<<<<< HEAD
+
 import java.math.BigDecimal;
-=======
->>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
+
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Service;
 
 /**
@@ -61,58 +62,53 @@ public class addService extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+    
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             ServiceDAO dao = new ServiceDAO();
             String idStr = request.getParameter("id");
-            String name = request.getParameter("name");
+
+            // Lấy các giá trị từ request
+            String name = request.getParameter("serviceName");
             String description = request.getParameter("description");
-            double price = Double.parseDouble(request.getParameter("price"));
-            boolean status = "1".equals(request.getParameter("status"));
+            String priceStr = request.getParameter("price");
+            String statusStr = request.getParameter("status");
+            String serviceType = request.getParameter("serviceType");
+            String createdBy = request.getParameter("createdBy");
+            String lastUpdatedBy = request.getParameter("lastUpdatedBy");
+            String serviceImage = request.getParameter("serviceImage");
 
-<<<<<<< HEAD
+            // Khởi tạo đối tượng Service
             Service service = new Service();
-            service.setServiceID(Integer.parseInt(request.getParameter("serviceID")));
-            service.setServiceName(request.getParameter("serviceName"));
-            service.setPrice(new BigDecimal(request.getParameter("price")));
-            service.setDescription(request.getParameter("description"));
-            service.setAvailabilityStatus(request.getParameter("availabilityStatus"));
-            service.setServiceType(request.getParameter("serviceType"));
-            // CreatedDate and LastUpdatedDate are set in DB (CURRENT_TIMESTAMP) or null
-            service.setCreatedBy(request.getParameter("createdBy"));
-            service.setLastUpdatedBy(request.getParameter("lastUpdatedBy"));
-            service.setServiceImage(request.getParameter("serviceImage"));
+            service.setServiceName(name);
+            service.setDescription(description);
+            service.setPrice(new BigDecimal(priceStr));
+            service.setStatus("1".equals(statusStr)); // true nếu status = "1", false nếu khác
+            service.setServiceType(serviceType);
+            service.setCreatedBy(createdBy);
+            service.setLastUpdatedBy(lastUpdatedBy);
+            service.setServiceImage(serviceImage);
 
-            if (idStr == null || idStr.isEmpty()) {
+            if (idStr == null || idStr.trim().isEmpty()) {
+                // Insert mới
                 dao.insert(service);
             } else {
+                // Cập nhật
                 service.setServiceID(Integer.parseInt(idStr));
                 dao.update(service);
-=======
-            Service s = new Service();
-            s.setServiceName(name);
-            s.setDescription(description);
-            s.setPrice(price);
-            s.setStatus(status);
-
-            if (idStr == null || idStr.isEmpty()) {
-                dao.insert(s);
-            } else {
-                s.setServiceID(Integer.parseInt(idStr));
-                dao.update(s);
->>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
             }
 
+            // Chuyển hướng về trang danh sách
             response.sendRedirect("services");
+
         } catch (SQLException e) {
             throw new ServletException("SQL Error: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new ServletException("Error: " + e.getMessage(), e);
+            Logger.getLogger(addService.class.getName()).log(Level.SEVERE, null, e);
+            throw new ServletException("Unexpected Error: " + e.getMessage(), e);
         }
     }
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -121,24 +117,10 @@ public class addService extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-<<<<<<< HEAD
-
-=======
-        processRequest(request, response);
->>>>>>> d0e996313656d347c86c0d7c1d6d2accd17cfc86
-    }
 
     /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
