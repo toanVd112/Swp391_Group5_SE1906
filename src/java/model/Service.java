@@ -6,23 +6,32 @@ public class Service {
     private int id;
     private String name;
     private int price;
-    private String type;
+    private String description;
     private String status;
-    private String createdBy;
+    private String type;
     private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private String createdBy;
+    private String lastUpdateBy;
+    private String serviceImage;
 
-    // Constructor
-    public Service(int id, String name, int price, String type, String status, String createdBy, LocalDateTime createDate) {
+    public Service() {
+    }
+
+    public Service(int id, String name, int price, String description, String status, String type, LocalDateTime createDate, LocalDateTime lastUpdateDate, String createdBy, String lastUpdateBy, String serviceImage) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.type = type;
+        this.description = description;
         this.status = status;
-        this.createdBy = createdBy;
+        this.type = type;
         this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.createdBy = createdBy;
+        this.lastUpdateBy = lastUpdateBy;
+        this.serviceImage = serviceImage;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -47,12 +56,12 @@ public class Service {
         this.price = price;
     }
 
-    public String getType() {
-        return type;
+    public String getDescription() {
+        return description;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStatus() {
@@ -63,12 +72,12 @@ public class Service {
         this.status = status;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
+    public String getType() {
+        return type;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public LocalDateTime getCreateDate() {
@@ -78,4 +87,38 @@ public class Service {
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getLastUpdateBy() {
+        return lastUpdateBy;
+    }
+
+    public void setLastUpdateBy(String lastUpdateBy) {
+        this.lastUpdateBy = lastUpdateBy;
+    }
+
+    public String getServiceImage() {
+        return serviceImage;
+    }
+
+    public void setServiceImage(String serviceImage) {
+        this.serviceImage = serviceImage;
+    }
+
+    
 }
