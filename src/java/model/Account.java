@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Account {
+public class Account implements Serializable{
 
     private int accountID;
     private String username;

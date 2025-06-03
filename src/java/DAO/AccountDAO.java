@@ -252,6 +252,52 @@ public class AccountDAO extends DBConnect {
 
         return 0;
     }
+    
+    public boolean updatePasswordByEmail(String email, String hashedPassword) {
+        String sql = "UPDATE Accounts SET Password = ? WHERE Email = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword);
+            ps.setString(2, email);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public Account getAccountByEmail(String email) {
+        String sql = "SELECT * FROM accounts WHERE Email = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Account(
+                    rs.getInt("AccountID"),
+                    rs.getString("Username"),
+                    rs.getString("Password"),
+                    rs.getString("Role"),
+                    rs.getBoolean("IsActive"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getString("Email")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public String getEmailByAccountId(int accountId) {
+        String sql = "SELECT Email FROM Accounts WHERE AccountID = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Email");
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }   
 
     public static void main(String[] args) {
         AccountDAO dao = new AccountDAO();
@@ -260,9 +306,3 @@ public class AccountDAO extends DBConnect {
     }
 
 }
-
-//test commit
-//nhap pass vô hạn 
-//commit 1
-//commit 2
-//commit test 

@@ -5,6 +5,7 @@
 
 package controller;
 
+import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.TokenDAO;
+import model.TokenInfo;
 
 /**
  *
@@ -55,6 +58,27 @@ public class resetPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String token = request.getParameter("token");
+        if (token == null || token.trim().isEmpty()) {
+            request.setAttribute("mess", "Link không hợp lệ!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+
+        // Lấy token từ DB
+        TokenInfo tokenInfo = new TokenDAO().getTokenInfo(token);
+
+        // Kiểm tra token
+        if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
+            request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+
+        // Lấy email từ accountId
+        String email = new AccountDAO().getEmailByAccountId(tokenInfo.getAccountId());
+        request.setAttribute("email", email);
+        request.setAttribute("token", token); // giữ lại token cho POST
         request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
     } 
 
@@ -68,7 +92,49 @@ public class resetPassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String token = request.getParameter("token");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String confirm = request.getParameter("confirm_password");
+
+        request.setAttribute("email", email);
+        request.setAttribute("token", token);
+
+        if (password == null || confirm == null || !password.equals(confirm)) {
+            request.setAttribute("mess", "Mật khẩu xác nhận không khớp!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+        if (!Validation.validatePassword(password)) {
+            request.setAttribute("mess", "Mật khẩu phải tối thiểu 6 ký tự.");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+
+        TokenInfo tokenInfo = new TokenDAO().getTokenInfo(token);
+        if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
+            request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra email có khớp với token không
+        String dbEmail = new AccountDAO().getEmailByAccountId(tokenInfo.getAccountId());
+        if (!email.equalsIgnoreCase(dbEmail)) {
+            request.setAttribute("mess", "Email không hợp lệ!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+
+        // Cập nhật password (nên hash mật khẩu)
+        boolean ok = new AccountDAO().updatePasswordByEmail(email, password);
+        if (ok) {
+            new TokenDAO().markTokenAsUsed(token);
+            response.sendRedirect("login.jsp?reset=success");
+        } else {
+            request.setAttribute("mess", "Có lỗi xảy ra, vui lòng thử lại!");
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+        }
     }
 
     /** 
