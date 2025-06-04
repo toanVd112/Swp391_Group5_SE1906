@@ -59,7 +59,10 @@ public class resetPassword extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         String token = request.getParameter("token");
+        System.out.println("[DEBUG] Token param: " + token);
+        
         if (token == null || token.trim().isEmpty()) {
+            System.out.println("[DEBUG] Token is null or empty");
             request.setAttribute("mess", "Link không hợp lệ!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
@@ -69,16 +72,27 @@ public class resetPassword extends HttpServlet {
         TokenInfo tokenInfo = new TokenDAO().getTokenInfo(token);
 
         // Kiểm tra token
+        System.out.println("[DEBUG] TokenInfo: " + tokenInfo);
+        if (tokenInfo != null) {
+            System.out.println("[DEBUG] tokenInfo.token = " + tokenInfo.getToken());
+            System.out.println("[DEBUG] tokenInfo.isUsed = " + tokenInfo.isUsed());
+            System.out.println("[DEBUG] tokenInfo.expiryTime = " + tokenInfo.getExpiryTime());
+            System.out.println("[DEBUG] Now = " + new java.util.Date());
+        }
+
+        // Lấy email từ accountId
         if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
+            System.out.println("[DEBUG] Token invalid or expired");
             request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
-
-        // Lấy email từ accountId
+        
         String email = new AccountDAO().getEmailByAccountId(tokenInfo.getAccountId());
+        System.out.println("[DEBUG] Email for accountId " + tokenInfo.getAccountId() + " is: " + email);
+
         request.setAttribute("email", email);
-        request.setAttribute("token", token); // giữ lại token cho POST
+        request.setAttribute("token", token);
         request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
     } 
 
@@ -97,41 +111,57 @@ public class resetPassword extends HttpServlet {
         String password = request.getParameter("password");
         String confirm = request.getParameter("confirm_password");
 
-        request.setAttribute("email", email);
-        request.setAttribute("token", token);
+//        request.setAttribute("email", email);
+//        request.setAttribute("token", token);
+
+        System.out.println("[DEBUG] POST: token = " + token + ", email = " + email);
 
         if (password == null || confirm == null || !password.equals(confirm)) {
+            System.out.println("[DEBUG] Passwords do not match");
             request.setAttribute("mess", "Mật khẩu xác nhận không khớp!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
         if (!Validation.validatePassword(password)) {
+            System.out.println("[DEBUG] Password does not meet criteria");
             request.setAttribute("mess", "Mật khẩu phải tối thiểu 6 ký tự.");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
 
         TokenInfo tokenInfo = new TokenDAO().getTokenInfo(token);
+        if (tokenInfo != null) {
+            System.out.println("[DEBUG] POST tokenInfo.token = " + tokenInfo.getToken());
+            System.out.println("[DEBUG] POST tokenInfo.isUsed = " + tokenInfo.isUsed());
+            System.out.println("[DEBUG] POST tokenInfo.expiryTime = " + tokenInfo.getExpiryTime());
+            System.out.println("[DEBUG] POST Now = " + new java.util.Date());
+        }
+
         if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
+            System.out.println("[DEBUG] Token invalid or expired (POST)");
             request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
 
-        // Kiểm tra email có khớp với token không
         String dbEmail = new AccountDAO().getEmailByAccountId(tokenInfo.getAccountId());
+        System.out.println("[DEBUG] DB email: " + dbEmail + ", submitted email: " + email);
+
         if (!email.equalsIgnoreCase(dbEmail)) {
+            System.out.println("[DEBUG] Email does not match");
             request.setAttribute("mess", "Email không hợp lệ!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
 
-        // Cập nhật password (nên hash mật khẩu)
         boolean ok = new AccountDAO().updatePasswordByEmail(email, password);
+        System.out.println("[DEBUG] Update password result: " + ok);
         if (ok) {
             new TokenDAO().markTokenAsUsed(token);
+            System.out.println("[DEBUG] Password updated and token marked as used");
             response.sendRedirect("login.jsp?reset=success");
         } else {
+            System.out.println("[DEBUG] Failed to update password");
             request.setAttribute("mess", "Có lỗi xảy ra, vui lòng thử lại!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
         }

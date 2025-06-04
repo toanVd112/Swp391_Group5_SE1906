@@ -14,7 +14,7 @@ import model.Account;
 public class NewClass {
 
     public static void main(String[] args) {
-        // Tạo một đối tượng Account mới để test
+         //Tạo một đối tượng Account mới để test
         Account acc = new Account();
         acc.setUsername("testuser");
         acc.setPassword("testpass123");
@@ -31,6 +31,8 @@ public class NewClass {
         } else {
             System.out.println("❌ Insert account thất bại!.....");
         }
+        
+        System.out.println(new java.util.Date());
     }
 
 }

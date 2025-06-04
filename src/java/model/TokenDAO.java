@@ -36,7 +36,9 @@ public class TokenDAO extends DBConnect{
             if (rs.next()) {
                 TokenInfo info = new TokenInfo();
                 info.setAccountId(rs.getInt("accountId"));
-                info.setExpiryTime(rs.getTimestamp("expiryTime"));               
+                info.setExpiryTime(rs.getTimestamp("expiryTime"));   
+                info.setUsed(rs.getBoolean("isUsed"));         // BỔ SUNG DÒNG NÀY
+                info.setToken(rs.getString("token")); 
                 return info;
             }
         } catch (Exception e) { e.printStackTrace(); }
