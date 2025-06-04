@@ -1,11 +1,4 @@
-<%-- 
-    Document   : staff
-    Created on : May 24, 2025, 5:55:04 PM
-    Author     : Admin
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html;charset=UTF-8"%>
 <%@ page import="model.Account" %>
 <%
     Account account = (Account) session.getAttribute("account");
@@ -21,97 +14,44 @@
         <title>Staff Dashboard</title>
         <link rel="stylesheet" href="../assets/css/style.css">
         <style>
-            /* === Dashboard Shared Styles === */
-
             body {
                 font-family: 'Segoe UI', sans-serif;
-                background-color: #f5f8fa;
                 margin: 0;
                 padding: 0;
+                display: flex;
+                background-color: #f5f8fa;
             }
 
-            .container {
-                max-width: 900px;
-                margin: 40px auto;
+            .main-content {
+                margin-left: 260px;
                 padding: 30px;
-                background-color: #ffffff;
-                border-radius: 12px;
-                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+                width: calc(100% - 260px);
+                box-sizing: border-box;
             }
 
-            h1 {
-                text-align: center;
+            .main-content h1 {
                 color: #2c3e50;
-                font-size: 28px;
                 margin-bottom: 20px;
             }
 
-            h2 {
-                color: #2980b9;
-                margin-top: 30px;
-                font-size: 22px;
-                border-bottom: 2px solid #2980b9;
-                padding-bottom: 6px;
+            .card {
+                background-color: #fff;
+                border-radius: 10px;
+                padding: 25px;
+                box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
             }
-
-            ul {
-                list-style-type: none;
-                padding-left: 0;
-            }
-
-            ul li {
-                margin: 10px 0;
-            }
-
-            a {
-                text-decoration: none;
-                color: #3498db;
-                font-weight: 500;
-                transition: color 0.3s ease;
-            }
-
-            a:hover {
-                color: #1abc9c;
-            }
-
-            .logout-btn {
-                display: inline-block;
-                margin-top: 40px;
-                padding: 10px 20px;
-                background-color: #e74c3c;
-                color: #fff;
-                border-radius: 6px;
-                text-decoration: none;
-                font-weight: bold;
-                transition: background-color 0.3s ease;
-            }
-
-            .logout-btn:hover {
-                background-color: #c0392b;
-            }
-
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Welcome, <%= account.getUsername() %> (Staff)</h1>
 
-            <h2>Room Tasks</h2>
-            <ul>
-                <li><a href="roomList.jsp">View Room</a></li>
-                <li><a href="updateRoomStatus.jsp">Update Room Status</a></li>
-                <li><a href="roomReport.jsp">Send Room Status Report</a></li>
-            </ul>
-           
-            <h2>Service Tasks</h2>
-            <ul>
-                <li><a href="viewServices.jsp">View Services</a></li>
-                <li><a href="setServiceStatus.jsp">Set Service Status</a></li>
-                <li><a href="serviceReport.jsp">Send Service Report</a></li>
-                <li><a href="notifications.jsp">Receive Service Notifications</a></li>
-            </ul>
+        <%@ include file="sidebarStaff.jsp" %>
 
-            <a href="${pageContext.request.contextPath}/Logout">Logout</a>
+        <div class="main-content">
+            <h1>Welcome to your dashboard</h1>
+            <div class="card">
+                <p>Please use the sidebar to manage your tasks.</p>
+            </div>
         </div>
+
     </body>
 </html>
