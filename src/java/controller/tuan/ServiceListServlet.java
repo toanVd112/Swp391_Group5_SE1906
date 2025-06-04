@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller.tuan;
 
 import DAO.ServiceDAO;
@@ -12,68 +7,77 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.Service;
+import model.Account; // Đảm bảo import đúng model Account
+import model.Service; // Đảm bảo import đúng model Service
 
-/**
- *
- * @author admin
- */
 @WebServlet(name="ServiceListServlet", urlPatterns={"/services/list"})
 public class ServiceListServlet extends HttpServlet {
    
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        List<Service> services = new ServiceDAO().getAll();
-        List<String> types = new ServiceDAO().getAllDistinctServiceType();
+        request.setCharacterEncoding("UTF-8"); // Quan trọng để xử lý tiếng Việt khi tìm kiếm
+
+        HttpSession session = request.getSession(false);
+        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
+
+        // Kiểm tra quyền truy cập
+        if (account == null || !"Manager".equals(account.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        // Lấy các tham số lọc từ request
+        String searchKeyword = request.getParameter("searchKeyword");
+        String filterType = request.getParameter("filterType");
+        String filterStatus = request.getParameter("filterStatus");
+        // String sortBy = request.getParameter("sortBy"); // Có thể thêm sau cho chức năng sắp xếp
+        // int page = 1; // Mặc định trang 1, có thể thêm sau cho phân trang
+        // String pageParam = request.getParameter("page");
+        // if (pageParam != null && pageParam.matches("\\d+")) {
+        //     page = Integer.parseInt(pageParam);
+        // }
+
+
+        ServiceDAO serviceDAO = new ServiceDAO();
         
-        request.setAttribute("serviceTypeList", types);
+        // Gọi phương thức DAO mới với các tham số lọc
+        // Hiện tại sortBy và page chưa được triển khai đầy đủ ở JSP, truyền null và 0
+        List<Service> services = serviceDAO.getFilteredServices(searchKeyword, filterType, filterStatus, null, 0);
+        List<String> types = serviceDAO.getAllDistinctServiceType(); // Để hiển thị trong dropdown loại dịch vụ
+        
         request.setAttribute("serviceList", services);
+        request.setAttribute("serviceTypeList", types);
+        
+        // Đặt lại các giá trị lọc vào request để JSP có thể hiển thị lại ("sticky filters")
+        request.setAttribute("currentSearchKeyword", searchKeyword != null ? searchKeyword : "");
+        request.setAttribute("currentFilterType", filterType != null ? filterType : "");
+        request.setAttribute("currentFilterStatus", filterStatus != null ? filterStatus : "");
+        // request.setAttribute("currentSortBy", sortBy);
+        // request.setAttribute("currentPage", page);
+        // request.setAttribute("totalPages", totalPages); // Nếu có phân trang
+
         request.getRequestDispatcher("/Manager/ServiceList.jsp").forward(request, response);
     } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         processRequest(request, response);
     } 
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        // Thông thường, việc tìm kiếm/lọc sử dụng GET để URL có thể được bookmark.
+        // Nếu bạn cũng muốn POST thực hiện lọc, hãy gọi processRequest.
         processRequest(request, response);
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Servlet để liệt kê và lọc danh sách dịch vụ";
+    }
 }
