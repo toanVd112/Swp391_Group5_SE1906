@@ -28,6 +28,7 @@
               </div>
             </div>
             <form action="resetPassword" method="POST">
+              <input type="hidden" name="token" value="${token}">
               <div class="row gy-3 overflow-hidden">
                 <div class="col-12">
                   <div class="form-floating mb-3">
