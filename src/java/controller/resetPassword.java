@@ -154,6 +154,19 @@ public class resetPassword extends HttpServlet {
             return;
         }
 
+        // =========== Check trùng mật khẩu cũ ===========
+        AccountDAO accountDAO = new AccountDAO();
+        String oldPassword = accountDAO.getPasswordByEmail(email);
+
+        // Nếu dùng mã hóa mật khẩu, phải hash password trước khi so sánh!
+        if (oldPassword != null && password.equals(oldPassword)) {
+            request.setAttribute("mess", "Mật khẩu mới không được trùng với mật khẩu cũ, vui lòng nhập lại!");
+            request.setAttribute("email", email);
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            return;
+        }
+        
         boolean ok = new AccountDAO().updatePasswordByEmail(email, password);
         System.out.println("[DEBUG] Update password result: " + ok);
         if (ok) {

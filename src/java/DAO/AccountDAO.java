@@ -299,10 +299,24 @@ public class AccountDAO extends DBConnect {
         return null;
     }   
 
+    public String getPasswordByEmail(String email) {
+        String sql = "SELECT Password FROM Accounts WHERE Email = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Password");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public static void main(String[] args) {
         AccountDAO dao = new AccountDAO();
         Account a = dao.getAccountByID("1");
         System.out.println(a);
     }
-
+    
 }
