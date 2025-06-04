@@ -5,7 +5,7 @@
 
 package controller;
 
-import DAO.PageContentDAO;
+import DAO.RoomDetailDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -58,27 +58,20 @@ public class RoomDetail extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         
         try {
             String idRaw = request.getParameter("id");
-            
             int roomId = Integer.parseInt(idRaw);
 
-            RoomDAO roomDAO = new RoomDAO();
-            PageContentDAO contentDAO = new PageContentDAO();
-//            AmenityDAO amenityDAO = new AmenityDAO();
+            RoomDetailDAO roomDetailDAO = new RoomDetailDAO();
 
             // Lấy thông tin phòng
-            Room room = roomDAO.getRoomById(roomId);
-            
+            Room room = roomDetailDAO.getRoomById(roomId);
 
-            // Tiện ích theo loại phòng
-//            room.setAmenities(amenityDAO.getAmenitiesByRoomTypeId(room.getRoomType().getTypeId()));
-
-            // Nội dung chính sách dùng chung
-            List<PageContent> contents = contentDAO.getPageContentsForGeneralUse();
+            // Lấy nội dung page chung
+            List<PageContent> contents = roomDetailDAO.getPageContent();
 
             List<PageContent> policies = new ArrayList<>();
             List<PageContent> importantInfos = new ArrayList<>();
@@ -86,13 +79,16 @@ public class RoomDetail extends HttpServlet {
 
             for (PageContent pc : contents) {
                 switch (pc.getPageSection().toLowerCase()) {
-                    case "policy": policies.add(pc); break;
-                    case "important_info": importantInfos.add(pc); break;
-                    case "faq": faqs.add(pc); break;
+                    case "policy":
+                        policies.add(pc); break;
+                    case "important_info":
+                        importantInfos.add(pc); break;
+                    case "faq":
+                        faqs.add(pc); break;
                 }
             }
 
-            // Đưa dữ liệu sang JSP
+            // Gửi dữ liệu sang JSP
             request.setAttribute("room", room);
             request.setAttribute("policies", policies);
             request.setAttribute("importantInfos", importantInfos);

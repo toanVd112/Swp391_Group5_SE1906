@@ -2,9 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller;
-
 
 import DAO.RoomDAO;
 import java.io.IOException;
@@ -17,11 +15,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Room;
 import model.RoomType;
+
 /**
  *
  * @author Arcueid
  */
-@WebServlet(name="RoomController", urlPatterns={"/roomlist"})
+@WebServlet(name = "RoomController", urlPatterns = {"/roomlist"})
 public class RoomController extends HttpServlet {
 
     @Override
@@ -43,15 +42,18 @@ public class RoomController extends HttpServlet {
             latestRoom = null;
         }
 
+        // Lấy parameter lọc và sắp xếp
         String typeParam = request.getParameter("typeId");
         String floorParam = request.getParameter("floor");
+        String sort = request.getParameter("sort");
+        if (sort == null || sort.isEmpty()) {
+            sort = "floor-asc"; // Mặc định sắp xếp theo tầng tăng dần
+        }
 
         Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.valueOf(typeParam) : null;
         Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.valueOf(floorParam) : null;
 
-        List<Room> filteredRooms = dao.filterRooms(floor, typeId);
-
-        // Xử lý phân trang
+        // Phân trang
         int pageSize = 12;
         int page = 1;
         String pageParam = request.getParameter("page");
@@ -62,13 +64,12 @@ public class RoomController extends HttpServlet {
                 page = 1;
             }
         }
+        int offset = (page - 1) * pageSize;
 
-        int totalRooms = filteredRooms.size();
+        // Lấy dữ liệu phân trang từ DB
+        List<Room> paginatedRooms = dao.getRooms(floor, typeId, sort, offset, pageSize);
+        int totalRooms = dao.countRoomsByFilter(floor, typeId);
         int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, totalRooms);
-
-        List<Room> paginatedRooms = filteredRooms.subList(start, end);
 
         // Truyền dữ liệu sang JSP
         request.setAttribute("listR", paginatedRooms);
@@ -77,6 +78,7 @@ public class RoomController extends HttpServlet {
         request.setAttribute("latestRoom", latestRoom);
         request.setAttribute("selectedType", typeId);
         request.setAttribute("selectedFloor", floor);
+        request.setAttribute("sort", sort);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
 
@@ -86,7 +88,7 @@ public class RoomController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response); 
+        doGet(request, response);
     }
 
     @Override
