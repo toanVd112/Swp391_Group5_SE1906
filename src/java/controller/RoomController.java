@@ -25,65 +25,73 @@ public class RoomController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
-        RoomDAO dao = new RoomDAO();
-        List<RoomType> roomTypes;
-        List<Integer> floors;
-        Room latestRoom;
+    RoomDAO dao = new RoomDAO();
+    List<RoomType> roomTypes;
+    List<Integer> floors;
+    Room latestRoom;
 
-        try {
-            roomTypes = dao.getAllRoomTypes();
-            floors = dao.getAllFloors();
-            latestRoom = dao.getLatestRoom();
-        } catch (SQLException e) {
-            roomTypes = null;
-            floors = null;
-            latestRoom = null;
-        }
-
-        // Lấy parameter lọc và sắp xếp
-        String typeParam = request.getParameter("typeId");
-        String floorParam = request.getParameter("floor");
-        String sort = request.getParameter("sort");
-        if (sort == null || sort.isEmpty()) {
-            sort = "floor-asc"; // Mặc định sắp xếp theo tầng tăng dần
-        }
-
-        Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.valueOf(typeParam) : null;
-        Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.valueOf(floorParam) : null;
-
-        // Phân trang
-        int pageSize = 12;
-        int page = 1;
-        String pageParam = request.getParameter("page");
-        if (pageParam != null) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
-        int offset = (page - 1) * pageSize;
-
-        // Lấy dữ liệu phân trang từ DB
-        List<Room> paginatedRooms = dao.getRooms(floor, typeId, sort, offset, pageSize);
-        int totalRooms = dao.countRoomsByFilter(floor, typeId);
-        int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
-
-        // Truyền dữ liệu sang JSP
-        request.setAttribute("listR", paginatedRooms);
-        request.setAttribute("roomTypes", roomTypes);
-        request.setAttribute("floors", floors);
-        request.setAttribute("latestRoom", latestRoom);
-        request.setAttribute("selectedType", typeId);
-        request.setAttribute("selectedFloor", floor);
-        request.setAttribute("sort", sort);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-
-        request.getRequestDispatcher("rooms.jsp").forward(request, response);
+    try {
+        roomTypes = dao.getAllRoomTypes();
+        floors = dao.getAllFloors();
+        latestRoom = dao.getLatestRoom();
+    } catch (SQLException e) {
+        roomTypes = null;
+        floors = null;
+        latestRoom = null;
     }
+
+    // Lấy parameter lọc
+    String typeParam = request.getParameter("typeId");
+    String floorParam = request.getParameter("floor");
+    String sort = request.getParameter("sort"); 
+
+    Integer typeId = (typeParam != null && !typeParam.isEmpty()) ? Integer.valueOf(typeParam) : null;
+    Integer floor = (floorParam != null && !floorParam.isEmpty()) ? Integer.valueOf(floorParam) : null;
+
+    // Phân loại sắp xếp
+    String sortPrice = null;
+    String sortFloor = null;
+    if (sort != null) {
+        if (sort.equals("asc") || sort.equals("desc")) {
+            sortPrice = sort;
+        } else if (sort.equals("floor-asc") || sort.equals("floor-desc")) {
+            sortFloor = sort;
+        }
+    }
+
+    // Phân trang
+    int pageSize = 12;
+    int page = 1;
+    String pageParam = request.getParameter("page");
+    if (pageParam != null) {
+        try {
+            page = Integer.parseInt(pageParam);
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+    }
+    int offset = (page - 1) * pageSize;
+
+    // Truy vấn danh sách phòng
+    List<Room> paginatedRooms = dao.getRooms(floor, typeId, sortFloor, sortPrice, offset, pageSize);
+    int totalRooms = dao.countRoomsByFilter(floor, typeId);
+    int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
+
+    // Truyền dữ liệu sang JSP
+    request.setAttribute("listR", paginatedRooms);
+    request.setAttribute("roomTypes", roomTypes);
+    request.setAttribute("floors", floors);
+    request.setAttribute("latestRoom", latestRoom);
+    request.setAttribute("selectedType", typeId);
+    request.setAttribute("selectedFloor", floor);
+    request.setAttribute("sort", sort); // <-- dùng cho phần active
+    request.setAttribute("currentPage", page);
+    request.setAttribute("totalPages", totalPages);
+
+    request.getRequestDispatcher("rooms.jsp").forward(request, response);
+}
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

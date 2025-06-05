@@ -60,116 +60,66 @@
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
 
         <style>
-            .status-available {
-                color: green;
-                font-weight: bold;
-            }
-            .status-occupied {
-                color: orange;
-                font-weight: bold;
-            }
-            .status-maintenance {
-                color: red;
-                font-weight: bold;
-            }
-           .collapsible {
+/* Trạng thái phòng */
+.status-available { color: green; font-weight: bold; }
+.status-occupied { color: orange; font-weight: bold; }
+.status-maintenance { color: red; font-weight: bold; }
+
+/* Collapsible */
+.collapsible {
     overflow: hidden;
-    transition: max-height 0.4s ease;
     max-height: 0;
+    transition: max-height 0.4s ease;
 }
-
-.collapsible.opening,
-.collapsible.closing {
-    will-change: max-height;
-}
-
 .widget-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
 }
-
 .toggle-btn {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
 }
-
 .toggle-btn i {
-    font-family: 'themify';
-    font-size: 16px;
-    color: #888;
     transition: transform 0.3s ease;
+    color: #888;
 }
-
 .toggle-btn.rotate i {
     transform: rotate(180deg);
 }
-            
-
+ .collapsible li.active a {
+     font-weight: bold;
+     color: #6c5ce7;
+    }
         </style>
 
  <script>
 function toggleSection(id, btn) {
     const section = document.getElementById(id);
-    const iconBtn = btn;
-
-    if (section.classList.contains("opening") || section.classList.contains("closing")) return;
-
-    let openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
-
-    // Đang mở → đóng
-    if (section.style.maxHeight && section.style.maxHeight !== "0px") {
-        section.classList.add("closing");
-        section.style.maxHeight = section.scrollHeight + "px";
-        requestAnimationFrame(() => {
-            section.style.maxHeight = "0";
-        });
-        section.addEventListener("transitionend", function handler() {
-            section.classList.remove("closing");
-            section.style.maxHeight = null;
-            section.removeEventListener("transitionend", handler);
-        });
-        iconBtn.classList.remove("rotate");
-
-        // Xóa khỏi danh sách mở
-        openSections = openSections.filter(sid => sid !== id);
-    } else {
-        // Đang đóng → mở
-        section.classList.add("opening");
-        section.style.maxHeight = section.scrollHeight + "px";
-        section.addEventListener("transitionend", function handler() {
-            section.classList.remove("opening");
-            section.style.maxHeight = "none";
-            section.removeEventListener("transitionend", handler);
-        });
-        iconBtn.classList.add("rotate");
-
-        // Thêm vào danh sách mở nếu chưa có
-        if (!openSections.includes(id)) {
-            openSections.push(id);
-        }
-    }
-
-    localStorage.setItem("openSections", JSON.stringify(openSections));
-}
-
-// Tự động mở lại nhiều phần đã lưu sau reload
-window.addEventListener("DOMContentLoaded", () => {
     const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
 
+    const isOpen = section.style.maxHeight && section.style.maxHeight !== "0px";
+
+    if (isOpen) {
+        section.style.maxHeight = "0";
+        btn.classList.remove("rotate");
+        localStorage.setItem("openSections", JSON.stringify(openSections.filter(s => s !== id)));
+    } else {
+        section.style.maxHeight = section.scrollHeight + "px";
+        btn.classList.add("rotate");
+        if (!openSections.includes(id)) openSections.push(id);
+        localStorage.setItem("openSections", JSON.stringify(openSections));
+    }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
     openSections.forEach(id => {
         const section = document.getElementById(id);
         const btn = section?.previousElementSibling?.querySelector(".toggle-btn");
         if (section && btn) {
             section.style.maxHeight = section.scrollHeight + "px";
-            section.style.overflow = "hidden";
-            section.style.transition = "max-height 0.4s ease";
-            section.style.maxHeight = "none";
             btn.classList.add("rotate");
         }
     });
@@ -400,100 +350,97 @@ window.addEventListener("DOMContentLoaded", () => {
                                     </div>
 
 
-                               <div class="widget widget_archive">
+                                    <div class="widget widget_archive">
+                                        
+                                        <!-- LOẠI PHÒNG -->
+                                        <h5 class="widget-title style-1">
+                                            All Room Types
+                                            <button class="toggle-btn" onclick="toggleSection('typeSection', this)">
+                                                <i class="ti-angle-down"></i>
+                                            </button>
+                                        </h5>
+                                        <div id="typeSection" class="collapsible">
+                                            <ul>
+                                                <li class="${selectedType == null ? 'active' : ''}">
+                                                    <c:url var="urlAllTypes" value="roomlist">
+                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                        <c:param name="sort" value="${sort}" />
+                                                    </c:url>
+                                                    <a href="${urlAllTypes}">All</a>
+                                                </li>
+                                                <c:forEach var="room" items="${roomTypes}">
+                                                    <c:url var="urlRoomType" value="roomlist">
+                                                        <c:param name="typeId" value="${room.roomtypeID}" />
+                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                        <c:param name="sort" value="${sort}" />
+                                                    </c:url>
+                                                    <li class="${selectedType == room.roomtypeID ? 'active' : ''}">
+                                                        <a href="${urlRoomType}">${room.name}</a>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
 
-    <!-- LOẠI PHÒNG -->
-    <h5 class="widget-title style-1">
-        All Room Types
-        <button class="toggle-btn" onclick="toggleSection('typeSection', this)">
-            <i class="ti-angle-down"></i>
-        </button>
-    </h5>
-    <div id="typeSection" class="collapsible">
-        <ul>
-            <li>
-                <c:url var="urlAllTypes" value="roomlist">
-                    <c:if test="${selectedFloor != null}">
-                        <c:param name="floor" value="${selectedFloor}" />
-                    </c:if>
-                </c:url>
-                <a href="${urlAllTypes}">All</a>
-            </li>
-            <c:forEach var="room" items="${roomTypes}">
-                <c:url var="urlRoomType" value="roomlist">
-                    <c:param name="typeId" value="${room.roomtypeID}" />
-                    <c:if test="${selectedFloor != null}">
-                        <c:param name="floor" value="${selectedFloor}" />
-                    </c:if>
-                </c:url>
-                <li><a href="${urlRoomType}">${room.name}</a></li>
-            </c:forEach>
-        </ul>
-    </div>
+                                        <!-- TẦNG -->
+                                        <h5 class="widget-title style-1">
+                                            Floor
+                                            <button class="toggle-btn" onclick="toggleSection('floorSection', this)">
+                                                <i class="ti-angle-down"></i>
+                                            </button>
+                                        </h5>
+                                        <div id="floorSection" class="collapsible">
+                                            <ul>
+                                                <li class="${selectedFloor == null ? 'active' : ''}">
+                                                    <c:url var="urlAllFloors" value="roomlist">
+                                                        <c:param name="typeId" value="${selectedType}" />
+                                                        <c:param name="sort" value="${sort}" />
+                                                    </c:url>
+                                                    <a href="${urlAllFloors}">All</a>
+                                                </li>
+                                                <c:forEach var="floor" items="${floors}">
+                                                    <c:url var="urlFloor" value="roomlist">
+                                                        <c:param name="floor" value="${floor}" />
+                                                        <c:param name="typeId" value="${selectedType}" />
+                                                        <c:param name="sort" value="${sort}" />
+                                                    </c:url>
+                                                    <li class="${selectedFloor == floor ? 'active' : ''}">
+                                                        <a href="${urlFloor}">Floor ${floor}</a>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
 
-    <!-- TẦNG -->
-    <h5 class="widget-title style-1">
-        Floor
-        <button class="toggle-btn" onclick="toggleSection('floorSection', this)">
-            <i class="ti-angle-down"></i>
-        </button>
-    </h5>
-    <div id="floorSection" class="collapsible">
-        <ul>
-            <li>
-                <c:url var="urlAllFloors" value="roomlist">
-                    <c:if test="${selectedType != null}">
-                        <c:param name="typeId" value="${selectedType}" />
-                    </c:if>
-                </c:url>
-                <a href="${urlAllFloors}">All</a>
-            </li>
-            <c:forEach var="floor" items="${floors}">
-                <c:url var="urlFloor" value="roomlist">
-                    <c:param name="floor" value="${floor}" />
-                    <c:if test="${selectedType != null}">
-                        <c:param name="typeId" value="${selectedType}" />
-                    </c:if>
-                </c:url>
-                <li><a href="${urlFloor}">Floor ${floor}</a></li>
-            </c:forEach>
-        </ul>
-    </div>
-
-    <!-- SẮP XẾP -->
-    <h5 class="widget-title style-1">
-        Sort By
-        <button class="toggle-btn" onclick="toggleSection('sortSection', this)">
-            <i class="ti-angle-down"></i>
-        </button>
-    </h5>
-    <div id="sortSection" class="collapsible">
-        <c:set var="sortOptions">asc,desc,floor-asc,floor-desc</c:set>
-        <ul>
-            <c:forEach var="option" items="${fn:split(sortOptions, ',')}">
-                <c:url var="urlSort" value="roomlist">
-                    <c:if test="${selectedType != null}">
-                        <c:param name="typeId" value="${selectedType}" />
-                    </c:if>
-                    <c:if test="${selectedFloor != null}">
-                        <c:param name="floor" value="${selectedFloor}" />
-                    </c:if>
-                    <c:param name="sort" value="${option}" />
-                </c:url>
-                <li>
-                    <a href="${urlSort}">
-                        <c:choose>
-                            <c:when test="${option == 'asc'}">Giá tăng dần</c:when>
-                            <c:when test="${option == 'desc'}">Giá giảm dần</c:when>
-                            <c:when test="${option == 'floor-asc'}">Tầng tăng dần</c:when>
-                            <c:when test="${option == 'floor-desc'}">Tầng giảm dần</c:when>
-                        </c:choose>
-                    </a>
-                </li>
-            </c:forEach>
-        </ul>
-    </div>
-</div>
+                                        <!-- SẮP XẾP -->
+                                        <h5 class="widget-title style-1">
+                                            Sort By
+                                            <button class="toggle-btn" onclick="toggleSection('sortSection', this)">
+                                                <i class="ti-angle-down"></i>
+                                            </button>
+                                        </h5>
+                                        <div id="sortSection" class="collapsible">
+                                            <c:set var="sortOptions">asc,desc,floor-asc,floor-desc</c:set>
+                                                <ul>
+                                                <c:forEach var="option" items="${fn:split(sortOptions, ',')}">
+                                                    <c:url var="urlSort" value="roomlist">
+                                                        <c:param name="sort" value="${option}" />
+                                                        <c:param name="typeId" value="${selectedType}" />
+                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                    </c:url>
+                                                    <li class="${sort == option ? 'active' : ''}">
+                                                        <a href="${urlSort}">
+                                                            <c:choose>
+                                                                <c:when test="${option == 'asc'}">Giá tăng dần</c:when>
+                                                                <c:when test="${option == 'desc'}">Giá giảm dần</c:when>
+                                                                <c:when test="${option == 'floor-asc'}">Tầng tăng dần</c:when>
+                                                                <c:when test="${option == 'floor-desc'}">Tầng giảm dần</c:when>
+                                                            </c:choose>
+                                                        </a>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                                
+                                    </div>
 
 
                                     <div class="widget">
@@ -574,50 +521,42 @@ window.addEventListener("DOMContentLoaded", () => {
                                             </div>
                                         </c:forEach>
 
+                                        <c:url var="baseUrl" value="roomlist">
+                                            <c:param name="sort" value="${sort}" />
+                                            <c:if test="${selectedType != null}">
+                                                <c:param name="typeId" value="${selectedType}" />
+                                            </c:if>
+                                            <c:if test="${selectedFloor != null}">
+                                                <c:param name="floor" value="${selectedFloor}" />
+                                            </c:if>
+                                        </c:url>
+
                                         <div class="col-lg-12 m-b20">
                                             <div class="pagination-bx rounded-sm gray clearfix">
                                                 <ul class="pagination">
 
-                                                    <!-- Phân trang -->
+                                                    <!-- Prev -->
                                                     <c:if test="${currentPage > 1}">
-                                                        <c:url var="prevUrl" value="roomlist">
+                                                        <c:url var="prevUrl" value="${baseUrl}">
                                                             <c:param name="page" value="${currentPage - 1}" />
-                                                            <c:if test="${selectedType != null}">
-                                                                <c:param name="typeId" value="${selectedType}" />
-                                                            </c:if>
-                                                            <c:if test="${selectedFloor != null}">
-                                                                <c:param name="floor" value="${selectedFloor}" />
-                                                            </c:if>
                                                         </c:url>
                                                         <li class="previous"><a href="${prevUrl}"><i class="ti-arrow-left"></i> Prev</a></li>
                                                         </c:if>
 
                                                     <!-- Page numbers -->
                                                     <c:forEach var="i" begin="1" end="${totalPages}">
-                                                        <c:url var="pageUrl" value="roomlist">
+                                                        <c:url var="pageUrl" value="${baseUrl}">
                                                             <c:param name="page" value="${i}" />
-                                                            <c:if test="${selectedType != null}">
-                                                                <c:param name="typeId" value="${selectedType}" />
-                                                            </c:if>
-                                                            <c:if test="${selectedFloor != null}">
-                                                                <c:param name="floor" value="${selectedFloor}" />
-                                                            </c:if>
                                                         </c:url>
                                                         <li class="${i == currentPage ? 'active' : ''}">
                                                             <a href="${pageUrl}">${i}</a>
                                                         </li>
                                                     </c:forEach>
 
-                                                    <!-- Next button -->
+                                                    <!-- Next -->
                                                     <c:if test="${currentPage < totalPages}">
-                                                        <c:url var="nextUrl" value="roomlist">
+                                                        <c:url var="nextUrl" value="${baseUrl}">
                                                             <c:param name="page" value="${currentPage + 1}" />
-                                                            <c:if test="${selectedType != null}">
-                                                                <c:param name="typeId" value="${selectedType}" />
-                                                            </c:if>
-                                                            <c:if test="${selectedFloor != null}">
-                                                                <c:param name="floor" value="${selectedFloor}" />
-                                                            </c:if>
                                                         </c:url>
                                                         <li class="next"><a href="${nextUrl}">Next <i class="ti-arrow-right"></i></a></li>
                                                             </c:if>

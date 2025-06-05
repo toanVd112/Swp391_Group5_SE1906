@@ -16,11 +16,12 @@ import model.RoomType;
 public class RoomDAO {
 
     // --- Lấy danh sách phòng có lọc, sắp xếp, phân trang ---
-    public List<Room> getRooms(Integer floor, Integer typeId, String sort, int offset, int limit) {
+    public List<Room> getRooms(Integer floor, Integer typeId, String sortFloor, String sortPrice, int offset, int limit) {
         List<Room> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
-                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1");
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+        );
 
         if (floor != null) {
             sql.append(" AND r.Floor = ?");
@@ -29,15 +30,24 @@ public class RoomDAO {
             sql.append(" AND r.RoomTypeID = ?");
         }
 
-        // Sắp xếp theo yêu cầu
-        if ("floor-asc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY r.Floor ASC");
-        } else if ("floor-desc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY r.Floor DESC");
-        } else if ("asc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY rt.BasePrice ASC");
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY rt.BasePrice DESC");
+        // ORDER BY nhiều điều kiện nếu có
+        List<String> orderList = new ArrayList<>();
+        if ("asc".equalsIgnoreCase(sortFloor)) {
+            orderList.add("r.Floor ASC");
+        } else if ("desc".equalsIgnoreCase(sortFloor)) {
+            orderList.add("r.Floor DESC");
+        }
+
+        if ("asc".equalsIgnoreCase(sortPrice)) {
+            orderList.add("rt.BasePrice ASC");
+        } else if ("desc".equalsIgnoreCase(sortPrice)) {
+            orderList.add("rt.BasePrice DESC");
+        }
+
+        if (!orderList.isEmpty()) {
+            sql.append(" ORDER BY ").append(String.join(", ", orderList));
+        } else {
+            sql.append(" ORDER BY r.Floor ASC"); // mặc định
         }
 
         sql.append(" LIMIT ? OFFSET ?");
@@ -56,30 +66,30 @@ public class RoomDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("TypeName"),
-                        rs.getString("Description"),
-                        rs.getDouble("BasePrice"),
-                        rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
-                );
-                Room room = new Room(
-                        rs.getInt("RoomID"),
-                        rs.getString("RoomNumber"),
-                        rs.getInt("Floor"),
-                        rs.getString("Status"),
-                        roomType
-                );
-                list.add(room);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            RoomType roomType = new RoomType(
+                rs.getInt("RoomTypeID"),
+                rs.getString("TypeName"),
+                rs.getString("Description"),
+                rs.getDouble("BasePrice"),
+                rs.getString("RoomTypeImage"),
+                rs.getString("RoomDetail")
+            );
+            Room room = new Room(
+                rs.getInt("RoomID"),
+                rs.getString("RoomNumber"),
+                rs.getInt("Floor"),
+                rs.getString("Status"),
+                roomType
+            );
+            list.add(room);
         }
 
-        return list;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    return list;
+}
 
     // --- Đếm số phòng có áp dụng bộ lọc ---
     public int countRoomsByFilter(Integer floor, Integer typeId) {
