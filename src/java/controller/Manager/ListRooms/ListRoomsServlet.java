@@ -58,18 +58,21 @@ public class ListRoomsServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
     @Override
     public void init() {
         ManageRoomList dao = new ManageRoomList();
-        try { Class.forName("com.mysql.cj.jdbc.Driver"); }
-        catch (ClassNotFoundException ignored) {}
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException ignored) {
+        }
     }
+
     @Override
+
     protected void doGet(HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
         ManageRoomList dao = new ManageRoomList();
-        // parse parameters hoặc null nếu trống
+
         Integer roomTypeId = parseIntOrNull(req.getParameter("roomTypeId"));
         String status = emptyToNull(req.getParameter("status"));
         String keyword = emptyToNull(req.getParameter("keyword"));
@@ -78,17 +81,24 @@ public class ListRoomsServlet extends HttpServlet {
         Double minPrice = parseDoubleOrNull(req.getParameter("minPrice"));
         Double maxPrice = parseDoubleOrNull(req.getParameter("maxPrice"));
 
+        int page = parseIntOrDefault(req.getParameter("page"), 1);
+        int pageSize = 5;
+        int offset = (page - 1) * pageSize;
+
         try {
             List<RoomType2> roomTypes = dao.getRoomTypes();
-            List<Room2> rooms = dao.searchRooms(
-                    roomTypeId, status, keyword,
-                    minFloor, maxFloor,
-                    minPrice, maxPrice
+            int totalRooms = dao.countRooms(roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice);
+            int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
+
+            List<Room2> rooms = dao.searchRoomsPaginated(
+                    roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice, offset, pageSize
             );
 
+            // Dữ liệu
             req.setAttribute("roomTypes", roomTypes);
             req.setAttribute("rooms", rooms);
-            // giữ lại giá trị filter để xuất lại trong form
+
+            // Filter giữ nguyên
             req.setAttribute("f_type", roomTypeId);
             req.setAttribute("f_status", status);
             req.setAttribute("f_keyword", keyword);
@@ -97,8 +107,11 @@ public class ListRoomsServlet extends HttpServlet {
             req.setAttribute("f_minPrice", minPrice);
             req.setAttribute("f_maxPrice", maxPrice);
 
-            req.getRequestDispatcher("Manager/ListRooms.jsp")
-                    .forward(req, response);
+            // Phân trang
+            req.setAttribute("currentPage", page);
+            req.setAttribute("totalPages", totalPages);
+
+            req.getRequestDispatcher("Manager/ListRooms.jsp").forward(req, response);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -114,6 +127,14 @@ public class ListRoomsServlet extends HttpServlet {
 
     private String emptyToNull(String s) {
         return (s == null || s.isBlank()) ? null : s;
+    }
+
+    private int parseIntOrDefault(String s, int def) {
+        try {
+            return (s == null || s.isBlank()) ? def : Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return def;
+        }
     }
 
     /**

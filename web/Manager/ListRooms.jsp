@@ -96,7 +96,7 @@
             <div class="card">
                 <h2>Danh sách Phòng</h2>
 
-                <form class="filter" method="get">
+                <form class="filter" method="get" action="ListRoomsServlet">
                     <select name="roomTypeId">
                         <option value="">--Loại phòng--</option>
                         <c:forEach var="rt" items="${roomTypes}">
@@ -143,7 +143,7 @@
                     <tbody>
                         <c:forEach var="r" items="${rooms}" varStatus="st">
                             <tr>
-                                <td>${st.count}</td>
+                                <td>${(currentPage - 1) * 5 + st.index + 1}</td>
                                 <td>${r.roomNumber}</td>
                                 <td>${r.floor}</td>
                                 <td>${r.roomTypeName}</td>
@@ -152,10 +152,37 @@
                             </tr>
                         </c:forEach>
                         <c:if test="${empty rooms}">
-                            <tr><td colspan="6" style="text-align:center">Không tìm thấy phòng nào</td></tr>
+                            <tr>
+                                <td colspan="6" style="text-align:center">Không tìm thấy phòng nào</td>
+                            </tr>
                         </c:if>
                     </tbody>
                 </table>
+                <c:if test="${totalPages > 1}">
+                    <ul class="pagination">
+
+                        <c:if test="${currentPage > 1}">
+                            <li>
+                                <a href="ListRoomsServlet?page=${currentPage - 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Prev</a>
+                            </li>
+                        </c:if>
+
+                        <c:forEach var="i" begin="1" end="${totalPages}">
+                            <li class="${i == currentPage ? 'active' : ''}">
+                                <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">${i}</a>
+                            </li>
+                        </c:forEach>
+
+                        <c:if test="${currentPage < totalPages}">
+                            <li>
+                                <a href="ListRoomsServlet?page=${currentPage + 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Next</a>
+                            </li>
+                        </c:if>
+
+                    </ul>
+                </c:if>
+
+
             </div>
         </div>
     </body>
