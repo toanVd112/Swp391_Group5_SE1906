@@ -12,21 +12,21 @@
 	<meta name="robots" content="" />
 	
 	<!-- DESCRIPTION -->
-	<meta name="description" content="EduChamp : Education HTML Template" />
+	<meta name="description" content="HoangNam Hotel" />
 	
 	<!-- OG -->
-	<meta property="og:title" content="EduChamp : Education HTML Template" />
-	<meta property="og:description" content="EduChamp : Education HTML Template" />
+	<meta property="og:title" content="HoangNam Hotel" />
+	<meta property="og:description" content="HoangNam Hotel" />
 	<meta property="og:image" content="" />
 	<meta name="format-detection" content="telephone=no">
 	
 	<!-- FAVICON1S ICON ============================================= -->
-	<link rel="icon" href="../error-404.html" type="image/x-icon" />
-	<link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
+	<link rel="icon" href="..assets/images/favicon1.ico" type="image/x-icon" />
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
+
 	
 	<!-- PAGE TITLE HERE ============================================= -->
-	<title>EduChamp : Education HTML Template </title>
-	
+	<title>HoangNam Hotel  </title>
 	<!-- MOBILE SPECIFIC ============================================= -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
@@ -37,7 +37,6 @@
 	
 	<!-- All PLUGINS CSS ============================================= -->
 	<link rel="stylesheet" type="text/css" href="assets/css/assets.css">
-	<link rel="stylesheet" type="text/css" href="assets/vendors/calendar/fullcalendar.css">
 	
 	<!-- TYPOGRAPHY ============================================= -->
 	<link rel="stylesheet" type="text/css" href="assets/css/typography.css">
@@ -63,20 +62,15 @@
 			</div>
 			<!--sidebar menu toggler end -->
 			<!--logo start -->
-			<div class="ttr-logo-box">
-				<div>
-					<a href="index.jsp" class="ttr-logo">
-						<img alt="" class="ttr-logo-mobile" src="assets/images/logo-mobile.png" width="30" height="30">
-						<img alt="" class="ttr-logo-desktop" src="assets/images/logo-white.png" width="160" height="27">
-					</a>
-				</div>
-			</div>
+			<div class="menu-logo">
+                                <a href="${pageContext.request.contextPath}/Home"><img src="../assets/images/logo.png" alt=""></a>
+                            </div>
 			<!--logo end -->
 			<div class="ttr-header-menu">
 				<!-- header left menu start -->
 				<ul class="ttr-header-navigation">
 					<li>
-						<a href="../index.jsp" class="ttr-material-button ttr-submenu-toggle">HOME</a>
+						<a href="${pageContext.request.contextPath}/Home" class="ttr-material-button ttr-submenu-toggle">HOME</a>
 					</li>
 					<li>
 						<a href="#" class="ttr-material-button ttr-submenu-toggle">QUICK MENU <i class="fa fa-angle-down"></i></a>
@@ -234,7 +228,8 @@
 		<div class="ttr-sidebar-wrapper content-scroll">
 			<!-- side menu logo start -->
 			<div class="ttr-sidebar-logo">
-				<a href="#"><img alt="" src="assets/images/logo.png" width="122" height="27"></a>
+				<a href="${pageContext.request.contextPath}/Home"><img alt="" src="../assets/images/logo.png" width="122" height="27"></a>
+                               
 				<!-- <div class="ttr-sidebar-pin-button" title="Pin/Unpin Menu">
 					<i class="material-icons ttr-fixed-icon">gps_fixed</i>
 					<i class="material-icons ttr-not-fixed-icon">gps_not_fixed</i>
@@ -247,12 +242,7 @@
 			<!-- sidebar menu start -->
 			<nav class="ttr-sidebar-navi">
 				<ul>
-					<li>
-						<a href="index.jsp" class="ttr-material-button">
-							<span class="ttr-icon"><i class="ti-home"></i></span>
-		                	<span class="ttr-label">Dashborad</span>
-		                </a>
-		            </li>
+					
 					<li>
 						<a href="roomlist" class="ttr-material-button">
 							<span class="ttr-icon"><i class="ti-book"></i></span>
@@ -292,12 +282,7 @@
 		                	</li>
 		                </ul>
 		            </li>
-					<li>
-						<a href="bookmark.html" class="ttr-material-button">
-							<span class="ttr-icon"><i class="ti-bookmark-alt"></i></span>
-		                	<span class="ttr-label">Bookmarks</span>
-		                </a>
-		            </li>
+					
 					<li>
 						<a href="review.html" class="ttr-material-button">
 							<span class="ttr-icon"><i class="ti-comments"></i></span>
@@ -365,19 +350,8 @@
 											<input class="form-control" type="text" value="Mark Andre">
 										</div>
 									</div>
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Occupation</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="CTO">
-										</div>
-									</div>
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Company Name</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="EduChamp">
-											<span class="help">If you want your invoices addressed to a company. Leave blank to use your full name.</span>
-										</div>
-									</div>
+									
+									
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Phone No.</label>
 										<div class="col-sm-7">
@@ -410,12 +384,7 @@
 											<input class="form-control" type="text" value="California">
 										</div>
 									</div>
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Postcode</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="000702">
-										</div>
-									</div>
+									
 
 									<div class="m-form__seperator m-form__seperator--dashed m-form__seperator--space-2x"></div>
 
@@ -425,12 +394,7 @@
 										</div>
 									</div>
 
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Linkedin</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="www.linkedin.com">
-										</div>
-									</div>
+									
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Facebook</label>
 										<div class="col-sm-7">

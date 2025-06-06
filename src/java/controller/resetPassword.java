@@ -150,7 +150,7 @@ public class resetPassword extends HttpServlet {
         if (!email.equalsIgnoreCase(dbEmail)) {
             System.out.println("[DEBUG] Email does not match");
             request.setAttribute("mess", "Email không hợp lệ!");
-            request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("resetPassword);.jsp").forward(request, response);
             return;
         }
 

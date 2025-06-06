@@ -97,5 +97,7 @@ public class Room2 {
                 ", basePrice=" + basePrice +
                 '}';
     }
+    
+    
 }
 

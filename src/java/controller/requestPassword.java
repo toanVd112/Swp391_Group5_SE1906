@@ -98,7 +98,7 @@ public class requestPassword extends HttpServlet {
             String subject = "Reset Password - Hoang Nam Hotel";
             String content = "Enter the link to reset password (có hiệu lực 30 phút): " + link;
 
-            EmailUtil.sendMail(email, subject, content); // Bạn tự implement hoặc dùng thư viện JavaMail
+            EmailUtil.sendMail(email, subject, content); 
         }
 
         // 7. Luôn trả về thông báo không tiết lộ email đúng/sai
