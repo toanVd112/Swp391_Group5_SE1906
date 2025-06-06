@@ -5,7 +5,7 @@
 package controller.managerAccount;
 
 import DAO.AccountDAO;
-import DAO.ActivityLogDAO;
+import DAO.ActivityStaffDAO;
 import controller.Validation;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -101,7 +101,7 @@ public class AddAccount extends HttpServlet {
         ad.addAccount(user, pass, role, isActive, email);
         Account currentUser = (Account) request.getSession().getAttribute("account");
         int newID = new AccountDAO().getLatestAccountID();
-        ActivityLogDAO logDAO = new ActivityLogDAO();
+        ActivityStaffDAO logDAO = new ActivityStaffDAO();
         try {
             logDAO.logAction(currentUser.getAccountID(), "Add", "accounts", newID);
         } catch (SQLException ex) {

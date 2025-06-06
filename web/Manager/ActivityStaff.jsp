@@ -93,6 +93,35 @@
             .back-btn:hover {
                 background-color: #1c5980;
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                list-style: none;
+                padding: 0;
+                margin-top: 20px;
+                gap: 6px;
+            }
+
+            .pagination li {
+                display: inline-block;
+            }
+
+            .pagination a {
+                padding: 8px 12px;
+                text-decoration: none;
+                border: 1px solid #ccc;
+                background-color: #f4f4f4;
+                color: #333;
+                border-radius: 4px;
+            }
+
+            .pagination .active a {
+                background-color: #3498db;
+                color: white;
+                font-weight: bold;
+                border-color: #2980b9;
+            }
+
         </style>
     </head>
     <body>
@@ -102,7 +131,7 @@
             <div class="card">
                 <h1>Activity Logs</h1>
 
-                <form class="filter-form" action="activityLogs" method="get">
+                <form class="filter-form" action="activityStaff" method="get">
                     <label>Username:</label>
                     <input type="text" name="username" value="${param.username}" />
 
@@ -127,6 +156,13 @@
                     <input type="number" name="targetID" value="${param.targetID}" />
 
                     <button type="submit">Filter</button>
+                    <label>Số dòng/trang:</label>
+                    <select name="pageSize" onchange="this.form.submit()">
+                        <option value="5" ${param.pageSize == '5' ? 'selected' : ''}>5</option>
+                        <option value="10" ${param.pageSize == '10' ? 'selected' : ''}>10</option>
+                        <option value="20" ${param.pageSize == '20' ? 'selected' : ''}>20</option>
+                    </select>
+
                 </form>
 
                 <table>
@@ -142,8 +178,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="log" items="${logList}">
+                      <c:forEach var="log" items="${logList}" varStatus="st">
+
                             <tr>
+                                <td>${(currentPage - 1) * pageSize + st.index + 1}</td>
+
                                 <td>${log.logID}</td>
                                 <td>${log.actorID}</td>
                                 <td>${log.username}</td>
@@ -155,6 +194,28 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                <c:if test="${totalPages > 1}">
+                    <ul class="pagination">
+                        <c:if test="${currentPage > 1}">
+                            <li>
+                                <a href="activityStaff?page=${currentPage - 1}&pageSize=${pageSize}&username=${param.username}&actionType=${param.actionType}&targetTable=${param.targetTable}&from=${param.from}&to=${param.to}&targetID=${param.targetID}">Prev</a>
+                            </li>
+                        </c:if>
+
+                        <c:forEach var="i" begin="1" end="${totalPages}">
+                            <li class="${i == currentPage ? 'active' : ''}">
+                                <a href="activityStaff?page=${i}&pageSize=${pageSize}&username=${param.username}&actionType=${param.actionType}&targetTable=${param.targetTable}&from=${param.from}&to=${param.to}&targetID=${param.targetID}">${i}</a>
+                            </li>
+                        </c:forEach>
+
+                        <c:if test="${currentPage < totalPages}">
+                            <li>
+                                <a href="activityStaff?page=${currentPage + 1}&pageSize=${pageSize}&username=${param.username}&actionType=${param.actionType}&targetTable=${param.targetTable}&from=${param.from}&to=${param.to}&targetID=${param.targetID}">Next</a>
+                            </li>
+                        </c:if>
+                    </ul>
+                </c:if>
+
 
                 <a class="back-btn" href="Manager/manager.jsp">← Back to Manager Home</a>
             </div>

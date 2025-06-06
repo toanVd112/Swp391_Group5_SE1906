@@ -87,6 +87,43 @@
                 color: blue;
                 font-weight: 600;
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                padding: 0;
+                margin-top: 20px;
+                list-style-type: none;
+                gap: 5px;
+            }
+
+            .pagination li {
+                display: inline-block;
+            }
+
+            .pagination a {
+                display: block;
+                padding: 8px 14px;
+                text-decoration: none;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                background-color: #f9f9f9;
+                color: #2c3e50;
+                font-weight: 500;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            .pagination a:hover {
+                background-color: #3498db;
+                color: white;
+            }
+
+            .pagination .active a {
+                background-color: #3498db;
+                color: white;
+                border-color: #3498db;
+                font-weight: bold;
+            }
+
         </style>
     </head>
     <body>

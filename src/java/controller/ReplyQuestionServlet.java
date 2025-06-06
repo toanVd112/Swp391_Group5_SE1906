@@ -5,7 +5,7 @@
 package controller;
 
 import DAO.AccountDAO;
-import DAO.ActivityLogDAO;
+import DAO.ActivityStaffDAO;
 import DAO.CustomerQuestionDAO;
 import controller.managerAccount.AddAccount;
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class ReplyQuestionServlet extends HttpServlet {
         dao.replyToQuestion(questionID, adminReply);
         Account currentUser = (Account) request.getSession().getAttribute("account");
         int newID = new AccountDAO().getLatestAccountID();
-        ActivityLogDAO logDAO = new ActivityLogDAO();
+        ActivityStaffDAO logDAO = new ActivityStaffDAO();
         try {
             logDAO.logAction(currentUser.getAccountID(), "Answer", "accounts", newID);
         } catch (SQLException ex) {

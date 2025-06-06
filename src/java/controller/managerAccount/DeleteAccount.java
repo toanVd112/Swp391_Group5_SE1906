@@ -5,7 +5,7 @@
 package controller.managerAccount;
 
 import DAO.AccountDAO;
-import DAO.ActivityLogDAO;
+import DAO.ActivityStaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -67,7 +67,7 @@ public class DeleteAccount extends HttpServlet {
 
         try {
             // Ghi log trước khi xoá
-            ActivityLogDAO logDAO = new ActivityLogDAO();
+            ActivityStaffDAO logDAO = new ActivityStaffDAO();
             logDAO.logAction(
                     currentUser.getAccountID(), // ID người xoá
                     "Delete", // Hành động

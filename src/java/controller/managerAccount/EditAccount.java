@@ -6,7 +6,7 @@
 package controller.managerAccount;
 
 import DAO.AccountDAO;
-import DAO.ActivityLogDAO;
+import DAO.ActivityStaffDAO;
 import controller.Validation;
 import java.io.IOException;
 import java.io.PrintWriter;
