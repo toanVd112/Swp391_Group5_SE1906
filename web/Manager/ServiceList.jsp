@@ -168,15 +168,15 @@
             </div>
         </div>
 
-<!--        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">««</a></li>
-                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
-                <li class="page-item"><a class="page-link" href="#">»»</a></li>
-            </ul>
-        </nav>-->
+        <!--        <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">««</a></li>
+                        <li class="page-item"><a class="page-link" href="#">«</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">»</a></li>
+                        <li class="page-item"><a class="page-link" href="#">»»</a></li>
+                    </ul>
+                </nav>-->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
@@ -198,6 +198,9 @@
                                                                 .catch(error => {
                                                                     alert("Error: " + error.message);
                                                                 });
+                                                        setTimeout(() => {
+                                                            window.location.reload();
+                                                        }, 1000);
                                                     }
 
                                                     function showImageModal(imagePath) {
@@ -206,6 +209,7 @@
                                                         const modal = new bootstrap.Modal(document.getElementById('imageModal'));
                                                         modal.show();
                                                     }
+
         </script>
     </body>
 </html>
