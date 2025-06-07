@@ -66,14 +66,14 @@ public class RoomDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            RoomType roomType = new RoomType(
-                rs.getInt("RoomTypeID"),
-                rs.getString("TypeName"),
-                rs.getString("Description"),
-                rs.getDouble("BasePrice"),
-                rs.getString("RoomTypeImage"),
-                rs.getString("RoomDetail")
-            );
+                RoomType roomType = new RoomType(
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
+                );
                 Room room = new Room(
                         rs.getInt("RoomID"),
                         rs.getString("RoomNumber"),
@@ -83,14 +83,14 @@ public class RoomDAO {
                         roomType
                 );
                 list.add(room);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
 
     // --- Đếm số phòng có áp dụng bộ lọc ---
     public int countRoomsByFilter(Integer floor, Integer typeId) {
@@ -184,7 +184,7 @@ public class RoomDAO {
         }
         return null;
     }
-    
+
     public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
         List<Room> list = new ArrayList<>();
         String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
@@ -266,5 +266,17 @@ public class RoomDAO {
         }
 
         return 0;
+    }
+
+    public void deleteRoom(String rid) {
+        String sql = "DELETE FROM rooms WHERE RoomID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, rid);
+            ps.executeUpdate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }
