@@ -8,7 +8,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
     <head>
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
      <style>
 .status-available { color: green; font-weight: bold; }
@@ -309,7 +312,7 @@
                                     <div class="rooms-post">
                                         <div class="ttr-post-media media-effect">
                                             <a href="#">
-                                                <img src="${room.roomType.imageUrl}" alt="${room.roomType.name}" />
+                                                <img src="${pageContext.request.contextPath}/${room.roomImage}" alt="Room ${room.roomnumber}" />
                                             </a>
                                         </div>
 
@@ -323,19 +326,22 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                            
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
                                             <div class="col-md-12 col-lg-4">
-                                                <ul class="course-features">
-                                                    <li><i class="ti-book"></i> <span class="label">Lectures</span> <span class="value">8</span></li>
-                                                    <li><i class="ti-help-alt"></i> <span class="label">Quizzes</span> <span class="value">1</span></li>
-                                                    <li><i class="ti-time"></i> <span class="label">Duration</span> <span class="value">60 hours</span></li>
-                                                    <li><i class="ti-stats-up"></i> <span class="label">Skill level</span> <span class="value">Beginner</span></li>
-                                                    <li><i class="ti-smallcap"></i> <span class="label">Language</span> <span class="value">English</span></li>
-                                                    <li><i class="ti-user"></i> <span class="label">Students</span> <span class="value">32</span></li>
-                                                    <li><i class="ti-check-box"></i> <span class="label">Assessments</span> <span class="value">Yes</span></li>
+                                                <ul class="course-features">    
+                                                    <li><i class="ri-hotel-bed-line"></i> 2 giường đơn</li>
+                                                    <li><i class="ri-windy-line"></i> Máy điều hòa</li>
+                                                    <li><i class="ri-building-line"></i> Ban công</li>
+                                                    <li><i class="ph ph-shower"></i> Phòng tắm riêng</li>
+                                                    <li><i class="ri-custom-size"></i> 19 mét vuông</li>
+                                                    <li><i class="ri-restaurant-line"></i> 19 mét vuông</li>
+                                                    <li><i class="ri-rss-line"></i> Wifi miễn phí</li>
+                                                    <li><i class="ri-customer-service-2-line"></i> Wifi miễn phí</li>
+                                                    
+                                                   
                                                 </ul>
                                             </div>
                                             <div class="col-md-12 col-lg-8">

@@ -74,14 +74,15 @@ public class RoomDAO {
                 rs.getString("RoomTypeImage"),
                 rs.getString("RoomDetail")
             );
-            Room room = new Room(
-                rs.getInt("RoomID"),
-                rs.getString("RoomNumber"),
-                rs.getInt("Floor"),
-                rs.getString("Status"),
-                roomType
-            );
-            list.add(room);
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        rs.getString("RoomImage"),
+                        roomType
+                );
+                list.add(room);
         }
 
     } catch (Exception e) {
@@ -174,6 +175,7 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
+                        rs.getString("RoomImage"),
                         roomType
                 );
             }
@@ -227,6 +229,7 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
+                        rs.getString("RoomImage"),
                         roomType
                 );
 

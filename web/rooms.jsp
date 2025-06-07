@@ -452,12 +452,13 @@ window.addEventListener("DOMContentLoaded", () => {
                                         <div class="widget-post-bx">
                                             <div class="widget-post clearfix">
                                                 <div class="ttr-post-media">
-                                                    <img src="${pageContext.request.contextPath}/${latestRoom.roomType.imageUrl}" width="200" height="143" alt="">
+                                                    <img src="${pageContext.request.contextPath}/${latestRoom.roomImage}" width="200" height="143" alt="">
                                                 </div>
                                                 <div class="ttr-post-info">
                                                     <div class="ttr-post-header">
                                                         <h6 class="post-title">
-                                                            <a href="#">${latestRoom.roomnumber} - Floor ${latestRoom.floor}</a>
+                                                            <a href="${pageContext.request.contextPath}/RoomDetail?id=${latestRoom.roomID}">
+                                                                ${latestRoom.roomnumber} - Floor ${latestRoom.floor}
                                                         </h6>
                                                     </div>
                                                     <div class="ttr-post-meta">
@@ -485,7 +486,7 @@ window.addEventListener("DOMContentLoaded", () => {
                                                 <div class="cours-bx">
                                                     <div class="action-box">
                                                         <!-- Dùng ảnh từ roomType -->
-                                                        <img src="${pageContext.request.contextPath}/${r.roomType.imageUrl}" alt="">
+                                                        <img src="${pageContext.request.contextPath}/${r.roomImage}" alt="Room Image">
                                                         <!-- Nút dẫn tới trang chi tiết phòng -->
                                                         <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}" class="btn">Read More</a>
                                                     </div>

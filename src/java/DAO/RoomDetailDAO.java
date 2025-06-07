@@ -64,12 +64,13 @@ public class RoomDetailDAO {
                     rs.getString("RoomDetail")
                 );
 
-                return new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
+                 return new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        rs.getString("RoomImage"),
+                        roomType
                 );
             }
 
