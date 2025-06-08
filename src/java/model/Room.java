@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Room {
     private int roomID;
+    private int roomTypeID;
     private String roomnumber;
     private int floor;
     private String status;   
@@ -23,6 +24,16 @@ public class Room {
     public Room(int roomID) {
         this.roomID = roomID;
     }
+
+    public Room(int roomID, int roomTypeID, String roomnumber, int floor, String status, String roomImage) {
+        this.roomID = roomID;
+        this.roomTypeID = roomTypeID;
+        this.roomnumber = roomnumber;
+        this.floor = floor;
+        this.status = status;
+        this.roomImage = roomImage;
+    }
+    
 
    public Room(int roomID, String roomnumber, int floor, String status, String roomImage, RoomType roomType) {
     this.roomID = roomID;
@@ -41,6 +52,15 @@ public class Room {
     public void setRoomID(int roomID) {
         this.roomID = roomID;
     }
+
+    public int getRoomTypeID() {
+        return roomTypeID;
+    }
+
+    public void setRoomTypeID(int roomTypeID) {
+        this.roomTypeID = roomTypeID;
+    }
+    
 
     public String getRoomnumber() {
         return roomnumber;

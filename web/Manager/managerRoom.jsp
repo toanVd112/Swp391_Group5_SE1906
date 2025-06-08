@@ -228,11 +228,11 @@
                         <tr>
                             <th><input type="checkbox" id="selectAll"></th>
                             <th>ID</th>
+                            <th>RoomType ID</th>
                             <th>Room Number</th>
                             <th>Floor</th>
-                            <th>Room Type</th>
                             <th>Status</th>
-                            <th>Price</th>
+                            <th>Room Image</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -241,11 +241,11 @@
                             <tr>
                                 <td><input type="checkbox" value="${r.roomID}" /></td>
                                 <td>${r.roomID}</td>
+                                <td>${r.roomTypeID}</td>
                                 <td>${r.roomnumber}</td>
                                 <td>${r.floor}</td>
-                                <td>${r.roomType.name}</td> 
                                 <td>${r.status}</td>
-                                <td>${r.roomType.basePrice}</td> 
+                                <td>${r.roomImage}</td>
                                 <td>
                                     <a href="loadRoom?rid=${r.roomID}" class="edit" title="Edit">&#x270E;</a>
                                     <a href="deleteRoom?rid=${r.roomID}" class="delete" title="Delete">&#x1F5D1;</a>

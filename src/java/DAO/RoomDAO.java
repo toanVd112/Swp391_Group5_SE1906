@@ -180,13 +180,13 @@ public class RoomDAO {
 
     public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
         List<Room> list = new ArrayList<>();
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
-                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1";
+        String sql = "SELECT *"
+                + "FROM rooms WHERE 1=1";
 
         boolean hasSearch = search != null && !search.trim().isEmpty();
 
         if (hasSearch) {
-            sql += " AND r.RoomNumber LIKE ?";
+            sql += " AND RoomNumber LIKE ?";
         }
 
         if ("asc".equalsIgnoreCase(sort)) {
@@ -208,22 +208,13 @@ public class RoomDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("TypeName"),
-                        rs.getString("Description"),
-                        rs.getDouble("BasePrice"),
-                        rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
-                );
-
                 Room room = new Room(
                         rs.getInt("RoomID"),
+                        rs.getInt("roomTypeID"),
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        rs.getString("RoomImage"),
-                        roomType
+                        rs.getString("RoomImage")
                 );
 
                 list.add(room);
@@ -267,9 +258,47 @@ public class RoomDAO {
 
             ps.setString(1, rid);
             ps.executeUpdate();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
+    public void addRoom(int roomTypeID, String roomnumber, int floor, String status, String roomImage) {
+        String sql = "INSERT INTO rooms (RoomTypeID, RoomNumber, Floor, Status, RoomImage)\n"
+                + "VALUES (?,?,?,?,?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, roomTypeID);
+            ps.setString(2, roomnumber);
+            ps.setInt(3, floor);
+            ps.setString(4, status);
+            ps.setString(5, roomImage);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void editRoom(int roomTypeID, String roomnumber, int floor, String status, String roomImage, String rid) {
+        String sql = "Update rooms\n"
+                + "Set RoomTypeID = ?,"
+                + "RoomNumber = ?,"
+                + "Floor = ?,"
+                + "Status = ? ,"
+                + "RoomImage = ?\n"
+                + "Where RoomID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeID);
+            ps.setString(2, roomnumber);
+            ps.setInt(3, floor);
+            ps.setString(4, status);
+            ps.setString(5, roomImage);
+            ps.setString(6, rid);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+        }
+    }
+
 }
