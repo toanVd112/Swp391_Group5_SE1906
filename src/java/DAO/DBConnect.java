@@ -61,5 +61,3 @@ public class DBConnect {
 
     }
 }
-//commit test 
-//commit part 2
