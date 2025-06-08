@@ -59,8 +59,10 @@ public class RoomController extends HttpServlet {
         if (sort != null) {
             if (sort.equals("asc") || sort.equals("desc")) {
                 sortPrice = sort;
-            } else if (sort.equals("floor-asc") || sort.equals("floor-desc")) {
-                sortFloor = sort;
+            } else if (sort.equals("floor-asc")) {
+                sortFloor = "asc";
+            } else if (sort.equals("floor-desc")) {
+                sortFloor = "desc";
             }
         }
 
@@ -95,10 +97,10 @@ public class RoomController extends HttpServlet {
         request.setAttribute("latestRoom", latestRoom);
         request.setAttribute("selectedType", typeId);
         request.setAttribute("selectedFloor", floor);
-        request.setAttribute("sort", sort); // <-- dùng cho phần active
+        request.setAttribute("sort", sort); // dùng cho phần active
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-
+        
         request.getRequestDispatcher("rooms.jsp").forward(request, response);
     }
 

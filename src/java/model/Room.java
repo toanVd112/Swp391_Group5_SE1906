@@ -20,12 +20,10 @@ public class Room {
     private RoomType roomType; // Liên kết với RoomType
     private List<Amenity> amenities;         // Danh sách tiện ích
     private List<PageContent> contents;       // Danh sách nội dung trang
-    // Constructor chỉ với RoomID (nên dùng cho DAO khi chưa có đủ dữ liệu)
     public Room(int roomID) {
         this.roomID = roomID;
     }
 
-    // Constructor đầy đủ (có thể mở rộng nếu muốn)
    public Room(int roomID, String roomnumber, int floor, String status, String roomImage, RoomType roomType) {
     this.roomID = roomID;
     this.roomnumber = roomnumber;

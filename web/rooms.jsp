@@ -60,71 +60,124 @@
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
 
         <style>
-/* Trạng thái phòng */
-.status-available { color: green; font-weight: bold; }
-.status-occupied { color: orange; font-weight: bold; }
-.status-maintenance { color: red; font-weight: bold; }
+            .status-available {
+                color: green;
+                font-weight: bold;
+            }
+            .status-occupied {
+                color: orange;
+                font-weight: bold;
+            }
+            .status-maintenance {
+                color: red;
+                font-weight: bold;
+            }
+            .collapsible {
+                overflow: hidden;
+                transition: max-height 0.4s ease;
+                max-height: 0;
+            }
 
-/* Collapsible */
-.collapsible {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.4s ease;
-}
-.widget-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.toggle-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.toggle-btn i {
-    transition: transform 0.3s ease;
-    color: #888;
-}
-.toggle-btn.rotate i {
-    transform: rotate(180deg);
-}
- .collapsible li.active a {
-     font-weight: bold;
-     color: #6c5ce7;
-    }
+            .collapsible.opening,
+            .collapsible.closing {
+                will-change: max-height;
+            }
+
+            .widget-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .toggle-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                display: flex;
+                align-items: center;
+            }
+
+            .toggle-btn i {
+                font-family: 'themify';
+                font-size: 16px;
+                color: #888;
+                transition: transform 0.3s ease;
+            }
+
+            .toggle-btn.rotate i {
+                transform: rotate(180deg);
+            }
+            .collapsible li.active a {
+                font-weight: bold;
+                color: #6c5ce7;
+            }
         </style>
 
- <script>
-function toggleSection(id, btn) {
-    const section = document.getElementById(id);
-    const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
+        <script>
+            function toggleSection(id, btn) {
+                const section = document.getElementById(id);
+                const iconBtn = btn;
 
-    const isOpen = section.style.maxHeight && section.style.maxHeight !== "0px";
+                if (section.classList.contains("opening") || section.classList.contains("closing"))
+                    return;
 
-    if (isOpen) {
-        section.style.maxHeight = "0";
-        btn.classList.remove("rotate");
-        localStorage.setItem("openSections", JSON.stringify(openSections.filter(s => s !== id)));
-    } else {
-        section.style.maxHeight = section.scrollHeight + "px";
-        btn.classList.add("rotate");
-        if (!openSections.includes(id)) openSections.push(id);
-        localStorage.setItem("openSections", JSON.stringify(openSections));
-    }
-}
+                let openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
 
-window.addEventListener("DOMContentLoaded", () => {
-    const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
-    openSections.forEach(id => {
-        const section = document.getElementById(id);
-        const btn = section?.previousElementSibling?.querySelector(".toggle-btn");
-        if (section && btn) {
-            section.style.maxHeight = section.scrollHeight + "px";
-            btn.classList.add("rotate");
-        }
-    });
-});
-</script>
+                // Đang mở → đóng
+                if (section.style.maxHeight && section.style.maxHeight !== "0px") {
+                    section.classList.add("closing");
+                    section.style.maxHeight = section.scrollHeight + "px";
+                    requestAnimationFrame(() => {
+                        section.style.maxHeight = "0";
+                    });
+                    section.addEventListener("transitionend", function handler() {
+                        section.classList.remove("closing");
+                        section.style.maxHeight = null;
+                        section.removeEventListener("transitionend", handler);
+                    });
+                    iconBtn.classList.remove("rotate");
+
+                    // Xóa khỏi danh sách mở
+                    openSections = openSections.filter(sid => sid !== id);
+                } else {
+                    // Đang đóng → mở
+                    section.classList.add("opening");
+                    section.style.maxHeight = section.scrollHeight + "px";
+                    section.addEventListener("transitionend", function handler() {
+                        section.classList.remove("opening");
+                        section.style.maxHeight = "none";
+                        section.removeEventListener("transitionend", handler);
+                    });
+                    iconBtn.classList.add("rotate");
+
+                    // Thêm vào danh sách mở nếu chưa có
+                    if (!openSections.includes(id)) {
+                        openSections.push(id);
+                    }
+                }
+
+                localStorage.setItem("openSections", JSON.stringify(openSections));
+            }
+
+       // Tự động mở lại nhiều phần đã lưu sau reload
+            window.addEventListener("DOMContentLoaded", () => {
+                const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
+
+                openSections.forEach(id => {
+                    const section = document.getElementById(id);
+                    const btn = section?.previousElementSibling?.querySelector(".toggle-btn");
+                    if (section && btn) {
+                        section.style.maxHeight = section.scrollHeight + "px";
+                        section.style.overflow = "hidden";
+                        section.style.transition = "max-height 0.4s ease";
+                        section.style.maxHeight = "none";
+                        btn.classList.add("rotate");
+                    }
+                });
+            });
+        </script>
     </head>
     <body id="bg">
 
@@ -351,7 +404,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
                                     <div class="widget widget_archive">
-                                        
+
                                         <!-- LOẠI PHÒNG -->
                                         <h5 class="widget-title style-1">
                                             All Room Types
@@ -363,16 +416,24 @@ window.addEventListener("DOMContentLoaded", () => {
                                             <ul>
                                                 <li class="${selectedType == null ? 'active' : ''}">
                                                     <c:url var="urlAllTypes" value="roomlist">
-                                                        <c:param name="floor" value="${selectedFloor}" />
-                                                        <c:param name="sort" value="${sort}" />
+                                                        <c:if test="${selectedFloor != null}">
+                                                            <c:param name="floor" value="${selectedFloor}" />
+                                                        </c:if>
+                                                        <c:if test="${sort != null}">
+                                                            <c:param name="sort" value="${sort}" />
+                                                        </c:if>
                                                     </c:url>
                                                     <a href="${urlAllTypes}">All</a>
                                                 </li>
                                                 <c:forEach var="room" items="${roomTypes}">
                                                     <c:url var="urlRoomType" value="roomlist">
                                                         <c:param name="typeId" value="${room.roomtypeID}" />
-                                                        <c:param name="floor" value="${selectedFloor}" />
-                                                        <c:param name="sort" value="${sort}" />
+                                                        <c:if test="${selectedFloor != null}">
+                                                            <c:param name="floor" value="${selectedFloor}" />
+                                                        </c:if>
+                                                        <c:if test="${sort != null}">
+                                                            <c:param name="sort" value="${sort}" />
+                                                        </c:if>
                                                     </c:url>
                                                     <li class="${selectedType == room.roomtypeID ? 'active' : ''}">
                                                         <a href="${urlRoomType}">${room.name}</a>
@@ -392,16 +453,24 @@ window.addEventListener("DOMContentLoaded", () => {
                                             <ul>
                                                 <li class="${selectedFloor == null ? 'active' : ''}">
                                                     <c:url var="urlAllFloors" value="roomlist">
-                                                        <c:param name="typeId" value="${selectedType}" />
-                                                        <c:param name="sort" value="${sort}" />
+                                                        <c:if test="${selectedType != null}">
+                                                            <c:param name="typeId" value="${selectedType}" />
+                                                        </c:if>
+                                                        <c:if test="${sort != null}">
+                                                            <c:param name="sort" value="${sort}" />
+                                                        </c:if>
                                                     </c:url>
                                                     <a href="${urlAllFloors}">All</a>
                                                 </li>
                                                 <c:forEach var="floor" items="${floors}">
                                                     <c:url var="urlFloor" value="roomlist">
                                                         <c:param name="floor" value="${floor}" />
-                                                        <c:param name="typeId" value="${selectedType}" />
-                                                        <c:param name="sort" value="${sort}" />
+                                                        <c:if test="${selectedType != null}">
+                                                            <c:param name="typeId" value="${selectedType}" />
+                                                        </c:if>
+                                                        <c:if test="${sort != null}">
+                                                            <c:param name="sort" value="${sort}" />
+                                                        </c:if>
                                                     </c:url>
                                                     <li class="${selectedFloor == floor ? 'active' : ''}">
                                                         <a href="${urlFloor}">Floor ${floor}</a>
@@ -418,13 +487,17 @@ window.addEventListener("DOMContentLoaded", () => {
                                             </button>
                                         </h5>
                                         <div id="sortSection" class="collapsible">
-                                            <c:set var="sortOptions">asc,desc,floor-asc,floor-desc</c:set>
-                                                <ul>
+                                            <c:set var="sortOptions" value="asc,desc,floor-asc,floor-desc" />
+                                            <ul>
                                                 <c:forEach var="option" items="${fn:split(sortOptions, ',')}">
                                                     <c:url var="urlSort" value="roomlist">
                                                         <c:param name="sort" value="${option}" />
-                                                        <c:param name="typeId" value="${selectedType}" />
-                                                        <c:param name="floor" value="${selectedFloor}" />
+                                                        <c:if test="${selectedType != null}">
+                                                            <c:param name="typeId" value="${selectedType}" />
+                                                        </c:if>
+                                                        <c:if test="${selectedFloor != null}">
+                                                            <c:param name="floor" value="${selectedFloor}" />
+                                                        </c:if>
                                                     </c:url>
                                                     <li class="${sort == option ? 'active' : ''}">
                                                         <a href="${urlSort}">
@@ -439,7 +512,7 @@ window.addEventListener("DOMContentLoaded", () => {
                                                 </c:forEach>
                                             </ul>
                                         </div>
-                                                
+
                                     </div>
 
 
@@ -485,13 +558,13 @@ window.addEventListener("DOMContentLoaded", () => {
                                             <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
                                                 <div class="cours-bx">
                                                     <div class="action-box">
-                                                        <!-- Dùng ảnh từ roomType -->
+                                                        <!-- Dùng ảnh  -->
                                                         <img src="${pageContext.request.contextPath}/${r.roomImage}" alt="Room Image">
-                                                        <!-- Nút dẫn tới trang chi tiết phòng -->
+
                                                         <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}" class="btn">Read More</a>
                                                     </div>
                                                     <div class="info-bx text-center">
-                                                        <!-- Link tên phòng cũng chuyển tới trang chi tiết -->
+
                                                         <h5>
                                                             <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}">
                                                                 Room ${r.roomnumber}

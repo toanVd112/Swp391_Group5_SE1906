@@ -31,21 +31,14 @@ public class RoomDAO {
         }
 
         // ORDER BY nhiều điều kiện nếu có
-        List<String> orderList = new ArrayList<>();
         if ("asc".equalsIgnoreCase(sortFloor)) {
-            orderList.add("r.Floor ASC");
+            sql.append(" ORDER BY r.Floor ASC");
         } else if ("desc".equalsIgnoreCase(sortFloor)) {
-            orderList.add("r.Floor DESC");
-        }
-
-        if ("asc".equalsIgnoreCase(sortPrice)) {
-            orderList.add("rt.BasePrice ASC");
+            sql.append(" ORDER BY r.Floor DESC");
+        } else if ("asc".equalsIgnoreCase(sortPrice)) {
+            sql.append(" ORDER BY rt.BasePrice ASC");
         } else if ("desc".equalsIgnoreCase(sortPrice)) {
-            orderList.add("rt.BasePrice DESC");
-        }
-
-        if (!orderList.isEmpty()) {
-            sql.append(" ORDER BY ").append(String.join(", ", orderList));
+            sql.append(" ORDER BY rt.BasePrice DESC");
         } else {
             sql.append(" ORDER BY r.Floor ASC"); // mặc định
         }
