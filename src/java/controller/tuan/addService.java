@@ -1,153 +1,161 @@
+// Gói (package) chứa class này, giúp tổ chức code theo thư mục controller.tuan
 package controller.tuan;
 
-import DAO.ServiceDAO;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.Account; // Cần import model.Account
-import model.Service; // Cần import model.Service
+// Các thư viện (import) cần thiết để class hoạt động
+import DAO.ServiceDAO; // Lớp ServiceDAO để tương tác với cơ sở dữ liệu (thêm dịch vụ mới)
+import jakarta.servlet.ServletException; // Xử lý lỗi liên quan đến servlet
+import jakarta.servlet.annotation.WebServlet; // Đánh dấu đây là một servlet và định nghĩa URL
+import jakarta.servlet.http.HttpServlet; // Lớp cha của servlet, cung cấp các chức năng cơ bản
+import jakarta.servlet.http.HttpServletRequest; // Đại diện cho yêu cầu từ trình duyệt (như dữ liệu form)
+import jakarta.servlet.http.HttpServletResponse; // Đại diện cho phản hồi gửi về trình duyệt
+import jakarta.servlet.http.HttpSession; // Quản lý phiên (session) để lưu thông tin người dùng
+import model.Account; // Lớp Account đại diện cho tài khoản người dùng
+import model.Service; // Lớp Service đại diện cho dịch vụ (như tên, giá, trạng thái)
+import java.io.IOException; // Xử lý lỗi khi làm việc với input/output (như đọc/ghi dữ liệu)
+import java.time.LocalDateTime; // Lớp để lấy thời gian hiện tại (dùng cho createDate, lastUpdateDate)
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-
-// Đổi tên class và WebServlet name để tránh trùng với tên package và rõ ràng hơn
+// Đánh dấu đây là một servlet với tên "AddServiceServlet" và URL "/addService"
+// Khi người dùng truy cập URL này (ví dụ: http://localhost:8080/addService), servlet sẽ được gọi
 @WebServlet(name = "AddServiceServlet", urlPatterns = {"/addService"})
 public class addService extends HttpServlet {
 
     /**
-     * Handles the HTTP <code>GET</code> method.
-     * Chuyển hướng đến trang JSP để hiển thị form thêm dịch vụ.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Xử lý yêu cầu HTTP GET
+     * Mục đích: Hiển thị form thêm dịch vụ mới (addService.jsp)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Lấy phiên (session) hiện tại, false nghĩa là không tạo session mới nếu chưa có
         HttpSession session = request.getSession(false);
-        // Kiểm tra quyền truy cập của người dùng
+        // Kiểm tra xem người dùng đã đăng nhập chưa
         if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect(request.getContextPath() + "/login_2.jsp"); // Chuyển đến trang đăng nhập
-            return;
-        }
-        Account account = (Account) session.getAttribute("account");
-        if (!"Manager".equals(account.getRole())) {
-            // Nếu không phải Manager, có thể chuyển hướng về trang chủ hoặc trang lỗi quyền
+            // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
             response.sendRedirect(request.getContextPath() + "/login_2.jsp");
-            return;
+            return; // Dừng xử lý tiếp
+        }
+        // Lấy thông tin tài khoản từ session
+        Account account = (Account) session.getAttribute("account");
+        // Kiểm tra xem người dùng có vai trò "Manager" không
+        if (!"Manager".equals(account.getRole())) {
+            // Nếu không phải Manager, chuyển hướng về trang đăng nhập
+            response.sendRedirect(request.getContextPath() + "/login_2.jsp");
+            return; // Dừng xử lý tiếp
         }
 
-        // Đường dẫn đến addService.jsp (giả sử nằm trong /manager/addService.jsp)
-        // Nếu JSP nằm ở thư mục gốc webapp, dùng "/addService.jsp"
+        // Chuyển tiếp (forward) yêu cầu tới file addService.jsp để hiển thị form thêm dịch vụ
+        // Đường dẫn "../Manager/addService.jsp" giả sử JSP nằm trong thư mục Manager
         request.getRequestDispatcher("../Manager/addService.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     * Xử lý dữ liệu từ form thêm dịch vụ và lưu vào cơ sở dữ liệu.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Xử lý yêu cầu HTTP POST
+     * Mục đích: Lấy dữ liệu từ form, validate, và lưu dịch vụ mới vào cơ sở dữ liệu
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8"); // Đảm bảo xử lý đúng tiếng Việt
+        // Đặt mã hóa UTF-8 để hỗ trợ tiếng Việt trong dữ liệu form
+        request.setCharacterEncoding("UTF-8");
+        // Đặt kiểu nội dung trả về là HTML với mã hóa UTF-8
         response.setContentType("text/html;charset=UTF-8");
 
+        // Lấy phiên (session) hiện tại
         HttpSession session = request.getSession(false);
         Account currentAccount = null;
         if (session != null) {
+            // Lấy thông tin tài khoản từ session
             currentAccount = (Account) session.getAttribute("account");
         }
 
-        // Kiểm tra đăng nhập và quyền
+        // Kiểm tra đăng nhập và quyền Manager
         if (currentAccount == null || !"Manager".equals(currentAccount.getRole())) {
+            // Nếu chưa đăng nhập hoặc không phải Manager, chuyển hướng về trang đăng nhập
             response.sendRedirect(request.getContextPath() + "/login_2.jsp");
-            return;
+            return; // Dừng xử lý tiếp
         }
-        // Giả sử Account model có getUsername() hoặc một phương thức tương tự để lấy tên người dùng
+        // Lấy tên người dùng từ tài khoản (giả sử Account có phương thức getUsername)
         String loggedInUser = currentAccount.getUsername();
 
-        // Lấy thông tin từ form
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String priceStr = request.getParameter("price");
-        String status = request.getParameter("status");
-        String serviceType = request.getParameter("serviceType");
-        String serviceImage = request.getParameter("serviceImage");
+        // Lấy dữ liệu từ form (các trường trong addService.jsp)
+        String name = request.getParameter("name"); // Tên dịch vụ
+        String description = request.getParameter("description"); // Mô tả dịch vụ
+        String priceStr = request.getParameter("price"); // Giá (dạng chuỗi)
+        String status = request.getParameter("status"); // Trạng thái (ví dụ: "1" hoặc "0")
+        String serviceType = request.getParameter("serviceType"); // Loại dịch vụ
+        String serviceImage = request.getParameter("serviceImage"); // URL hình ảnh
 
-        String jspPath = "../manager/addService.jsp"; // Đường dẫn tới JSP để forward lại nếu có lỗi
+        // Đường dẫn tới JSP để quay lại nếu có lỗi
+        String jspPath = "../manager/addService.jsp";
 
-        // Validate đầu vào cơ bản
+        // Validate dữ liệu đầu vào cơ bản
         if (name == null || name.trim().isEmpty() || priceStr == null || priceStr.trim().isEmpty()) {
+            // Nếu tên hoặc giá rỗng, đặt thông báo lỗi
             request.setAttribute("errorMessage", "Tên dịch vụ và giá là bắt buộc.");
+            // Chuyển tiếp về form để người dùng nhập lại
             request.getRequestDispatcher(jspPath).forward(request, response);
-            return;
+            return; // Dừng xử lý tiếp
         }
 
         int price;
         try {
-            // JSP có step="0.01", nhưng DAO và model Service dùng int cho price.
-            // Nếu price có thể là số thập phân, cần sửa model và DAO (dùng BigDecimal).
-            // Hiện tại, chuyển đổi sang int (làm tròn xuống nếu có phần thập phân).
+            // Chuyển giá từ chuỗi sang số (lưu ý: form có thể gửi số thập phân)
+            // Hiện tại ép kiểu sang int, làm tròn xuống nếu có phần thập phân
             price = (int) Double.parseDouble(priceStr);
+            // Kiểm tra giá âm
             if (price < 0) {
-                 request.setAttribute("errorMessage", "Giá không được là số âm.");
-                 request.getRequestDispatcher(jspPath).forward(request, response);
-                 return;
+                request.setAttribute("errorMessage", "Giá không được là số âm.");
+                request.getRequestDispatcher(jspPath).forward(request, response);
+                return; // Dừng xử lý tiếp
             }
         } catch (NumberFormatException e) {
+            // Nếu giá không phải số hợp lệ, đặt thông báo lỗi
             request.setAttribute("errorMessage", "Giá không hợp lệ. Vui lòng nhập một số.");
             request.getRequestDispatcher(jspPath).forward(request, response);
-            return;
+            return; // Dừng xử lý tiếp
         }
 
-        // Tạo đối tượng Service
+        // Tạo đối tượng Service để lưu thông tin dịch vụ mới
         Service newService = new Service();
         newService.setName(name);
         newService.setDescription(description);
         newService.setPrice(price);
         newService.setStatus(status);
         newService.setType(serviceType);
-        newService.setServiceImage(serviceImage); // URL hình ảnh
-        newService.setCreateDate(LocalDateTime.now());
-        newService.setLastUpdateDate(LocalDateTime.now());
-        newService.setCreatedBy(loggedInUser);
-        newService.setLastUpdateBy(loggedInUser);
+        newService.setServiceImage(serviceImage);
+        newService.setCreateDate(LocalDateTime.now()); // Lưu thời gian tạo
+        newService.setLastUpdateDate(LocalDateTime.now()); // Lưu thời gian cập nhật
+        newService.setCreatedBy(loggedInUser); // Lưu người tạo
+        newService.setLastUpdateBy(loggedInUser); // Lưu người cập nhật
 
+        // Tạo đối tượng ServiceDAO để tương tác với cơ sở dữ liệu
         ServiceDAO serviceDAO = new ServiceDAO();
         boolean success = false;
         try {
+            // Gọi phương thức addService để lưu dịch vụ mới
             success = serviceDAO.addService(newService);
         } catch (Exception e) {
-            e.printStackTrace(); // Log lỗi server
+            // Nếu có lỗi (như lỗi cơ sở dữ liệu), in lỗi ra console
+            e.printStackTrace();
+            // Đặt thông báo lỗi cho người dùng
             request.setAttribute("errorMessage", "Lỗi hệ thống khi thêm dịch vụ: " + e.getMessage());
             request.getRequestDispatcher(jspPath).forward(request, response);
-            return;
+            return; // Dừng xử lý tiếp
         }
 
+        // Kiểm tra kết quả thêm dịch vụ
         if (success) {
-            // Chuyển hướng đến trang danh sách dịch vụ với thông báo thành công
-            // Giả sử URL của trang danh sách là "/services/list" (theo link trong JSP)
+            // Nếu thành công, chuyển hướng về trang danh sách dịch vụ với thông báo
             response.sendRedirect(request.getContextPath() + "/services/list?addStatus=success");
         } else {
+            // Nếu thất bại, đặt thông báo lỗi và quay lại form
             request.setAttribute("errorMessage", "Thêm dịch vụ mới thất bại. Vui lòng thử lại.");
             request.getRequestDispatcher(jspPath).forward(request, response);
         }
     }
 
     /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
+     * Mô tả ngắn gọn về servlet
      */
     @Override
     public String getServletInfo() {
