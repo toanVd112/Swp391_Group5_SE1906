@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.*;
 import DAO.UserDao;
+import model.Account;
 import model.User;
 
 /**
@@ -58,17 +59,20 @@ public class UserProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        if (accountId == null) {
+        Account account = (Account) session.getAttribute("user");
+        if (account == null) {
             response.sendRedirect("login.jsp");
             return;
         }
+        int accountId = account.getAccountID();
 
         UserDao userDAO = new UserDao();
         User user = userDAO.getUserByAccountId(accountId);
         request.setAttribute("user", user);
-        request.getRequestDispatcher("user-profile.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
     } 
 
     /** 
@@ -81,14 +85,17 @@ public class UserProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8"); // Đảm bảo nhận Tiếng Việt
         
         HttpSession session = request.getSession();
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        if (accountId == null) {
+        Account account = (Account) session.getAttribute("user");
+        if (account == null) {
             response.sendRedirect("login.jsp");
             return;
         }
+        
+        int accountId = account.getAccountID();
         
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
@@ -97,7 +104,7 @@ public class UserProfileServlet extends HttpServlet {
 
         UserDao userDAO = new UserDao();
         User user = userDAO.getUserByAccountId(accountId);
-        boolean ok = false;
+        boolean ok;
         if (user == null) {
             // Thêm mới
             user = new User();
@@ -121,7 +128,7 @@ public class UserProfileServlet extends HttpServlet {
             request.setAttribute("msg", "Có lỗi xảy ra!");
         }
         request.setAttribute("user", userDAO.getUserByAccountId(accountId)); // load lại info mới nhất
-        request.getRequestDispatcher("user-profile.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
     }
 
     /** 

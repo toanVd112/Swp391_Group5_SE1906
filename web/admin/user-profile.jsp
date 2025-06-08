@@ -1,13 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from educhamp.themetrades.com/demo/admin/user-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 22 Feb 2019 13:11:35 GMT -->
 <head>
 
 	<!-- META ============================================= -->
-	
+	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="keywords" content="" />
 	<meta name="author" content="" />
@@ -85,6 +87,7 @@
 						</div>
 					</li>
 				</ul>
+                                        
 				<!-- header left menu end -->
 			</div>
 			<div class="ttr-header-right ttr-with-seperator">
@@ -339,20 +342,17 @@
 							<h4>User Profile</h4>
 						</div>
 						<div class="widget-inner">
-                                                    
-                                                    <!-- FORM X? LÝ THÔNG TIN NG??I DÙNG -->
-							<form method="post" action="user-profile" class="edit-profile m-b30">
-                                                            <div class="">
+							<form method="post" action="${pageContext.request.contextPath}/user-profile" class="edit-profile m-b30">
+								<div class="">
 									<div class="form-group row">
 										<div class="col-sm-10  ml-auto">
 											<h3>1. Personal Details</h3>
 										</div>
 									</div>
 									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Full name</label>
+										<label class="col-sm-2 col-form-label">Full Name</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="fullName" type="text" 
-												value="${user != null ? user.fullName : ''}">
+											  <input class="form-control" name="fullName" type="text" value="${user.fullName}" />
 										</div>
 									</div>
 									
@@ -360,8 +360,7 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Phone No.</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="phone" type="text" 
-												value="${user != null ? user.phone : ''}">
+											<input class="form-control" name="phone" type="text" value="${user.phone}" />
 										</div>
 									</div>
 									
@@ -375,12 +374,9 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Address</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="address" type="text" 
-												value="${user != null ? user.address : ''}">
+											<input class="form-control" name="address" type="text" value="${user.address}" />
 										</div>
 									</div>
-									
-									
 
 									<div class="m-form__seperator m-form__seperator--dashed m-form__seperator--space-2x"></div>
 
@@ -394,19 +390,19 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Facebook</label>
 										<div class="col-sm-7">
-											<input class="form-control" type="text" value="">
+											<input class="form-control" type="text" value="www.facebook.com">
 										</div>
 									</div>
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Email</label>
 										<div class="col-sm-7">
-											<input class="form-control" type="email" name="email" value="${user != null ? user.email : ''}">
+											<input class="form-control" type="email" name="email" value="${user.email}">
 										</div>
 									</div>
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Instagram</label>
 										<div class="col-sm-7">
-											<input class="form-control" type="text" value="">
+											<input class="form-control" type="text" value="www.instagram.com">
 										</div>
 									</div>
 								</div>
@@ -416,15 +412,16 @@
 											<div class="col-sm-2">
 											</div>
 											<div class="col-sm-7">
-                                                                                            <button type="submit" class="btn">Save changes</button>
+												<button type="reset" class="btn">Save changes</button>
 												<button type="reset" class="btn-secondry">Cancel</button>
 											</div>
 										</div>
+                                                                            <c:if test="${not empty msg}">
+                                                                                <div class="alert alert-success">${msg}</div>
+                                                                            </c:if>
 									</div>
 								</div>
-                                                                <c:if test="${not empty msg}">
-									<div class="alert alert-success">${msg}</div>
-								</c:if>                
+                                                                              
 							</form>
 							<form class="edit-profile">
 								<div class="">
@@ -456,8 +453,8 @@
 									<div class="col-sm-2">
 									</div>
 									<div class="col-sm-7">
-										<button type="reset" class="btn">Save changes</button>
-										<button type="reset" class="btn-secondry">Cancel</button>
+                                                                                <button type="submit" class="btn">Save changes</button>
+									        <button type="reset" class="btn-secondry">Cancel</button>
 									</div>
 								</div>
 									
