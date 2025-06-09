@@ -150,40 +150,68 @@
             <div class="card">
                 <h1>Activity Logs</h1>
 
-                <form class="filter-form" action="activityStaff" method="get">
-                    <label>Username:</label>
-                    <input type="text" name="username" value="${param.username}" />
+                <form class="filter-form" action="activityStaff" method="get" novalidate>
 
-                    <label>Action Type:</label>
-                    <select name="actionType">
-                        <option value="">All</option>
-                        <option value="Add" ${param.actionType == 'Add' ? 'selected' : ''}>Add</option>
-                        <option value="Delete" ${param.actionType == 'Delete' ? 'selected' : ''}>Delete</option>
-                        <option value="Update" ${param.actionType == 'Update' ? 'selected' : ''}>Update</option>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username"
+                           value="${param.username}"
+                           required
+                           oninvalid="this.setCustomValidity('Username không được bỏ trống')"
+                           oninput="this.setCustomValidity('')" />
+
+                    <label for="actionType">Action Type:</label>
+                    <select id="actionType" name="actionType"
+                            required
+                            oninvalid="this.setCustomValidity('Hãy chọn Action Type')"
+                            oninput="this.setCustomValidity('')">
+                        <option value="">-- Chọn Action --</option>
+                        <option value="Add"    ${param.actionType=='Add'    ? 'selected':''}>Add</option>
+                        <option value="Delete" ${param.actionType=='Delete' ? 'selected':''}>Delete</option>
+                        <option value="Update" ${param.actionType=='Update' ? 'selected':''}>Update</option>
                     </select>
 
-                    <label>Target Table:</label>
-                    <input type="text" name="targetTable" value="${param.targetTable}" />
+                    <label for="targetTable">Target Table:</label>
+                    <input type="text" id="targetTable" name="targetTable"
+                           value="${param.targetTable}"
+                           required
+                           oninvalid="this.setCustomValidity('Target Table không được bỏ trống')"
+                           oninput="this.setCustomValidity('')" />
 
-                    <label>From:</label>
-                    <input type="date" name="from" value="${param.from}" />
+                    <label for="from">From (ngày):</label>
+                    <input type="date" id="from" name="from"
+                           value="${param.from}"
+                           required
+                           oninvalid="this.setCustomValidity('Chọn ngày bắt đầu')"
+                           oninput="this.setCustomValidity('')" />
 
-                    <label>To:</label>
-                    <input type="date" name="to" value="${param.to}" />
+                    <label for="to">To (ngày):</label>
+                    <input type="date" id="to" name="to"
+                           value="${param.to}"
+                           required
+                           oninvalid="this.setCustomValidity('Chọn ngày kết thúc')"
+                           oninput="this.setCustomValidity('')" />
 
-                    <label>Target ID:</label>
-                    <input type="number" name="targetID" value="${param.targetID}" />
+                    <label for="targetID">Target ID:</label>
+                    <input type="number" id="targetID" name="targetID"
+                           value="${param.targetID}"
+                           required
+                           oninvalid="this.setCustomValidity('Target ID không được để trống')"
+                           oninput="this.setCustomValidity('')" />
+
+                    <label for="pageSize">Số dòng / trang:</label>
+                    <select id="pageSize" name="pageSize"
+                            required
+                            oninvalid="this.setCustomValidity('Chọn số dòng/trang')"
+                            oninput="this.setCustomValidity('')">
+                        <option value="">-- Chọn --</option>
+                        <option value="5"  ${param.pageSize=='5'  ? 'selected':''}>5</option>
+                        <option value="10" ${param.pageSize=='10' ? 'selected':''}>10</option>
+                        <option value="20" ${param.pageSize=='20' ? 'selected':''}>20</option>
+                    </select>
 
                     <button type="submit">Filter</button>
-                    <label>Số dòng/trang:</label>
-                    <select name="pageSize" onchange="this.form.submit()">
-                        <option value="5" ${param.pageSize == '5' ? 'selected' : ''}>5</option>
-                        <option value="10" ${param.pageSize == '10' ? 'selected' : ''}>10</option>
-                        <option value="20" ${param.pageSize == '20' ? 'selected' : ''}>20</option>
-                    </select>
-                    <button type="button" class="form-btn" onclick="window.location.href = 'activityStaff'">Reset</button>
+                    <button type="reset">Reset</button>
                 </form>
-
 
                 <table>
                     <thead>

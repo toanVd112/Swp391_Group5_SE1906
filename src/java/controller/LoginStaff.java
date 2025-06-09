@@ -105,8 +105,13 @@ public class LoginStaff extends HttpServlet {
             }
         } else {
             // Sai thông tin hoặc role không đúng
-            request.setAttribute("result", "Invalid username, password, or role.");
-            request.getRequestDispatcher("login_2.jsp").forward(request, response);
+             request.setAttribute("pass", password);
+            request.setAttribute("username", username);
+            request.setAttribute("role", selectedRole);
+            request.setAttribute("result", "Invalid username, password or role");
+            // forward (không redirect) để giữ nguyên request
+            request.getRequestDispatcher("login_2.jsp")
+                    .forward(request, response);
 
         }
     }

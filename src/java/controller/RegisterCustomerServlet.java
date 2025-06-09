@@ -21,7 +21,6 @@ import model.Account;
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/Register"})
 public class RegisterCustomerServlet extends HttpServlet {
 
-  
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -62,41 +61,65 @@ public class RegisterCustomerServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        AccountDAO dao = new AccountDAO();
-        Validation val = new Validation();
+
+        // Lấy dữ liệu từ form
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
         String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
 
-        Account account = new Account();
-        account.setUsername(username);
-        account.setPassword(password);
-        account.setEmail(email);
-        account.setRole("Customer");
+        // Đặt lại để JSP đổ giá trị khi error
+        request.setAttribute("username", username);
+        request.setAttribute("email", email);
+        request.setAttribute("password", password);
+        request.setAttribute("confirmPassword", confirmPassword);
 
+        Validation val = new Validation();
+        AccountDAO dao = new AccountDAO();
+
+        // 1. Kiểm tra username
         if (!val.validateUsername(username)) {
-            request.setAttribute("result", "user ít nhất 4 kí tự");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-        }
-        if (!val.validatePassword(password)) {
-            request.setAttribute("result", "  Pass ít nhất 6 kí tự,Có ít nhất một chữ hoa, một chữ thường, một số, ký tự đặc biệt");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-        }
-        if (dao.isDuplicateAccount(username, email) || !val.validateUsername(username) || !val.validatePassword(password)) {
-            request.setAttribute("result", "Đăng ký thất bại, trùng username hoặc mail!");
+            request.setAttribute("result", "Username phải >= 4 ký tự");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
-        boolean result = dao.insertAccount(account);
 
-        if (result) {
-            response.sendRedirect("login.jsp"); // Redirect nếu thành công
+        // 2. Kiểm tra password
+        if (!val.validatePassword(password)) {
+            request.setAttribute("result", "Password phải >= 6 ký tự, có ký tự hoa, thường, số, đặc biệt");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // 3. Kiểm tra confirm password
+        if (!password.equals(confirmPassword)) {
+            request.setAttribute("result", "Password và Confirm Password không khớp");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // 4. Kiểm tra trùng username hoặc email
+        if (dao.isDuplicateAccount(username, email)) {
+            request.setAttribute("result", "Username hoặc Email đã tồn tại");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // 5. Tạo account và lưu
+        Account account = new Account();
+        account.setUsername(username);
+        account.setEmail(email);
+        account.setPassword(password);
+        account.setRole("Customer");
+
+        boolean inserted = dao.insertAccount(account);
+        if (inserted) {
+            // Đăng ký thành công, chuyển đến login
+            response.sendRedirect("login.jsp");
         } else {
-            request.setAttribute("result", "Đăng ký thất bại!");
+            request.setAttribute("result", "Đăng ký thất bại, vui lòng thử lại");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

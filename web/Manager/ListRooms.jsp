@@ -154,7 +154,7 @@
                         </c:forEach>
                     </select>
 
-                    <input type="text" name="keyword" placeholder="Số phòng chứa..." value="${f_keyword}" />
+                    <input type="number" name="keyword" placeholder="Số phòng chứa..." value="${f_keyword}" />
 
                     <input type="number" name="minFloor" placeholder="Tầng từ" style="width:80px" value="${f_minFloor}" />
                     <input type="number" name="maxFloor" placeholder="đến" style="width:80px" value="${f_maxFloor}" />

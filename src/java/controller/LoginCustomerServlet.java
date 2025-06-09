@@ -62,7 +62,7 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -79,28 +79,23 @@ public class LoginCustomerServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String remember = request.getParameter("rememberMe");
 
         AccountDAO dao = new AccountDAO();
         Account account = dao.login(username, password);
 
         if (account != null) {
             HttpSession session = request.getSession();
-            
-            // 60 phút (3600 giây)
 
+            // 60 phút (3600 giây)
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
 
             session.setAttribute("user", account);
 //            session.setAttribute("accountId", account.getAccountID());
 
-            if ("on".equals(remember)) {
-                Cookie cookie = new Cookie("userName", account.getUsername());
-                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
-                response.addCookie(cookie);
-            }
             response.sendRedirect("Home");
         } else {
+            request.setAttribute("username", username);
+            request.setAttribute("pass", password);
             request.setAttribute("result", "Invalid username or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }

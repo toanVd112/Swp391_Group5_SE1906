@@ -23,8 +23,8 @@ public class EmailUtil {
         // Gửi email sử dụng JavaMail. 
         // Bạn cần cấu hình SMTP Server, tài khoản email, mật khẩu ứng dụng...
         // Đây là ví dụ tối giản:
-        final String from = "toan74428@gmail.com";
-        final String pass = "qbvk ucpo aolr ajwe";
+        final String from = "fcpctk@gmail.com";
+        final String pass = "daeg attb munj hkxz";
         final String host = "smtp.gmail.com";
         Properties props = new Properties();
         props.put("mail.smtp.host", host);

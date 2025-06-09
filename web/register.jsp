@@ -68,41 +68,69 @@
                             <h2 class="title-head">Sign Up <span>Now</span></h2>
                             <p>Already have an account? <a href="login.jsp">Click here</a></p>
                         </div>	
-                        <form action="Register" method="post" class="contact-bx">
-                            <div class="row placeani">
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <label>Username</label>
-                                        <input name="username" type="text" required class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <label>Password</label>
-                                        <input name="password" type="password" required class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <label>Email</label>
-                                        <input name="email" type="email" required class="form-control">
-                                    </div>
-                                </div>
+                    
+          <form action="Register" method="post" class="contact-bx">
+            <div class="row placeani">
 
-                                <div class="col-lg-12 m-b30">
-                                    <button type="submit" class="btn button-md">Sign Up</button>
-                                </div>
-                            </div>
-                        </form>
-                        <%
-                          String result = (String) request.getAttribute("result");
-                        %>
+              <!-- Username -->
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Username</label>
+                  <input name="username" type="text"
+                         class="form-control"
+                         required
+                         value="${username != null ? username : ''}" />
+                </div>
+              </div>
 
-                        <% if (result != null) { %>
-                        <div class="alert alert-info">
-                            <%= result %>
-                        </div>
-                        <% } %>
+              <!-- Email -->
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Email</label>
+                  <input name="email" type="email"
+                         class="form-control"
+                         required
+                         value="${email != null ? email : ''}" />
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Password</label>
+                  <input name="password" type="password"
+                         class="form-control"
+                         required
+                         value="${password != null ? password : ''}" />
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Confirm Password</label>
+                  <input name="confirmPassword" type="password"
+                         class="form-control"
+                         required
+                         value="${confirmPassword != null ? confirmPassword : ''}" />
+                </div>
+              </div>
+
+              <div class="col-lg-12 m-b30">
+                <button type="submit" class="btn button-md">Sign Up</button>
+              </div>
+
+            </div>
+          </form>
+          <%
+            String result = (String) request.getAttribute("result");
+          %>
+
+          <% if (result != null) { %>
+          <div class="alert alert-info">
+              <%= result %>
+          </div>
+          <% } %>
 
                     </div>
                 </div>

@@ -21,8 +21,8 @@
         <!-- DESCRIPTION -->
         <meta name="description" content="HoangNam Hotel />
 
-        <!-- OG -->
-        <meta property="og:title" content="HoangNam Hotel" />
+              <!-- OG -->
+              <meta property="og:title" content="HoangNam Hotel" />
         <meta property="og:description" content="HoangNam Hotel" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
@@ -61,7 +61,7 @@
             <div id="loading-icon-bx"></div>
             <div class="account-form">
                 <div class="account-head" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
-                                        <a href="Home"><img src="https://sdmntprcentralus.oaiusercontent.com/files/00000000-d6e4-61f5-b8f5-ed132ce8136d/raw?se=2025-05-23T18%3A54%3A16Z&sp=r&sv=2024-08-04&sr=b&scid=d42d4d8a-3666-5c1c-aed3-eecb2c5f8c56&skoid=add8ee7d-5fc7-451e-b06e-a82b2276cf62&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-22T19%3A19%3A10Z&ske=2025-05-23T19%3A19%3A10Z&sks=b&skv=2024-08-04&sig=P147Fz%2B1AhPFYZ2ShbDI9hITzNLLl17opDMuAL%2B9dcI%3D" alt=""></a>
+                    <a href="Home"><img src="https://sdmntprcentralus.oaiusercontent.com/files/00000000-d6e4-61f5-b8f5-ed132ce8136d/raw?se=2025-05-23T18%3A54%3A16Z&sp=r&sv=2024-08-04&sr=b&scid=d42d4d8a-3666-5c1c-aed3-eecb2c5f8c56&skoid=add8ee7d-5fc7-451e-b06e-a82b2276cf62&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-22T19%3A19%3A10Z&ske=2025-05-23T19%3A19%3A10Z&sks=b&skv=2024-08-04&sig=P147Fz%2B1AhPFYZ2ShbDI9hITzNLLl17opDMuAL%2B9dcI%3D" alt=""></a>
 
                 </div>
                 <div class="account-form-inner">
@@ -69,50 +69,44 @@
                         <div class="heading-bx left">
                             <h2 class="title-head">Login to your <span>Account</span></h2>
                             <p>Don't have an account? <a href="register.jsp">Create one here</a></p>
-                              <p>Manager, Staff? <a href="login_2.jsp">Login here</a></p>
-                               <p>Forget password <a href="requestPassword.jsp">Click here</a></p>
+                            <p>Manager, Staff? <a href="login_2.jsp">Login here</a></p>
+                            <p>Forget password <a href="requestPassword.jsp">Click here</a></p>
+                            <p>Comeback to Home <a href="Home">Click here</a></p>
                         </div>	
                         <form action="LoginServlet" method="post" class="contact-bx">
                             <div class="row placeani">
+
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label>Your Name</label>
-                                            <input name="username" type="text" required="" class="form-control">
+                                            <input name="username" type="text" required
+                                                   class="form-control"
+                                                   value="${username != null ? username : ''}" />
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <div class="input-group"> 
                                             <label>Your Password</label>
-                                            <input name="password" type="password" class="form-control" required="">
+                                            <input name="password" type="password"
+                                                   class="form-control" required 
+                                                   value="${pass != null ? pass : ''}"/>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12">
-<!--                                    <div class="form-group form-forget">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="customControlAutosizing" name="rememberMe">
-                                            <label class="custom-control-label" for="customControlAutosizing">Remember me</label>
-                                        </div>
-                                        <a href="forget-password.html" class="ml-auto">Forgot Password?</a>
-                                    </div>-->
-                                </div>
+
                                 <div class="col-lg-12 m-b30">
-                                    <button name="submit" type="submit" value="Submit" class="btn button-md">Login</button>
+                                    <button name="submit" type="submit" value="Submit"
+                                            class="btn button-md">Login</button>
                                 </div>
-<!--                                <div class="col-lg-12">
-                                    <h6>Login with Social media</h6>
-                                    <div class="d-flex">
-                                        <a class="btn flex-fill m-r5 facebook" href="#"><i class="fa fa-facebook"></i>Facebook</a>
-                                        <a class="btn flex-fill m-l5 google-plus" href="#"><i class="fa fa-google-plus"></i>Google Plus</a>
-                                    </div>
-                                </div>-->
                             </div>
                         </form>
-                         <%
-                          String result = (String) request.getAttribute("result");
+
+                        <%
+                         String result = (String) request.getAttribute("result");
                         %>
 
                         <% if (result != null) { %>
