@@ -80,7 +80,7 @@ public class EditAccount extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
-        AccountDAO ad = new AccountDAO();
+
         String user = request.getParameter("username");
         String pass = request.getParameter("password");
         String role = request.getParameter("role");
@@ -88,16 +88,41 @@ public class EditAccount extends HttpServlet {
         String email = request.getParameter("email");
         String aid = request.getParameter("aid");
 
+        // Validate dữ liệu đầu vào
+        if (user == null || user.trim().isEmpty()) {
+            request.setAttribute("error", "Username must not be empty.");
+            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
+            request.getRequestDispatcher("editAccount").forward(request, response);
+            return;
+        }
+
+        if (pass == null || pass.trim().isEmpty()) {
+            request.setAttribute("error", "Password must not be empty.");
+            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
+            request.getRequestDispatcher("editAccount").forward(request, response);
+            return;
+        }
+
+        if (email == null || email.trim().isEmpty() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            request.setAttribute("error", "Invalid email address.");
+            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
+            request.getRequestDispatcher("editAccount").forward(request, response);
+            return;
+        }
+
         boolean isActive = Boolean.parseBoolean(active);
+        AccountDAO ad = new AccountDAO();
         ad.editAccount(user, pass, role, isActive, email, aid);
+
         Account currentUser = (Account) request.getSession().getAttribute("account");
-        int newID = new AccountDAO().getLatestAccountID();
+        int editedID = Integer.parseInt(aid);
         ActivityStaffDAO logDAO = new ActivityStaffDAO();
         try {
-            logDAO.logAction(currentUser.getAccountID(), "Edit", "accounts", newID);
+            logDAO.logAction(currentUser.getAccountID(), "Edit", "accounts", editedID);
         } catch (SQLException ex) {
-            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditAccount.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         response.sendRedirect("managerAccount");
     }
 
