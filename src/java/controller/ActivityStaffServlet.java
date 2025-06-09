@@ -34,7 +34,7 @@ public class ActivityStaffServlet extends HttpServlet {
         String targetID = request.getParameter("targetID");
 
         int page = parseIntOrDefault(request.getParameter("page"), 1);
-        int pageSize = parseIntOrDefault(request.getParameter("pageSize"), 10);
+        int pageSize = parseIntOrDefault(request.getParameter("pageSize"), 5);
         int offset = (page - 1) * pageSize;
 
         ActivityStaffDAO dao = new ActivityStaffDAO();

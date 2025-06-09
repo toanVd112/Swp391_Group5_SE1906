@@ -311,44 +311,44 @@
                             <div class="row">
                                 <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
                                     <c:forEach var="room" items="${roomTypes}">
-    <c:url var="roomUrl" value="roomlist">
-        <c:param name="typeId" value="${room.roomtypeID}" />
-        <c:if test="${selectedFloor != null}">
-            <c:param name="floor" value="${selectedFloor}" />
-        </c:if>
-    </c:url>
+                                        <c:url var="roomUrl" value="roomlist">
+                                            <c:param name="typeId" value="${room.roomtypeID}" />
+                                            <c:if test="${selectedFloor != null}">
+                                                <c:param name="floor" value="${selectedFloor}" />
+                                            </c:if>
+                                        </c:url>
 
-    <div class="item">
-        <div class="cours-bx">
-            <div class="action-box">
-                <img src="${pageContext.request.contextPath}/${room.imageUrl}" alt="">
-                <a href="${roomUrl}" class="btn">Xem phòng</a>
-            </div>
-            <div class="info-bx text-center">
-                <h5>
-                    <a href="${roomUrl}">${room.name}</a>
-                </h5>
-                <span>${room.description}</span>
-            </div>
-            <div class="cours-more-info">
-                <div class="review">
-                    <span>3 Review</span>
-                    <ul class="cours-star">
-                        <li class="active"><i class="fa fa-star"></i></li>
-                        <li class="active"><i class="fa fa-star"></i></li>
-                        <li class="active"><i class="fa fa-star"></i></li>
-                        <li><i class="fa fa-star"></i></li>
-                        <li><i class="fa fa-star"></i></li>
-                    </ul>
-                </div>
-                <div class="price">
-                    <del>$190</del>
-                    <h5>$${room.basePrice}</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-</c:forEach>
+                                        <div class="item">
+                                            <div class="cours-bx">
+                                                <div class="action-box">
+                                                    <img src="${pageContext.request.contextPath}/${room.imageUrl}" alt="">
+                                                    <a href="${roomUrl}" class="btn">Xem phòng</a>
+                                                </div>
+                                                <div class="info-bx text-center">
+                                                    <h5>
+                                                        <a href="${roomUrl}">${room.name}</a>
+                                                    </h5>
+                                                    <span>${room.description}</span>
+                                                </div>
+                                                <div class="cours-more-info">
+                                                    <div class="review">
+                                                        <span>3 Review</span>
+                                                        <ul class="cours-star">
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li class="active"><i class="fa fa-star"></i></li>
+                                                            <li><i class="fa fa-star"></i></li>
+                                                            <li><i class="fa fa-star"></i></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="price">
+                                                        <del>$190</del>
+                                                        <h5>$${room.basePrice}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
 
 
                                 </div>

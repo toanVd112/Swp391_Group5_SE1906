@@ -33,6 +33,7 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 12px;
+                align-items: center;
             }
 
             .filter-form label {
@@ -121,7 +122,25 @@
                 font-weight: bold;
                 border-color: #2980b9;
             }
+            .filter-form .form-btn {
+                padding: 6px 14px;
+                background-color: #2980b9;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                height: 38px;
+                line-height: 24px;
+            }
 
+            .filter-form .form-btn:hover {
+                background-color: #1c5980;
+            }
+            .btn-reset:hover {
+                background-color: #1c5980;
+            }
         </style>
     </head>
     <body>
@@ -162,13 +181,17 @@
                         <option value="10" ${param.pageSize == '10' ? 'selected' : ''}>10</option>
                         <option value="20" ${param.pageSize == '20' ? 'selected' : ''}>20</option>
                     </select>
-
+                    <button type="button" class="form-btn" onclick="window.location.href = 'activityStaff'">Reset</button>
                 </form>
+
 
                 <table>
                     <thead>
                         <tr>
-                            <th>Log ID</th>
+                            <th>#</th>
+
+                            <%--   <th>Log ID</th>--%>
+
                             <th>Actor ID</th>
                             <th>Username</th>
                             <th>Action Type</th>
@@ -178,12 +201,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                      <c:forEach var="log" items="${logList}" varStatus="st">
+                        <c:forEach var="log" items="${logList}" varStatus="st">
 
                             <tr>
                                 <td>${(currentPage - 1) * pageSize + st.index + 1}</td>
 
-                                <td>${log.logID}</td>
+
+                                <%--   <     <td>${log.logID}</td>--%>
                                 <td>${log.actorID}</td>
                                 <td>${log.username}</td>
                                 <td>${log.actionType}</td>

@@ -31,21 +31,14 @@ public class RoomDAO {
         }
 
         // ORDER BY nhiều điều kiện nếu có
-        List<String> orderList = new ArrayList<>();
         if ("asc".equalsIgnoreCase(sortFloor)) {
-            orderList.add("r.Floor ASC");
+            sql.append(" ORDER BY r.Floor ASC");
         } else if ("desc".equalsIgnoreCase(sortFloor)) {
-            orderList.add("r.Floor DESC");
-        }
-
-        if ("asc".equalsIgnoreCase(sortPrice)) {
-            orderList.add("rt.BasePrice ASC");
+            sql.append(" ORDER BY r.Floor DESC");
+        } else if ("asc".equalsIgnoreCase(sortPrice)) {
+            sql.append(" ORDER BY rt.BasePrice ASC");
         } else if ("desc".equalsIgnoreCase(sortPrice)) {
-            orderList.add("rt.BasePrice DESC");
-        }
-
-        if (!orderList.isEmpty()) {
-            sql.append(" ORDER BY ").append(String.join(", ", orderList));
+            sql.append(" ORDER BY rt.BasePrice DESC");
         } else {
             sql.append(" ORDER BY r.Floor ASC"); // mặc định
         }
@@ -66,30 +59,31 @@ public class RoomDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            RoomType roomType = new RoomType(
-                rs.getInt("RoomTypeID"),
-                rs.getString("TypeName"),
-                rs.getString("Description"),
-                rs.getDouble("BasePrice"),
-                rs.getString("RoomTypeImage"),
-                rs.getString("RoomDetail")
-            );
-            Room room = new Room(
-                rs.getInt("RoomID"),
-                rs.getString("RoomNumber"),
-                rs.getInt("Floor"),
-                rs.getString("Status"),
-                roomType
-            );
-            list.add(room);
+                RoomType roomType = new RoomType(
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail")
+                );
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        rs.getString("RoomImage"),
+                        roomType
+                );
+                list.add(room);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
 
     // --- Đếm số phòng có áp dụng bộ lọc ---
     public int countRoomsByFilter(Integer floor, Integer typeId) {
@@ -174,6 +168,7 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
+                        rs.getString("RoomImage"),
                         roomType
                 );
             }
@@ -182,16 +177,16 @@ public class RoomDAO {
         }
         return null;
     }
-    
+
     public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
         List<Room> list = new ArrayList<>();
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail "
-                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1";
+        String sql = "SELECT *"
+                + "FROM rooms WHERE 1=1";
 
         boolean hasSearch = search != null && !search.trim().isEmpty();
 
         if (hasSearch) {
-            sql += " AND r.RoomNumber LIKE ?";
+            sql += " AND RoomNumber LIKE ?";
         }
 
         if ("asc".equalsIgnoreCase(sort)) {
@@ -213,21 +208,13 @@ public class RoomDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("TypeName"),
-                        rs.getString("Description"),
-                        rs.getDouble("BasePrice"),
-                        rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
-                );
-
                 Room room = new Room(
                         rs.getInt("RoomID"),
+                        rs.getInt("roomTypeID"),
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        roomType
+                        rs.getString("RoomImage")
                 );
 
                 list.add(room);
@@ -264,4 +251,54 @@ public class RoomDAO {
 
         return 0;
     }
+
+    public void deleteRoom(String rid) {
+        String sql = "DELETE FROM rooms WHERE RoomID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, rid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addRoom(int roomTypeID, String roomnumber, int floor, String status, String roomImage) {
+        String sql = "INSERT INTO rooms (RoomTypeID, RoomNumber, Floor, Status, RoomImage)\n"
+                + "VALUES (?,?,?,?,?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, roomTypeID);
+            ps.setString(2, roomnumber);
+            ps.setInt(3, floor);
+            ps.setString(4, status);
+            ps.setString(5, roomImage);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void editRoom(int roomTypeID, String roomnumber, int floor, String status, String roomImage, String rid) {
+        String sql = "Update rooms\n"
+                + "Set RoomTypeID = ?,"
+                + "RoomNumber = ?,"
+                + "Floor = ?,"
+                + "Status = ? ,"
+                + "RoomImage = ?\n"
+                + "Where RoomID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeID);
+            ps.setString(2, roomnumber);
+            ps.setInt(3, floor);
+            ps.setString(4, status);
+            ps.setString(5, roomImage);
+            ps.setString(6, rid);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+        }
+    }
+
 }

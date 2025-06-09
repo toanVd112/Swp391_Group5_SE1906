@@ -163,7 +163,7 @@
                     <input type="number" step="0.01" name="maxPrice" placeholder="đến" style="width:100px" value="${f_maxPrice}" />
 
                     <button type="submit">Tìm</button>
-                    <a href="${pageContext.request.contextPath}/manager/rooms">Reset</a>
+                    <a href="${pageContext.request.contextPath}/ListRoomsServlet">Reset</a>
                 </form>
 
                 <table>

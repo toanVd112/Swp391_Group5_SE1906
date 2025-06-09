@@ -90,6 +90,7 @@
         <li><strong>Room Management</strong></li>
         <li><a href="${pageContext.request.contextPath}/ListRoomsServlet">View Room List</a></li>
         <li><a href="${pageContext.request.contextPath}/managerR">CRUD Rooms</a></li>
+        <li><a href="#">Manage RoomType</a></li>
         <li><a href="#">Add Room Images</a></li>
         <li><a href="#">Amenities</a></li>
         <li><a href="#">Update Room Status</a></li>
@@ -128,3 +129,4 @@
 
     <a class="logout" href="${pageContext.request.contextPath}/Logout">Logout</a>
 </div>
+

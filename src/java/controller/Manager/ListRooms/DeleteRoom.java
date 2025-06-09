@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.managerAccount;
 
-import DAO.AccountDAO;
-import DAO.ActivityStaffDAO;
-import controller.Validation;
+package controller.Manager.ListRooms;
+
+import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,48 +13,41 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.Account;
 
 /**
  *
  * @author MyPC
  */
-@WebServlet(name = "EditAccount", urlPatterns = {"/editAccount"})
-public class EditAccount extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+@WebServlet(name="DeleteRoom", urlPatterns={"/deleteRoom"})
+public class DeleteRoom extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditAccount</title>");
+            out.println("<title>Servlet DeleteRoom</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EditAccount at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteRoom at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -63,13 +55,16 @@ public class EditAccount extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
+    throws ServletException, IOException {
+        String id = request.getParameter("rid");
+        RoomDAO rd = new RoomDAO();
+        rd.deleteRoom(id);
+        
+        response.sendRedirect("managerR");
+    } 
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -77,33 +72,12 @@ public class EditAccount extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
-        AccountDAO ad = new AccountDAO();
-        String user = request.getParameter("username");
-        String pass = request.getParameter("password");
-        String role = request.getParameter("role");
-        String active = request.getParameter("isActive");
-        String email = request.getParameter("email");
-        String aid = request.getParameter("aid");
-
-        boolean isActive = Boolean.parseBoolean(active);
-        ad.editAccount(user, pass, role, isActive, email, aid);
-        Account currentUser = (Account) request.getSession().getAttribute("account");
-        int newID = new AccountDAO().getLatestAccountID();
-        ActivityStaffDAO logDAO = new ActivityStaffDAO();
-        try {
-            logDAO.logAction(currentUser.getAccountID(), "Edit", "accounts", newID);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        response.sendRedirect("managerAccount");
+    throws ServletException, IOException {
+        processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

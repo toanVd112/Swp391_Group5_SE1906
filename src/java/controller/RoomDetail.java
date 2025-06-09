@@ -50,7 +50,6 @@ public class RoomDetail extends HttpServlet {
         }
     } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
@@ -69,10 +68,13 @@ public class RoomDetail extends HttpServlet {
 
             // Lấy thông tin phòng
             Room room = roomDetailDAO.getRoomById(roomId);
+            
+            if (room.getRoomImage() == null || room.getRoomImage().trim().isEmpty()) {
+                room.setRoomImage(room.getRoomType().getImageUrl());
+            }
 
             // Lấy nội dung page chung
             List<PageContent> contents = roomDetailDAO.getPageContent();
-
             List<PageContent> policies = new ArrayList<>();
             List<PageContent> importantInfos = new ArrayList<>();
             List<PageContent> faqs = new ArrayList<>();
