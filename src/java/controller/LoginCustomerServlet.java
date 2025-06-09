@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Account;
+import model.User;
 
 /**
  *
@@ -61,7 +62,7 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -85,13 +86,15 @@ public class LoginCustomerServlet extends HttpServlet {
 
         if (account != null) {
             HttpSession session = request.getSession();
+            
             // 60 phút (3600 giây)
 
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
 
             session.setAttribute("user", account);
+//            session.setAttribute("accountId", account.getAccountID());
 
-            if (remember != null && remember.equals("on")) {
+            if ("on".equals(remember)) {
                 Cookie cookie = new Cookie("userName", account.getUsername());
                 cookie.setMaxAge(60 * 60 * 24 * 30); // 30 ngày
                 response.addCookie(cookie);
