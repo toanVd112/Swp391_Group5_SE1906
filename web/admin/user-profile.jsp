@@ -352,7 +352,7 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Full Name</label>
 										<div class="col-sm-7">
-											  <input class="form-control" name="fullName" type="text" value="${user.fullName}" />
+											  <input class="form-control" name="fullName" type="text" value="" />
 										</div>
 									</div>
 									
@@ -360,7 +360,7 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Phone No.</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="phone" type="text" value="${user.phone}" />
+											<input class="form-control" name="phone" type="text" value="" />
 										</div>
 									</div>
 									
@@ -374,7 +374,7 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Address</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="address" type="text" value="${user.address}" />
+											<input class="form-control" name="address" type="text" value="" />
 										</div>
 									</div>
 
