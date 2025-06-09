@@ -108,7 +108,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <%-- Liên kết đến trang hồ sơ --%>
-                                <li><a class="dropdown-item" href="../loadAccount">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <%-- <li><a class="dropdown-item" href="#">Settings</a></li> --%>
                                 <li><hr class="dropdown-divider"></li>
                                 <%-- Liên kết đăng xuất --%>

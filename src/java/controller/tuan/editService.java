@@ -118,7 +118,7 @@ public class editService extends HttpServlet {
         }
 
         // Bước 3: Khởi tạo các biến cần thiết
-        String jspPath = "../Manager/editService.jsp"; // Đường dẫn tới JSP để forward khi cần
+        String jspPath = request.getContextPath() + "/Manager/editService.jsp"; // Đường dẫn tới JSP để forward khi cần
         ServiceDAO serviceDAO = new ServiceDAO(); // Đối tượng DAO để tương tác với cơ sở dữ liệu
         int serviceId = -1; // Biến lưu ID dịch vụ, mặc định -1 để xử lý trường hợp lỗi
 

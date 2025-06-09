@@ -15,52 +15,46 @@
 
 <%-- Kiểm tra quyền truy cập --%>
 <%
-    // Lấy đối tượng Account từ session (phiên đăng nhập của người dùng)
+    // Lấy đối tượng Account từ session
     Account account = (Account) session.getAttribute("account");
     
-    // Kiểm tra nếu người dùng chưa đăng nhập (account == null) hoặc không phải Manager
+    // Kiểm tra nếu người dùng chưa đăng nhập hoặc không phải Manager
     if (account == null || !"Manager".equals(account.getRole())) {
-        // Chuyển hướng về trang đăng nhập (login.jsp) nếu không đủ quyền
-        response.sendRedirect("../login.jsp");
-        return; // Dừng xử lý JSP
+        response.sendRedirect(request.getContextPath() + "/login_2.jsp");
+        return;
     }
     
     // Lấy danh sách các loại dịch vụ duy nhất từ ServiceDAO
     List<String> types = new ServiceDAO().getAllDistinctServiceType();
-    // Lưu danh sách loại dịch vụ vào request để sử dụng trong JSP
     request.setAttribute("serviceTypes", types);
 %>
 
 <%-- Khai báo HTML5 và ngôn ngữ trang là tiếng Anh --%>
 <html>
 <head>
-    <%-- Tiêu đề của trang --%>
     <title>Thêm Dịch vụ</title>
     
     <%-- CSS tùy chỉnh để tạo giao diện đẹp và responsive --%>
     <style>
-        /* Định dạng body với font chữ, nền, và căn giữa nội dung */
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f5f6fa; /* Màu nền nhạt */
+            background-color: #f5f6fa;
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center; /* Căn giữa nội dung */
-            min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+            justify-content: center;
+            min-height: 100vh;
         }
         
-        /* Định dạng container chứa form */
         .container {
-            background: white; /* Nền trắng */
+            background: white;
             padding: 30px;
-            border-radius: 10px; /* Bo góc */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px; /* Chiều rộng tối đa */
+            max-width: 500px;
         }
         
-        /* Định dạng tiêu đề h2 */
         h2 {
             color: #333;
             text-align: center;
@@ -68,12 +62,10 @@
             font-size: 24px;
         }
         
-        /* Định dạng mỗi nhóm input trong form */
         .form-group {
-            margin-bottom: 20px; /* Khoảng cách giữa các nhóm */
+            margin-bottom: 20px;
         }
         
-        /* Định dạng nhãn (label) */
         label {
             display: block;
             margin-bottom: 8px;
@@ -81,39 +73,35 @@
             font-weight: 500;
         }
         
-        /* Định dạng các input và select */
         input[type="text"],
         input[type="number"],
         textarea,
         select {
-            width: 100%; /* Chiếm toàn bộ chiều rộng */
+            width: 100%;
             padding: 10px;
-            border: 1px solid #ddd; /* Viền nhạt */
-            border-radius: 5px; /* Bo góc */
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 16px;
-            box-sizing: border-box; /* Bao gồm padding trong kích thước */
-            transition: border-color 0.3s; /* Hiệu ứng khi focus */
+            box-sizing: border-box;
+            transition: border-color 0.3s;
         }
         
-        /* Hiệu ứng khi focus vào input */
         input[type="text"]:focus,
         input[type="number"]:focus,
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: #007bff; /* Viền xanh khi focus */
-            box-shadow: 0 0 5px rgba(0,123,255,0.3); /* Hiệu ứng bóng */
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
         }
         
-        /* Định dạng textarea */
         textarea {
-            resize: vertical; /* Chỉ cho phép thay đổi chiều cao */
+            resize: vertical;
             min-height: 100px;
         }
         
-        /* Định dạng nút submit */
         input[type="submit"] {
-            background-color: #007bff; /* Màu xanh */
+            background-color: #007bff;
             color: white;
             padding: 12px 20px;
             border: none;
@@ -121,99 +109,160 @@
             cursor: pointer;
             font-size: 16px;
             width: 100%;
-            transition: background-color 0.3s; /* Hiệu ứng hover */
+            transition: background-color 0.3s;
         }
         
-        /* Hiệu ứng hover cho nút submit */
         input[type="submit"]:hover {
-            background-color: #0056b3; /* Màu xanh đậm hơn */
+            background-color: #0056b3;
         }
         
-        /* Định dạng liên kết quay lại */
         .back-link {
             display: block;
             text-align: center;
             margin-top: 20px;
-            color: #007bff; /* Màu xanh */
+            color: #007bff;
             text-decoration: none;
             font-size: 16px;
         }
         
-        /* Hiệu ứng hover cho liên kết */
         .back-link:hover {
-            text-decoration: underline; /* Gạch chân khi hover */
+            text-decoration: underline;
         }
         
-        /* Responsive cho màn hình nhỏ */
+        /* Định dạng thông báo lỗi */
+        .error-message {
+            color: #dc3545; /* Màu đỏ */
+            background-color: #f8d7da; /* Nền hồng nhạt */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        /* Định dạng input lỗi */
+        .input-error {
+            border-color: #dc3545;
+        }
+        
         @media (max-width: 600px) {
             .container {
-                padding: 20px; /* Giảm padding */
+                padding: 20px;
             }
             h2 {
-                font-size: 20px; /* Giảm kích thước chữ */
+                font-size: 20px;
             }
         }
     </style>
+    
+    <%-- JavaScript để validate phía client (tùy chọn) --%>
+    <script>
+        function validateForm() {
+            let isValid = true;
+            const name = document.getElementById("name").value.trim();
+            const price = document.getElementById("price").value.trim();
+            const serviceType = document.getElementById("serviceType").value.trim();
+            const serviceImage = document.getElementById("serviceImage").value.trim();
+            
+            // Xóa lớp input-error trước khi validate
+            document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+            
+            // Validate tên dịch vụ
+            if (!name) {
+                document.getElementById("name").classList.add("input-error");
+                isValid = false;
+            } else if (name.length < 3 || name.length > 100) {
+                document.getElementById("name").classList.add("input-error");
+                isValid = false;
+            }
+            
+            // Validate giá
+            if (!price) {
+                document.getElementById("price").classList.add("input-error");
+                isValid = false;
+            } else if (isNaN(price) || price < 0 || price > 1000000000) {
+                document.getElementById("price").classList.add("input-error");
+                isValid = false;
+            }
+            
+            // Validate loại dịch vụ
+            if (!serviceType) {
+                document.getElementById("serviceType").classList.add("input-error");
+                isValid = false;
+            }
+            
+            // Validate URL hình ảnh
+            if (serviceImage) {
+                const imageRegex = /^(https?:\/\/|\/).+\.(jpg|jpeg|png|gif)$/i;
+                if (!imageRegex.test(serviceImage)) {
+                    document.getElementById("serviceImage").classList.add("input-error");
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                alert("Vui lòng kiểm tra các trường dữ liệu được đánh dấu đỏ.");
+            }
+            
+            return isValid;
+        }
+    </script>
 </head>
 <body>
-    <%-- Container chứa form thêm dịch vụ --%>
     <div class="container">
-        <%-- Tiêu đề của form --%>
         <h2>Thêm Dịch vụ mới</h2>
         
-        <%-- Form gửi dữ liệu đến Servlet /addService qua phương thức POST --%>
-        <form action="${pageContext.request.contextPath}/addService" method="post">
-            <%-- Nhóm input: Tên dịch vụ --%>
+        <%-- Hiển thị thông báo lỗi nếu có --%>
+        <c:if test="${not empty errorMessage}">
+            <div class="error-message">${errorMessage}</div>
+        </c:if>
+        
+        <%-- Form thêm dịch vụ --%>
+        <form action="${pageContext.request.contextPath}/addService" method="post" onsubmit="return validateForm()">
             <div class="form-group">
-                <label for="name">Tên dịch vụ:</label>
-                <input type="text" id="name" name="name" required> <%-- Trường bắt buộc --%>
+                <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
+                <input type="text" id="name" name="name" value="${service.name}" required
+                       pattern="[A-Za-z0-9\s\-_]+" title="Chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">
             </div>
             
-            <%-- Nhóm input: Mô tả --%>
             <div class="form-group">
-                <label for="description">Mô tả:</label>
-                <textarea id="description" name="description" rows="4"></textarea> <%-- Không bắt buộc --%>
+                <label for="description">Mô tả: <span title="Tối đa 1000 ký tự"></span></label>
+                <textarea id="description" name="description" rows="4" maxlength="1000">${service.description}</textarea>
             </div>
             
-            <%-- Nhóm input: Giá --%>
             <div class="form-group">
-                <label for="price">Giá:</label>
-                <input type="number" id="price" step="1" name="price" required> <%-- Trường bắt buộc, chỉ nhận số nguyên --%>
+                <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
+                <input type="number" id="price" name="price" step="1" min="0" max="1000000000"
+                       value="${service.price > 0 ? service.price : ''}" required>
             </div>
             
-            <%-- Nhóm input: Trạng thái --%>
             <div class="form-group">
                 <label for="status">Trạng thái:</label>
                 <select id="status" name="status">
-                    <option value="1" selected>Hoạt động</option> <%-- Mặc định chọn "Hoạt động" --%>
-                    <option value="0">Ngừng Hoạt động</option>
+                    <option value="1" ${service.status == '1' ? 'selected' : ''}>Hoạt động</option>
+                    <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt động</option>
                 </select>
             </div>
             
-            <%-- Nhóm input: Loại dịch vụ --%>
             <div class="form-group">
-                <label for="serviceType">Loại dịch vụ:</label>
-                <select id="serviceType" name="serviceType">
-                    <option value="">Chọn loại</option> <%-- Tùy chọn mặc định --%>
-                    <%-- Lặp qua danh sách serviceTypes để hiển thị các loại dịch vụ --%>
+                <label for="serviceType">Loại dịch vụ: <span title="Chọn một loại từ danh sách">*</span></label>
+                <select id="serviceType" name="serviceType" required>
+                    <option value="">Chọn loại</option>
                     <c:forEach var="type" items="${serviceTypes}">
-                        <%-- ${service.type eq type ? 'selected' : ''} kiểm tra xem type có được chọn không, nhưng không cần ở đây vì là form thêm mới --%>
                         <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
                     </c:forEach>
                 </select>
             </div>
             
-            <%-- Nhóm input: Hình ảnh (URL) --%>
             <div class="form-group">
-                <label for="serviceImage">Hình ảnh:</label>
-                <input type="text" id="serviceImage" name="serviceImage"> <%-- Không bắt buộc --%>
+                <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif), tối đa 255 ký tự"></span></label>
+                <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}"
+                       maxlength="255" pattern="^(https?://|/).+\.(jpg|jpeg|png|gif)$"
+                       title="URL hợp lệ với định dạng jpg, jpeg, png, gif">
             </div>
             
-            <%-- Nút gửi form --%>
             <input type="submit" value="Lưu">
         </form>
         
-        <%-- Liên kết quay lại danh sách dịch vụ --%>
         <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Quay lại danh sách</a>
     </div>
 </body>
