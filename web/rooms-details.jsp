@@ -5,20 +5,73 @@
 --%>
 <!DOCTYPE html>
 <html lang="en">
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@page contentType="text/html" pageEncoding="UTF-8"%>
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
     <head>
-<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-     <style>
-.status-available { color: green; font-weight: bold; }
-.status-occupied { color: orange; font-weight: bold; }
-.status-maintenance { color: red; font-weight: bold; }
-</style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 
+        <style>
+            .status-available {
+                color: green;
+                font-weight: bold;
+            }
+            .status-occupied {
+                color: orange;
+                font-weight: bold;
+            }
+            .status-maintenance {
+                color: red;
+                font-weight: bold;
+            }
+
+
+            .tabs button {
+                margin-right: 10px;
+                padding: 8px 12px;
+                border: none;
+                border-radius: 4px;
+                background: #eee;
+                cursor: pointer;
+            }
+            .tabs button.active {
+                background: #333;
+                color: white;
+            }
+
+            .gallery {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 15px;
+                margin-top: 20px;
+            }
+            .image-item img {
+                width: 100%;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                transition: transform 0.2s;
+            }
+            .image-item:hover img {
+                transform: scale(1.03);
+            }
+        </style>
+
+        <script>
+            function filterImages(category) {
+                const items = document.querySelectorAll('.image-item');
+                const buttons = document.querySelectorAll('.tabs button');
+                items.forEach(item => {
+                    item.style.display = (category === 'all' || item.classList.contains(category)) ? 'block' : 'none';
+                });
+                buttons.forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+        </script>
 
 
         <!-- META ============================================= -->
@@ -265,36 +318,36 @@
                                 <div class="col-lg-3 col-md-4 col-sm-12 m-b30">
                                     <div class="course-detail-bx">
                                         <div class="course-price">
-                                          
+
                                             <h4 class="price">$${room.roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
                                             <a href="#" class="btn radius-xl text-uppercase">BOOK NOW</a>
                                         </div>
-                                            <div class="teacher-bx">
-                                                <div class="teacher-info">
-                                                    <div class="teacher-thumb">
+                                        <div class="teacher-bx">
+                                            <div class="teacher-info">
+                                                <div class="teacher-thumb">
 
-                                                    </div>
-                                                    <h5>
-                                                        <span class="status-${room.status.toLowerCase()}">${room.status}</span>
-                                                    </h5>
                                                 </div>
+                                                <h5>
+                                                    <span class="status-${room.status.toLowerCase()}">${room.status}</span>
+                                                </h5>
                                             </div>
-                                            <div class="cours-more-info">
-                                                <div class="review">
-                                                    <span>3 Review</span>
-                                                    <ul class="cours-star">
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li><i class="fa fa-star"></i></li>
-                                                        <li><i class="fa fa-star"></i></li>
-                                                    </ul>
-                                                </div>
-                                                <div class="categories">
-                                                    <span> Room Type</span>
-                                                    <h6 class="text-primary"> ${room.roomType.name}</h6>
+                                        </div>
+                                        <div class="cours-more-info">
+                                            <div class="review">
+                                                <span>3 Review</span>
+                                                <ul class="cours-star">
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li><i class="fa fa-star"></i></li>
+                                                    <li><i class="fa fa-star"></i></li>
+                                                </ul>
+                                            </div>
+                                            <div class="categories">
+                                                <span> Room Type</span>
+                                                <h6 class="text-primary"> ${room.roomType.name}</h6>
                                             </div>
                                         </div>
                                         <div class="course-info-list scroll-page">
@@ -326,7 +379,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                            
+
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
@@ -337,11 +390,11 @@
                                                     <li><i class="ri-building-line"></i> Ban công</li>
                                                     <li><i class="ph ph-shower"></i> Phòng tắm riêng</li>
                                                     <li><i class="ri-custom-size"></i> 19 mét vuông</li>
-                                                    <li><i class="ri-restaurant-line"></i> 19 mét vuông</li>
+                                                    <li><i class="ri-restaurant-line"></i> ban cong</li>
                                                     <li><i class="ri-rss-line"></i> Wifi miễn phí</li>
-                                                    <li><i class="ri-customer-service-2-line"></i> Wifi miễn phí</li>
-                                                    
-                                                   
+                                                    <li><i class="ri-customer-service-2-line"></i> phuc vu day du</li>
+
+
                                                 </ul>
                                             </div>
                                             <div class="col-md-12 col-lg-8">
@@ -375,74 +428,30 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="m-b30" id="curriculum">
-                                        <h4>Curriculum</h4>
-                                        <ul class="curriculum-list">
-                                            <li>
-                                                <h5>First Level</h5>
-                                                <ul>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 1.</span> Introduction to UI Design
-                                                        </div>
-                                                        <span>120 minutes</span>
-                                                    </li>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 2.</span> User Research and Design
-                                                        </div>
-                                                        <span>60 minutes</span>
-                                                    </li>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 3.</span> Evaluating User Interfaces Part 1
-                                                        </div>
-                                                        <span>85 minutes</span>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <h5>Second Level</h5>
-                                                <ul>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 1.</span> Prototyping and Design
-                                                        </div>
-                                                        <span>110 minutes</span>
-                                                    </li>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 2.</span> UI Design Capstone
-                                                        </div>
-                                                        <span>120 minutes</span>
-                                                    </li>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Lesson 3.</span> Evaluating User Interfaces Part 2
-                                                        </div>
-                                                        <span>120 minutes</span>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <h5>Final</h5>
-                                                <ul>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Part 1.</span> Final Test
-                                                        </div>
-                                                        <span>120 minutes</span>
-                                                    </li>
-                                                    <li>
-                                                        <div class="curriculum-list-box">
-                                                            <span>Part 2.</span> Online Test
-                                                        </div>
-                                                        <span>120 minutes</span>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
+
+
+                                    <!-- Tabs -->
+                                    <div class="tabs">
+                                        <button class="active" onclick="filterImages('all')">Tất cả ảnh</button>
+                                        <c:forEach var="img" items="${images}">
+                                            <c:if test="${not empty img.category}">
+                                                <button onclick="filterImages('${fn:toLowerCase(img.category)}')">
+                                                    ${img.category}
+                                                </button>
+                                            </c:if>
+                                        </c:forEach>
                                     </div>
+                                    <!-- Gallery -->
+                                    <div class="gallery">
+                                        <c:forEach var="img" items="${images}">
+                                            <div class="image-item ${img.category}">
+                                                <a href="${pageContext.request.contextPath}/${img.imageUrl}" data-lightbox="gallery" data-title="${img.category}">
+                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
+                                                </a>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+
                                     <div class="" id="instructor">
                                         <h4>Instructor</h4>
                                         <div class="instructor-bx">

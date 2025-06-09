@@ -10,16 +10,22 @@ package model;
  */
 public class RoomImage {
     private int imageID;
-    private int roomID;
+    private Integer roomID;       // Dùng Integer để cho phép null
+    private Integer roomTypeID;
     private String imageUrl;
+    private boolean isPrimary;
+    private String category;
 
     public RoomImage() {
     }
 
-    public RoomImage(int imageID, int roomID, String imageUrl, boolean isPrimary) {
+    public RoomImage(int imageID, Integer roomID, Integer roomTypeID, String imageUrl, boolean isPrimary, String category) {
         this.imageID = imageID;
         this.roomID = roomID;
+        this.roomTypeID = roomTypeID;
         this.imageUrl = imageUrl;
+        this.isPrimary = isPrimary;
+        this.category = category;
     }
 
     public int getImageID() {
@@ -30,12 +36,20 @@ public class RoomImage {
         this.imageID = imageID;
     }
 
-    public int getRoomID() {
+    public Integer getRoomID() {
         return roomID;
     }
 
-    public void setRoomID(int roomID) {
+    public void setRoomID(Integer roomID) {
         this.roomID = roomID;
+    }
+
+    public Integer getRoomTypeID() {
+        return roomTypeID;
+    }
+
+    public void setRoomTypeID(Integer roomTypeID) {
+        this.roomTypeID = roomTypeID;
     }
 
     public String getImageUrl() {
@@ -46,15 +60,32 @@ public class RoomImage {
         this.imageUrl = imageUrl;
     }
 
+    public boolean isPrimary() {
+        return isPrimary;
+    }
 
-    
+    public void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "RoomImage{" +
                 "imageID=" + imageID +
                 ", roomID=" + roomID +
-                ", imageUrl='" + imageUrl + '\'' 
-                ;
+                ", roomTypeID=" + roomTypeID +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", isPrimary=" + isPrimary +
+                ", category='" + category + '\'' +
+                '}';
     }
 }
 

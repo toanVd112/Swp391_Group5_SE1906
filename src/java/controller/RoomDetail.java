@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller;
 
 import DAO.RoomDetailDAO;
-import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,80 +16,89 @@ import java.util.ArrayList;
 import java.util.List;
 import model.PageContent;
 import model.Room;
+import model.RoomImage;
 
 /**
  *
  * @author Arcueid
  */
-@WebServlet(name="RoomDetail", urlPatterns={"/RoomDetail"})
+@WebServlet(name = "RoomDetail", urlPatterns = {"/RoomDetail"})
 public class RoomDetail extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet RoomDetail</title>");  
+            out.println("<title>Servlet RoomDetail</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet RoomDetail at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet RoomDetail at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-      protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-        
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         try {
-            String idRaw = request.getParameter("id");
-            int roomId = Integer.parseInt(idRaw);
+            int roomId = Integer.parseInt(request.getParameter("id"));
+            RoomDetailDAO dao = new RoomDetailDAO();
 
-            RoomDetailDAO roomDetailDAO = new RoomDetailDAO();
+            Room room = dao.getRoomById(roomId);
+            if (room == null) {
+                throw new ServletException("Không tìm thấy phòng với ID = " + roomId);
+            }
 
-            // Lấy thông tin phòng
-            Room room = roomDetailDAO.getRoomById(roomId);
-            
             if (room.getRoomImage() == null || room.getRoomImage().trim().isEmpty()) {
                 room.setRoomImage(room.getRoomType().getImageUrl());
             }
 
-            // Lấy nội dung page chung
-            List<PageContent> contents = roomDetailDAO.getPageContent();
+            // Phân loại nội dung
+            List<PageContent> contents = dao.getPageContent();
             List<PageContent> policies = new ArrayList<>();
             List<PageContent> importantInfos = new ArrayList<>();
             List<PageContent> faqs = new ArrayList<>();
 
             for (PageContent pc : contents) {
                 switch (pc.getPageSection().toLowerCase()) {
-                    case "policy":
-                        policies.add(pc); break;
-                    case "important_info":
-                        importantInfos.add(pc); break;
-                    case "faq":
-                        faqs.add(pc); break;
+                    case "policy" ->
+                        policies.add(pc);
+                    case "important_info" ->
+                        importantInfos.add(pc);
+                    case "faq" ->
+                        faqs.add(pc);
                 }
             }
 
-            // Gửi dữ liệu sang JSP
+            // Lấy ảnh theo RoomID hoặc RoomTypeID
+            List<RoomImage> images = dao.getImagesByRoomOrType(roomId);
+
             request.setAttribute("room", room);
+            request.setAttribute("images", images);
+            request.setAttribute("roomID", roomId);
             request.setAttribute("policies", policies);
             request.setAttribute("importantInfos", importantInfos);
             request.setAttribute("faqs", faqs);
@@ -100,14 +107,13 @@ public class RoomDetail extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý: " + e.getMessage());
         }
     }
 
-
-
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -115,12 +121,13 @@ public class RoomDetail extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

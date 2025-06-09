@@ -9,6 +9,7 @@ import java.util.List;
 import model.PageContent;
 import java.sql.ResultSet;
 import model.Room;
+import model.RoomImage;
 import model.RoomType;
 
 /**
@@ -37,7 +38,6 @@ public class RoomDetailDAO {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return list;
@@ -75,9 +75,47 @@ public class RoomDetailDAO {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return null;
     }
+
+
+public List<RoomImage> getImagesByRoomOrType(int roomID) {
+    List<RoomImage> list = new ArrayList<>();
+    String sql = """
+        SELECT * FROM roomimages
+        WHERE RoomID = ? 
+        UNION
+        SELECT * FROM roomimages
+        WHERE RoomTypeID = (
+            SELECT RoomTypeID FROM rooms WHERE RoomID = ?
+        ) AND RoomID IS NULL
+        ORDER BY IsPrimary DESC
+        """;
+
+    try (java.sql.Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, roomID);
+        ps.setInt(2, roomID);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                RoomImage img = new RoomImage();
+                img.setImageID(rs.getInt("ImageID"));
+                img.setRoomID(rs.getObject("RoomID") != null ? rs.getInt("RoomID") : null);
+                img.setRoomTypeID(rs.getObject("RoomTypeID") != null ? rs.getInt("RoomTypeID") : null);
+                img.setImageUrl(rs.getString("ImageUrl"));
+                img.setCategory(rs.getString("Category"));
+                img.setPrimary(rs.getBoolean("IsPrimary"));
+                list.add(img);
+            }
+        }
+
+    } catch (Exception e) {
+    }
+
+    return list;
+}
+
 }
