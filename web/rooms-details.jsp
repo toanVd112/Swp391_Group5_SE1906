@@ -13,8 +13,8 @@
         <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 
         <style>
             .status-available {
@@ -30,52 +30,132 @@
                 font-weight: bold;
             }
 
-
-            .tabs button {
-                margin-right: 10px;
-                padding: 8px 12px;
-                border: none;
-                border-radius: 4px;
-                background: #eee;
-                cursor: pointer;
+            .filter-container {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
             }
-            .tabs button.active {
-                background: #333;
+
+            .filter-btn {
+                padding: 8px 16px;
+                cursor: pointer;
+                background-color: #f5f5f5;
+                border: 1px solid #ddd;
+                border-radius: 30px;
+                font-weight: 500;
+                text-transform: capitalize;
+                transition: 0.3s;
+            }
+
+            .filter-btn:hover {
+                background-color: #007bff20;
+            }
+
+            .filter-btn.active {
+                background-color: #007bff;
                 color: white;
+                box-shadow: 0 0 6px rgba(0,123,255,0.5);
             }
 
             .gallery {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 15px;
-                margin-top: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: flex-start;
             }
-            .image-item img {
+
+            .gallery-item {
+                width: calc(33.33% - 20px);
+                background: #fff;
+                border: 1px solid #eee;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                transition: 0.3s ease;
+                position: relative;
+            }
+
+            .gallery-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            }
+
+            .gallery-item img {
                 width: 100%;
-                border-radius: 8px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-                transition: transform 0.2s;
+                height: 200px;
+                object-fit: cover;
+                display: block;
             }
-            .image-item:hover img {
-                transform: scale(1.03);
+
+            .gallery-item::after {
+                content: attr(data-category);
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.6);
+                color: white;
+                padding: 6px 10px;
+                font-size: 13px;
+                text-align: center;
+                opacity: 0;
+                transition: 0.3s;
             }
+
+            .gallery-item:hover::after {
+                opacity: 1;
+            }
+
+            @media screen and (max-width: 992px) {
+                .gallery-item {
+                    width: calc(50% - 20px);
+                }
+            }
+
+            @media screen and (max-width: 576px) {
+                .gallery-item {
+                    width: 100%;
+                }
+            }
+            body {
+    overflow-x: hidden;
+}
+
+body.glightbox-open {
+    padding-right: 0 !important;  /* Ngăn GLightbox thêm padding */
+}
+            
         </style>
 
         <script>
-            function filterImages(category) {
-                const items = document.querySelectorAll('.image-item');
-                const buttons = document.querySelectorAll('.tabs button');
+            function filterSelection(category, btn) {
+                const items = document.querySelectorAll('.gallery-item');
+                const buttons = document.querySelectorAll('.filter-btn');
+
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
                 items.forEach(item => {
-                    item.style.display = (category === 'all' || item.classList.contains(category)) ? 'block' : 'none';
+                    const isMatch = item.classList.contains(category);
+                    item.style.display = (category === 'all' || isMatch) ? 'block' : 'none';
                 });
-                buttons.forEach(btn => btn.classList.remove('active'));
-                event.target.classList.add('active');
             }
+
+            // GLightbox khởi động
+            document.addEventListener("DOMContentLoaded", function () {
+                GLightbox({
+                    selector: '.glightbox',
+                    touchNavigation: true,
+                    loop: true,
+                    zoomable: true
+                });
+            });
         </script>
 
 
         <!-- META ============================================= -->
-        <meta charset="utf-8">
+        <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keywords" content="" />
         <meta name="author" content="" />
@@ -353,7 +433,7 @@
                                         <div class="course-info-list scroll-page">
                                             <ul class="navbar">
                                                 <li><a class="nav-link" href="#overview"><i class="ti-zip"></i>Overview</a></li>
-                                                <li><a class="nav-link" href="#curriculum"><i class="ti-bookmark-alt"></i>Curriculum</a></li>
+                                                <li><a class="nav-link" href="#pictures"><i class="ti-bookmark-alt"></i>pictures</a></li>
                                                 <li><a class="nav-link" href="#instructor"><i class="ti-user"></i>Instructor</a></li>
                                                 <li><a class="nav-link" href="#reviews"><i class="ti-comments"></i>Reviews</a></li>
                                             </ul>
@@ -428,285 +508,309 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- PICTURES SECTION -->
+                                    <div id="pictures">
+                                        <h3 style="font-weight: bold;">Gallery</h3>
 
+                                        <!-- DANH MỤC -->
+                                        <div class="filter-container">
+                                            <button class="filter-btn active" onclick="filterSelection('all', this)">Tất cả</button>
 
-                                    <!-- Tabs -->
-                                    <div class="tabs">
-                                        <button class="active" onclick="filterImages('all')">Tất cả ảnh</button>
-                                        <c:forEach var="img" items="${images}">
-                                            <c:if test="${not empty img.category}">
-                                                <button onclick="filterImages('${fn:toLowerCase(img.category)}')">
-                                                    ${img.category}
-                                                </button>
-                                            </c:if>
-                                        </c:forEach>
-                                    </div>
-                                    <!-- Gallery -->
-                                    <div class="gallery">
-                                        <c:forEach var="img" items="${images}">
-                                            <div class="image-item ${img.category}">
-                                                <a href="${pageContext.request.contextPath}/${img.imageUrl}" data-lightbox="gallery" data-title="${img.category}">
-                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
-                                                </a>
-                                            </div>
-                                        </c:forEach>
-                                    </div>
-
-                                    <div class="" id="instructor">
-                                        <h4>Instructor</h4>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                            </div>
+                                            <%-- Tránh lặp category --%>
+                                            <c:set var="usedCats" value="" />
+                                            <c:forEach var="img" items="${images}">
+                                                <c:if test="${not fn:contains(usedCats, img.category)}">
+                                                    <button class="filter-btn" onclick="filterSelection('${fn:toLowerCase(img.category)}', this)">
+                                                        ${img.category}
+                                                    </button>
+                                                    <c:set var="usedCats" value="${usedCats}${img.category}," />
+                                                </c:if>
+                                            </c:forEach>
                                         </div>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="" id="reviews">
-                                        <h4>Reviews</h4>
 
-                                        <div class="review-bx">
-                                            <div class="all-review">
-                                                <h2 class="rating-type">3</h2>
-                                                <ul class="cours-star">
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                </ul>
-                                                <span>3 Rating</span>
+                                        <div class="gallery">
+                                            <c:forEach var="img" items="${images}">
+                                                <div class="gallery-item ${fn:toLowerCase(img.category)}" data-category="${img.category}">
+                                                    <a href="${pageContext.request.contextPath}/${img.imageUrl}" 
+                                                       class="glightbox" 
+                                                       data-gallery="room-gallery" 
+                                                       data-title="${img.category}">
+                                                        <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
+                                                    </a>
+                                                </div>
+                                            </c:forEach>
+                                        </div>
+
+
+                                        <div class="" id="instructor">
+                                            <h4>Instructor</h4>
+                                            <div class="instructor-bx">
+                                                <div class="instructor-author">
+                                                    <img src="assets/images/testimonials/pic1.jpg" alt="">
+                                                </div>
+                                                <div class="instructor-info">
+                                                    <h6>Keny White </h6>
+                                                    <span>Professor</span>
+                                                    <ul class="list-inline m-tb10">
+                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                    </ul>
+                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                                                </div>
                                             </div>
-                                            <div class="review-bar">
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>5 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:90%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>150</div>
-                                                    </div>
+                                            <div class="instructor-bx">
+                                                <div class="instructor-author">
+                                                    <img src="assets/images/testimonials/pic2.jpg" alt="">
                                                 </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>4 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:70%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>140</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>3 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:50%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>120</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>2 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:40%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>110</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>1 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:20%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>80</div>
-                                                    </div>
+                                                <div class="instructor-info">
+                                                    <h6>Keny White </h6>
+                                                    <span>Professor</span>
+                                                    <ul class="list-inline m-tb10">
+                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                    </ul>
+                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="" id="reviews">
+                                            <h4>Reviews</h4>
+
+                                            <div class="review-bx">
+                                                <div class="all-review">
+                                                    <h2 class="rating-type">3</h2>
+                                                    <ul class="cours-star">
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                    </ul>
+                                                    <span>3 Rating</span>
+                                                </div>
+                                                <div class="review-bar">
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>5 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:90%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>150</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>4 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:70%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>140</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>3 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:50%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>120</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>2 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:40%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>110</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>1 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:20%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>80</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- contact area END -->
+                    <!-- contact area END -->
 
-            </div>
-            <!-- Content END-->
-            <!-- Footer ==== -->
-            <footer>
-                <div class="footer-top">
-                    <div class="pt-exebar">
+                </div>
+                <!-- Content END-->
+                <!-- Footer ==== -->
+                <footer>
+                    <div class="footer-top">
+                        <div class="pt-exebar">
+                            <div class="container">
+                                <div class="d-flex align-items-stretch">
+                                    <div class="pt-logo mr-auto">
+                                        <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                                    </div>
+                                    <div class="pt-social-link">
+                                        <ul class="list-inline m-a0">
+                                            <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="pt-btn-join">
+                                        <a href="#" class="btn ">Join Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="container">
-                            <div class="d-flex align-items-stretch">
-                                <div class="pt-logo mr-auto">
-                                    <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                                    <div class="widget">
+                                        <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                                        <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                                        <div class="subscribe-form m-b20">
+                                            <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                                <div class="ajax-message"></div>
+                                                <div class="input-group">
+                                                    <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                                    <span class="input-group-btn">
+                                                        <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                                    </span> 
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="pt-social-link">
-                                    <ul class="list-inline m-a0">
-                                        <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div class="pt-btn-join">
-                                    <a href="#" class="btn ">Join Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                                <div class="widget">
-                                    <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                    <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                                    <div class="subscribe-form m-b20">
-                                        <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-                                            <div class="ajax-message"></div>
-                                            <div class="input-group">
-                                                <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-                                                <span class="input-group-btn">
-                                                    <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-                                                </span> 
+                                <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                                    <div class="row">
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Company</h5>
+                                                <ul>
+                                                    <li><a href="Home">Home</a></li>
+                                                    <li><a href="about-1.html">About</a></li>
+                                                    <li><a href="faq-1.jsp">FAQs</a></li>
+                                                    <li><a href="contact-1.html">Contact</a></li>
+                                                </ul>
                                             </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                                <div class="row">
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Company</h5>
-                                            <ul>
-                                                <li><a href="Home">Home</a></li>
-                                                <li><a href="about-1.html">About</a></li>
-                                                <li><a href="faq-1.jsp">FAQs</a></li>
-                                                <li><a href="contact-1.html">Contact</a></li>
-                                            </ul>
                                         </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Get In Touch</h5>
-                                            <ul>
-                                                <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-                                                <li><a href="blog-classic-grid.html">Blog</a></li>
-                                                <li><a href="portfolio.html">Portfolio</a></li>
-                                                <li><a href="event.html">Event</a></li>
-                                            </ul>
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Get In Touch</h5>
+                                                <ul>
+                                                    <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                                    <li><a href="blog-classic-grid.html">Blog</a></li>
+                                                    <li><a href="portfolio.html">Portfolio</a></li>
+                                                    <li><a href="event.html">Event</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Rooms</h5>
-                                            <ul>
-                                                <li><a href="roomlist">Rooms</a></li>
-                                                <li><a href="rooms-details.html">Details</a></li>
-                                                <li><a href="membership.html">Membership</a></li>
-                                                <li><a href="profile.html">Profile</a></li>
-                                            </ul>
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Rooms</h5>
+                                                <ul>
+                                                    <li><a href="roomlist">Rooms</a></li>
+                                                    <li><a href="rooms-details.html">Details</a></li>
+                                                    <li><a href="membership.html">Membership</a></li>
+                                                    <li><a href="profile.html">Profile</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                                <div class="widget widget_gallery gallery-grid-4">
-                                    <h5 class="footer-title">Our Gallery</h5>
-                                    <ul class="magnific-image">
-                                        <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-                                    </ul>
+                                <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                                    <div class="widget widget_gallery gallery-grid-4">
+                                        <h5 class="footer-title">Our Gallery</h5>
+                                        <ul class="magnific-image">
+                                            <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                    <div class="footer-bottom">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </footer>
-            <!-- Footer END ==== -->
-            <button class="back-to-top fa fa-chevron-up" ></button>
-        </div>
-        <!-- External JavaScripts -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-        <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-        <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-        <script src="assets/vendors/counter/waypoints-min.js"></script>
-        <script src="assets/vendors/counter/counterup.min.js"></script>
-        <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-        <script src="assets/vendors/masonry/masonry.js"></script>
-        <script src="assets/vendors/masonry/filter.js"></script>
-        <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-        <script src="assets/js/jquery.scroller.js"></script>
-        <script src="assets/js/functions.js"></script>
-        <script src="assets/js/contact.js"></script>
-        <script src="assets/vendors/switcher/switcher.js"></script>
+                </footer>
+                <!-- Footer END ==== -->
+                <button class="back-to-top fa fa-chevron-up" ></button>
+            </div>
+            <!-- External JavaScripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+            <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+            <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+            <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+            <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+            <script src="assets/vendors/counter/waypoints-min.js"></script>
+            <script src="assets/vendors/counter/counterup.min.js"></script>
+            <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+            <script src="assets/vendors/masonry/masonry.js"></script>
+            <script src="assets/vendors/masonry/filter.js"></script>
+            <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+            <script src="assets/js/jquery.scroller.js"></script>
+            <script src="assets/js/functions.js"></script>
+            <script src="assets/js/contact.js"></script>
+            <script src="assets/vendors/switcher/switcher.js"></script>
+
+            <script>
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const lightbox = GLightbox({
+                                                                selector: '.glightbox',
+                                                                touchNavigation: true,
+                                                                loop: true,
+                                                                zoomable: true,
+                                                                closeButton: true,
+                                                                autoplayVideos: false
+                                                            });
+                                                        });
+            </script>
+
     </body>
 
 </html>
