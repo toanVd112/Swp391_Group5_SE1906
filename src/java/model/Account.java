@@ -29,9 +29,16 @@ public class Account implements Serializable{
         this.isVerified = isVerified;
     }
 
+    // hot fix
+    public Account(int accountID, String username, String password, String role, boolean isActive, String email) {
+        this.accountID = accountID;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.isActive = isActive;
+        this.email = email;
+    }
     
-    
-
     // Getters và Setters////////////////////////////////
     public int getAccountID() {
         return accountID;
