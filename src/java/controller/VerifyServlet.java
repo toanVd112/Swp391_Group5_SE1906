@@ -13,16 +13,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Account;
-import model.EmailUtil;
-import model.TokenDAO;
 
 /**
  *
  * @author AD
  */
-@WebServlet(name="requestPassword", urlPatterns={"/requestPassword"})
-public class requestPassword extends HttpServlet {
+@WebServlet(name="VerifyServlet", urlPatterns={"/verify"})
+public class VerifyServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -39,10 +36,10 @@ public class requestPassword extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet requestPassword</title>");  
+            out.println("<title>Servlet VerifyServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet requestPassword at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet VerifyServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,7 +56,15 @@ public class requestPassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+        String code = request.getParameter("code");
+        AccountDAO dao = new AccountDAO();
+        boolean success = dao.verifyAccount(code);
+        if (success) {
+            request.setAttribute("result", "Xác nhận thành công! Bạn có thể đăng nhập.");
+        } else {
+            request.setAttribute("result", "Mã xác nhận không hợp lệ hoặc đã được xác nhận!");
+        }
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     } 
 
     /** 
@@ -72,38 +77,7 @@ public class requestPassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String email = request.getParameter("email");
-        // 1. Kiểm tra email hợp lệ
-        if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("mess", "Email không được để trống!");
-            request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
-            return;
-        }
-
-        // 2. Kiểm tra email có trong hệ thống không
-        Account account = new AccountDAO().getAccountByEmail(email);
-
-        // Nếu tài khoản tồn tại
-        if (account != null) {
-            // 3. Sinh token ngẫu nhiên
-            String token = java.util.UUID.randomUUID().toString();
-            // 4. Thời gian hết hạn (ví dụ: 30 phút từ bây giờ)
-            java.util.Date expiry = new java.util.Date(System.currentTimeMillis() + 30*60*1000);
-
-            // 5. Ghi token vào DB (DAO cần method insertToken)
-            new TokenDAO().insertToken(token, new java.sql.Timestamp(expiry.getTime()), false, account.getAccountID());
-
-            // 6. Gửi email (dùng JavaMail, code mẫu bên dưới)
-            String link = request.getRequestURL().toString().replace("requestPassword", "resetPassword") + "?token=" + token;
-            String subject = "Reset Password - Hoang Nam Hotel";
-            String content = "Enter the link to reset password (valid for 30 minutes): " + link;
-
-            EmailUtil.sendMail(email, subject, content); 
-        }
-
-        // 7. Luôn trả về thông báo không tiết lộ email đúng/sai
-        request.setAttribute("mess", "Nếu email hợp lệ, bạn sẽ nhận được hướng dẫn trong hộp thư của mình!");
-        request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /** 

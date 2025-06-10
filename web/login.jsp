@@ -32,7 +32,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
 
         <!-- PAGE TITLE HERE ============================================= -->
-        <title>Hoang Nam Hotel</title>
+        <title>HoangNam Hotel</title>
 
         <!-- MOBILE SPECIFIC ============================================= -->
         <meta name="viewport" content="width=device-width, initial-scale=1">

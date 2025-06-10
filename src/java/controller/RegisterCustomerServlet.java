@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Account;
+import java.util.UUID;
+import model.EmailUtil;
 
 /**
  *
@@ -108,16 +110,24 @@ public class RegisterCustomerServlet extends HttpServlet {
         }
 
         // 5. Tạo account và lưu
+        String verificationCode = UUID.randomUUID().toString(); // random chuỗi unique
         Account account = new Account();
         account.setUsername(username);
         account.setEmail(email);
         account.setPassword(password);
         account.setRole("Customer");
+        account.setVerificationCode(verificationCode);
+        account.setIsVerified(false);
 
         boolean inserted = dao.insertAccount(account);
         if (inserted) {
-            // Đăng ký thành công, chuyển đến login
-            response.sendRedirect("login.jsp");
+            // Gửi mail xác thực
+            String verifyLink = "http://localhost:8080/HotelManagement/verify?code=" + verificationCode;
+            String content = "Chào bạn,<br/>Vui lòng nhấn vào <a href='" + verifyLink + "'>liên kết này</a> để xác nhận tài khoản!";
+            EmailUtil.sendMail(email, "Xác nhận tài khoản HoangNam Hotel", content);
+
+            request.setAttribute("result", "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             request.setAttribute("result", "Đăng ký thất bại, vui lòng thử lại");
             request.getRequestDispatcher("register.jsp").forward(request, response);

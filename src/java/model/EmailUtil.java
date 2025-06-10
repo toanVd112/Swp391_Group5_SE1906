@@ -19,12 +19,14 @@ import javax.mail.internet.MimeMessage;
  * @author AD
  */
 public class EmailUtil {
-    public static void sendMail(String to, String subject, String content) {
+    public static boolean sendMail(String to, String subject, String content) {
         // Gửi email sử dụng JavaMail. 
         // Bạn cần cấu hình SMTP Server, tài khoản email, mật khẩu ứng dụng...
         // Đây là ví dụ tối giản:
-        final String from = "fcpctk@gmail.com";
-        final String pass = "daeg attb munj hkxz";
+        final String from = "toan74428@gmail.com";
+        final String pass = "qbvk ucpo aolr ajwe";
+//        final String from = "fcpctk@gmail.com";
+//        final String pass = "daeg attb munj hkxz";
         final String host = "smtp.gmail.com";
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
@@ -41,10 +43,12 @@ public class EmailUtil {
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
             message.setSubject(subject);
-            message.setText(content);
+            message.setContent(content, "text/html; charset=utf-8");
             Transport.send(message);
+            return true;
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

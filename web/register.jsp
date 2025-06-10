@@ -69,6 +69,7 @@
                             <p>Already have an account? <a href="login.jsp">Click here</a></p>
                         </div>	
                     
+            <!-- ==== FORM ==== -->
           <form action="Register" method="post" class="contact-bx">
             <div class="row placeani">
 
@@ -122,16 +123,23 @@
 
             </div>
           </form>
+                
+            <!-- ==== THÔNG BÁO ==== -->
           <%
             String result = (String) request.getAttribute("result");
+            String success = (String) request.getAttribute("success");
           %>
 
           <% if (result != null) { %>
-          <div class="alert alert-info">
-              <%= result %>
+          <div class="alert alert-danger" style="margin-top:10px;">
+                            <%= result %>
           </div>
           <% } %>
-
+          <% if (success != null) { %>
+                <div class="alert alert-success" style="margin-top:10px;">
+                    <%= success %>
+                </div>
+          <% } %>
                     </div>
                 </div>
             </div>

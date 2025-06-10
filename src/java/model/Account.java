@@ -12,10 +12,12 @@ public class Account implements Serializable{
     private boolean isActive;
     private Timestamp createdAt;
     private String email;
+    private String verificationCode;
+    private boolean isVerified;
     
     public Account(){}
 
-    public Account(int accountID, String username, String password, String role, boolean isActive, Timestamp createdAt, String email) {
+    public Account(int accountID, String username, String password, String role, boolean isActive, Timestamp createdAt, String email, String verificationCode, boolean isVerified) {
         this.accountID = accountID;
         this.username = username;
         this.password = password;
@@ -23,16 +25,11 @@ public class Account implements Serializable{
         this.isActive = isActive;
         this.createdAt = createdAt;
         this.email = email;
+        this.verificationCode = verificationCode;
+        this.isVerified = isVerified;
     }
 
-    public Account(int accountID, String username, String password, String role, boolean isActive, String email) {
-        this.accountID = accountID;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.isActive = isActive;
-        this.email = email;
-    }
+    
     
 
     // Getters và Setters////////////////////////////////
@@ -99,5 +96,21 @@ public class Account implements Serializable{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public String getVerificationCode() {
+    return verificationCode;
+}
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(boolean isVerified) {
+        this.isVerified = isVerified;
     }
 }
