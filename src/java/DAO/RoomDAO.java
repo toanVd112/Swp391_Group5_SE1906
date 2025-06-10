@@ -314,10 +314,27 @@ public class RoomDAO {
         throw new Exception("Không tìm thấy phòng: " + roomNumber);
     }
 
-    public List<RoomInspectionReport> getPendingInspections() {
+    public List<RoomInspectionReport> getFilteredPendingRequests(String keyword, String sort, int page, int size) {
         List<RoomInspectionReport> list = new ArrayList<>();
         String sql = "SELECT * FROM roominspectionreports WHERE IsRoomOk IS NULL";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql += " AND Notes LIKE ?";
+        }
+
+        sql += " ORDER BY InspectionTime " + ("asc".equals(sort) ? "ASC" : "DESC");
+        sql += " LIMIT ? OFFSET ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + keyword + "%");
+            }
+            ps.setInt(paramIndex++, size);
+            ps.setInt(paramIndex, (page - 1) * size);
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 RoomInspectionReport r = new RoomInspectionReport();
                 r.setReportID(rs.getInt("ReportID"));
@@ -326,24 +343,73 @@ public class RoomDAO {
                 r.setStaffID(rs.getInt("StaffID"));
                 r.setInspectionTime(rs.getTimestamp("InspectionTime"));
                 r.setNotes(rs.getString("Notes"));
-                // Không cần set IsRoomOk vì đang là null
                 list.add(r);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
+    }
+
+    public int countPendingRequests(String keyword) {
+        String sql = "SELECT COUNT(*) FROM roominspectionreports WHERE IsRoomOk IS NULL";
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql += " AND Notes LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(1, "%" + keyword + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean updateInspectionReport(int reportID, boolean isRoomOk, String notes) {
+        String sql = "UPDATE roominspectionreports SET IsRoomOk = ?, Notes = ? WHERE ReportID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, isRoomOk);
+            ps.setString(2, notes);
+            ps.setInt(3, reportID);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static void main(String[] args) {
         RoomDAO dao = new RoomDAO();
-        List<RoomInspectionReport> list = dao.getPendingInspections();
-        System.out.println("Số lượng kết quả: " + list.size());
-        for (RoomInspectionReport r : list) {
+
+        // Các tham số để test
+        String keyword = "dọn"; // hoặc null / "" để không lọc theo keyword
+        String sort = "desc";   // hoặc "asc"
+        int page = 1;
+        int size = 5;
+
+        List<RoomInspectionReport> reports = dao.getFilteredPendingRequests(keyword, sort, page, size);
+
+        System.out.println("Danh sách kết quả:");
+        for (RoomInspectionReport r : reports) {
             System.out.println("ReportID: " + r.getReportID());
+            System.out.println("BookingID: " + r.getBookingID());
             System.out.println("RoomID: " + r.getRoomID());
-            System.out.println("IsRoomOk: " + r.getIsRoomOk());
-            System.out.println("--------------");
+            System.out.println("StaffID: " + r.getStaffID());
+            System.out.println("InspectionTime: " + r.getInspectionTime());
+            System.out.println("Notes: " + r.getNotes());
+            System.out.println("------------------------------");
+        }
+
+        if (reports.isEmpty()) {
+            System.out.println("Không có kết quả phù hợp.");
         }
     }
 
