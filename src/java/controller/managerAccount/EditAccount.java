@@ -88,32 +88,41 @@ public class EditAccount extends HttpServlet {
         String email = request.getParameter("email");
         String aid = request.getParameter("aid");
 
-        // Validate dữ liệu đầu vào
+        boolean isActive = Boolean.parseBoolean(active);
+        boolean hasError = false;
+
+        // Gán lại account để giữ giá trị trong form nếu có lỗi
+        Account acc = new Account(Integer.parseInt(aid), user, pass, role, isActive, email);
+        request.setAttribute("account", acc);
+
+        // Validate từng trường và đặt thông báo lỗi tương ứng
         if (user == null || user.trim().isEmpty()) {
-            request.setAttribute("error", "Username must not be empty.");
-            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
-            request.getRequestDispatcher("editAccount").forward(request, response);
-            return;
+            request.setAttribute("usernameError", "Username must not be empty.");
+            hasError = true;
         }
 
         if (pass == null || pass.trim().isEmpty()) {
-            request.setAttribute("error", "Password must not be empty.");
-            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
-            request.getRequestDispatcher("editAccount").forward(request, response);
+            request.setAttribute("passwordError", "Password must not be empty.");
+            hasError = true;
+        }
+
+        if (email == null || email.trim().isEmpty()
+                || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            request.setAttribute("emailError", "Invalid email address.");
+            hasError = true;
+        }
+
+        // Nếu có lỗi thì quay lại trang editAccount.jsp
+        if (hasError) {
+            request.getRequestDispatcher("editAccount.jsp").forward(request, response);
             return;
         }
 
-        if (email == null || email.trim().isEmpty() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            request.setAttribute("error", "Invalid email address.");
-            request.setAttribute("account", new Account(Integer.parseInt(aid), user, pass, role, Boolean.parseBoolean(active), email));
-            request.getRequestDispatcher("editAccount").forward(request, response);
-            return;
-        }
-
-        boolean isActive = Boolean.parseBoolean(active);
+        // Cập nhật vào CSDL
         AccountDAO ad = new AccountDAO();
         ad.editAccount(user, pass, role, isActive, email, aid);
 
+        // Ghi lại lịch sử chỉnh sửa
         Account currentUser = (Account) request.getSession().getAttribute("account");
         int editedID = Integer.parseInt(aid);
         ActivityStaffDAO logDAO = new ActivityStaffDAO();
@@ -123,6 +132,7 @@ public class EditAccount extends HttpServlet {
             Logger.getLogger(EditAccount.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        // Chuyển hướng về trang quản lý tài khoản
         response.sendRedirect("managerAccount");
     }
 

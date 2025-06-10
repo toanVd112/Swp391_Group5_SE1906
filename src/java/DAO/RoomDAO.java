@@ -7,6 +7,7 @@ package DAO;
 import java.util.*;
 import java.sql.*;
 import model.Room;
+import model.RoomInspectionReport;
 import model.RoomType;
 
 /**
@@ -311,6 +312,39 @@ public class RoomDAO {
             }
         }
         throw new Exception("Không tìm thấy phòng: " + roomNumber);
+    }
+
+    public List<RoomInspectionReport> getPendingInspections() {
+        List<RoomInspectionReport> list = new ArrayList<>();
+        String sql = "SELECT * FROM roominspectionreports WHERE IsRoomOk IS NULL";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                RoomInspectionReport r = new RoomInspectionReport();
+                r.setReportID(rs.getInt("ReportID"));
+                r.setBookingID(rs.getInt("BookingID"));
+                r.setRoomID(rs.getInt("RoomID"));
+                r.setStaffID(rs.getInt("StaffID"));
+                r.setInspectionTime(rs.getTimestamp("InspectionTime"));
+                r.setNotes(rs.getString("Notes"));
+                // Không cần set IsRoomOk vì đang là null
+                list.add(r);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static void main(String[] args) {
+        RoomDAO dao = new RoomDAO();
+        List<RoomInspectionReport> list = dao.getPendingInspections();
+        System.out.println("Số lượng kết quả: " + list.size());
+        for (RoomInspectionReport r : list) {
+            System.out.println("ReportID: " + r.getReportID());
+            System.out.println("RoomID: " + r.getRoomID());
+            System.out.println("IsRoomOk: " + r.getIsRoomOk());
+            System.out.println("--------------");
+        }
     }
 
 }
