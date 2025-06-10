@@ -32,7 +32,7 @@
 <%-- Khai báo HTML5 và ngôn ngữ trang là tiếng Anh --%>
 <html>
 <head>
-    <title>Thêm Dịch vụ</title>
+    <title>Add Service</title>
     
     <%-- CSS tùy chỉnh để tạo giao diện đẹp và responsive --%>
     <style>
@@ -144,6 +144,10 @@
             border-color: #dc3545;
         }
         
+        span {
+            color: red;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -154,62 +158,113 @@
         }
     </style>
     
-    <%-- JavaScript để validate phía client (tùy chọn) --%>
-    <script>
-        function validateForm() {
-            let isValid = true;
-            const name = document.getElementById("name").value.trim();
-            const price = document.getElementById("price").value.trim();
-            const serviceType = document.getElementById("serviceType").value.trim();
-            const serviceImage = document.getElementById("serviceImage").value.trim();
-            
-            // Xóa lớp input-error trước khi validate
-            document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
-            
-            // Validate tên dịch vụ
-            if (!name) {
-                document.getElementById("name").classList.add("input-error");
-                isValid = false;
-            } else if (name.length < 3 || name.length > 100) {
-                document.getElementById("name").classList.add("input-error");
-                isValid = false;
-            }
-            
-            // Validate giá
-            if (!price) {
-                document.getElementById("price").classList.add("input-error");
-                isValid = false;
-            } else if (isNaN(price) || price < 0 || price > 1000000000) {
-                document.getElementById("price").classList.add("input-error");
-                isValid = false;
-            }
-            
-            // Validate loại dịch vụ
-            if (!serviceType) {
-                document.getElementById("serviceType").classList.add("input-error");
-                isValid = false;
-            }
-            
-            // Validate URL hình ảnh
-            if (serviceImage) {
-                const imageRegex = /^(https?:\/\/|\/).+\.(jpg|jpeg|png|gif)$/i;
-                if (!imageRegex.test(serviceImage)) {
-                    document.getElementById("serviceImage").classList.add("input-error");
-                    isValid = false;
+        <%-- JavaScript để validate phía client --%>
+        <script>
+            async function isDupeServiceName(input) {
+                const dataToSend = input;
+
+                try {
+                    const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({data: dataToSend})
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Phản hồi từ API không thành công');
+                    }
+
+                    const result = await response.json();
+                    console.log('Kết quả:', result);
+                    return result === true || result === "true"; // Hỗ trợ cả boolean và chuỗi
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    return false; // Trả về false khi lỗi, giả sử không trùng lặp nếu API thất bại
                 }
             }
-            
-            if (!isValid) {
-                alert("Vui lòng kiểm tra các trường dữ liệu được đánh dấu đỏ.");
+
+            async function validateForm(form) {
+                let isValid = true;
+                let errorMessages = [];
+
+                // Lấy các phần tử HTML và kiểm tra tồn tại
+                const nameInput = document.getElementById("name");
+                const priceInput = document.getElementById("price");
+                const serviceTypeInput = document.getElementById("serviceType");
+                const serviceImageInput = document.getElementById("serviceImage");
+
+                if (!nameInput || !priceInput || !serviceTypeInput || !serviceImageInput) {
+                    console.error("Một hoặc nhiều phần tử HTML không tồn tại.");
+                    alert("Lỗi: Không tìm thấy các trường dữ liệu cần thiết.");
+                    return false;
+                }
+
+                // Lấy giá trị từ các trường
+                const name = nameInput.value.trim();
+                const price = priceInput.value.trim();
+                const serviceType = serviceTypeInput.value.trim();
+                const serviceImage = serviceImageInput.value.trim();
+
+                // Xóa lớp input-error trước khi validate
+                document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+
+                // Kiểm tra tên dịch vụ trùng lặp
+                const isDupServiceName = await isDupeServiceName(name);
+
+                // Validate tên dịch vụ
+                if (!name) {
+                    nameInput.classList.add("input-error");
+                    errorMessages.push("Tên dịch vụ không được để trống.");
+                    isValid = false;
+                } else if (name.length < 3 || name.length > 100) {
+                    nameInput.classList.add("input-error");
+                    errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự.");
+                    isValid = false;
+                } else if (isDupServiceName) {
+                    console.log("Tên dịch vụ trùng lặp");
+                    nameInput.classList.add("input-error");
+                    errorMessages.push("Tên dịch vụ đã tồn tại.");
+                    isValid = false;
+                }
+
+                // Validate giá
+                const priceValue = parseFloat(price);
+                if (!price || isNaN(priceValue) || priceValue < 0 || priceValue > 1000000000) {
+                    priceInput.classList.add("input-error");
+                    errorMessages.push("Giá phải là số hợp lệ từ 0 đến 1,000,000,000.");
+                    isValid = false;
+                }
+
+                // Validate loại dịch vụ
+                if (!serviceType) {
+                    serviceTypeInput.classList.add("input-error");
+                    errorMessages.push("Loại dịch vụ không được để trống.");
+                    isValid = false;
+                }
+
+                // Validate URL hình ảnh
+                if (serviceImage) {
+                    const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
+                    if (!imageRegex.test(serviceImage)) {
+                        serviceImageInput.classList.add("input-error");
+                        errorMessages.push("URL hình ảnh không hợp lệ.");
+                        isValid = false;
+                    }
+                }
+
+                if (!isValid) {
+                    alert(errorMessages.join("\n"));
+                } else {
+                    form.submit();
+                }
             }
-            
-            return isValid;
-        }
-    </script>
+        </script>
 </head>
 <body>
     <div class="container">
-        <h2>Thêm Dịch vụ mới</h2>
+        <h2>Add New Service</h2>
         
         <%-- Hiển thị thông báo lỗi nếu có --%>
         <c:if test="${not empty errorMessage}">
@@ -217,11 +272,10 @@
         </c:if>
         
         <%-- Form thêm dịch vụ --%>
-        <form action="${pageContext.request.contextPath}/addService" method="post" onsubmit="return validateForm()">
+        <form action="${pageContext.request.contextPath}/addService" method="post" onsubmit="event.preventDefault(); validateForm(this);">
             <div class="form-group">
                 <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
-                <input type="text" id="name" name="name" value="${service.name}" required
-                       pattern="[A-Za-z0-9\s\-_]+" title="Chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">
+                <input type="text" id="name" name="name" value="${service.name}" required>
             </div>
             
             <div class="form-group">
@@ -231,8 +285,15 @@
             
             <div class="form-group">
                 <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
-                <input type="number" id="price" name="price" step="1" min="0" max="1000000000"
-                       value="${service.price > 0 ? service.price : ''}" required>
+                <input 
+                    type="number" 
+                    id="price" 
+                    name="price" 
+                    step="1" 
+                    min="0" 
+                    max="1000000000" 
+                    value="" 
+                    required />
             </div>
             
             <div class="form-group">

@@ -4,6 +4,7 @@
     Author     : Admin
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -89,7 +90,7 @@
 
                         <!-- Hiển thị lỗi nếu login thất bại -->
                         <c:if test="${not empty result}">
-                            <div class="alert alert-danger">${result}</div>
+                            <p class="alert alert-danger">${result}</p>
                         </c:if>
 
                     </div>

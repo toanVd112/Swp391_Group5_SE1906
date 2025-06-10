@@ -92,18 +92,20 @@
         </style>
     </head>
     <body>
+            <%-- Nhúng file sidebar.jsp để hiển thị menu bên trái --%>
+            <%@ include file="sidebar.jsp" %>
         <%-- Navbar cố định ở trên cùng --%>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-primary fixed-top" style="margin-left: 240px">
             <div class="container-fluid">
                 <%-- Logo hoặc tên ứng dụng --%>
-                <a class="navbar-brand" href="#">Hotel Management</a>
+                <a class="navbar-brand" style="color: white;" href="#"><strong>Services Management</strong></a>
                 
                 <%-- Navbar collapse để hiển thị menu khi màn hình nhỏ --%>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto"> <%-- Căn phải các mục navbar --%>
                         <li class="nav-item dropdown">
                             <%-- Hiển thị vai trò người dùng (Manager) và menu dropdown --%>
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle"  style="color: white;" href="#" role="button" data-bs-toggle="dropdown">
                                 Welcome, ${account.role} <%-- Hiển thị vai trò từ session --%>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -122,8 +124,6 @@
 
         <%-- Nội dung chính với sidebar và bảng dịch vụ --%>
         <div class="d-flex">
-            <%-- Nhúng file sidebar.jsp để hiển thị menu bên trái --%>
-            <%@ include file="sidebar.jsp" %>
 
             <%-- Nội dung chính --%>
             <div class="main-content p-3">

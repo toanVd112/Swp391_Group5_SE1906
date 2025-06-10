@@ -12,12 +12,10 @@ public class ServiceDAO {
 
     // Giữ nguyên các phương thức khác của bạn như getServiceByID, addService, update, etc.
     // ... (các phương thức hiện có của bạn) ...
-
     public Service getServiceByID(int id) {
         Service s = null;
         String sql = "SELECT * FROM services WHERE ServiceID = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -44,9 +42,7 @@ public class ServiceDAO {
     public List<String> getAllDistinctServiceType() {
         List<String> serviceTypes = new ArrayList<>();
         String sql = "SELECT DISTINCT ServiceType FROM services WHERE ServiceType IS NOT NULL AND ServiceType <> '' ORDER BY ServiceType ASC";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 serviceTypes.add(rs.getString("ServiceType"));
             }
@@ -59,11 +55,15 @@ public class ServiceDAO {
 
     /**
      * Lấy danh sách dịch vụ dựa trên các tiêu chí lọc và tìm kiếm.
+     *
      * @param keyword Từ khóa tìm kiếm theo tên dịch vụ (có thể null hoặc rỗng).
      * @param type Lọc theo loại dịch vụ (có thể null hoặc rỗng).
-     * @param status Lọc theo trạng thái ("1" cho available, "0" cho not available; có thể null hoặc rỗng).
-     * @param sortBy Tiêu chí sắp xếp (ví dụ: "name_asc", "price_desc"; có thể null để sắp xếp mặc định).
-     * @param page Trang hiện tại cho phân trang (0 hoặc 1 nếu không phân trang/lấy tất cả).
+     * @param status Lọc theo trạng thái ("1" cho available, "0" cho not
+     * available; có thể null hoặc rỗng).
+     * @param sortBy Tiêu chí sắp xếp (ví dụ: "name_asc", "price_desc"; có thể
+     * null để sắp xếp mặc định).
+     * @param page Trang hiện tại cho phân trang (0 hoặc 1 nếu không phân
+     * trang/lấy tất cả).
      * @return Danh sách các dịch vụ.
      */
     public List<Service> getFilteredServices(String keyword, String type, String status, String sortBy, int page) {
@@ -105,9 +105,7 @@ public class ServiceDAO {
         // Ví dụ: sql.append(" LIMIT ? OFFSET ?");
         // params.add(recordsPerPage);
         // params.add((page - 1) * recordsPerPage);
-
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
@@ -147,10 +145,9 @@ public class ServiceDAO {
     // Đảm bảo rằng phương thức toggleServiceStatus hiện tại của bạn hoạt động đúng với ToggleServiceStatusServlet.
     // Ví dụ:
     public boolean addService(Service s) {
-        String sql = "INSERT INTO services (ServiceName, Price, Description, AvailabilityStatus, ServiceType, CreatedDate, LastUpdatedDate, CreatedBy, LastUpdatedBy, ServiceImage) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "INSERT INTO services (ServiceName, Price, Description, AvailabilityStatus, ServiceType, CreatedDate, LastUpdatedDate, CreatedBy, LastUpdatedBy, ServiceImage) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, s.getName());
             ps.setInt(2, s.getPrice());
             ps.setString(3, s.getDescription());
@@ -170,10 +167,9 @@ public class ServiceDAO {
     }
 
     public boolean update(Service s) {
-        String sql = "UPDATE services SET ServiceName = ?, Price = ?, Description = ?, AvailabilityStatus = ?, " +
-                     "ServiceType = ?, LastUpdatedDate = ?, LastUpdatedBy = ?, ServiceImage = ? WHERE ServiceID = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "UPDATE services SET ServiceName = ?, Price = ?, Description = ?, AvailabilityStatus = ?, "
+                + "ServiceType = ?, LastUpdatedDate = ?, LastUpdatedBy = ?, ServiceImage = ? WHERE ServiceID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, s.getName());
             ps.setInt(2, s.getPrice());
             ps.setString(3, s.getDescription());
@@ -189,19 +185,19 @@ public class ServiceDAO {
             return false;
         }
     }
-    
+
     // Giả sử phương thức này đã tồn tại và được ToggleServiceStatusServlet sử dụng
     public boolean toggleServiceStatus(int id) { // hoặc toggleServiceStatus(int id, String updatedBy)
         boolean success = false;
         // Câu lệnh SQL của bạn có thể khác, đây chỉ là ví dụ
-        String sql = "UPDATE services SET AvailabilityStatus = CASE " +
-                     "WHEN AvailabilityStatus = '1' THEN '0' " +
-                     "ELSE '1' END, " +
-                     "LastUpdatedDate = ? " + // Nên cập nhật cả LastUpdatedDate
-                   //  "LastUpdatedBy = ? " +   // Và LastUpdatedBy nếu có
-                     "WHERE ServiceID = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "UPDATE services SET AvailabilityStatus = CASE "
+                + "WHEN AvailabilityStatus = '1' THEN '0' "
+                + "ELSE '1' END, "
+                + "LastUpdatedDate = ? "
+                + // Nên cập nhật cả LastUpdatedDate
+                //  "LastUpdatedBy = ? " +   // Và LastUpdatedBy nếu có
+                "WHERE ServiceID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setObject(1, LocalDateTime.now());
             // ps.setString(2, "current_user_from_session"); // Nếu bạn lưu người cập nhật
             ps.setInt(2, id); // Hoặc 3 nếu có LastUpdatedBy
@@ -210,5 +206,19 @@ public class ServiceDAO {
             e.printStackTrace();
         }
         return success;
+    }
+
+    public boolean isDuplicatedServiceName(String serviceName) {
+        try (
+                Connection conn = DBConnect.getConnection(); 
+                PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM services WHERE ServiceName = ? LIMIT 1");
+                ) {
+            stmt.setString(1, serviceName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Database error while checking for duplicated service name", e);
+        }
     }
 }
