@@ -3,137 +3,160 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Quản lý Phòng</title>
+        <jsp:include page="/header.jsp" />
         <style>
-            /* KHÔNG có .sidebar ở đây nữa */
-
-            .main-content {
-                margin-left: 260px;
-                padding: 30px;
-                width: calc(100% - 260px);
-                box-sizing: border-box;
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f3f4f6;
             }
 
-            .card {
-                background: #fff;
-                padding: 20px;
-                border-radius: 8px;
+            .main-content {
                 max-width: 1200px;
-                margin: auto;
-                box-shadow: 0 4px 12px rgba(0,0,0,.1);
+                margin: 40px auto;
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            h2 {
+                font-size: 24px;
+                color: #1e293b;
+                margin-bottom: 20px;
+                border-left: 5px solid #3b82f6;
+                padding-left: 10px;
             }
 
             .filter {
                 display: flex;
-                gap: 10px;
                 flex-wrap: wrap;
+                gap: 15px;
                 margin-bottom: 20px;
             }
 
-            .filter select, .filter input {
-                padding: 6px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
+            .filter select,
+            .filter input {
+                padding: 10px;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 14px;
+                min-width: 140px;
             }
 
             .filter button {
-                padding: 6px 12px;
+                padding: 10px 16px;
+                background-color: #2563eb;
+                color: white;
                 border: none;
-                border-radius: 4px;
-                background: #2563eb;
-                color: #fff;
+                border-radius: 6px;
+                font-weight: 500;
                 cursor: pointer;
             }
 
+            .filter button:hover {
+                background-color: #1e40af;
+            }
+
             .filter a {
-                padding: 6px 12px;
-                background: #ccc;
-                color: #000;
+                display: inline-block;
+                padding: 10px 16px;
+                background-color: #e5e7eb;
+                color: #111827;
+                border-radius: 6px;
                 text-decoration: none;
-                border-radius: 4px;
+                font-weight: 500;
+            }
+
+            .filter a:hover {
+                background-color: #d1d5db;
             }
 
             table {
                 width: 100%;
                 border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            table thead {
+                background-color: #f1f5f9;
             }
 
             th, td {
-                padding: 10px;
-                border-bottom: 1px solid #eaeaea;
+                padding: 12px;
+                border-bottom: 1px solid #e5e7eb;
                 text-align: left;
+                font-size: 14px;
             }
 
-            th {
-                background: #fafafa;
+            .status {
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-size: 13px;
             }
 
             .status.Available {
-                color: green;
-                font-weight: 600;
+                background-color: #d1fae5;
+                color: #065f46;
             }
 
             .status.Occupied {
-                color: orange;
-                font-weight: 600;
+                background-color: #fef3c7;
+                color: #92400e;
             }
 
             .status.Maintenance {
-                color: red;
-                font-weight: 600;
+                background-color: #fee2e2;
+                color: #991b1b;
             }
 
             .status.Dirty {
-                color: blue;
-                font-weight: 600;
+                background-color: #dbeafe;
+                color: #1e3a8a;
             }
+
             .pagination {
                 display: flex;
                 justify-content: center;
+                list-style: none;
                 padding: 0;
-                margin-top: 20px;
-                list-style-type: none;
-                gap: 5px;
+                margin-top: 30px;
+                gap: 8px;
             }
 
-            .pagination li {
-                display: inline-block;
-            }
-
-            .pagination a {
+            .pagination li a {
                 display: block;
                 padding: 8px 14px;
-                text-decoration: none;
+                background-color: #ffffff;
+                color: #1e3a8a;
+                border: 1px solid #cbd5e1;
                 border-radius: 6px;
-                border: 1px solid #ccc;
-                background-color: #f9f9f9;
-                color: #2c3e50;
-                font-weight: 500;
-                transition: background-color 0.3s, color 0.3s;
+                text-decoration: none;
+                transition: all 0.3s;
             }
 
-            .pagination a:hover {
-                background-color: #3498db;
+            .pagination li a:hover {
+                background-color: #3b82f6;
                 color: white;
             }
 
-            .pagination .active a {
-                background-color: #3498db;
+            .pagination li.active a {
+                background-color: #3b82f6;
                 color: white;
-                border-color: #3498db;
                 font-weight: bold;
+                border-color: #3b82f6;
             }
-
         </style>
     </head>
     <body>
-        
 
         <div class="main-content">
             <div class="card">
                 <h2>Danh sách Phòng</h2>
 
-                <form class="filter" method="get" action="ListRoomsServlet">
+                <form class="filter" method="get" action="ListRoomsServlet1">
                     <select name="roomTypeId">
                         <option value="">--Loại phòng--</option>
                         <c:forEach var="rt" items="${roomTypes}">
@@ -155,15 +178,13 @@
                     </select>
 
                     <input type="number" name="keyword" placeholder="Số phòng chứa..." value="${f_keyword}" />
-
                     <input type="number" name="minFloor" placeholder="Tầng từ" style="width:80px" value="${f_minFloor}" />
                     <input type="number" name="maxFloor" placeholder="đến" style="width:80px" value="${f_maxFloor}" />
-
                     <input type="number" step="0.01" name="minPrice" placeholder="Giá từ" style="width:100px" value="${f_minPrice}" />
                     <input type="number" step="0.01" name="maxPrice" placeholder="đến" style="width:100px" value="${f_maxPrice}" />
 
                     <button type="submit">Tìm</button>
-                    <a href="${pageContext.request.contextPath}/ListRoomsServlet">Reset</a>
+                    <a href="${pageContext.request.contextPath}/ListRoomsServlet1">Reset</a>
                 </form>
 
                 <table>
@@ -189,38 +210,34 @@
                             </tr>
                         </c:forEach>
                         <c:if test="${empty rooms}">
-                            <tr>
-                                <td colspan="6" style="text-align:center">Không tìm thấy phòng nào</td>
-                            </tr>
+                            <tr><td colspan="6" style="text-align:center">Không tìm thấy phòng nào</td></tr>
                         </c:if>
                     </tbody>
                 </table>
+
                 <c:if test="${totalPages > 1}">
                     <ul class="pagination">
-
                         <c:if test="${currentPage > 1}">
                             <li>
-                                <a href="ListRoomsServlet?page=${currentPage - 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Prev</a>
+                                <a href="ListRoomsServlet1?page=${currentPage - 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Prev</a>
                             </li>
                         </c:if>
-
                         <c:forEach var="i" begin="1" end="${totalPages}">
                             <li class="${i == currentPage ? 'active' : ''}">
-                                <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">${i}</a>
+                                <a href="ListRoomsServlet1?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">${i}</a>
                             </li>
                         </c:forEach>
-
                         <c:if test="${currentPage < totalPages}">
                             <li>
-                                <a href="ListRoomsServlet?page=${currentPage + 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Next</a>
+                                <a href="ListRoomsServlet1?page=${currentPage + 1}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}">Next</a>
                             </li>
                         </c:if>
-
                     </ul>
                 </c:if>
 
-
             </div>
         </div>
+
+        <jsp:include page="/footer.jsp" />
     </body>
 </html>

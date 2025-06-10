@@ -190,7 +190,7 @@
         </style>
     </head>
     <body>
-        <%@ include file="sidebar.jsp" %>
+      
 
         <div class="main-content">
             <div class="container">

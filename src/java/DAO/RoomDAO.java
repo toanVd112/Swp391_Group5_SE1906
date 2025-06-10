@@ -301,4 +301,16 @@ public class RoomDAO {
         }
     }
 
+    public int getRoomIdByNumber(int roomNumber) throws Exception {
+        String sql = "SELECT RoomID FROM rooms WHERE RoomNumber = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("RoomID");
+            }
+        }
+        throw new Exception("Không tìm thấy phòng: " + roomNumber);
+    }
+
 }
