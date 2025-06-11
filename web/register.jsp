@@ -70,7 +70,7 @@
                         </div>	
                     
             <!-- ==== FORM ==== -->
-          <form action="Register" method="post" class="contact-bx">
+          <form action="Register" method="post" class="contact-bx" autocomplete="off">
             <div class="row placeani">
 
               <!-- Username -->
@@ -80,7 +80,7 @@
                   <input name="username" type="text"
                          class="form-control"
                          required
-                         value="${username != null ? username : ''}" />
+                         value="${username != null ? username : ''}" autocomplete="username" />
                 </div>
               </div>
 
@@ -91,7 +91,7 @@
                   <input name="email" type="email"
                          class="form-control"
                          required
-                         value="${email != null ? email : ''}" />
+                         value="${email != null ? email : ''}" autocomplete="email" />
                 </div>
               </div>
 
@@ -102,7 +102,7 @@
                   <input name="password" type="password"
                          class="form-control"
                          required
-                         value="${password != null ? password : ''}" />
+                         autocomplete="new-password" />
                 </div>
               </div>
 
@@ -113,7 +113,7 @@
                   <input name="confirmPassword" type="password"
                          class="form-control"
                          required
-                         value="${confirmPassword != null ? confirmPassword : ''}" />
+                         autocomplete="new-password" />
                 </div>
               </div>
 
@@ -124,7 +124,7 @@
             </div>
           </form>
                 
-            <!-- ==== THÔNG BÁO ==== -->
+            <!-- ==== TH?NG B?O ==== -->
           <%
             String result = (String) request.getAttribute("result");
             String success = (String) request.getAttribute("success");

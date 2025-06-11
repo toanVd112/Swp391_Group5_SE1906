@@ -75,8 +75,8 @@ public class RegisterCustomerServlet extends HttpServlet {
         // Đặt lại để JSP đổ giá trị khi error
         request.setAttribute("username", username);
         request.setAttribute("email", email);
-        request.setAttribute("password", password);
-        request.setAttribute("confirmPassword", confirmPassword);
+        //request.setAttribute("password", password);
+        //request.setAttribute("confirmPassword", confirmPassword);
 
         Validation val = new Validation();
         AccountDAO dao = new AccountDAO();
@@ -110,23 +110,27 @@ public class RegisterCustomerServlet extends HttpServlet {
         }
 
         // 5. Tạo account và lưu
-        String verificationCode = UUID.randomUUID().toString(); // random chuỗi unique
+        
         Account account = new Account();
         account.setUsername(username);
         account.setEmail(email);
         account.setPassword(password);
         account.setRole("Customer");
-        account.setVerificationCode(verificationCode);
-        account.setIsVerified(false);
+        account.setIsActive(true); // Đảm bảo account hoạt động
+
 
         boolean inserted = dao.insertAccount(account);
         if (inserted) {
-            // Gửi mail xác thực
-            String verifyLink = "http://localhost:8080/HotelManagement/verify?code=" + verificationCode;
-            String content = "Chào bạn,<br/>Vui lòng nhấn vào <a href='" + verifyLink + "'>liên kết này</a> để xác nhận tài khoản!";
-            EmailUtil.sendMail(email, "Xác nhận tài khoản HoangNam Hotel", content);
+        // Gửi mail với link đăng nhập
+            String context = request.getRequestURL().toString().replace(request.getServletPath(), "");
+            String loginLink = context + "/login.jsp";
+            String content = "Chào bạn,<br/>Tài khoản của bạn đã được đăng ký thành công!<br/>"
+                    + "Bạn có thể đăng nhập tại đây: <a href='" + loginLink + "'>Đăng nhập</a>";
 
-            request.setAttribute("result", "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
+            EmailUtil.sendMail(email, "Đăng ký tài khoản HoangNam Hotel thành công", content);
+
+            // Hiển thị message ở trang đăng nhập
+            request.setAttribute("result", "Đăng ký thành công! Đã gửi link đăng nhập tới email của bạn.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             request.setAttribute("result", "Đăng ký thất bại, vui lòng thử lại");
@@ -141,7 +145,7 @@ public class RegisterCustomerServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Register servlet for HoangNam Hotel";
     }// </editor-fold>
 
 }

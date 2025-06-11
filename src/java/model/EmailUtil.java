@@ -20,9 +20,7 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailUtil {
     public static boolean sendMail(String to, String subject, String content) {
-        // Gửi email sử dụng JavaMail. 
-        // Bạn cần cấu hình SMTP Server, tài khoản email, mật khẩu ứng dụng...
-        // Đây là ví dụ tối giản:
+        
         final String from = "toan74428@gmail.com";
         final String pass = "qbvk ucpo aolr ajwe";
 //        final String from = "fcpctk@gmail.com";

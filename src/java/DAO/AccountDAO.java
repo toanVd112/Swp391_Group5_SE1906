@@ -26,8 +26,7 @@ public class AccountDAO extends DBConnect {
             ps.setString(3, account.getRole());
             ps.setBoolean(4, true);
             ps.setString(5, account.getEmail());
-            ps.setString(6, account.getVerificationCode());
-            ps.setBoolean(7, account.isVerified());
+            
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -135,24 +134,13 @@ public class AccountDAO extends DBConnect {
         return latestID;
     }
 
-    public Account getAccountByID(String aid) {
-
+     public Account getAccountByID(String aid) {
         String sql = "SELECT * FROM accounts WHERE AccountID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, Integer.parseInt(aid)); // Đảm bảo aid là số
+            ps.setInt(1, Integer.parseInt(aid));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Account(
-                        rs.getInt("AccountID"),
-                        rs.getString("Username"),
-                        rs.getString("Password"),
-                        rs.getString("Role"),
-                        rs.getBoolean("IsActive"),
-                        rs.getTimestamp("CreatedAt"),
-                        rs.getString("Email"),
-                        rs.getString("verification_code"),
-                        rs.getBoolean("is_verified")
-                );
+                return extractAccount(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -208,17 +196,7 @@ public class AccountDAO extends DBConnect {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new Account(
-                        rs.getInt("AccountID"),
-                        rs.getString("Username"),
-                        rs.getString("Password"),
-                        rs.getString("Role"),
-                        rs.getBoolean("IsActive"),
-                        rs.getTimestamp("CreatedAt"),
-                        rs.getString("Email"),
-                        rs.getString("verification_code"),
-                        rs.getBoolean("is_verified")
-                ));
+                list.add(extractAccount(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -263,22 +241,12 @@ public class AccountDAO extends DBConnect {
     }
 
     public Account getAccountByEmail(String email) {
-        String sql = "SELECT * FROM accounts WHERE Email = ?";
+         String sql = "SELECT * FROM accounts WHERE Email = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Account(
-                        rs.getInt("AccountID"),
-                        rs.getString("Username"),
-                        rs.getString("Password"),
-                        rs.getString("Role"),
-                        rs.getBoolean("IsActive"),
-                        rs.getTimestamp("CreatedAt"),
-                        rs.getString("Email"),
-                        rs.getString("verification_code"),
-                        rs.getBoolean("is_verified")
-                );
+                return extractAccount(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -314,27 +282,7 @@ public class AccountDAO extends DBConnect {
         return null;
     }
 
-    public Account getAccountByVerificationCode(String code) {
-        String sql = "SELECT * FROM accounts WHERE verification_code = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Account account = new Account();
-                account.setAccountID(rs.getInt("AccountID"));
-                account.setUsername(rs.getString("Username"));
-                account.setPassword(rs.getString("Password"));
-                account.setRole(rs.getString("Role"));
-                account.setEmail(rs.getString("Email"));
-                account.setVerificationCode(rs.getString("verification_code"));
-                account.setIsVerified(rs.getBoolean("is_verified"));
-                return account;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    
 
     public boolean verifyAccount(String code) {
         String sql = "UPDATE accounts SET is_verified = TRUE, verification_code = NULL WHERE verification_code = ?";
@@ -356,12 +304,7 @@ public class AccountDAO extends DBConnect {
         account.setIsActive(rs.getBoolean("IsActive"));
         account.setCreatedAt(rs.getTimestamp("CreatedAt"));
         account.setEmail(rs.getString("Email"));
-        // nếu có: verification_code, is_verified
-        try {
-            account.setVerificationCode(rs.getString("verification_code"));
-            account.setIsVerified(rs.getBoolean("is_verified"));
-        } catch (Exception ignore) {
-        }
+        // Không còn xử lý verificationCode, isVerified
         return account;
     }
 
