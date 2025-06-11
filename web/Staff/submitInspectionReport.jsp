@@ -97,7 +97,9 @@
                 <label for="notes">Ghi chú:</label>
                 <textarea name="notes" rows="5" placeholder="Nhập ghi chú..."></textarea>
 
-                <button type="submit">Gửi báo cáo</button>
+                <div style="text-align: right;">
+                    <button type="submit">Gửi báo cáo</button>
+                </div>
             </form>
 
             <!-- Nút quay về trang chính -->

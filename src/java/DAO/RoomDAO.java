@@ -6,6 +6,7 @@ package DAO;
 
 import java.util.*;
 import java.sql.*;
+import model.MaintenanceRequest;
 import model.Room;
 import model.RoomInspectionReport;
 import model.RoomType;
@@ -314,9 +315,9 @@ public class RoomDAO {
         throw new Exception("Không tìm thấy phòng: " + roomNumber);
     }
 
-    public List<RoomInspectionReport> getFilteredPendingRequests(String keyword, String sort, int page, int size) {
+    public List<RoomInspectionReport> getFilteredPendingRequests(String keyword, String sort, int page, int size, int accountID) {
         List<RoomInspectionReport> list = new ArrayList<>();
-        String sql = "SELECT * FROM roominspectionreports WHERE IsRoomOk IS NULL";
+        String sql = "SELECT * FROM roominspectionreports WHERE IsRoomOk IS NULL AND StaffID = ?";
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             sql += " AND Notes LIKE ?";
@@ -326,11 +327,14 @@ public class RoomDAO {
         sql += " LIMIT ? OFFSET ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
             int paramIndex = 1;
+
+            ps.setInt(paramIndex++, accountID);
+
             if (keyword != null && !keyword.trim().isEmpty()) {
                 ps.setString(paramIndex++, "%" + keyword + "%");
             }
+
             ps.setInt(paramIndex++, size);
             ps.setInt(paramIndex, (page - 1) * size);
 
@@ -386,31 +390,77 @@ public class RoomDAO {
         return false;
     }
 
-    public static void main(String[] args) {
-        RoomDAO dao = new RoomDAO();
+    public List<MaintenanceRequest> getMaintenanceRequests(String search, String sort, int offset, int limit) {
+        List<MaintenanceRequest> list = new ArrayList<>();
+        String sql = "SELECT * FROM MaintenanceRequests WHERE IsResolved = false";
 
-        // Các tham số để test
-        String keyword = "dọn"; // hoặc null / "" để không lọc theo keyword
-        String sort = "desc";   // hoặc "asc"
-        int page = 1;
-        int size = 5;
-
-        List<RoomInspectionReport> reports = dao.getFilteredPendingRequests(keyword, sort, page, size);
-
-        System.out.println("Danh sách kết quả:");
-        for (RoomInspectionReport r : reports) {
-            System.out.println("ReportID: " + r.getReportID());
-            System.out.println("BookingID: " + r.getBookingID());
-            System.out.println("RoomID: " + r.getRoomID());
-            System.out.println("StaffID: " + r.getStaffID());
-            System.out.println("InspectionTime: " + r.getInspectionTime());
-            System.out.println("Notes: " + r.getNotes());
-            System.out.println("------------------------------");
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND Description LIKE ?";
+        }
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY RequestDate ASC";
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql += " ORDER BY RequestDate DESC";
+        } else {
+            sql += " ORDER BY RequestDate DESC";
         }
 
-        if (reports.isEmpty()) {
-            System.out.println("Không có kết quả phù hợp.");
+        sql += " LIMIT ? OFFSET ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(idx++, "%" + search.trim() + "%");
+            }
+            ps.setInt(idx++, limit);
+            ps.setInt(idx, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                MaintenanceRequest r = new MaintenanceRequest(
+                        rs.getInt("RequestID"),
+                        rs.getInt("RoomID"),
+                        rs.getInt("StaffID"),
+                        rs.getTimestamp("RequestDate"),
+                        rs.getString("Description"),
+                        rs.getBoolean("IsResolved"),
+                        rs.getTimestamp("ResolutionDate")
+                );
+                list.add(r);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return list;
     }
 
+    public int countMaintenanceRequests(String search) {
+        String sql = "SELECT COUNT(*) FROM MaintenanceRequests WHERE IsResolved = false";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND Description LIKE ?";
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(1, "%" + search.trim() + "%");
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void markAsResolved(int requestID) {
+        String sql = "UPDATE MaintenanceRequests SET IsResolved = true, ResolutionDate = NOW() WHERE RequestID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, requestID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

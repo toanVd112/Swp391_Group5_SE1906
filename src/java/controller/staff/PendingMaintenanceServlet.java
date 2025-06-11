@@ -1,9 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.PendingCheckout to edit this template
- */
 package controller.staff;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,17 +12,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.Account;
-import model.RoomInspectionReport;
+import model.MaintenanceRequest;
 
 /**
  *
  * @author MyPC
  */
-@WebServlet(name = "PendingCheckout", urlPatterns = {"/pendingCheckout"})
-public class PendingCheckout extends HttpServlet {
+@WebServlet(urlPatterns = {"/pendingMaintenance"})
+public class PendingMaintenanceServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +39,10 @@ public class PendingCheckout extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet java</title>");
+            out.println("<title>Servlet PendingMaintenanceServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet java at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet PendingMaintenanceServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,43 +60,30 @@ public class PendingCheckout extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String keyword = request.getParameter("search"); // keyword trong <input name="search">
-        String sort = request.getParameter("sort");      // asc | desc
-        String pageParam = request.getParameter("page");
+        String search = request.getParameter("search");
+        String sort = request.getParameter("sort");
         int page = 1;
-        if (pageParam != null) {
+        int pageSize = 5;
+
+        if (request.getParameter("page") != null) {
             try {
-                page = Integer.parseInt(pageParam);
+                page = Integer.parseInt(request.getParameter("page"));
             } catch (NumberFormatException e) {
                 page = 1;
             }
         }
 
-        int pageSize = 5;
-
+        int offset = (page - 1) * pageSize;
         RoomDAO dao = new RoomDAO();
+        List<MaintenanceRequest> list = dao.getMaintenanceRequests(search, sort, offset, pageSize);
+        int totalCount = dao.countMaintenanceRequests(search);
 
-        HttpSession session = request.getSession();
-        Account acc = (Account) session.getAttribute("account");
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
-        if (acc == null) {
-            // Chưa đăng nhập → chuyển hướng về trang đăng nhập
-            response.sendRedirect("login_2.jsp"); // hoặc đường dẫn đúng của bạn
-            return;
-        }
-
-        int accountID = acc.getAccountID(); // Bây giờ an toàn để sử dụng
-
-        List<RoomInspectionReport> list = dao.getFilteredPendingRequests(keyword, sort, page, pageSize, accountID);
-
-        int totalItems = dao.countPendingRequests(keyword);
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        // Gửi dữ liệu đến JSP
         request.setAttribute("pendingRequests", list);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        request.getRequestDispatcher("Staff/pendingCheckoutRequests.jsp").forward(request, response);
+        request.getRequestDispatcher("/Staff/pendingMaintenanceRequests.jsp").forward(request, response);
 
     }
 

@@ -66,13 +66,13 @@
         <div class="wrapper">
             <!-- Sidebar -->
             <div class="nav-menu">
-                <h2> Staff Dashbord</h2>
+                <h2> Staff Dashboard</h2>
                 <div class="menu-grid">
-                    <a href="${pageContext.request.contextPath}/pendingCheckout">📋View Checkout List</a>
-                    <a href="${pageContext.request.contextPath}/assignStaffServlet">📅 Assign Task to staff</a>
+                    <a href="${pageContext.request.contextPath}/pendingCheckout">📋View Checkout Request</a>
+                    <a href="${pageContext.request.contextPath}/pendingMaintenance">📅 View Maintenance Request</a>
                   
                    
-                    <a class="logout" href="${pageContext.request.contextPath}/LogoutServlet">🚪 Logout</a>
+                    <a class="logout" href="${pageContext.request.contextPath}/Logout">🚪 Logout</a>
                 </div>
             </div>
 
