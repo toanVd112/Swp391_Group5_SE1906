@@ -390,28 +390,25 @@ public class RoomDAO {
         return false;
     }
 
-    public List<MaintenanceRequest> getMaintenanceRequests(String search, String sort, int offset, int limit) {
+    public List<MaintenanceRequest> getMaintenanceRequests(String search, String sort, int offset, int limit, int accountID) {
         List<MaintenanceRequest> list = new ArrayList<>();
-        String sql = "SELECT * FROM MaintenanceRequests WHERE IsResolved = false";
+        String sql = "SELECT * FROM MaintenanceRequests WHERE IsResolved = false AND StaffID = ?";
 
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND Description LIKE ?";
         }
-        if ("asc".equalsIgnoreCase(sort)) {
-            sql += " ORDER BY RequestDate ASC";
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            sql += " ORDER BY RequestDate DESC";
-        } else {
-            sql += " ORDER BY RequestDate DESC";
-        }
 
+        sql += " ORDER BY RequestDate " + ("asc".equalsIgnoreCase(sort) ? "ASC" : "DESC");
         sql += " LIMIT ? OFFSET ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int idx = 1;
+            ps.setInt(idx++, accountID); // ✅ lọc theo StaffID
+
             if (search != null && !search.trim().isEmpty()) {
                 ps.setString(idx++, "%" + search.trim() + "%");
             }
+
             ps.setInt(idx++, limit);
             ps.setInt(idx, offset);
 
@@ -434,16 +431,20 @@ public class RoomDAO {
         return list;
     }
 
-    public int countMaintenanceRequests(String search) {
-        String sql = "SELECT COUNT(*) FROM MaintenanceRequests WHERE IsResolved = false";
+    public int countMaintenanceRequests(String search, int accountID) {
+        String sql = "SELECT COUNT(*) FROM MaintenanceRequests WHERE IsResolved = false AND StaffID = ?";
         if (search != null && !search.trim().isEmpty()) {
             sql += " AND Description LIKE ?";
         }
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            ps.setInt(idx++, accountID);
+
             if (search != null && !search.trim().isEmpty()) {
-                ps.setString(1, "%" + search.trim() + "%");
+                ps.setString(idx, "%" + search.trim() + "%");
             }
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);

@@ -12,7 +12,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import model.Account;
 import model.MaintenanceRequest;
 
 /**
@@ -74,9 +76,15 @@ public class PendingMaintenanceServlet extends HttpServlet {
         }
 
         int offset = (page - 1) * pageSize;
+        int limit = pageSize;
         RoomDAO dao = new RoomDAO();
-        List<MaintenanceRequest> list = dao.getMaintenanceRequests(search, sort, offset, pageSize);
-        int totalCount = dao.countMaintenanceRequests(search);
+        HttpSession session = request.getSession();
+        Account acc = (Account) session.getAttribute("account");
+
+        int accountID = acc.getAccountID(); // từ session
+        List<MaintenanceRequest> list = dao.getMaintenanceRequests(search, sort, offset, limit, accountID);
+
+        int totalCount = dao.countMaintenanceRequests(search, accountID);
 
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
