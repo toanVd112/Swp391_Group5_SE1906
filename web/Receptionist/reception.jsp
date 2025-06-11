@@ -69,7 +69,8 @@
                 <h2> Receptionist Dashbord</h2>
                 <div class="menu-grid">
                     <a href="${pageContext.request.contextPath}/ListRoomsServlet1">📋 View Room List</a>
-                    <a href="${pageContext.request.contextPath}/assignStaffServlet">📅 Assign Task to staff</a>
+                    <a href="${pageContext.request.contextPath}/roomInspection">📅 Request Inspection</a>
+                     <a href="${pageContext.request.contextPath}/sendMaintenanceRequest">📅 Request Maintainance</a>
                   
                    
                     <a class="logout" href="${pageContext.request.contextPath}/LogoutServlet">🚪 Logout</a>

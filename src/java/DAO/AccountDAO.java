@@ -26,7 +26,7 @@ public class AccountDAO extends DBConnect {
             ps.setString(3, account.getRole());
             ps.setBoolean(4, true);
             ps.setString(5, account.getEmail());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,7 +134,7 @@ public class AccountDAO extends DBConnect {
         return latestID;
     }
 
-     public Account getAccountByID(String aid) {
+    public Account getAccountByID(String aid) {
         String sql = "SELECT * FROM accounts WHERE AccountID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, Integer.parseInt(aid));
@@ -241,7 +241,7 @@ public class AccountDAO extends DBConnect {
     }
 
     public Account getAccountByEmail(String email) {
-         String sql = "SELECT * FROM accounts WHERE Email = ?";
+        String sql = "SELECT * FROM accounts WHERE Email = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -282,8 +282,6 @@ public class AccountDAO extends DBConnect {
         return null;
     }
 
-    
-
     public boolean verifyAccount(String code) {
         String sql = "UPDATE accounts SET is_verified = TRUE, verification_code = NULL WHERE verification_code = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -323,7 +321,7 @@ public class AccountDAO extends DBConnect {
             while (rs.next()) {
                 Account acc = new Account();
                 acc.setAccountID(rs.getInt("AccountID"));
-
+                acc.setUsername(rs.getString("Username"));
                 list.add(acc);
             }
         }

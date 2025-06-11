@@ -29,6 +29,11 @@ public class RoomInspectionReport {
         this.notes = notes;
     }
 
+    public RoomInspectionReport(int bookingID, int roomID) {
+        this.bookingID = bookingID;
+        this.roomID = roomID;
+    }
+
     public RoomInspectionReport() {
     }
 
