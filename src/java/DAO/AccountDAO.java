@@ -19,7 +19,7 @@ import java.util.List;
 public class AccountDAO extends DBConnect {
 
     public boolean insertAccount(Account account) {
-        String sql = "INSERT INTO accounts (Username, Password, Role, IsActive, CreatedAt, Email, verification_code, is_verified) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?)";
+        String sql = "INSERT INTO accounts (Username, Password, Role, IsActive, CreatedAt, Email) VALUES (?, ?, ?, ?, NOW(), ?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, account.getUsername());
             ps.setString(2, account.getPassword());

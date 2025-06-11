@@ -130,8 +130,8 @@ public class RegisterCustomerServlet extends HttpServlet {
             EmailUtil.sendMail(email, "Đăng ký tài khoản HoangNam Hotel thành công", content);
 
             // Hiển thị message ở trang đăng nhập
-            request.setAttribute("result", "Đăng ký thành công! Đã gửi link đăng nhập tới email của bạn.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.setAttribute("success", "Bạn đã đăng ký thành công, xin mời vào email để đăng nhập");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
         } else {
             request.setAttribute("result", "Đăng ký thất bại, vui lòng thử lại");
             request.getRequestDispatcher("register.jsp").forward(request, response);
