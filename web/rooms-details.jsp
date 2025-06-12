@@ -10,223 +10,217 @@
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 
     <head>
-        <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-        <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-       <style>
-    body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #f4f7f9;
-        margin: 0;
-        padding: 20px;
-    }
+        <style>
+            /* === MODAL WRAPPER === */
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 99999 !important;
+                overflow-y: auto;
+                animation: fadeIn 0.3s ease;
+            }
 
-    .photo-gallery-title {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 12px;
-    }
-
-    .gallery-preview {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .gallery-preview .main-photo img {
-        width: 100%;
-        height: 400px;
-        object-fit: cover;
-        display: block;
-        cursor: pointer;
-    }
-
-    .gallery-preview .sub-photo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 12px;
-    }
-
-    .gallery-preview .sub-photo-grid img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        display: block;
-        cursor: pointer;
-    }
-
-    .gallery-preview img[loading="lazy"] {
-        background: #e0e0e0;
-    }
-
-    /* Gallery Modal */
-    .gallery-modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 1280px;
-        max-height: 90%;
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        z-index: 10000;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        padding: 24px;
-        display: none;
-        flex-direction: column;
-    }
-
-    .gallery-modal.show {
-        display: flex;
-    }
-
-    .gallery-modal .close-btn {
-        position: absolute;
-        top: 12px;
-        right: 16px;
-        font-size: 24px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #444;
-        font-weight: bold;
-    }
-
-    .modal-tabs {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        padding-bottom: 6px;
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 16px;
-    }
-
-    .filter-btn {
-        flex-shrink: 0;
-        padding: 6px 14px;
-        font-size: 14px;
-        background-color: #f1f1f1;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: all 0.3s;
-    }
-
-    .filter-btn.active {
-        background-color: #0064d2;
-        color: white;
-        font-weight: bold;
-    }
-
-    .gallery-modal-body {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 16px;
-        overflow-y: auto;
-    }
-
-    .gallery-item img {
-        width: 100%;
-        height: 220px;
-        object-fit: cover;
-        background: #f0f0f0;
-    }
-
-    .gallery-item p {
-        margin: 0;
-        padding: 10px 14px;
-        font-size: 14px;
-        background: #f9f9f9;
-        color: #333;
-        border-top: 1px solid #eee;
-        text-align: left;
-    }
-
-    .gallery.no-caption .gallery-item p {
-        display: none;
-    }
-
-    @media screen and (max-width: 768px) {
-        .gallery-modal-body {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-    }
-
-    @media screen and (max-width: 480px) {
-        .gallery-modal-body {
-            grid-template-columns: 1fr;
-        }
-
-        .gallery-preview .main-photo img {
-            height: 240px;
-        }
-
-        .gallery-preview .sub-photo-grid img {
-            height: 160px;
-        }
-    }
-</style>
-
-        <script>
-            function filterSelection(category, btn) {
-                const modal = btn.closest('.gallery-modal');
-                const scope = modal || document;
-
-                const items = scope.querySelectorAll('.gallery-item');
-                const buttons = scope.querySelectorAll('.filter-btn');
-
-                // Cập nhật trạng thái active
-                buttons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Lọc ảnh
-                items.forEach(item => {
-                    const show = category === 'all' || item.classList.contains(category);
-                    item.style.display = show ? 'block' : 'none';
-                });
-
-                // Cập nhật tiêu đề nếu có
-                const galleryTitle = scope.querySelector('.photo-gallery-title');
-                if (galleryTitle) {
-                    galleryTitle.textContent = btn.textContent;
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
                 }
             }
 
-            function openGalleryModal() {
+            /* === MODAL CONTENT === */
+            .modal-content {
+                margin: 40px auto;
+                padding: 20px;
+                background: #fff;
+                width: 96%;
+                max-width: 1100px;
+                border-radius: 16px;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                position: relative;
+                max-height: 85vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* === CATEGORY FILTER TABS === */
+            .category-tabs {
+                flex-shrink: 0;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                background: #fff;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #dee2e6;
+                overflow-x: auto;
+                display: flex;
+                gap: 10px;
+            }
+
+            .category-tabs button {
+                padding: 10px 18px;
+                white-space: nowrap;
+                border: none;
+                border-radius: 30px;
+                background: #e9ecef;
+                font-size: 14px;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            .category-tabs button.active,
+            .category-tabs button:hover {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* === SCROLLABLE IMAGE AREA === */
+            .gallery-scroll {
+                overflow-y: auto;
+                flex-grow: 1;
+            }
+
+            .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .gallery-item {
+                background: #f8f9fa;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .gallery-item img {
+                width: 100%;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                background-color: #f5f5f5;
+            }
+
+            .image-caption {
+                padding: 12px;
+                font-size: 14px;
+                color: #333;
+            }
+
+            @media (max-width: 768px) {
+                .gallery-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* === IMAGE GALLERY OUTSIDE MODAL === */
+            .image-gallery-row {
+                display: flex;
+                gap: 16px;
+                align-items: stretch;
+                flex-wrap: wrap;
+                margin-bottom: 24px;
+            }
+
+            .main-photo-box {
+                flex: 5;
+                display: flex;
+                 cursor: pointer; 
+            }
+
+            .main-photo-box img {
+                width: 100%;
+                height: 300px;
+                object-fit: cover;
+                border-radius: 12px;
+            }
+
+            .thumb-2x2-box {
+                flex: 4;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .thumb-2x2-box img {
+                width: 100%;
+                height: 140px;
+                object-fit: cover;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+        </style>
+
+        <script>
+            function filterCategory(cat, button) {
+                const tabs = document.querySelectorAll(".category-tabs button");
+                const items = document.querySelectorAll("#galleryImages .gallery-item");
+
+                // Cập nhật trạng thái nút
+                tabs.forEach(tab => {
+                    tab.classList.remove("active");
+                    tab.setAttribute('aria-pressed', 'false');
+                });
+
+                if (button) {
+                    button.classList.add("active");
+                    button.setAttribute('aria-pressed', 'true');
+                }
+
+                // Lọc ảnh theo category
+                items.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category') || 'uncategorized';
+                    item.style.display = (cat === 'all' || itemCategory === cat) ? 'block' : 'none';
+                });
+            }
+
+            function openGallery(category) {
                 const modal = document.getElementById("galleryModal");
-                if (!modal)
-                    return;
+                modal.style.display = "block";
+                modal.setAttribute('aria-hidden', 'false');
 
-                modal.classList.add('show');
-                document.body.style.overflow = "hidden";
+                // Lọc ảnh theo danh mục nếu có
+                const defaultBtn = document.querySelector(`.category-tabs button[onclick*="${category}"]`)
+                        || document.querySelector('.category-tabs .tab-btn');
+                filterCategory(category, defaultBtn);
 
-                document.addEventListener('keydown', closeOnEsc);
+                // Đăng ký sự kiện
+                setTimeout(() => {
+                    document.addEventListener('click', handleClickOutside);
+                }, 0);
+                document.addEventListener('keydown', handleKeyboard);
             }
 
             function closeGallery() {
                 const modal = document.getElementById("galleryModal");
-                if (!modal)
-                    return;
-
-                modal.classList.remove('show');
-                document.body.style.overflow = "auto";
-
-                document.removeEventListener('keydown', closeOnEsc);
+                modal.style.display = "none";
+                modal.setAttribute('aria-hidden', 'true');
+                document.removeEventListener('click', handleClickOutside);
+                document.removeEventListener('keydown', handleKeyboard);
             }
 
-            function closeOnEsc(e) {
-                if (e.key === 'Escape') {
+            function handleClickOutside(event) {
+                const modal = document.getElementById("galleryModal");
+                const modalContent = modal.querySelector(".modal-content");
+                if (!modalContent.contains(event.target)) {
                     closeGallery();
                 }
             }
 
+            function handleKeyboard(event) {
+                if (event.key === 'Escape') {
+                    closeGallery();
+                }
+            }
         </script>
-
-
-
         <!-- META ============================================= -->
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -582,51 +576,63 @@
                                         </div>
                                     </div>
 
-                                    <div class="container" id="pictures">
-    <h2 class="photo-gallery-title">Tất cả ảnh</h2>
-    <div class="gallery-preview">
-        <c:if test="${not empty images}">
-            <div class="main-photo" onclick="openGalleryModal()">
-                <img src="${pageContext.request.contextPath}/${images[0].imageUrl}" alt="Ảnh chính" loading="lazy" />
-            </div>
-            <div class="sub-photo-grid">
-                <c:forEach var="img" begin="1" items="${images}">
-                    <img src="${pageContext.request.contextPath}/${img.imageUrl}"
-                         alt="Ảnh phụ"
-                         class="${fn:toLowerCase(img.category)}"
-                         onclick="openGalleryModal()"
-                         loading="lazy" />
-                </c:forEach>
-            </div>
-        </c:if>
-    </div>
-</div>
+                                    <!-- Tiêu đề gallery -->
+                                    <h2 class="photo-gallery-title" style="margin: 20px 0 16px; font-size: 24px;">Thư viện ảnh phòng</h2>
 
-                                    <div id="galleryModal" class="gallery-modal">
-                                        <div class="gallery-content">
-                                            <button class="close-btn" onclick="closeGallery()">×</button>
-                                            <div class="filter-container modal-tabs">
-                                                <button class="filter-btn active" onclick="filterSelection('all', this)">Tất cả</button>
-                                                <c:set var="usedCatsModal" value="" />
+                                    <!-- Phần hiển thị ảnh -->
+                                    <div class="image-gallery-row">
+                                        <!-- Ảnh chính bên trái -->
+                                        <div class="main-photo-box">
+                                            <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
+                                                 alt="Ảnh chính"
+                                                 onclick="openGallery('all')"
+                                                 loading="lazy"
+                                                 class="gallery-clickable"
+                                                 aria-label="Mở tất cả ảnh"
+                                                 role="button" />
+                                        </div>
+
+                                        <!-- Nhóm 4 ảnh phụ bên phải -->
+                                        <div class="thumb-2x2-box">
+                                            <c:forEach var="img" items="${images}" begin="1" end="4">
+                                                <img src="${pageContext.request.contextPath}/${img.imageUrl}"
+                                                     alt="Ảnh phụ ${img.category}"
+                                                     onclick="openGallery('${fn:toLowerCase(img.category)}')"
+                                                     loading="lazy"
+                                                     class="gallery-clickable"
+                                                     aria-label="Mở ảnh theo danh mục ${img.category}"
+                                                     role="button" />
+                                            </c:forEach>
+                                        </div>
+                                    </div>
+
+
+                                    <div id="galleryModal" class="modal" role="dialog" aria-hidden="true">
+                                        <div class="modal-content">
+                                            <span class="close-btn" onclick="closeGallery()" role="button" aria-label="Đóng thư viện ảnh">&times;</span>
+
+                                            <!-- Thanh danh mục cố định -->
+                                            <div class="category-tabs">
+                                                <button class="tab-btn active" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+                                                <c:set var="usedCats" value="" />
                                                 <c:forEach var="img" items="${images}">
-                                                    <c:if test="${not fn:contains(usedCatsModal, img.category)}">
-                                                        <button class="filter-btn" onclick="filterSelection('${fn:toLowerCase(img.category)}', this)">
-                                                            ${img.category}
-                                                        </button>
-                                                        <c:set var="usedCatsModal" value="${usedCatsModal}${img.category}," />
+                                                    <c:if test="${not fn:contains(usedCats, img.category)}">
+                                                        <button class="tab-btn" onclick="filterCategory('${fn:toLowerCase(img.category)}', this)" aria-pressed="false">${img.category}</button>
+                                                        <c:set var="usedCats" value="${usedCats}${img.category}," />
                                                     </c:if>
                                                 </c:forEach>
                                             </div>
 
-                                            <div class="gallery gallery-modal-body">
-                                                <c:forEach var="img" items="${images}">
-                                                    <div class="gallery-item ${fn:toLowerCase(img.category)}">
-                                                        <img src="${pageContext.request.contextPath}/${img.imageUrl}" 
-                                                             alt="Hình ảnh ${img.category} của phòng ${room.roomnumber}" 
-                                                             loading="lazy" />
-                                                        <p>${img.category}</p>
-                                                    </div>
-                                                </c:forEach>
+                                            <!-- Chỉ phần này được scroll -->
+                                            <div class="gallery-scroll" id="galleryImages">
+                                                <div class="gallery-grid">
+                                                    <c:forEach var="img" items="${images}">
+                                                        <div class="gallery-item ${fn:toLowerCase(img.category)}" style="display: block;" data-category="${fn:toLowerCase(img.category)}">
+                                                            <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
+                                                            <p class="image-caption">Ảnh: ${img.category}</p>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
