@@ -79,9 +79,9 @@
                                 </select>
                             </li>
 
-                            <c:if test="${sessionScope.user != null}">
+                            <c:if test="${sessionScope.account != null}">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.user.username}</a>
+                                    <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.account.username}</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="Logout">Logout</a>

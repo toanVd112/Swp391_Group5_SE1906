@@ -111,7 +111,7 @@ public class ListRoomsServlet extends HttpServlet {
             req.setAttribute("currentPage", page);
             req.setAttribute("totalPages", totalPages);
 
-            req.getRequestDispatcher("Manager/ListRooms.jsp").forward(req, response);
+            req.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(req, response);
         } catch (Exception e) {
             throw new ServletException(e);
         }

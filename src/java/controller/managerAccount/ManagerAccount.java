@@ -88,7 +88,7 @@ public class ManagerAccount extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
 
-        request.getRequestDispatcher("Manager/managerAccount.jsp").forward(request, response);
+        request.getRequestDispatcher("Manager/manager.jsp?page=managerAccount.jsp").forward(request, response);
     }
 
     /**
