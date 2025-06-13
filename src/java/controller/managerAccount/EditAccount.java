@@ -114,7 +114,7 @@ public class EditAccount extends HttpServlet {
 
         // Nếu có lỗi thì quay lại trang editAccount.jsp
         if (hasError) {
-            request.getRequestDispatcher("editAccount.jsp").forward(request, response);
+            request.getRequestDispatcher("managerAccount").forward(request, response);
             return;
         }
 

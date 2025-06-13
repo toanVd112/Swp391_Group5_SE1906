@@ -21,7 +21,7 @@
 
         <link rel="stylesheet" type="text/css" href="Manager/manager.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Manager/sidebar.css" />
-        
+
 
 
 
@@ -34,7 +34,7 @@
         <div class="main-content" id="main-content">
             <jsp:include page="${param.page}" />
         </div>
-
+        <a href="${pageContext.request.contextPath}/managerAccount">👥 Manage Account</a>
         <script>
             function toggleSidebar() {
                 const sidebar = document.querySelector('.sidebar');
