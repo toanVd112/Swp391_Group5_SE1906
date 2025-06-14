@@ -13,7 +13,7 @@
 <html lang="en">
     <head>
         <title>Gửi Yêu Cầu Bảo Trì</title>
-        <%@ include file="/header.jsp" %>
+       
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
             body {
@@ -174,6 +174,6 @@
             </c:if>
         </div>
 
-        <%@ include file="/footer.jsp" %>
+      
     </body>
 </html>

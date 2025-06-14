@@ -13,37 +13,42 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
         <meta charset="UTF-8">
-        <title>Manager Dashboard</title>
-        <%@ include file="/header.jsp" %>
+        <title>Receptionist Dashboard</title>
 
 
-        <link rel="stylesheet" type="text/css" href="Manager/manager.css">
+        <!-- CSS giống manager -->
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Manager/manager.css" />
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Manager/sidebar.css" />
 
-
-
-
-    </head>
-
     <body>
+        <div class="main-wrapper" id="mainWrapper">
+            <%@ include file="/header.jsp" %>
+           
+
+
+            <div class="main-content" id="main-content">
+                <jsp:include page="${param.page}" />
+            </div>
+            <%@ include file="/footer.jsp" %>
+        </div>
         <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
         <%@ include file="/sidebar.jsp" %>
 
-        <div class="main-content" id="main-content">
-            <jsp:include page="${param.page}" />
-        </div>
-        <a href="${pageContext.request.contextPath}/managerAccount">👥 Manage Account</a>
+        <!-- Wrapper chứa header và nội dung chính -->
+
+
         <script>
             function toggleSidebar() {
                 const sidebar = document.querySelector('.sidebar');
-                const mainContent = document.querySelector('.main-content');
+                const wrapper = document.getElementById('mainWrapper');
                 sidebar.classList.toggle('expanded');
-                mainContent.classList.toggle('expanded');
+                wrapper.classList.toggle('expanded');
             }
         </script>
 
-        <%@ include file="/footer.jsp" %>
+
     </body>
 </html>

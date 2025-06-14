@@ -1,3 +1,12 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jun 14, 2025, 4:49:21 PM
+    Author     : Admin
+*/
+
 /* ========== Layout Gốc (giữ nguyên của bạn) ========== */
 body {
     margin: 0;
@@ -79,8 +88,6 @@ h2 {
     margin-bottom: 20px;
     color: #1e293b;
 }
-
-
 /* Wrapper cho toàn bộ nội dung bên phải */
 .main-wrapper {
     margin-left: 60px;
@@ -95,3 +102,5 @@ h2 {
     padding: 30px;
     padding-top: 100px;
 }
+
+

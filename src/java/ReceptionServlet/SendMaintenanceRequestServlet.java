@@ -32,12 +32,13 @@ public class SendMaintenanceRequestServlet extends HttpServlet {
 
         MaintenanceRequestDAO1 dao = new MaintenanceRequestDAO1();
         boolean success = dao.insertRequest(roomID, staffID, description);
-
+        List<MaintenanceRequest> allRequests = new MaintenanceRequestDAO1().getAllRequests();
+        request.setAttribute("requestList", allRequests);
         if (success) {
-            response.sendRedirect("Receptionist/sendMaintenanceRequest.jsp"); // hoặc redirect về trang dashboard
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=sendMaintenanceRequest.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Không thể gửi yêu cầu.");
-            request.getRequestDispatcher("sendMaintenanceRequest.jsp").forward(request, response);
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=sendMaintenanceRequest.jsp").forward(request, response);
         }
     }
 
@@ -55,6 +56,6 @@ public class SendMaintenanceRequestServlet extends HttpServlet {
         List<MaintenanceRequest> allRequests = new MaintenanceRequestDAO1().getAllRequests();
         request.setAttribute("requestList", allRequests);
 
-        request.getRequestDispatcher("/Receptionist/sendMaintenanceRequest.jsp").forward(request, response);
+        request.getRequestDispatcher("Receptionist/reception.jsp?page=sendMaintenanceRequest.jsp").forward(request, response);
     }
 }
