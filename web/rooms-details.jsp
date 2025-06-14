@@ -10,7 +10,8 @@
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 
     <head>
-
+        <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
         <style>
             /* === MODAL WRAPPER === */
             .modal {
@@ -34,22 +35,55 @@
                 }
             }
 
+
             /* === MODAL CONTENT === */
             .modal-content {
                 margin: 40px auto;
                 padding: 20px;
                 background: #fff;
-                width: 96%;
-                max-width: 1100px;
+                width: 100%;
+                max-width: 1280px;
                 border-radius: 16px;
                 box-shadow: 0 8px 30px rgba(0,0,0,0.35);
                 position: relative;
-                max-height: 85vh;
+                max-height: 92vh;
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
+                border-radius: 20px !important;
             }
 
+
+            .close-btn {
+                position: absolute;
+                top: 16px;
+                left: 16px;
+                z-index: 1000;
+                background-color: #e9f0ff;
+                border: none;
+                border-radius: 999px;
+                padding: 12px;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s ease;
+            }
+
+            .close-btn i {
+                font-size: 24px; /* Phóng to icon */
+                color: #1a1a1a;
+                transition: transform 0.2s ease;
+            }
+
+            .close-btn:hover {
+                background-color: #d0e4ff;
+            }
+
+            .close-btn:hover i {
+                transform: scale(1.2);
+            }
             /* === CATEGORY FILTER TABS === */
             .category-tabs {
                 flex-shrink: 0;
@@ -57,28 +91,30 @@
                 top: 0;
                 z-index: 10;
                 background: #fff;
-                padding-bottom: 10px;
+                padding: 6px 10px;
                 margin-bottom: 10px;
                 border-bottom: 1px solid #dee2e6;
                 overflow-x: auto;
                 display: flex;
-                gap: 10px;
+                gap: 8px;
+                padding-left: 56px; /* Đẩy tránh icon trái */
             }
 
             .category-tabs button {
-                padding: 10px 18px;
+                padding: 6px 14px;
                 white-space: nowrap;
                 border: none;
-                border-radius: 30px;
-                background: #e9ecef;
-                font-size: 14px;
+                border-radius: 20px;
+                background: #f0f0f0;
+                font-size: 13px;
                 cursor: pointer;
                 flex-shrink: 0;
+                transition: all 0.2s;
             }
 
             .category-tabs button.active,
             .category-tabs button:hover {
-                background: #007bff;
+                background: #004bff;
                 color: #fff;
             }
 
@@ -95,24 +131,26 @@
             }
 
             .gallery-item {
-                background: #f8f9fa;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                background: none; /* bỏ viền và nền trắng */
+                box-shadow: none; /* bỏ đổ bóng */
+                overflow: visible;
             }
 
             .gallery-item img {
                 width: 100%;
+                max-height: 100%;
                 height: auto;
                 object-fit: contain;
                 display: block;
-                background-color: #f5f5f5;
+                margin: 0 auto;
             }
 
             .image-caption {
-                padding: 12px;
-                font-size: 14px;
+                font-size: 16px;
                 color: #333;
+                text-align: left;
+                padding: 0;
+                margin: 0;
             }
 
             @media (max-width: 768px) {
@@ -133,7 +171,7 @@
             .main-photo-box {
                 flex: 5;
                 display: flex;
-                 cursor: pointer; 
+                cursor: pointer;
             }
 
             .main-photo-box img {
@@ -577,57 +615,55 @@
                                     </div>
 
                                     <!-- Tiêu đề gallery -->
-                                    <h2 class="photo-gallery-title" style="margin: 20px 0 16px; font-size: 24px;">Thư viện ảnh phòng</h2>
+                                    <div class="photo-gallery-title" id="pictures">
+                                        <h4>Pictures</h4>
 
-                                    <!-- Phần hiển thị ảnh -->
-                                    <div class="image-gallery-row">
-                                        <!-- Ảnh chính bên trái -->
-                                        <div class="main-photo-box">
-                                            <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
-                                                 alt="Ảnh chính"
-                                                 onclick="openGallery('all')"
-                                                 loading="lazy"
-                                                 class="gallery-clickable"
-                                                 aria-label="Mở tất cả ảnh"
-                                                 role="button" />
-                                        </div>
+                                        <!-- Phần hiển thị ảnh chính và ảnh phụ -->
+                                        <div class="image-gallery-row">
+                                            <!-- Ảnh chính -->
+                                            <div class="main-photo-box">
+                                                <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
+                                                     alt="Ảnh chính"
+                                                     onclick="openGallery('all')"
+                                                     loading="lazy" />
+                                            </div>
 
-                                        <!-- Nhóm 4 ảnh phụ bên phải -->
-                                        <div class="thumb-2x2-box">
-                                            <c:forEach var="img" items="${images}" begin="1" end="4">
-                                                <img src="${pageContext.request.contextPath}/${img.imageUrl}"
-                                                     alt="Ảnh phụ ${img.category}"
-                                                     onclick="openGallery('${fn:toLowerCase(img.category)}')"
-                                                     loading="lazy"
-                                                     class="gallery-clickable"
-                                                     aria-label="Mở ảnh theo danh mục ${img.category}"
-                                                     role="button" />
-                                            </c:forEach>
+                                            <!-- Nhóm 4 ảnh phụ -->
+                                            <div class="thumb-2x2-box">
+                                                <c:forEach var="img" items="${images}" begin="1" end="4">
+                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}"
+                                                         alt="Ảnh phụ ${img.category}"
+                                                         onclick="openGallery('${fn:toLowerCase(img.category)}')"
+                                                         loading="lazy" />
+                                                </c:forEach>
+                                            </div>
                                         </div>
                                     </div>
 
-
-                                    <div id="galleryModal" class="modal" role="dialog" aria-hidden="true">
+                                    <!-- Modal gallery popup -->
+                                    <div id="galleryModal" class="modal">
                                         <div class="modal-content">
-                                            <span class="close-btn" onclick="closeGallery()" role="button" aria-label="Đóng thư viện ảnh">&times;</span>
+                                            <span class="close-btn" onclick="closeGallery()">
+                                                <i class="ti-control-backward"></i>
+                                            </span>
 
-                                            <!-- Thanh danh mục cố định -->
+                                            <!-- Tabs danh mục -->
                                             <div class="category-tabs">
-                                                <button class="tab-btn active" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+                                                <button class="tab-btn active" onclick="filterCategory('all', this)">Tất cả</button>
                                                 <c:set var="usedCats" value="" />
                                                 <c:forEach var="img" items="${images}">
                                                     <c:if test="${not fn:contains(usedCats, img.category)}">
-                                                        <button class="tab-btn" onclick="filterCategory('${fn:toLowerCase(img.category)}', this)" aria-pressed="false">${img.category}</button>
+                                                        <button class="tab-btn" onclick="filterCategory('${fn:toLowerCase(img.category)}', this)">${img.category}</button>
                                                         <c:set var="usedCats" value="${usedCats}${img.category}," />
                                                     </c:if>
                                                 </c:forEach>
                                             </div>
 
-                                            <!-- Chỉ phần này được scroll -->
+                                            <!-- Vùng ảnh -->
                                             <div class="gallery-scroll" id="galleryImages">
                                                 <div class="gallery-grid">
                                                     <c:forEach var="img" items="${images}">
-                                                        <div class="gallery-item ${fn:toLowerCase(img.category)}" style="display: block;" data-category="${fn:toLowerCase(img.category)}">
+                                                        <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
                                                             <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
                                                             <p class="image-caption">Ảnh: ${img.category}</p>
                                                         </div>
