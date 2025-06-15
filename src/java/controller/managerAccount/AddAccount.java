@@ -66,48 +66,59 @@ public class AddAccount extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
-        AccountDAO ad = new AccountDAO();
+
         String user = request.getParameter("username");
         String pass = request.getParameter("password");
         String role = request.getParameter("role");
         String active = request.getParameter("isActive");
         String email = request.getParameter("email");
+        String aid = request.getParameter("aid");
 
+        boolean hasError = false;
+
+        // Kiểm tra username
+        if (user == null || user.trim().isEmpty()) {
+            request.setAttribute("usernameError", "Username không được để trống.");
+            hasError = true;
+        }
+
+        // Kiểm tra password
+        if (pass == null || pass.length() < 6) {
+            request.setAttribute("passwordError", "Password phải có ít nhất 6 ký tự.");
+            hasError = true;
+        }
+
+        // Kiểm tra email
+        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            request.setAttribute("emailError", "Email không hợp lệ.");
+            hasError = true;
+        }
+
+        // Kiểm tra role
+        if (role == null || !(role.equals("Manager") || role.equals("Receptionist") || role.equals("Staff"))) {
+            request.setAttribute("roleError", "Role không hợp lệ.");
+            hasError = true;
+        }
+
+        // Kiểm tra isActive
         boolean isActive = Boolean.parseBoolean(active);
-        if (ad.isDuplicateAccount(user, email)) {
-            request.setAttribute("error", "user or email đã tồn tại");
-            request.setAttribute("showAddModal", true);
-            request.getRequestDispatcher("managerAccount").forward(request, response);
-            return;
-        }//
-        // Validation username
-        if (!Validation.validateUsername(user)) {
-            request.setAttribute("error", "Tên đăng nhập không hợp lệ. Độ dài từ 4–20 ký tự.");
-            request.setAttribute("showAddModal", true);
-            request.getRequestDispatcher("managerAccount").forward(request, response);
-            return;
-        }
 
-        {
-            if (!Validation.validatePassword(pass)) {
-                request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự");
-                request.setAttribute("showAddModal", true);
-                request.getRequestDispatcher("managerAccount").forward(request, response);
-                return;
-            }
-        }
+        if (hasError) {
+            // Gửi lại dữ liệu đã nhập và chuyển hướng về lại trang edit
+            request.setAttribute("username", user);
+            request.setAttribute("password", pass);
+            request.setAttribute("email", email);
+            request.setAttribute("role", role);
+            request.setAttribute("isActive", active);
+            request.setAttribute("aid", aid);
 
-        // Nếu hợp lệ, thêm tài khoản
-        ad.addAccount(user, pass, role, isActive, email);
-        Account currentUser = (Account) request.getSession().getAttribute("account");
-        int newID = new AccountDAO().getLatestAccountID();
-        ActivityStaffDAO logDAO = new ActivityStaffDAO();
-        try {
-            logDAO.logAction(currentUser.getAccountID(), "Add", "accounts", newID);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
+            request.getRequestDispatcher("editAccount.jsp").forward(request, response);
+        } else {
+            // Nếu hợp lệ thì cập nhật dữ liệu
+            AccountDAO ad = new AccountDAO();
+            ad.editAccount(user, pass, role, isActive, email, aid);
+            response.sendRedirect("managerAccount");
         }
-        response.sendRedirect("managerAccount");
     }
 
     /**
@@ -121,6 +132,56 @@ public class AddAccount extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        String user = request.getParameter("username");
+        String pass = request.getParameter("password");
+        String role = request.getParameter("role");
+        String active = request.getParameter("isActive");
+        String email = request.getParameter("email");
+
+        boolean hasError = false;
+
+        // Validate input
+        if (user == null || user.trim().isEmpty()) {
+            request.setAttribute("usernameError", "Username không được để trống.");
+            hasError = true;
+        }
+
+        if (pass == null || pass.length() < 6) {
+            request.setAttribute("passwordError", "Password phải có ít nhất 6 ký tự.");
+            hasError = true;
+        }
+
+        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            request.setAttribute("emailError", "Email không hợp lệ.");
+            hasError = true;
+        }
+
+        if (role == null || !(role.equals("Receptionist") || role.equals("Staff"))) {
+            request.setAttribute("roleError", "Role không hợp lệ.");
+            hasError = true;
+        }
+
+        boolean isActive = Boolean.parseBoolean(active);
+
+        if (hasError) {
+            // Giữ lại dữ liệu đã nhập
+            request.setAttribute("username", user);
+            request.setAttribute("password", pass);
+            request.setAttribute("role", role);
+            request.setAttribute("isActive", active);
+            request.setAttribute("email", email);
+            request.setAttribute("showAddModal", true); // Để mở lại modal
+
+            request.getRequestDispatcher("manageAccount.jsp").forward(request, response);
+        } else {
+            // Gọi DAO để thêm account mới
+            AccountDAO dao = new AccountDAO();
+            dao.addAccount(user, pass, role, isActive, email);
+            response.sendRedirect("managerAccount"); // Quay lại danh sách
+        }
 
     }
 
