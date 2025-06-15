@@ -13,13 +13,13 @@
         <c:if test="${role eq 'Receptionist'}">
             <div class="menu-title">Receptionist</div>
             <a href="${pageContext.request.contextPath}/sendMaintenanceRequest">🛠 View Maintenance Requests</a>
-            <a href="${pageContext.request.contextPath}/layout.jsp?page=pendingCheckoutRequests.jsp">📋 Room Inspection Reports</a>
+            <a href="${pageContext.request.contextPath}/roomInspection">📋 Room Inspection Reports</a>
         </c:if>
 
         <c:if test="${role eq 'Staff'}">
             <div class="menu-title">Staff</div>
-            <a href="${pageContext.request.contextPath}/layout.jsp?page=pendingMaintenance.jsp">🛠 View Maintenance Requests</a>
-            <a href="${pageContext.request.contextPath}/layout.jsp?page=pendingCheckoutRequests.jsp">📋 Room Inspection Reports</a>
+            <a href="${pageContext.request.contextPath}/pendingMaintenance">🛠 View Maintenance Requests</a>
+            <a href="${pageContext.request.contextPath}/pendingCheckout">📋 Room Inspection Reports</a>
         </c:if>
 
         <hr style="border-color: #3b82f6; margin: 20px 0;">

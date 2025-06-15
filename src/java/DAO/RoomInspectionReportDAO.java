@@ -82,24 +82,45 @@ public class RoomInspectionReportDAO {
         return null;
     }
 
-    public static void main(String[] args) {
-        try {
-            RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
+    public String getUsernameByStaffID(int staffID) throws SQLException {
+        String username = null;
+        String sql = "SELECT Username FROM Accounts WHERE AccountID = ?";
 
-            RoomInspectionReport report = new RoomInspectionReport();
-            report.setBookingID(4);       // ⚠️ Thay bằng ID có thật trong DB
-            report.setRoomID(1);        // ⚠️ Thay bằng ID có thật trong DB
-            report.setStaffID(28);         // ⚠️ Thay bằng AccountID của Staff hợp lệ
-            report.setNotes("Kiểm tra quạt");
-            // Không set isRoomOk để test giá trị null
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            dao.insert(report);
+            stmt.setInt(1, staffID);
 
-            System.out.println("✅ Thêm report thành công!");
-
-        } catch (Exception e) {
-            System.err.println("❌ Lỗi khi thêm report:");
-            e.printStackTrace();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    username = rs.getString("Username");
+                }
+            }
         }
+
+        return username;
+    }
+
+    public static void main(String[] args) throws SQLException {
+        //      try {
+        //        RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
+
+//            RoomInspectionReport report = new RoomInspectionReport();
+//            report.setBookingID(4);       // ⚠️ Thay bằng ID có thật trong DB
+//            report.setRoomID(1);        // ⚠️ Thay bằng ID có thật trong DB
+//            report.setStaffID(28);         // ⚠️ Thay bằng AccountID của Staff hợp lệ
+//            report.setNotes("Kiểm tra quạt");
+//            // Không set isRoomOk để test giá trị null
+//
+//            dao.insert(report);
+//
+//            System.out.println("✅ Thêm report thành công!");
+//
+//        } catch (Exception e) {
+//            System.err.println("❌ Lỗi khi thêm report:");
+//            e.printStackTrace();
+//        }
+        //}
+            RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
+        System.out.println(dao.getUsernameByStaffID(40));
     }
 }

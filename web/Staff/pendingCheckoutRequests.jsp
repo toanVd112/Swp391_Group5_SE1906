@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <%@ include file="/header.jsp" %>
+       
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -149,6 +149,5 @@
 
         </div>
 
-        <%@ include file="/footer.jsp" %>
-    </body>
+          </body>
 </html>

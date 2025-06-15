@@ -15,7 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
@@ -44,18 +47,28 @@ public class SendMaintenanceRequestServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Load danh sách nhân viên Staff
+
         AccountDAO dao = new AccountDAO();
-        List<Account> staffList = null;
+        List<Account> staffList = new ArrayList<>();
         try {
             staffList = dao.getAccountsByRole("Staff");
         } catch (SQLException ex) {
             Logger.getLogger(SendMaintenanceRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         request.setAttribute("staffList", staffList);
+
+        // Gán Map<staffID, username>
+        Map<Integer, String> staffMap = new HashMap<>();
+        for (Account acc : staffList) {
+            staffMap.put(acc.getAccountID(), acc.getUsername());
+        }
+        request.setAttribute("staffMap", staffMap);
+
+        // Danh sách yêu cầu bảo trì
         List<MaintenanceRequest> allRequests = new MaintenanceRequestDAO1().getAllRequests();
         request.setAttribute("requestList", allRequests);
 
         request.getRequestDispatcher("Receptionist/reception.jsp?page=sendMaintenanceRequest.jsp").forward(request, response);
     }
+
 }

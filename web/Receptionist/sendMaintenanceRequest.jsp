@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="model.Account" %>
+<%@ page import="DAO.RoomInspectionReportDAO" %>
+
+<%@ page import="java.sql.SQLException" %>
 <%
     Account account = (Account) session.getAttribute("account");
     if (account == null || !"Receptionist".equals(account.getRole())) {
@@ -13,7 +16,7 @@
 <html lang="en">
     <head>
         <title>Gửi Yêu Cầu Bảo Trì</title>
-       
+
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
             body {
@@ -151,7 +154,17 @@
                             <tr>
                                 <td>${r.requestID}</td>
                                 <td>${r.roomID}</td>
-                                <td>${r.staffID}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty r.staffID}">
+                                            <c:out value="${staffMap[r.staffID]}" default="Không rõ" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="center-text">Chưa phân công</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+
                                 <td>${r.requestDate}</td>
                                 <td>${r.description}</td>
                                 <td>
@@ -174,6 +187,6 @@
             </c:if>
         </div>
 
-      
+
     </body>
 </html>

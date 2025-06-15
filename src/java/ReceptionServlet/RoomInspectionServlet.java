@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
 
 @WebServlet(name = "RoomInspectionServlet", urlPatterns = {"/roomInspection"})
@@ -21,21 +23,33 @@ public class RoomInspectionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            AccountDAO accountDao = new AccountDAO();
-            List<Account> staffList = accountDao.getAccountsByRole("Staff");
-            request.setAttribute("staffList", staffList);
+        throws ServletException, IOException {
+    try {
+        AccountDAO accountDao = new AccountDAO();
+        List<Account> staffList = accountDao.getAccountsByRole("Staff");
+        request.setAttribute("staffList", staffList);
 
-            request.setAttribute("reports", dao.getAll());
-            request.getRequestDispatcher("Receptionist/roomInspection.jsp").forward(request, response);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Lỗi khi tải danh sách yêu cầu!");
-            request.getRequestDispatcher("Receptionist/roomInspection.jsp").forward(request, response);
+        // Lấy toàn bộ báo cáo
+        List<RoomInspectionReport> reports = dao.getAll();
+        request.setAttribute("reports", reports);
+
+        // Tạo map staffID → Username
+        Map<Integer, String> staffMap = new HashMap<>();
+        for (Account staff : staffList) {
+            staffMap.put(staff.getAccountID(), staff.getUsername());
         }
-    }
+        request.setAttribute("staffMap", staffMap);
 
+        // Forward
+        request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        request.setAttribute("error", "Lỗi khi tải danh sách yêu cầu!");
+        request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
+    }
+}
+
+//
     @Override
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -68,7 +82,7 @@ public class RoomInspectionServlet extends HttpServlet {
             }
 
             request.setAttribute("error", "Lỗi khi thêm yêu cầu!");
-            request.getRequestDispatcher("Receptionist/roomInspection.jsp").forward(request, response);
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -82,7 +96,7 @@ public class RoomInspectionServlet extends HttpServlet {
             }
 
             request.setAttribute("error", "Dữ liệu đầu vào không hợp lệ!");
-            request.getRequestDispatcher("Receptionist/roomInspection.jsp").forward(request, response);
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
         }
     }
 

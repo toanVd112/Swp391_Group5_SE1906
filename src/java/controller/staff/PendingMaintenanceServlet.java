@@ -91,8 +91,8 @@ public class PendingMaintenanceServlet extends HttpServlet {
         request.setAttribute("pendingRequests", list);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        request.getRequestDispatcher("/Staff/pendingMaintenanceRequests.jsp").forward(request, response);
-
+        request.getRequestDispatcher("Staff/staff.jsp?page=pendingMaintenanceRequests.jsp").forward(request, response);
+//
     }
 
     /**

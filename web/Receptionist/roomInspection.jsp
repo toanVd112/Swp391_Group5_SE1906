@@ -1,10 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="DAO.RoomInspectionReportDAO" %>
 
+<%@ page import="java.sql.SQLException" %>
+<%
+    RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
+%>
 <!DOCTYPE html>
 <html>
     <head>
-        <jsp:include page="/header.jsp" />
+
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -181,13 +186,16 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty report.staffID}">
-                                    ${report.staffID}
+                                    <span style="color:blue">
+                                        staffID = ${report.staffID}, tên = ${staffMap[report.staffID]}
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="center-text">Chưa phân công</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
+
                         <td>
                             <c:choose>
                                 <c:when test="${report.isRoomOk == true}">
@@ -227,6 +235,6 @@
 
         </div>
 
-        <jsp:include page="/footer.jsp" />
+
     </body>
 </html>

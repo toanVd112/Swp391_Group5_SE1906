@@ -98,8 +98,8 @@ public class PendingCheckout extends HttpServlet {
         request.setAttribute("pendingRequests", list);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        request.getRequestDispatcher("Staff/pendingCheckoutRequests.jsp").forward(request, response);
-
+        request.getRequestDispatcher("Staff/staff.jsp?page=pendingCheckoutRequests.jsp").forward(request, response);
+   //
     }
 
     /**
