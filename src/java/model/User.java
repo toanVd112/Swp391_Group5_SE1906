@@ -16,6 +16,18 @@ public class User {
     private String phone;
     private String address;
 
+    public User() {
+    }
+
+    public User(int userId, int accountId, String fullName, String email, String phone, String address) {
+        this.userId = userId;
+        this.accountId = accountId;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -63,6 +75,14 @@ public class User {
     public void setAddress(String address) {
         this.address = address;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "User{" + "userId=" + userId 
+                    + ", accountId=" + accountId 
+                    + ", fullName=" + fullName 
+                    + ", email=" + email 
+                    + ", phone=" + phone 
+                    + ", address=" + address + '}';
+    }
 }
