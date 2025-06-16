@@ -1,7 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-
+<c:if test="${empty user}">
+  <div style="color: red;">Không tìm th?y thông tin h? s? ng??i dùng trong h? th?ng.</div>
+</c:if>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -352,7 +354,8 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Full Name</label>
 										<div class="col-sm-7">
-											  <input class="form-control" name="fullName" type="text" value="" />
+											  <input class="form-control" name="fullName" type="text" value="${empty user ? '' : user.fullName}" maxlength="30" required />
+
 										</div>
 									</div>
 									
@@ -360,7 +363,8 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Phone No.</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="phone" type="text" value="" />
+											<input class="form-control" name="phone" type="text" value="${empty user ? '' : user.phone}" maxlength="10" required />
+
 										</div>
 									</div>
 									
@@ -374,7 +378,7 @@
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Address</label>
 										<div class="col-sm-7">
-											<input class="form-control" name="address" type="text" value="" />
+											<input class="form-control" name="address" type="text" value="${empty user ? '' : user.address}" maxlength="30" required />
 										</div>
 									</div>
 
@@ -387,24 +391,14 @@
 									</div>
 
 									
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Facebook</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="www.facebook.com">
-										</div>
-									</div>
+									
 									<div class="form-group row">
 										<label class="col-sm-2 col-form-label">Email</label>
 										<div class="col-sm-7">
 											<input class="form-control" type="email" name="email" value="${user.email}">
 										</div>
 									</div>
-									<div class="form-group row">
-										<label class="col-sm-2 col-form-label">Instagram</label>
-										<div class="col-sm-7">
-											<input class="form-control" type="text" value="www.instagram.com">
-										</div>
-									</div>
+									
 								</div>
 								<div class="">
 									<div class="">
@@ -486,6 +480,36 @@
 <script src="assets/vendors/chart/chart.min.js"></script>
 <script src="assets/js/admin.js"></script>
 <script src='assets/vendors/switcher/switcher.js'></script>
+<script>
+    document.querySelector('.edit-profile.m-b30').addEventListener('submit', function(e) {
+        let valid = true;
+        let fullName = document.querySelector('[name="fullName"]').value.trim();
+        let phone = document.querySelector('[name="phone"]').value.trim();
+        let address = document.querySelector('[name="address"]').value.trim();
+
+    // Ch? cho nh?p ch? cái và kho?ng tr?ng cho h? tên
+        let nameRegex = /^[A-Za-zÀ-?\s]+$/;
+        if (!nameRegex.test(fullName)) {
+            alert('H? tên ch? ???c ch?a ch? cái và kho?ng tr?ng, không ch?a s? ho?c ký t? ??c bi?t!');
+            valid = false;
+        }
+
+    // S? ?i?n tho?i ph?i ?úng 10 ch? s?
+        let phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('S? ?i?n tho?i ph?i ?úng 10 ch? s?!');
+            valid = false;
+        }
+
+    // ??a ch? t?i ?a 30 ký t?
+        if (address.length > 30) {
+            alert('??a ch? ch? ???c nh?p t?i ?a 30 ký t?!');
+            valid = false;
+        }
+
+        if (!valid) e.preventDefault();
+    });
+</script>
 </body>
 
 <!-- Mirrored from educhamp.themetrades.com/demo/admin/user-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 22 Feb 2019 13:11:35 GMT -->

@@ -89,7 +89,7 @@ public class UserProfileServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8"); // Đảm bảo nhận Tiếng Việt
         
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("user");
+        Account account = (Account) session.getAttribute("account");
         if (account == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -101,12 +101,56 @@ public class UserProfileServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
+        
+        StringBuilder errors = new StringBuilder();
+    // Validate họ tên
+        if (fullName == null || fullName.trim().isEmpty()) {
+            errors.append("Vui lòng nhập Họ tên.<br>");
+        } else if (!isValidName(fullName.trim())) {
+            errors.append("Họ tên chỉ được nhập chữ, không chứa số hoặc ký tự đặc biệt.<br>");
+        }
+
+    // Validate email
+        if (email == null || email.trim().isEmpty()) {
+            errors.append("Vui lòng nhập Email.<br>");
+        } else if (!isValidEmail(email.trim())) {
+            errors.append("Email không hợp lệ.<br>");
+        }
+
+    // Validate số điện thoại
+        if (phone == null || phone.trim().isEmpty()) {
+            errors.append("Vui lòng nhập Số điện thoại.<br>");
+        } else if (!isValidPhone(phone.trim())) {
+            errors.append("Số điện thoại phải gồm đúng 10 số.<br>");
+        }
+    // Validate địa chỉ
+        if (address == null || address.trim().isEmpty()) {
+            errors.append("Vui lòng nhập Địa chỉ.<br>");
+        } else if (address.trim().length() > 30) {
+            errors.append("Địa chỉ chỉ được nhập tối đa 30 ký tự.<br>");
+        }
 
         UserDao userDAO = new UserDao();
         User user = userDAO.getUserByAccountId(accountId);
+        
+        if (errors.length() > 0) {
+            if (user == null) {
+                user = new User();
+                user.setAccountId(accountId);
+            }
+            user.setFullName(fullName);
+            user.setEmail(email);
+            user.setPhone(phone);
+            user.setAddress(address);
+
+            request.setAttribute("user", user);
+            request.setAttribute("msg", "<span style='color:red'>" + errors.toString() + "</span>");
+            request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
+            return;
+        }
+
         boolean ok;
         if (user == null) {
-            // Thêm mới
             user = new User();
             user.setAccountId(accountId);
             user.setFullName(fullName);
@@ -115,7 +159,6 @@ public class UserProfileServlet extends HttpServlet {
             user.setAddress(address);
             ok = userDAO.insertUser(user);
         } else {
-            // Update
             user.setFullName(fullName);
             user.setEmail(email);
             user.setPhone(phone);
@@ -123,12 +166,27 @@ public class UserProfileServlet extends HttpServlet {
             ok = userDAO.updateUser(user);
         }
         if (ok) {
-            request.setAttribute("msg", "Cập nhật thành công!");
+            request.setAttribute("msg", "<span style='color:green'>Cập nhật thành công!</span>");
         } else {
-            request.setAttribute("msg", "Có lỗi xảy ra!");
+            request.setAttribute("msg", "<span style='color:red'>Có lỗi xảy ra khi lưu thông tin!</span>");
         }
         request.setAttribute("user", userDAO.getUserByAccountId(accountId)); // load lại info mới nhất
         request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
+    }
+    
+    // Validate email theo regex đơn giản
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[\\w-.]+@[\\w-]+(\\.[\\w-]+)+$");
+    }
+
+    // Validate số điện thoại (chỉ số và 10 ký tự)
+    private boolean isValidPhone(String phone) {
+        return phone != null && phone.matches("^\\d{10}$");
+    }
+    
+    // Cho phép chữ cái tiếng Việt, chữ hoa, thường, và khoảng trắng, không số hoặc ký tự đặc biệt
+    private boolean isValidName(String name) {
+        return name != null && name.matches("^[a-zA-ZÀ-ỹ\\s]+$");
     }
 
     /** 

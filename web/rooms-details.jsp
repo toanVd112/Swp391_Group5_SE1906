@@ -13,6 +13,9 @@
         <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
         <style>
+            body, h1, h2, h3, h4, h5, h6, p, ul, li, .ttr-post-title h2 {
+                font-family: 'Roboto', sans-serif !important;
+            }
             /* === MODAL WRAPPER === */
             .modal {
                 position: fixed;
@@ -58,33 +61,35 @@
                 position: absolute;
                 top: 16px;
                 left: 16px;
-                z-index: 1000;
-                background-color: #e9f0ff;
-                border: none;
-                border-radius: 999px;
-                padding: 12px;
+                background-color: transparent; 
+                padding: 6px;                  
+                border-radius: 50%;
+                border: 2px solid transparent;
                 cursor: pointer;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                z-index: 999;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: background 0.2s ease;
+                transition: all 0.25s ease;
             }
 
+
             .close-btn i {
-                font-size: 24px; /* Phóng to icon */
-                color: #1a1a1a;
-                transition: transform 0.2s ease;
+                font-size: 16px;
+                color: #5a3d91;
+                transition: transform 0.2s ease, color 0.2s ease;
             }
 
             .close-btn:hover {
-                background-color: #d0e4ff;
+                background: linear-gradient(135deg, #d3bfff, #c9aeff);
             }
 
             .close-btn:hover i {
-                transform: scale(1.2);
+                transform: scale(1.15);
+                color: #432d7b;
             }
-            /* === CATEGORY FILTER TABS === */
+
+            /* === CATEGORY FILTER TABS (nút lọc ảnh) === */
             .category-tabs {
                 flex-shrink: 0;
                 position: sticky;
@@ -97,7 +102,7 @@
                 overflow-x: auto;
                 display: flex;
                 gap: 8px;
-                padding-left: 56px; /* Đẩy tránh icon trái */
+                padding-left: 56px;
             }
 
             .category-tabs button {
@@ -105,17 +110,24 @@
                 white-space: nowrap;
                 border: none;
                 border-radius: 20px;
-                background: #f0f0f0;
+                background: transparent; /* <-- trong suốt */
                 font-size: 13px;
+                color: #666;
                 cursor: pointer;
                 flex-shrink: 0;
-                transition: all 0.2s;
+                transition: all 0.25s;
+                border: 1px solid #ccc;
             }
 
-            .category-tabs button.active,
+            .category-tabs button.active {
+                background: linear-gradient(135deg, #cdb6ff, #d4bfff);
+                color: #4c2a84;
+                font-weight: bold;
+            }
+
             .category-tabs button:hover {
-                background: #004bff;
-                color: #fff;
+                background: #e4d4fb;
+                color: #5a3d91;
             }
 
             /* === SCROLLABLE IMAGE AREA === */
@@ -225,12 +237,18 @@
                 modal.style.display = "block";
                 modal.setAttribute('aria-hidden', 'false');
 
-                // Lọc ảnh theo danh mục nếu có
-                const defaultBtn = document.querySelector(`.category-tabs button[onclick*="${category}"]`)
-                        || document.querySelector('.category-tabs .tab-btn');
-                filterCategory(category, defaultBtn);
+                // ✅ Tìm đúng nút theo data-category
+                let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
 
-                // Đăng ký sự kiện
+                // Nếu không có, fallback về 'all'
+                if (!button) {
+                    button = document.querySelector(`.category-tabs button[data-category="all"]`);
+                    category = "all";
+                }
+
+                filterCategory(category, button);
+
+                // Đăng ký sự kiện ngoài và phím ESC
                 setTimeout(() => {
                     document.addEventListener('click', handleClickOutside);
                 }, 0);
@@ -649,11 +667,13 @@
 
                                             <!-- Tabs danh mục -->
                                             <div class="category-tabs">
-                                                <button class="tab-btn active" onclick="filterCategory('all', this)">Tất cả</button>
-                                                <c:set var="usedCats" value="" />
+                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+
                                                 <c:forEach var="img" items="${images}">
                                                     <c:if test="${not fn:contains(usedCats, img.category)}">
-                                                        <button class="tab-btn" onclick="filterCategory('${fn:toLowerCase(img.category)}', this)">${img.category}</button>
+                                                        <button class="tab-btn" data-category="${fn:toLowerCase(img.category)}"
+                                                                onclick="filterCategory('${fn:toLowerCase(img.category)}', this)"
+                                                                aria-pressed="false">${img.category}</button>
                                                         <c:set var="usedCats" value="${usedCats}${img.category}," />
                                                     </c:if>
                                                 </c:forEach>
@@ -665,7 +685,7 @@
                                                     <c:forEach var="img" items="${images}">
                                                         <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
                                                             <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
-                                                            <p class="image-caption">Ảnh: ${img.category}</p>
+                                                            <p class="image-caption">${img.category}</p>
                                                         </div>
                                                     </c:forEach>
                                                 </div>
