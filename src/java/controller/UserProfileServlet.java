@@ -89,7 +89,7 @@ public class UserProfileServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8"); // Đảm bảo nhận Tiếng Việt
         
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("user");
+        Account account = (Account) session.getAttribute("account");
         if (account == null) {
             response.sendRedirect("login.jsp");
             return;
