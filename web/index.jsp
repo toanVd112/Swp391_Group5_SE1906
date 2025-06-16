@@ -312,7 +312,7 @@
                                 <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
                                     <c:forEach var="room" items="${roomTypes}">
                                         <c:url var="roomUrl" value="roomlist">
-                                            <c:param name="typeId" value="${room.roomtypeID}" />
+                                            <c:param name="typeId" value="${room.roomTypeID}" />
                                             <c:if test="${selectedFloor != null}">
                                                 <c:param name="floor" value="${selectedFloor}" />
                                             </c:if>

@@ -11,13 +11,15 @@ package model;
 public class Amenity {
     private int amenityId;
     private String amenityName;
+    private String icon;                
     private RoomType roomType;
 
     public Amenity() {}
 
-    public Amenity(int amenityId, String amenityName, RoomType roomType) {
+    public Amenity(int amenityId, String amenityName, String icon, RoomType roomType) {
         this.amenityId = amenityId;
         this.amenityName = amenityName;
+        this.icon = icon;
         this.roomType = roomType;
     }
 
@@ -37,6 +39,14 @@ public class Amenity {
         this.amenityName = amenityName;
     }
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     public RoomType getRoomType() {
         return roomType;
     }
@@ -50,6 +60,7 @@ public class Amenity {
         return "Amenity{" +
                 "amenityId=" + amenityId +
                 ", amenityName='" + amenityName + '\'' +
+                ", icon='" + icon + '\'' +
                 ", roomType=" + (roomType != null ? roomType.getName() : "null") +
                 '}';
     }

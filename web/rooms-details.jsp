@@ -61,8 +61,8 @@
                 position: absolute;
                 top: 16px;
                 left: 16px;
-                background-color: transparent; 
-                padding: 6px;                  
+                background-color: transparent;
+                padding: 6px;
                 border-radius: 50%;
                 border: 2px solid transparent;
                 cursor: pointer;
@@ -587,17 +587,12 @@
                                         <h4>Overview</h4>
                                         <div class="row">
                                             <div class="col-md-12 col-lg-4">
-                                                <ul class="course-features">    
-                                                    <li><i class="ri-hotel-bed-line"></i> 2 giường đơn</li>
-                                                    <li><i class="ri-windy-line"></i> Máy điều hòa</li>
-                                                    <li><i class="ri-building-line"></i> Ban công</li>
-                                                    <li><i class="ph ph-shower"></i> Phòng tắm riêng</li>
-                                                    <li><i class="ri-custom-size"></i> 19 mét vuông</li>
-                                                    <li><i class="ri-restaurant-line"></i> ban cong</li>
-                                                    <li><i class="ri-rss-line"></i> Wifi miễn phí</li>
-                                                    <li><i class="ri-customer-service-2-line"></i> phuc vu day du</li>
-
-
+                                                <ul class="course-features">
+                                                    <c:forEach var="a" items="${amenities}">
+                                                        <li>
+                                                            <i class="${a.icon}"></i> ${a.amenityName}
+                                                        </li>
+                                                    </c:forEach>
                                                 </ul>
                                             </div>
                                             <div class="col-md-12 col-lg-8">

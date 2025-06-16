@@ -75,6 +75,8 @@ public class RoomDetail extends HttpServlet {
             if (room.getRoomImage() == null || room.getRoomImage().trim().isEmpty()) {
                 room.setRoomImage(room.getRoomType().getImageUrl());
             }
+        List<model.Amenity> amenities = dao.getAmenitiesByRoomTypeId(room.getRoomType().getRoomTypeID());
+
 
             // Phân loại nội dung
             List<PageContent> contents = dao.getPageContent();
@@ -97,6 +99,7 @@ public class RoomDetail extends HttpServlet {
             List<RoomImage> images = dao.getImagesByRoomOrType(roomId);
 
             request.setAttribute("room", room);
+            request.setAttribute("amenities", amenities);
             request.setAttribute("images", images);
             request.setAttribute("roomID", roomId);
             request.setAttribute("policies", policies);

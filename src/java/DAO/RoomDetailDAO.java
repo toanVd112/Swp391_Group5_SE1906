@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.PageContent;
 import java.sql.ResultSet;
+import model.Amenity;
 import model.Room;
 import model.RoomImage;
 import model.RoomType;
@@ -117,5 +118,28 @@ public List<RoomImage> getImagesByRoomOrType(int roomID) {
 
     return list;
 }
+public List<Amenity> getAmenitiesByRoomTypeId(int roomTypeID) {
+    List<Amenity> list = new ArrayList<>();
+    String sql = "SELECT * FROM roomamenities WHERE RoomTypeID = ?";
 
+    try (java.sql.Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, roomTypeID);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Amenity a = new Amenity();
+                a.setAmenityId(rs.getInt("RoomAmenityID"));
+                a.setAmenityName(rs.getString("AmenityName"));
+                a.setIcon(rs.getString("Icon"));
+                list.add(a);
+            }
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
 }

@@ -28,11 +28,11 @@ public class RoomType {
         this.roomDetail = roomDetail;
     }
 
-    public int getRoomtypeID() {
+    public int getRoomTypeID() {
         return roomtypeID;
     }
 
-    public void setRoomtypeID(int roomtypeID) {
+    public void setRoomTypeID(int roomtypeID) {
         this.roomtypeID = roomtypeID;
     }
 

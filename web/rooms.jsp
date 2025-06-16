@@ -427,7 +427,7 @@
                                                 </li>
                                                 <c:forEach var="room" items="${roomTypes}">
                                                     <c:url var="urlRoomType" value="roomlist">
-                                                        <c:param name="typeId" value="${room.roomtypeID}" />
+                                                        <c:param name="typeId" value="${room.roomTypeID}" />
                                                         <c:if test="${selectedFloor != null}">
                                                             <c:param name="floor" value="${selectedFloor}" />
                                                         </c:if>
@@ -435,7 +435,7 @@
                                                             <c:param name="sort" value="${sort}" />
                                                         </c:if>
                                                     </c:url>
-                                                    <li class="${selectedType == room.roomtypeID ? 'active' : ''}">
+                                                    <li class="${selectedType == room.roomTypeID ? 'active' : ''}">
                                                         <a href="${urlRoomType}">${room.name}</a>
                                                     </li>
                                                 </c:forEach>
