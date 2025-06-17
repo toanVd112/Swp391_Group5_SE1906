@@ -112,7 +112,7 @@ public class AddAccount extends HttpServlet {
             request.setAttribute("isActive", active);
             request.setAttribute("aid", aid);
 
-            request.getRequestDispatcher("editAccount.jsp").forward(request, response);
+            request.getRequestDispatcher("Manager/editAccount.jsp").forward(request, response);
         } else {
             // Nếu hợp lệ thì cập nhật dữ liệu
             AccountDAO ad = new AccountDAO();
@@ -175,7 +175,7 @@ public class AddAccount extends HttpServlet {
             request.setAttribute("email", email);
             request.setAttribute("showAddModal", true); // Để mở lại modal
 
-            request.getRequestDispatcher("manageAccount.jsp").forward(request, response);
+            request.getRequestDispatcher("managerAccount").forward(request, response);
         } else {
             // Gọi DAO để thêm account mới
             AccountDAO dao = new AccountDAO();
