@@ -806,7 +806,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/Home">Trang chủ</a></li>
-                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/rooms.jsp">Phòng</a></li>
+                        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/roomlist">Phòng</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Thanh toán</li>
                     </ol>
                 </nav>

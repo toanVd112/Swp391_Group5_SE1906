@@ -470,7 +470,7 @@
                                             <h4 class="price">$${room.roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
-                                            <button class="open-booking-btn" onclick="openBookingModal()">Đặt ngay</button>
+                                            <button class="btn radius-xl text-uppercase" onclick="openBookingModal()">Đặt ngay</button>
 
                                         </div>
                                         <div class="teacher-bx">

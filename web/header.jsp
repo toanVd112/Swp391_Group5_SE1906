@@ -27,7 +27,7 @@
                             <li><a class="dropdown-item" href="#">English US</a></li>
                         </ul>
                     </div>
-                    
+
                     <c:if test="${sessionScope.account != null}">
                         <span class="text-muted">Hello, ${username}</span>
                         <a href="${pageContext.request.contextPath}/Logout" class="btn btn-sm btn-outline-danger">Logout</a>
@@ -42,7 +42,8 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="Hoang Nam Hotel" class="logo">
+
+                    <a href="Home"><img src="assets/images/logo.png" alt=""  class="logo"></a>
                 </div>
 
                 <nav class="d-none d-md-flex align-items-center gap-4">
