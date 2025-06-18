@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Account;
 import model.Room2;
-import model.RoomType2;
+import model.RoomType;
 
 /**
  *
@@ -93,7 +93,7 @@ public class ListRoomsServlet1 extends HttpServlet {
         int offset = (page - 1) * pageSize;
 
         try {
-            List<RoomType2> roomTypes = dao.getRoomTypes();
+            List<RoomType> roomTypes = dao.getRoomTypes();
             int totalRooms = dao.countRooms(roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice);
             int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
 

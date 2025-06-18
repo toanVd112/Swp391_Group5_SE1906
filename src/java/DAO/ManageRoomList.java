@@ -16,20 +16,20 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Room2;
-import model.RoomType2;
+import model.RoomType;
 
 public class ManageRoomList {
 
     /**
      * Lấy danh sách RoomType để đổ vào combobox
      */
-    public List<RoomType2> getRoomTypes() throws SQLException {
+    public List<RoomType> getRoomTypes() throws SQLException {
         String sql = "SELECT RoomTypeID, Name FROM RoomTypes ORDER BY Name";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-            List<RoomType2> list = new ArrayList<>();
+            List<RoomType> list = new ArrayList<>();
             while (rs.next()) {
-                list.add(new RoomType2(rs.getInt("RoomTypeID"), rs.getString("Name")));
+                list.add(new RoomType(rs.getInt("RoomTypeID"), rs.getString("Name")));
             }
             return list;
         }

@@ -9,23 +9,34 @@ package model;
  * @author Arcueid
  */
 public class RoomType {
+
     private int roomtypeID;
     private String name;
     private String description;
     private double basePrice;
     private String imageUrl;
     private String roomDetail; // mới thêm
+    private int availableRooms;
 
     public RoomType() {
     }
 
-    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail) {
+    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int availableRooms) {
         this.roomtypeID = roomtypeID;
         this.name = name;
         this.description = description;
         this.basePrice = basePrice;
         this.imageUrl = imageUrl;
         this.roomDetail = roomDetail;
+        this.availableRooms = availableRooms;
+    }
+
+    public int getAvailableRooms() {
+        return availableRooms;
+    }
+
+    public void setAvailableRooms(int availableRooms) {
+        this.availableRooms = availableRooms;
     }
 
     public int getRoomTypeID() {
@@ -74,5 +85,19 @@ public class RoomType {
 
     public void setRoomDetail(String roomDetail) {
         this.roomDetail = roomDetail;
+    }
+
+    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail) {
+        this.roomtypeID = roomtypeID;
+        this.name = name;
+        this.description = description;
+        this.basePrice = basePrice;
+        this.imageUrl = imageUrl;
+        this.roomDetail = roomDetail;
+    }
+
+    public RoomType(int roomtypeID, String name) {
+        this.roomtypeID = roomtypeID;
+        this.name = name;
     }
 }
