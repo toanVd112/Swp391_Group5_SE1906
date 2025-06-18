@@ -1,92 +1,43 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Admin
- */
 import java.sql.Timestamp;
 
 public class ActivityLog {
-
-    private int logID;
-    private int actorID;
-    private String actionType, username;
+    private int logId;
+    private int actorId;
+    private String actionType;
     private String targetTable;
-    private int targetID;
+    private int targetId;
+    private String description;
     private Timestamp actionTime;
+    private String username;
+    private String role;
 
-    public ActivityLog() {
-    }
+    // Getters and Setters
+    public int getLogId() { return logId; }
+    public void setLogId(int logId) { this.logId = logId; }
 
-    public ActivityLog(int logID, int actorID, String actionType, String targetTable, int targetID, Timestamp actionTime, String username) {
-        this.logID = logID;
-        this.actorID = actorID;
-        this.actionType = actionType;
-        this.targetTable = targetTable;
-        this.targetID = targetID;
-        this.actionTime = actionTime;
-        this.username = username;
-    }
+    public int getActorId() { return actorId; }
+    public void setActorId(int actorId) { this.actorId = actorId; }
 
-    public int getLogID() {
-        return logID;
-    }
+    public String getActionType() { return actionType; }
+    public void setActionType(String actionType) { this.actionType = actionType; }
 
-    public void setLogID(int logID) {
-        this.logID = logID;
-    }
+    public String getTargetTable() { return targetTable; }
+    public void setTargetTable(String targetTable) { this.targetTable = targetTable; }
 
-    public int getActorID() {
-        return actorID;
-    }
+    public int getTargetId() { return targetId; }
+    public void setTargetId(int targetId) { this.targetId = targetId; }
 
-    public void setActorID(int actorID) {
-        this.actorID = actorID;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getActionType() {
-        return actionType;
-    }
+    public Timestamp getActionTime() { return actionTime; }
+    public void setActionTime(Timestamp actionTime) { this.actionTime = actionTime; }
 
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getTargetTable() {
-        return targetTable;
-    }
-
-    public void setTargetTable(String targetTable) {
-        this.targetTable = targetTable;
-    }
-
-    public int getTargetID() {
-        return targetID;
-    }
-
-    public void setTargetID(int targetID) {
-        this.targetID = targetID;
-    }
-
-    public Timestamp getActionTime() {
-        return actionTime;
-    }
-
-    public void setActionTime(Timestamp actionTime) {
-        this.actionTime = actionTime;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-   
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
