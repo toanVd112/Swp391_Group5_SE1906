@@ -28,6 +28,10 @@
                     <i class="fas fa-building"></i>
                     <span>View Room List</span>
                 </a>
+                <a href="${pageContext.request.contextPath}/RoomTypeListServlet" class="menu-item" data-page="RoomTypeList">
+                    <i class="fas fa-list"></i>
+                    <span>View Room Types</span>
+                </a>
             </c:if>
 
             <c:if test="${role eq 'Receptionist'}">

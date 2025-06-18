@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.RoomType;
+package controller.Manager.RoomType;
 
 import DAO.RoomTypeDAO;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import model.RoomType;
  *
  * @author Arcueid
  */
-@WebServlet(name="ManageRomType", urlPatterns={"/ManageRomType"})
+@WebServlet(name="ManageRoomType", urlPatterns={"/ManageRoomType"})
 public class ManageRomType extends HttpServlet {
    
     /** 
@@ -61,54 +61,54 @@ public class ManageRomType extends HttpServlet {
         roomTypeDAO = new RoomTypeDAO();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String idParam = request.getParameter("id");
-        if (idParam != null) {
-            try {
-                int id = Integer.parseInt(idParam);
-                RoomType roomType = roomTypeDAO.getRoomTypeById(id);
-                request.setAttribute("roomType", roomType);
-            } catch (NumberFormatException e) {
-            }
-        }
-        request.getRequestDispatcher("room-type-form.jsp").forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-
-        String idRaw = request.getParameter("roomTypeID");
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String basePriceRaw = request.getParameter("basePrice");
-        String imageUrl = request.getParameter("imageUrl");
-        String roomDetail = request.getParameter("roomDetail");
-
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String idParam = request.getParameter("id");
+    if (idParam != null) {
         try {
-            double basePrice = Double.parseDouble(basePriceRaw);
-
-            RoomType type = new RoomType();
-            type.setName(name);
-            type.setDescription(description);
-            type.setBasePrice(basePrice);
-            type.setImageUrl(imageUrl);
-            type.setRoomDetail(roomDetail);
-
-            if (idRaw == null || idRaw.isEmpty()) {
-                roomTypeDAO.insertRoomType(type);
-            } else {
-                int id = Integer.parseInt(idRaw);
-                type.setRoomTypeID(id);
-                roomTypeDAO.updateRoomType(type);
-            }
-
-            response.sendRedirect("roomtypes.jsp");
-        } catch (IOException | NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Lỗi xử lý dữ liệu loại phòng");
+            int id = Integer.parseInt(idParam);
+            RoomType roomType = roomTypeDAO.getRoomTypeById(id);
+            request.setAttribute("roomType", roomType);
+        } catch (NumberFormatException e) {
         }
     }
+   request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+}
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+
+    String idRaw = request.getParameter("roomTypeID");
+    String name = request.getParameter("name");
+    String description = request.getParameter("description");
+    String basePriceRaw = request.getParameter("basePrice");
+    String imageUrl = request.getParameter("imageUrl");
+    String roomDetail = request.getParameter("roomDetail");
+
+    try {
+        double basePrice = Double.parseDouble(basePriceRaw);
+
+        RoomType type = new RoomType();
+        type.setName(name);
+        type.setDescription(description);
+        type.setBasePrice(basePrice);
+        type.setImageUrl(imageUrl);
+        type.setRoomDetail(roomDetail);
+
+        if (idRaw == null || idRaw.isEmpty()) {
+            roomTypeDAO.insertRoomType(type);
+        } else {
+            int id = Integer.parseInt(idRaw);
+            type.setRoomTypeID(id);
+            roomTypeDAO.updateRoomType(type);
+        }
+
+        response.sendRedirect("Manager/manager.jsp?page=ListRoomType.jsp");
+    } catch (IOException | NumberFormatException e) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Lỗi xử lý dữ liệu loại phòng");
+    }
+}
 
     @Override
     public String getServletInfo() {

@@ -48,7 +48,6 @@
                 text-decoration: none;
                 font-weight: 500;
             }
-
             table {
                 width: 100%;
                 border-collapse: collapse;

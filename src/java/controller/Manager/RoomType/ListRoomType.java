@@ -3,11 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.RoomType;
+package controller.Manager.RoomType;
 
 import DAO.RoomTypeDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,8 +19,8 @@ import model.RoomType;
  *
  * @author Arcueid
  */
-@WebServlet(name="RoomTypeList", urlPatterns={"/RoomTypeList"})
-public class RoomTypeList extends HttpServlet {
+@WebServlet(name = "RoomTypeListServlet", urlPatterns = {"/RoomTypeListServlet"})
+public class ListRoomType extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -30,32 +29,7 @@ public class RoomTypeList extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RoomTypeList</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RoomTypeList at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    private static final int PAGE_SIZE = 10;
+   private static final int PAGE_SIZE = 10;
     private RoomTypeDAO roomTypeDAO;
 
     @Override
@@ -73,7 +47,7 @@ public class RoomTypeList extends HttpServlet {
         String minPriceStr = request.getParameter("minPrice");
         String maxPriceStr = request.getParameter("maxPrice");
 
-        // Mặc định giá trị min/max nếu rỗng
+        // Giá trị mặc định nếu không nhập
         double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : 0;
         double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : Double.MAX_VALUE;
 
@@ -83,18 +57,16 @@ public class RoomTypeList extends HttpServlet {
         if (pageParam != null) {
             try {
                 currentPage = Integer.parseInt(pageParam);
-            } catch (NumberFormatException ignored) {
-            }
+            } catch (NumberFormatException ignored) {}
         }
-
         int offset = (currentPage - 1) * PAGE_SIZE;
 
-        // Truy vấn dữ liệu từ DAO
+        // Truy vấn DAO
         List<RoomType> roomTypes = roomTypeDAO.searchRoomTypes(keyword, minPrice, maxPrice, sortBy, offset, PAGE_SIZE);
         int totalRoomTypes = roomTypeDAO.countRoomTypes(keyword, minPrice, maxPrice);
         int totalPages = (int) Math.ceil((double) totalRoomTypes / PAGE_SIZE);
 
-        // Truyền dữ liệu ra JSP
+        // Gửi dữ liệu sang JSP
         request.setAttribute("roomTypes", roomTypes);
         request.setAttribute("f_keyword", keyword);
         request.setAttribute("f_minPrice", minPriceStr);
@@ -104,6 +76,6 @@ public class RoomTypeList extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
 
         // Forward đến JSP
-        request.getRequestDispatcher("RoomTypeList.jsp").forward(request, response);
+        request.getRequestDispatcher("Manager/manager.jsp?page=ListRoomType.jsp").forward(request, response);
     }
 }
