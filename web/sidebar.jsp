@@ -5,8 +5,7 @@
     <!-- Sidebar Header -->
     <div class="sidebar-header">
         <div class="d-flex align-items-center">
-            <i class="fas fa-hotel text-primary me-2"></i>
-            <span class="fw-bold">Hoang Nam Hotel</span>
+        
         </div>
     </div>
 
