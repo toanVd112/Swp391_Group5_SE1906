@@ -1,51 +1,54 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.Account" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="model.Account" %>
 
 <%
     Account account = (Account) session.getAttribute("account");
-    if (account == null || !"Receptionist".equals(account.getRole())) {
-        response.sendRedirect("../login_2.jsp");
+    if (account == null) {
+        response.sendRedirect("login.jsp");
         return;
     }
     request.setAttribute("role", account.getRole());
+    request.setAttribute("username", account.getUsername());
 %>
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Receptionist Dashboard</title>
-
-
-        <!-- CSS giống manager -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Receptionist/reception.css" />
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Receptionist/sidebar2.css" />
-
-    <body>
-        <div class="main-wrapper" id="mainWrapper">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoang Nam Hotel - Management System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout.css">
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <%@ include file="/sidebar.jsp" %>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
             <%@ include file="/header.jsp" %>
-
-            <div class="main-content" id="main-content">
-                <jsp:include page="${param.page}" />
-            </div>
+            
+            <!-- Page Content -->
+            <main class="content-area">
+                <jsp:include page="${param.page != null ? param.page : '/dashboard.jsp'}" />
+            </main>
+            
+            <!-- Footer -->
             <%@ include file="/footer.jsp" %>
         </div>
-        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-        <%@ include file="/sidebar.jsp" %>
+    </div>
 
-        <!-- Wrapper chứa header và nội dung chính -->
-
-
-        <script>
-            function toggleSidebar() {
-                const sidebar = document.querySelector('.sidebar');
-                const wrapper = document.getElementById('mainWrapper');
-                sidebar.classList.toggle('expanded');
-                wrapper.classList.toggle('expanded');
-            }
-        </script>
-
-
-    </body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="${pageContext.request.contextPath}/assets/js/layout.js"></script>
+</body>
 </html>

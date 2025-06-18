@@ -15,8 +15,8 @@ import model.Account; // Lớp Account đại diện cho tài khoản người d
 import model.Service; // Lớp Service đại diện cho dịch vụ (như tên, giá, trạng thái)
 
 // Đánh dấu đây là một servlet với tên "ServiceListServlet" và URL "/services/list"
-// Khi người dùng truy cập URL này (ví dụ: http://localhost:8080/services/list), servlet sẽ được gọi
-@WebServlet(name="ServiceListServlet", urlPatterns={"/services/list"})
+
+@WebServlet(name="ServiceListServlet", urlPatterns={"/serviceslist"})
 public class ServiceListServlet extends HttpServlet {
    
     // Phương thức chính xử lý cả GET và POST, nhận yêu cầu và trả về phản hồi
@@ -87,7 +87,8 @@ public class ServiceListServlet extends HttpServlet {
         request.setAttribute("msg", a);
 
         // Chuyển tiếp (forward) yêu cầu và phản hồi tới file JSP để hiển thị giao diện
-        request.getRequestDispatcher("/Manager/ServiceList.jsp").forward(request, response);
+      request.getRequestDispatcher("Manager/manager.jsp?page=ServiceList.jsp").forward(request, response);
+          
     } 
 
     // Xử lý yêu cầu GET (khi người dùng truy cập URL hoặc nhấn nút tìm kiếm)

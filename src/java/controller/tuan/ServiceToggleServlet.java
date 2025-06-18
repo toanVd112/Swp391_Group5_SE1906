@@ -32,77 +32,56 @@ public class ServiceToggleServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Đặt kiểu nội dung trả về là JSON (thay vì HTML), để giao tiếp với frontend (như JavaScript)
         response.setContentType("application/json");
-        
-        // Bắt đầu khối try-catch để xử lý các lỗi có thể xảy ra
+
         try {
-            // Tạo BufferedReader để đọc dữ liệu từ body của yêu cầu (nơi chứa JSON)
             BufferedReader reader = request.getReader();
-            // Tạo StringBuilder để xây dựng chuỗi JSON từ các dòng đọc được
             StringBuilder jsonBuilder = new StringBuilder();
             String line;
-            // Đọc từng dòng từ body của yêu cầu
             while ((line = reader.readLine()) != null) {
-                // Thêm dòng vào StringBuilder
                 jsonBuilder.append(line);
             }
 
-            // Lấy chuỗi JSON từ StringBuilder
             String jsonString = jsonBuilder.toString();
-            // Kiểm tra xem JSON có rỗng không
             if (jsonString.isEmpty()) {
-                // Nếu rỗng, trả về mã lỗi 400 (Bad Request)
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                // Gửi phản hồi JSON với thông báo lỗi
                 response.getWriter().write("{\"error\": \"Empty request body\"}");
-                return; // Dừng xử lý tiếp
+                return;
             }
 
-            // Parse chuỗi JSON thành một đối tượng JsonObject để dễ truy cập các trường
             JsonObject jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
-            // Kiểm tra xem JSON có trường "id" không
             if (!jsonObject.has("id")) {
-                // Nếu thiếu trường "id", trả về mã lỗi 400
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                // Gửi phản hồi JSON với thông báo lỗi
                 response.getWriter().write("{\"error\": \"Missing id field\"}");
-                return; // Dừng xử lý tiếp
+                return;
             }
-            // Lấy giá trị của trường "id" từ JSON dưới dạng chuỗi
+
             String serviceId = jsonObject.get("id").getAsString();
-            // Khởi tạo biến id với giá trị mặc định là 0
             int id = 0;
-            // Thử chuyển đổi serviceId từ chuỗi sang số nguyên
             try {
                 id = Integer.parseInt(serviceId);
             } catch (Exception e) {
-                // Nếu chuyển đổi thất bại (ví dụ: id không phải số), id vẫn là 0
-                // Lưu ý: Phần này không xử lý lỗi, cần cải thiện
+                // Cải thiện bằng cách trả lỗi nếu ID không hợp lệ
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Invalid ID\"}");
+                return;
             }
 
-            // Gọi ServiceDAO để cập nhật trạng thái dịch vụ (toggle: ví dụ từ active sang inactive)
             boolean success = serviceDAO.toggleServiceStatus(id);
 
-            // Kiểm tra kết quả cập nhật
             if (success) {
-                // Nếu thành công, trả về mã trạng thái 200 (OK)
                 response.setStatus(HttpServletResponse.SC_OK);
-                // Gửi phản hồi JSON với thông báo thành công
-                response.getWriter().write("{\"message\": \"Update Status Success\"}");
+                // ✅ Thêm key "success": true
+                response.getWriter().write("{\"success\": true, \"message\": \"Update Status Success\"}");
             } else {
-                // Nếu thất bại, trả về mã lỗi 500 (Internal Server Error)
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                // Gửi phản hồi JSON với thông báo lỗi
                 response.getWriter().write("{\"error\": \"Failed to update status\"}");
             }
         } catch (Exception e) {
-            // Nếu có lỗi bất kỳ (như lỗi parse JSON hoặc lỗi hệ thống)
-            // Trả về mã lỗi 500
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            // Gửi phản hồi JSON với thông báo lỗi chi tiết
             response.getWriter().write("{\"error\": \"Error: " + e.getMessage() + "\"}");
         }
     }
+
 }
 // update serviceToggleServlet
