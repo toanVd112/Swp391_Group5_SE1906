@@ -123,7 +123,7 @@
             }
 
             /* Modal Styles */
-            .modal {
+            .amodal {
                 display: none;
                 position: fixed;
                 z-index: 999999;
@@ -135,7 +135,7 @@
                 background-color: rgba(0,0,0,0.4);
             }
 
-            .modal-dialog {
+            .amodal-dialog {
                 background-color: #fff;
                 margin: 80px auto;
                 padding: 20px;
@@ -143,7 +143,7 @@
                 border-radius: 10px;
             }
 
-            .modal-header h4 {
+            .amodal-header h4 {
                 margin: 0;
                 color: #2c3e50;
             }
@@ -166,13 +166,13 @@
                 border: 1px solid #ccc;
             }
 
-            .modal-footer {
+            .amodal-footer {
                 margin-top: 20px;
                 display: flex;
                 justify-content: flex-end;
             }
 
-            .modal-footer input {
+            .amodal-footer input {
                 margin-left: 10px;
                 padding: 10px 14px;
                 border: none;
@@ -280,13 +280,13 @@
             </script>
         </c:if>
 
-        <div id="addAccountModal" class="modal">
-            <div class="modal-dialog">
-                <form action="addAccount" >
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add New Account</h4>
+        <div id="addAccountModal" class="amodal">
+            <div class="amodal-dialog">
+                <form action="${pageContext.request.contextPath}/addAccount" method="post" >
+                    <div class="amodal-header">
+                        <h4 class="amodal-title">Add New Account</h4>
                     </div>
-                    <div class="modal-body">
+                    <div class="amodal-body">
                         <div class="form-group">
                             <label for="username">Username</label>
                             <input id="username" name="username" type="text" placeholder="Enter username" required>
@@ -319,7 +319,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
+                    <div class="amodal-footer">
                         <input type="button" class="btn-default" value="Cancel" onclick="closeModal()">
                         <input type="submit" class="btn-success" value="Add Account">
                     </div>
@@ -342,7 +342,7 @@
             // Close modal when clicking outside
             window.addEventListener("click", function (event) {
                 const modal = document.getElementById("addAccountModal");
-                const dialog = document.querySelector(".modal-dialog");
+                const dialog = document.querySelector(".amodal-dialog");
                 if (event.target === modal) {
                     closeModal();
                 }
