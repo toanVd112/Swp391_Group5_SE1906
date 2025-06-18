@@ -116,7 +116,8 @@ public class AddAccount extends HttpServlet {
         } else {
             // Nếu hợp lệ thì cập nhật dữ liệu
             AccountDAO ad = new AccountDAO();
-            ad.editAccount(user, pass, role, isActive, email, aid);
+            Account acc=new Account(0, user, pass, role, isActive, email);
+            ad.addAccount(user, pass, role, isActive, email);
             response.sendRedirect("managerAccount");
         }
     }

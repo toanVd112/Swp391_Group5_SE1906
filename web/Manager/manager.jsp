@@ -38,7 +38,7 @@
             
             <!-- Page Content -->
             <main class="content-area">
-                <jsp:include page="${param.page != null ? param.page : 'dashboard.jsp'}" />
+                <jsp:include page="${param.page != null ? param.page : '/dashboard.jsp'}" />
             </main>
             
             <!-- Footer -->
