@@ -321,7 +321,7 @@
                                         <div class="item">
                                             <div class="cours-bx">
                                                 <div class="action-box">
-                                                    <img src="${pageContext.request.contextPath}/${room.imageUrl}" alt="">
+                                                    <img src="${room.imageUrl}" alt="">
                                                     <a href="${roomUrl}" class="btn">Xem phòng</a>
                                                 </div>
                                                 <div class="info-bx text-center">
@@ -342,7 +342,7 @@
                                                         </ul>
                                                     </div>
                                                     <div class="price">
-                                                        <del>$190</del>
+                                                        
                                                         <h5>$${room.basePrice}</h5>
                                                     </div>
                                                 </div>

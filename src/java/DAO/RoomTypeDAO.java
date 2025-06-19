@@ -5,14 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import model.RoomImage;
 import model.RoomType;
-import java.util.logging.Logger;
 
-/**
- *
- * @author Arcueid
- */
 public class RoomTypeDAO {
-    private static final Logger LOGGER = Logger.getLogger(RoomTypeDAO.class.getName());
 
     public RoomType getRoomTypeById(int id) throws SQLException {
         String sql = "SELECT * FROM roomtypes WHERE RoomTypeID = ?";
@@ -21,23 +15,19 @@ public class RoomTypeDAO {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"), // Có thể để trống nếu dùng roomimages
-                    rs.getString("RoomDetail"),
-                    0 // Giá trị mặc định cho availableRooms (cần điều chỉnh nếu có trong DB)
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail"),
+                        0
                 );
-                // Lấy danh sách ảnh từ roomimages
                 roomType.setImages(getImagesByRoomTypeId(id));
                 return roomType;
             }
-            return null;
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi lấy thông tin loại phòng ID=" + id + ": " + e.getMessage());
-            throw e;
         }
+        return null;
     }
 
     public void insertRoomType(RoomType type) throws SQLException {
@@ -46,19 +36,15 @@ public class RoomTypeDAO {
             ps.setString(1, type.getName());
             ps.setString(2, type.getDescription());
             ps.setDouble(3, type.getBasePrice());
-            ps.setString(4, ""); // RoomTypeImage có thể để trống
+            ps.setString(4, type.getImageUrl());
             ps.setString(5, type.getRoomDetail());
             ps.executeUpdate();
 
-            // Lấy RoomTypeID vừa tạo
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int roomTypeId = generatedKeys.getInt(1);
-                insertImages(roomTypeId, type.getImages()); // Lưu ảnh mới
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int roomTypeId = rs.getInt(1);
+                insertImages(roomTypeId, type.getImages());
             }
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi thêm loại phòng: " + e.getMessage());
-            throw e;
         }
     }
 
@@ -68,21 +54,13 @@ public class RoomTypeDAO {
             ps.setString(1, type.getName());
             ps.setString(2, type.getDescription());
             ps.setDouble(3, type.getBasePrice());
-            ps.setString(4, ""); // RoomTypeImage có thể để trống
+            ps.setString(4, type.getImageUrl());
             ps.setString(5, type.getRoomDetail());
             ps.setInt(6, type.getRoomTypeID());
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected == 0) {
-                throw new SQLException("Không tìm thấy loại phòng để cập nhật với ID: " + type.getRoomTypeID());
-            }
-
-            // Cập nhật hoặc thêm ảnh mới
-            deleteImagesByRoomTypeId(type.getRoomTypeID()); // Xóa ảnh cũ
-            insertImages(type.getRoomTypeID(), type.getImages()); // Thêm ảnh mới
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi cập nhật loại phòng ID=" + type.getRoomTypeID() + ": " + e.getMessage());
-            throw e;
+            ps.executeUpdate();
         }
+        deleteImagesByRoomTypeId(type.getRoomTypeID());
+        insertImages(type.getRoomTypeID(), type.getImages());
     }
 
     public List<RoomImage> getImagesByRoomTypeId(int roomTypeId) throws SQLException {
@@ -92,39 +70,35 @@ public class RoomTypeDAO {
             ps.setInt(1, roomTypeId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                RoomImage image = new RoomImage(
-                    rs.getInt("ImageID"),
-                    (Integer) rs.getObject("RoomID"), // Xử lý null
-                    roomTypeId, // Sử dụng tham số truyền vào
-                    rs.getString("ImageUrl"),
-                    rs.getBoolean("IsPrimary"),
-                    rs.getString("Category")
+                RoomImage img = new RoomImage(
+                        rs.getInt("ImageID"),
+                        (Integer) rs.getObject("RoomID"),
+                        roomTypeId,
+                        rs.getString("ImageUrl"),
+                        rs.getBoolean("IsPrimary"),
+                        rs.getString("Category")
                 );
-                images.add(image);
+                images.add(img);
             }
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi lấy ảnh cho RoomTypeID=" + roomTypeId + ": " + e.getMessage());
-            throw e;
         }
         return images;
     }
 
     public void insertImages(int roomTypeId, List<RoomImage> images) throws SQLException {
-        if (images == null || images.isEmpty()) return;
+        if (images == null || images.isEmpty()) {
+            return;
+        }
         String sql = "INSERT INTO roomimages (RoomID, ImageUrl, IsPrimary, Category, RoomTypeID) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (RoomImage image : images) {
-                ps.setObject(1, image.getRoomID()); // Có thể null
-                ps.setString(2, image.getImageUrl()); // Lưu URL
-                ps.setBoolean(3, image.isPrimary());
-                ps.setString(4, image.getCategory());
+            for (RoomImage img : images) {
+                ps.setObject(1, img.getRoomID());
+                ps.setString(2, img.getImageUrl());
+                ps.setBoolean(3, img.isPrimary());
+                ps.setString(4, img.getCategory());
                 ps.setInt(5, roomTypeId);
                 ps.addBatch();
             }
             ps.executeBatch();
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi thêm ảnh cho RoomTypeID=" + roomTypeId + ": " + e.getMessage());
-            throw e;
         }
     }
 
@@ -133,10 +107,16 @@ public class RoomTypeDAO {
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, roomTypeId);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi xóa ảnh cho RoomTypeID=" + roomTypeId + ": " + e.getMessage());
-            throw e;
         }
+    }
+
+    public void deleteImageById(int imageId) throws SQLException {
+        String sql = "DELETE FROM roomimages WHERE ImageID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, imageId);
+            ps.executeUpdate();
+        }
+
     }
 
     public List<RoomType> searchRoomTypes(String keyword, double minPrice, double maxPrice, String sortBy, int offset, int limit) throws SQLException {
@@ -144,10 +124,10 @@ public class RoomTypeDAO {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
 
         StringBuilder sql = new StringBuilder(
-            "SELECT rt.*, COUNT(r.RoomID) AS roomCount " +
-            "FROM roomtypes rt " +
-            "LEFT JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID " +
-            "WHERE rt.BasePrice BETWEEN ? AND ?"
+                "SELECT rt.*, COUNT(r.RoomID) AS roomCount "
+                + "FROM roomtypes rt "
+                + "LEFT JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID "
+                + "WHERE rt.BasePrice BETWEEN ? AND ?"
         );
 
         if (hasKeyword) {
@@ -183,19 +163,19 @@ public class RoomTypeDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 RoomType rt = new RoomType(
-                    rs.getInt("RoomTypeID"),
-                    rs.getString("Name"),
-                    rs.getString("Description"),
-                    rs.getDouble("BasePrice"),
-                    rs.getString("RoomTypeImage"),
-                    rs.getString("RoomDetail"),
-                    rs.getInt("roomCount") // Giả sử dùng roomCount làm availableRooms (cần điều chỉnh nếu khác)
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("Name"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail"),
+                        rs.getInt("roomCount") // Giả sử dùng roomCount làm availableRooms (cần điều chỉnh nếu khác)
                 );
                 rt.setImages(getImagesByRoomTypeId(rs.getInt("RoomTypeID")));
                 list.add(rt);
             }
         } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi tìm kiếm loại phòng: " + e.getMessage());
+
             throw e;
         }
         return list;
@@ -219,7 +199,7 @@ public class RoomTypeDAO {
                 count = rs.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.severe("Lỗi khi đếm loại phòng: " + e.getMessage());
+
             throw e;
         }
         return count;
