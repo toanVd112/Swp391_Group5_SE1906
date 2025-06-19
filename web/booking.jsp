@@ -26,6 +26,7 @@
     String roomTypeName   = request.getParameter("roomTypeName");
     String pricePerNight  = request.getParameter("pricePerNight");
     String checkInDate    = request.getParameter("checkInDate");
+    
     String checkOutDate   = request.getParameter("checkOutDate");
     String roomDetail     =request.getParameter("roomDetail");
     // Set default values nếu null
@@ -40,7 +41,9 @@
     roomTypeID      = (roomTypeID    != null) ? roomTypeID    : "DELUXE";
     roomTypeName    = (roomTypeName  != null) ? roomTypeName  : "Deluxe Room";
     pricePerNight   = (pricePerNight != null) ? pricePerNight : "1000000";
-    checkInDate     = (checkInDate   != null) ? checkInDate   : "2025-06-21";
+   if (checkInDate == null || checkInDate.trim().isEmpty()) {
+    checkInDate = "2025-06-21";
+}
     checkOutDate    = (checkOutDate  != null) ? checkOutDate  : "2025-06-22";
 
     // Gợi ý: nếu bạn cần dùng lại, có thể lưu vào session ở đây
@@ -799,6 +802,8 @@
         <!-- Include Header -->
         <jsp:include page="header.jsp" />
 
+
+
         <!-- Breadcrumb Section -->
         <div class="breadcrumb-section">
             <div class="container">
@@ -859,6 +864,8 @@
                                         <input type="date" class="date-input" id="checkOutDate" name="checkOutDate" value="<%= checkOutDate %>" onchange="updateStayDuration()">
                                     </div>
                                 </div>
+
+
                                 <div id="stayDuration" style="text-align: center; margin-top: 12px; font-weight: 600; color: #059669;">
                                     1 đêm lưu trú
                                 </div>
@@ -1118,7 +1125,7 @@
                         <h3>Chi tiết giá</h3>
                         <div class="price-row">
                             <span>1 phòng, <span id="nightCount">1</span> đêm</span>
-                            <span>6.300.002 ₫</span>
+                            <span>6.300.002 ₫</span> <!-- sẽ bị ghi đè -->
                         </div>
                         <div class="price-row">
                             <span>Thuế</span>
@@ -1141,6 +1148,7 @@
                             <span>7.419.955 ₫</span>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -1158,10 +1166,8 @@
                                                 const btnText = document.getElementById('btnText');
                                                 const loadingSpinner = document.getElementById('loadingSpinner');
                                                 const successMessage = document.getElementById('successMessage');
-
                                                 // Update stay duration when dates change
                                                 updateStayDuration();
-
                                                 // Validation functions
                                                 function validateField(field, errorElement, validationFn, errorMessage) {
                                                     const isValid = validationFn(field.value);
@@ -1175,6 +1181,8 @@
                                                         return true;
                                                     }
                                                 }
+// Tính giá động
+
 
                                                 function validateEmail(email) {
                                                     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1205,23 +1213,19 @@
                                                     }
                                                     e.target.value = formattedValue;
                                                 });
-
                                                 // CVV validation
                                                 const cvvInput = document.getElementById('cvv');
                                                 cvvInput.addEventListener('input', function (e) {
                                                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
                                                 });
-
                                                 // Phone validation
                                                 const phoneInput = document.getElementById('phone');
                                                 phoneInput.addEventListener('input', function (e) {
                                                     e.target.value = e.target.value.replace(/[^0-9+\-\s]/g, '');
                                                 });
-
                                                 // Form submission
                                                 form.addEventListener('submit', function (e) {
                                                     e.preventDefault();
-
                                                     // Validate all fields
                                                     let isValid = true;
                                                     const fields = [
@@ -1240,13 +1244,11 @@
                                                         {field: cvvInput, error: document.getElementById('cvvError'),
                                                             validator: validateCVV, message: 'Mã CVV không hợp lệ'}
                                                     ];
-
                                                     fields.forEach(fieldObj => {
                                                         if (!validateField(fieldObj.field, fieldObj.error, fieldObj.validator, fieldObj.message)) {
                                                             isValid = false;
                                                         }
                                                     });
-
                                                     // Check expiry date
                                                     const expMonth = document.getElementById('expMonth').value;
                                                     const expYear = document.getElementById('expYear').value;
@@ -1262,31 +1264,36 @@
                                                         submitBtn.disabled = true;
                                                         btnText.style.display = 'none';
                                                         loadingSpinner.style.display = 'inline-block';
-
                                                         // Simulate form submission
                                                         setTimeout(() => {
                                                             // Hide loading state
                                                             submitBtn.disabled = false;
                                                             btnText.style.display = 'inline';
                                                             loadingSpinner.style.display = 'none';
-
                                                             // Show success message
                                                             successMessage.style.display = 'block';
-
                                                             // Scroll to success message
                                                             successMessage.scrollIntoView({behavior: 'smooth'});
-
                                                             console.log('Form submitted successfully');
                                                             // form.submit(); // Uncomment for real submission
                                                         }, 2000);
                                                     }
                                                 });
                                             });
-
                                             // Update stay duration and display dates
+
                                             function updateStayDuration() {
-                                                const checkInDate = document.getElementById('checkInDate').value;
-                                                const checkOutDate = document.getElementById('checkOutDate').value;
+                                                const checkInInput = document.getElementById('checkInDate');
+                                                const checkOutInput = document.getElementById('checkOutDate');
+
+                                                if (!checkInInput || !checkOutInput)
+                                                    return;
+
+                                                const checkInDate = checkInInput.value;
+                                                const checkOutDate = checkOutInput.value;
+
+                                                console.log("JS checkInDate:", checkInDate);
+                                                console.log("JS checkOutDate:", checkOutDate);
 
                                                 if (checkInDate && checkOutDate) {
                                                     const checkIn = new Date(checkInDate);
@@ -1295,16 +1302,47 @@
                                                     const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
                                                     if (dayDiff > 0) {
-                                                        document.getElementById('stayDuration').textContent = dayDiff + ' đêm lưu trú';
-                                                        document.getElementById('nightCount').textContent = dayDiff;
+                                                        // Cập nhật số đêm
+                                                        const stayDurationElem = document.getElementById('stayDuration');
+                                                        if (stayDurationElem)
+                                                            stayDurationElem.textContent = dayDiff + ' đêm lưu trú';
 
-                                                        // Update sidebar display
-                                                        document.getElementById('displayCheckIn').textContent = formatDate(checkInDate);
-                                                        document.getElementById('displayCheckOut').textContent = formatDate(checkOutDate);
+                                                        const nightCount = document.getElementById('nightCount');
+                                                        if (nightCount)
+                                                            nightCount.textContent = dayDiff;
 
-                                                        // Update hidden inputs
-                                                        document.querySelector('input[name="checkInDate"]').value = checkInDate;
-                                                        document.querySelector('input[name="checkOutDate"]').value = checkOutDate;
+                                                        // Cập nhật ngày hiển thị
+                                                        const displayIn = document.getElementById('displayCheckIn');
+                                                        const displayOut = document.getElementById('displayCheckOut');
+                                                        if (displayIn)
+                                                            displayIn.textContent = checkInDate;
+                                                        if (displayOut)
+                                                            displayOut.textContent = checkOutDate;
+
+                                                        // Cập nhật hidden input
+                                                        const hiddenCheckIn = document.querySelector('input[name="checkInDate"]');
+                                                        const hiddenCheckOut = document.querySelector('input[name="checkOutDate"]');
+                                                        if (hiddenCheckIn)
+                                                            hiddenCheckIn.value = checkInDate;
+                                                        if (hiddenCheckOut)
+                                                            hiddenCheckOut.value = checkOutDate;
+
+                                                        // === TÍNH GIÁ TIỀN ===
+                                                        const pricePerNight = parseInt("<%= pricePerNight %>");
+                                                        if (!isNaN(pricePerNight)) {
+                                                            const subtotal = pricePerNight * dayDiff;
+                                                            const tax = Math.round(subtotal * 0.1);         // 10%
+                                                            const localTax = Math.round(subtotal * 0.07);   // 7%
+                                                            const total = subtotal + tax + localTax;
+
+                                                            // Cập nhật giá vào HTML
+                                                            document.querySelector('.price-row span:nth-child(2)').textContent = subtotal.toLocaleString('vi-VN') + ' ₫';
+                                                            document.querySelectorAll('.price-row')[1].children[1].textContent = tax.toLocaleString('vi-VN') + ' ₫';
+                                                            document.querySelectorAll('.price-row')[2].children[1].textContent = localTax.toLocaleString('vi-VN') + ' ₫';
+                                                            document.querySelector('.price-total span:nth-child(2)').textContent = total.toLocaleString('vi-VN') + ' ₫';
+                                                            document.querySelector('.price-payment.now span:nth-child(2)').textContent = '0 ₫';
+                                                            document.querySelector('.price-payment:not(.now) span:nth-child(2)').textContent = total.toLocaleString('vi-VN') + ' ₫';
+                                                        }
                                                     }
                                                 }
                                             }

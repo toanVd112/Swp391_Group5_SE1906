@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Quản lý Phòng</title>
+        <title>Danh sách trạng thái phòng</title>
         <style>
             .card h2 {
                 font-size: 24px;
@@ -137,7 +137,7 @@
 
 
         <div class="card">
-            <h2>Danh sách Phòng</h2>
+            <h2>Danh sách trạng thái phòng</h2>
 
             <form class="filter" method="get" action="ListRoomsServlet">
                 <select name="roomTypeId">

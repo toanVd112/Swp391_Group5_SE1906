@@ -19,27 +19,28 @@ import model.ActivityLog;
  */
 public class ActivityStaffDAO {
 
-    public void logAction(int actorID, String actionType, String targetTable, int targetID) throws SQLException {
-        String sql = "INSERT INTO activitylogs (ActorID, ActionType, TargetTable, TargetID, ActionTime) VALUES (?, ?, ?, ?, NOW())";
+    public void logAction(int actorId, String actionType, String targetTable, int targetId) throws SQLException {
+        String sql = "INSERT INTO activitylogs (ActorId, ActionType, TargetTable, TargetId, ActionTime) VALUES (?, ?, ?, ?, NOW())";
         Connection conn = DBConnect.getConnection();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, actorID);
+            ps.setInt(1, actorId);
             ps.setString(2, actionType);
             ps.setString(3, targetTable);
-            ps.setInt(4, targetID);
+            ps.setInt(4, targetId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
+      
     }
 
     public List<ActivityLog> getAllLogs() {
         List<ActivityLog> logs = new ArrayList<>();
         String sql = """
-        SELECT l.LogID, l.ActorID, a.Username, l.ActionType, l.TargetTable, l.TargetID, l.ActionTime
+        SELECT l.LogId, l.ActorId, a.Username, l.ActionType, l.TargetTable, l.TargetId, l.ActionTime
         FROM activitylogs l
-        JOIN accounts a ON l.ActorID = a.AccountID
+        JOIN accounts a ON l.ActorId = a.AccountId
         ORDER BY l.ActionTime DESC
     """;
 
@@ -47,12 +48,12 @@ public class ActivityStaffDAO {
 
             while (rs.next()) {
                 ActivityLog log = new ActivityLog();
-                log.setLogID(rs.getInt("LogID"));
-                log.setActorID(rs.getInt("ActorID"));
+                log.setLogId(rs.getInt("LogId"));
+                log.setActorId(rs.getInt("ActorId"));
                 log.setUsername(rs.getString("Username")); // Phải có setUsername trong model
                 log.setActionType(rs.getString("ActionType"));
                 log.setTargetTable(rs.getString("TargetTable"));
-                log.setTargetID(rs.getInt("TargetID"));
+                log.setTargetId(rs.getInt("TargetId"));
                 log.setActionTime(rs.getTimestamp("ActionTime"));
                 logs.add(log);
             }
@@ -65,11 +66,11 @@ public class ActivityStaffDAO {
     }
 
     public List<ActivityLog> getFilteredLogs(String username, String actionType, String targetTable,
-            String fromDate, String toDate, String targetID) {
+            String fromDate, String toDate, String targetId) {
         List<ActivityLog> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT al.*, a.Username FROM activitylogs al "
-                + "JOIN accounts a ON al.ActorID = a.AccountID WHERE 1=1"
+                + "JOIN accounts a ON al.ActorId = a.AccountId WHERE 1=1"
         );
 
         List<Object> params = new ArrayList<>();
@@ -91,9 +92,9 @@ public class ActivityStaffDAO {
             params.add(fromDate + " 00:00:00");
             params.add(toDate + " 23:59:59");
         }
-        if (targetID != null && !targetID.isEmpty()) {
-            sql.append(" AND al.TargetID = ?");
-            params.add(Integer.parseInt(targetID));
+        if (targetId != null && !targetId.isEmpty()) {
+            sql.append(" AND al.TargetId = ?");
+            params.add(Integer.parseInt(targetId));
         }
 
         sql.append(" ORDER BY al.ActionTime DESC");
@@ -107,11 +108,11 @@ public class ActivityStaffDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ActivityLog log = new ActivityLog();
-                log.setLogID(rs.getInt("LogID"));
-                log.setActorID(rs.getInt("ActorID"));
+                log.setLogId(rs.getInt("LogId"));
+                log.setActorId(rs.getInt("ActorId"));
                 log.setActionType(rs.getString("ActionType"));
                 log.setTargetTable(rs.getString("TargetTable"));
-                log.setTargetID(rs.getInt("TargetID"));
+                log.setTargetId(rs.getInt("TargetId"));
                 log.setActionTime(rs.getTimestamp("ActionTime"));
                 log.setUsername(rs.getString("Username"));
                 list.add(log);
@@ -124,9 +125,9 @@ public class ActivityStaffDAO {
     }
 
     public int countFilteredLogs(String username, String actionType, String targetTable,
-            String fromDate, String toDate, String targetID) {
+            String fromDate, String toDate, String targetId) {
         StringBuilder sql = new StringBuilder(
-                "SELECT COUNT(*) FROM activitylogs al JOIN accounts a ON al.ActorID = a.AccountID WHERE 1=1"
+                "SELECT COUNT(*) FROM activitylogs al JOIN accounts a ON al.ActorId = a.AccountId WHERE 1=1"
         );
         List<Object> params = new ArrayList<>();
 
@@ -147,9 +148,9 @@ public class ActivityStaffDAO {
             params.add(fromDate + " 00:00:00");
             params.add(toDate + " 23:59:59");
         }
-        if (targetID != null && !targetID.isEmpty()) {
-            sql.append(" AND al.TargetID = ?");
-            params.add(Integer.parseInt(targetID));
+        if (targetId != null && !targetId.isEmpty()) {
+            sql.append(" AND al.TargetId = ?");
+            params.add(Integer.parseInt(targetId));
         }
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -168,11 +169,11 @@ public class ActivityStaffDAO {
     }
 
     public List<ActivityLog> getFilteredLogsPaginated(String username, String actionType, String targetTable,
-            String fromDate, String toDate, String targetID, int offset, int limit) {
+            String fromDate, String toDate, String targetId, int offset, int limit) {
 
         StringBuilder sql = new StringBuilder(
                 "SELECT al.*, a.Username FROM activitylogs al "
-                + "JOIN accounts a ON al.ActorID = a.AccountID WHERE 1=1"
+                + "JOIN accounts a ON al.ActorId = a.AccountId WHERE 1=1"
         );
         List<Object> params = new ArrayList<>();
 
@@ -193,9 +194,9 @@ public class ActivityStaffDAO {
             params.add(fromDate + " 00:00:00");
             params.add(toDate + " 23:59:59");
         }
-        if (targetID != null && !targetID.isEmpty()) {
-            sql.append(" AND al.TargetID = ?");
-            params.add(Integer.parseInt(targetID));
+        if (targetId != null && !targetId.isEmpty()) {
+            sql.append(" AND al.TargetId = ?");
+            params.add(Integer.parseInt(targetId));
         }
 
         sql.append(" ORDER BY al.ActionTime DESC LIMIT ? OFFSET ?");
@@ -212,11 +213,11 @@ public class ActivityStaffDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ActivityLog log = new ActivityLog();
-                log.setLogID(rs.getInt("LogID"));
-                log.setActorID(rs.getInt("ActorID"));
+                log.setLogId(rs.getInt("LogId"));
+                log.setActorId(rs.getInt("ActorId"));
                 log.setActionType(rs.getString("ActionType"));
                 log.setTargetTable(rs.getString("TargetTable"));
-                log.setTargetID(rs.getInt("TargetID"));
+                log.setTargetId(rs.getInt("TargetId"));
                 log.setActionTime(rs.getTimestamp("ActionTime"));
                 log.setUsername(rs.getString("Username"));
                 list.add(log);

@@ -146,7 +146,7 @@ public class addService extends HttpServlet {
         // Kiểm tra kết quả thêm dịch vụ
         if (success) {
             // Nếu thành công, chuyển hướng về trang danh sách dịch vụ với thông báo
-            response.sendRedirect(request.getContextPath() + "/services/list?addStatus=success");
+            response.sendRedirect(request.getContextPath() + "/serviceslist?addStatus=success");
         } else {
             // Nếu thất bại, đặt thông báo lỗi và quay lại form
             request.setAttribute("errorMessage", "Thêm dịch vụ mới thất bại. Vui lòng thử lại.");
