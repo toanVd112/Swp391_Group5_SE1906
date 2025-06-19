@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -9,20 +5,20 @@ package model;
  * @author Arcueid
  */
 public class RoomType {
-
-    private int roomtypeID;
+    private int roomTypeID;
     private String name;
     private String description;
     private double basePrice;
-    private String imageUrl;
-    private String roomDetail; // mới thêm
+    private String imageUrl; // Giữ để tương thích, nhưng ưu tiên dùng images
+    private String roomDetail;
     private int availableRooms;
+    private java.util.List<model.RoomImage> images; // Thêm danh sách ảnh
 
     public RoomType() {
     }
 
-    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int availableRooms) {
-        this.roomtypeID = roomtypeID;
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int availableRooms) {
+        this.roomTypeID = roomTypeID;
         this.name = name;
         this.description = description;
         this.basePrice = basePrice;
@@ -31,20 +27,27 @@ public class RoomType {
         this.availableRooms = availableRooms;
     }
 
-    public int getAvailableRooms() {
-        return availableRooms;
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail) {
+        this.roomTypeID = roomTypeID;
+        this.name = name;
+        this.description = description;
+        this.basePrice = basePrice;
+        this.imageUrl = imageUrl;
+        this.roomDetail = roomDetail;
     }
 
-    public void setAvailableRooms(int availableRooms) {
-        this.availableRooms = availableRooms;
+    public RoomType(int roomTypeID, String name) {
+        this.roomTypeID = roomTypeID;
+        this.name = name;
     }
 
+    // Getters and Setters
     public int getRoomTypeID() {
-        return roomtypeID;
+        return roomTypeID;
     }
 
-    public void setRoomTypeID(int roomtypeID) {
-        this.roomtypeID = roomtypeID;
+    public void setRoomTypeID(int roomTypeID) {
+        this.roomTypeID = roomTypeID;
     }
 
     public String getName() {
@@ -87,17 +90,30 @@ public class RoomType {
         this.roomDetail = roomDetail;
     }
 
-    public RoomType(int roomtypeID, String name, String description, double basePrice, String imageUrl, String roomDetail) {
-        this.roomtypeID = roomtypeID;
-        this.name = name;
-        this.description = description;
-        this.basePrice = basePrice;
-        this.imageUrl = imageUrl;
-        this.roomDetail = roomDetail;
+    public int getAvailableRooms() {
+        return availableRooms;
     }
 
-    public RoomType(int roomtypeID, String name) {
-        this.roomtypeID = roomtypeID;
-        this.name = name;
+    public void setAvailableRooms(int availableRooms) {
+        this.availableRooms = availableRooms;
+    }
+
+    public java.util.List<model.RoomImage> getImages() {
+        if (images == null) {
+            images = new java.util.ArrayList<>(); // Khởi tạo nếu null
+        }
+        return images;
+    }
+
+    public void setImages(java.util.List<model.RoomImage> images) {
+        this.images = images;
+    }
+
+    // Phương thức tiện ích để thêm ảnh
+    public void addImage(RoomImage image) {
+        if (images == null) {
+            images = new java.util.ArrayList<>();
+        }
+        images.add(image);
     }
 }
