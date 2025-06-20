@@ -14,7 +14,10 @@
         <!-- Role-based Menu -->
         <div class="menu-section">
             <div class="menu-title">${role}</div>
-
+               <a href="${pageContext.request.contextPath}/Manager/manager.jsp" class="menu-item" data-page="Dashboard">
+                    <i class="fas fa-users"></i>
+                    <span>Dashboard</span>
+                </a>
             <c:if test="${role eq 'Manager'}">
                 <a href="${pageContext.request.contextPath}/managerAccount" class="menu-item" data-page="managerAccount">
                     <i class="fas fa-users"></i>

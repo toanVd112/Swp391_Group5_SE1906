@@ -14,17 +14,7 @@
 
         <style>
             /* === MODAL WRAPPER === */
-            .modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 99999 !important;
-                overflow-y: auto;
-                animation: fadeIn 0.3s ease;
-            }
+
 
             @keyframes fadeIn {
                 from {
@@ -36,20 +26,7 @@
             }
 
             /* === MODAL CONTENT === */
-            .modal-content {
-                margin: 40px auto;
-                padding: 20px;
-                background: #fff;
-                width: 96%;
-                max-width: 1100px;
-                border-radius: 16px;
-                box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-                position: relative;
-                max-height: 85vh;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            }
+
 
             /* === CATEGORY FILTER TABS === */
             .category-tabs {
@@ -157,6 +134,80 @@
                 object-fit: cover;
                 border-radius: 8px;
                 cursor: pointer;
+            }
+            /* Thay thế CSS cũ cho modal bằng CSS này */
+
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(2px);
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-content {
+                background: #fff;
+                padding: 30px 24px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 400px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .modal-content h3 {
+                margin-bottom: 20px;
+                font-size: 20px;
+                color: #1f2937;
+                text-align: center;
+            }
+
+            .modal-content label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 6px;
+                color: #374151;
+            }
+
+            .modal-content input[type="date"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 16px;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 14px;
+                font-family: inherit;
+
+                /* Force dd/mm/yyyy format trên một số browser */
+                -webkit-locale: "vi-VN";
+                locale: "vi-VN";
+            }
+
+            /* Styling cho Webkit browsers (Chrome, Safari) */
+            More actions
+            .modal-content button {
+                padding: 10px 16px;
+                margin-right: 8px;
+                font-size: 14px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+            .modal-content button[type="submit"] {
+                background-color: #2563eb;
+                color: white;
+            }
+
+            .modal-content button[type="button"] {
+                background-color: #e5e7eb;
+                color: #1f2937;
             }
         </style>
 
@@ -916,13 +967,15 @@
                     <input type="hidden" name="roomID" value="<%= safeRoomID %>">
                     <input type="hidden" name="roomTypeName" value="<%= safeRoomType %>">
                     <input type="hidden" name="pricePerNight" value="<%= safePrice %>">
-                      <input type="hidden" name="roomDetail" value="<%= roomDetail %>">
+                    <input type="hidden" name="roomDetail" value="<%= roomDetail %>">
 
                     <label for="checkInDate">Ngày nhận phòng:</label>
-                    <input type="date" name="checkInDate" id="checkInDate" required>
+                    <input type="date" name="checkInDate" id="checkInDate" required 
+                           lang="vi" locale="vi-VN">
 
                     <label for="checkOutDate">Ngày trả phòng:</label>
-                    <input type="date" name="checkOutDate" id="checkOutDate" required>
+                    <input type="date" name="checkOutDate" id="checkOutDate" required 
+                           lang="vi" locale="vi-VN">
 
                     <div style="text-align: right;">
                         <button type="submit">Tiếp tục đặt</button>
@@ -935,83 +988,63 @@
 
 
     </body>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
-            
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: #fff;
-            padding: 30px 24px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            color: #1f2937;
-            text-align: center;
-        }
-
-        .modal-content label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #374151;
-        }
-
-        .modal-content input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .modal-content button {
-            padding: 10px 16px;
-            margin-right: 8px;
-            font-size: 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .modal-content button[type="submit"] {
-            background-color: #2563eb;
-            color: white;
-        }
-
-        .modal-content button[type="button"] {
-            background-color: #e5e7eb;
-            color: #1f2937;
-        }
-    </style>
 
 
     <script>
+        // Thêm script này vào cuối file JSP, thay thế script cũ
+
         function openBookingModal() {
             document.getElementById("bookingModal").style.display = "flex";
+
+            // Set ngày mặc định
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            // Format: yyyy-mm-dd cho value của input (chuẩn HTML5)
+            document.getElementById('checkInDate').value = today.toISOString().split('T')[0];
+            document.getElementById('checkOutDate').value = tomorrow.toISOString().split('T')[0];
         }
+
         function closeBookingModal() {
             document.getElementById("bookingModal").style.display = "none";
         }
+
+// Validation trước khi submit
+        function validateBookingDates() {
+            const checkInInput = document.getElementById('checkInDate');
+            const checkOutInput = document.getElementById('checkOutDate');
+
+            const checkInDate = new Date(checkInInput.value);
+            const checkOutDate = new Date(checkOutInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (checkInDate < today) {
+                alert('Ngày nhận phòng không thể là ngày trong quá khứ');
+                return false;
+            }
+
+            if (checkOutDate <= checkInDate) {
+                alert('Ngày trả phòng phải sau ngày nhận phòng');
+                return false;
+            }
+
+            return true;
+        }
+
+// Thêm event listener khi DOM load
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('#bookingModal form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!validateBookingDates()) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+
         window.onclick = function (event) {
             const modal = document.getElementById("bookingModal");
             if (event.target === modal)

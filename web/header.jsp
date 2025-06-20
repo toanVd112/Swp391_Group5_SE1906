@@ -43,7 +43,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
 
-                    <a href="Home"><img src="assets/images/logo.png" alt=""  class="logo"></a>
+                    <a href="${pageContext.request.contextPath}/Home"><img src="${pageContext.request.contextPath}/assets/images/logo.png" alt=""  class="logo"></a>
                 </div>
 
                 <nav class="d-none d-md-flex align-items-center gap-4">
