@@ -1,14 +1,14 @@
 package controller.tuan;
 
-import DAO.DBConnect;
 import dao.ActivityLogDAO;
 import model.ActivityLog;
+import DAO.DBConnect;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
 
 @WebServlet(name = "ViewLogDetailServlet", urlPatterns = {"/ViewLogDetailServlet"})
 public class ViewLogDetailServlet extends HttpServlet {
@@ -22,31 +22,34 @@ public class ViewLogDetailServlet extends HttpServlet {
             return;
         }
 
-        String idParam = request.getParameter("id");
+        String csrfToken = request.getParameter("csrfToken");
+        if (csrfToken == null || !csrfToken.equals(session.getAttribute("csrfToken"))) {
+            response.sendError(403, "Invalid CSRF token.");
+            return;
+        }
+
+        String logIdStr = request.getParameter("id");
+        int logId;
+        try {
+            logId = Integer.parseInt(logIdStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid log ID.");
+            request.getRequestDispatcher("/Manager/logDetail.jsp").forward(request, response);
+            return;
+        }
+
         try (Connection conn = DBConnect.getConnection()) {
-            String sql = "SELECT al.*, acc.Username, acc.Role FROM activitylogs al " +
-                         "JOIN accounts acc ON al.ActorID = acc.AccountID WHERE al.LogID = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(idParam));
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                ActivityLog log = new ActivityLog();
-                log.setLogId(rs.getInt("LogID"));
-                log.setUsername(rs.getString("Username"));
-                log.setRole(rs.getString("Role"));
-                log.setActionType(rs.getString("ActionType"));
-                log.setTargetTable(rs.getString("TargetTable"));
-                log.setTargetId(rs.getInt("TargetID"));
-                log.setDescription(rs.getString("Description"));
-                log.setActionTime(rs.getTimestamp("ActionTime"));
-                request.setAttribute("log", log);
-                request.getRequestDispatcher("Manager/viewLogDetail.jsp").forward(request, response);
+            ActivityLogDAO logDAO = new ActivityLogDAO(conn);
+            ActivityLog log = logDAO.getLogById(logId);
+            if (log == null) {
+                request.setAttribute("errorMessage", "Log not found.");
             } else {
-                response.sendError(404, "Log not found");
+                request.setAttribute("log", log);
             }
+            request.getRequestDispatcher("/Manager/logDetail.jsp").forward(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Internal Server Error");
+            request.setAttribute("errorMessage", "Error loading log details: " + e.getMessage());
+            request.getRequestDispatcher("/Manager/logDetail.jsp").forward(request, response);
         }
     }
 }

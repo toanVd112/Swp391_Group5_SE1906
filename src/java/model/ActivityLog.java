@@ -9,11 +9,11 @@ public class ActivityLog {
     private String targetTable;
     private int targetId;
     private String description;
+    private String ipAddress;
     private Timestamp actionTime;
     private String username;
     private String role;
 
-    // Getters and Setters
     public int getLogId() { return logId; }
     public void setLogId(int logId) { this.logId = logId; }
 
@@ -31,6 +31,9 @@ public class ActivityLog {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getIpAddress() { return ipAddress; }
+    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
     public Timestamp getActionTime() { return actionTime; }
     public void setActionTime(Timestamp actionTime) { this.actionTime = actionTime; }
