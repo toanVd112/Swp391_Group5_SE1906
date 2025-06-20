@@ -3,6 +3,7 @@ package DAO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.Amenity;
 import model.RoomImage;
 import model.RoomType;
 
@@ -204,4 +205,43 @@ public class RoomTypeDAO {
         }
         return count;
     }
+
+    //tien ich
+    public List<Amenity> getAmenitiesByRoomTypeId(int roomTypeId) throws SQLException {
+        List<Amenity> list = new ArrayList<>();
+        String sql = "SELECT RoomAmenityID, AmenityName, Icon FROM roomamenities WHERE RoomTypeID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Amenity a = new Amenity();
+                a.setAmenityId(rs.getInt("RoomAmenityID"));
+                a.setAmenityName(rs.getString("AmenityName"));
+                a.setIcon(rs.getString("Icon"));
+                list.add(a);
+            }
+        }
+        return list;
+    }
+
+       public void insertAmenity(Amenity amenity) throws SQLException {
+        String sql = "INSERT INTO roomamenities (RoomTypeID, AmenityName, Icon) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amenity.getRoomType().getRoomTypeID());
+            ps.setString(2, amenity.getAmenityName());
+            ps.setString(3, amenity.getIcon());
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteAmenityById(int amenityId) {
+        String sql = "DELETE FROM roomamenities WHERE RoomAmenityID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amenityId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

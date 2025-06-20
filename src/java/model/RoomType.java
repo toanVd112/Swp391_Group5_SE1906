@@ -5,6 +5,7 @@ package model;
  * @author Arcueid
  */
 public class RoomType {
+
     private int roomTypeID;
     private String name;
     private String description;
@@ -115,5 +116,25 @@ public class RoomType {
             images = new java.util.ArrayList<>();
         }
         images.add(image);
+    }
+
+    private java.util.List<model.Amenity> amenities;
+
+    public java.util.List<model.Amenity> getAmenities() {
+        if (amenities == null) {
+            amenities = new java.util.ArrayList<>();
+        }
+        return amenities;
+    }
+
+    public void setAmenities(java.util.List<model.Amenity> amenities) {
+        this.amenities = amenities;
+    }
+
+    public void addAmenity(Amenity amenity) {
+        if (amenities == null) {
+            amenities = new java.util.ArrayList<>();
+        }
+        amenities.add(amenity);
     }
 }

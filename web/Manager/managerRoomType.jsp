@@ -1,5 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -28,20 +29,19 @@
                 border-radius: 5px;
                 background: #f0f0f0;
             }
+            .image-url-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
             .image-url-row input {
                 flex: 1;
+                max-width: 80%;
             }
             .image-url-row img {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                margin-left: 10px;
-                border-radius: 5px;
-            }
-            .image-preview {
+                height: 120px;
+                width: auto;
                 max-width: 200px;
-                margin-top: 10px;
-                border-radius: 5px;
             }
         </style>
     </head>
@@ -87,6 +87,35 @@
                             <div class="form-group">
                                 <label for="roomDetail">Chi tiết loại phòng</label>
                                 <textarea id="roomDetail" name="roomDetail" rows="4" class="form-control">${roomType.roomDetail}</textarea>
+                            </div>
+
+                            <!-- Tiện ích -->
+                            <div class="form-group mt-4">
+                                <label>Tiện ích (Amenity)</label>
+                                <div id="amenity-list">
+                                    <c:forEach var="a" items="${roomType.amenities}">
+                                        <div class="d-flex align-items-center mb-2 amenity-item" data-id="${a.amenityId}">
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(a.icon, 'http')}">
+                                                    <img src="${a.icon}" alt="icon" style="width: 24px; height: 24px; margin-right: 8px;">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="${a.icon}" style="font-size: 24px; margin-right: 8px;"></i>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <span>${a.amenityName}</span>
+                                            <button type="button" class="btn btn-sm btn-danger ml-2 delete-amenity" data-id="${a.amenityId}">×</button>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+
+                                <!-- Nút + khung nhập tiện ích mới -->
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-amenity-btn">+ Thêm tiện ích</button>
+                                <div id="amenity-form" class="mt-2" style="display: none;">
+                                    <input type="text" id="amenityName" class="form-control mb-2" placeholder="Tên tiện ích" />
+                                    <input type="text" id="amenityIcon" class="form-control mb-2" placeholder="URL icon (VD: https://...png)" />
+                                    <button type="button" class="btn btn-success btn-sm" id="save-amenity">Lưu tiện ích</button>
+                                </div>
                             </div>
                         </div>
 
@@ -200,6 +229,59 @@
                     })
                             .then(res => res.ok ? row.remove() : alert('Xóa ảnh thất bại'))
                             .catch(() => alert('Không thể kết nối server để xóa ảnh'));
+                });
+            });
+
+            document.getElementById('add-amenity-btn').addEventListener('click', () => {
+                document.getElementById('amenity-form').style.display = 'block';
+            });
+
+            document.getElementById('save-amenity').addEventListener('click', () => {
+                const name = document.getElementById('amenityName').value.trim();
+                const icon = document.getElementById('amenityIcon').value.trim();
+                const roomTypeID = document.querySelector('input[name="roomTypeID"]').value;
+
+                if (!name || !icon) {
+                    alert('Vui lòng nhập tên và icon');
+                    return;
+                }
+
+                const formData = new URLSearchParams();
+                formData.append('amenityAction', 'add');
+                formData.append('amenityName', name);
+                formData.append('icon', icon);
+                formData.append('roomTypeID', roomTypeID);
+
+                fetch('ManageRoomType', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: formData.toString()
+                })
+                        .then(res => res.text())
+                        .then(msg => {
+                            alert(msg);
+                            location.reload();
+                        });
+            });
+
+            document.querySelectorAll('.delete-amenity').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const amenityId = btn.dataset.id;
+
+                    const formData = new URLSearchParams();
+                    formData.append('amenityAction', 'delete');
+                    formData.append('amenityId', amenityId);
+
+                    fetch('ManageRoomType', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: formData.toString()
+                    })
+                            .then(res => res.text())
+                            .then(msg => {
+                                alert(msg);
+                                btn.closest('.amenity-item').remove();
+                            });
                 });
             });
         </script>
