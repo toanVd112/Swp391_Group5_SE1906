@@ -31,133 +31,148 @@
 
 <%-- Khai báo HTML5 và ngôn ngữ trang là tiếng Anh --%>
 <html>
-<head>
-    <title>Add Service</title>
-    
-    <%-- CSS tùy chỉnh để tạo giao diện đẹp và responsive --%>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f5f6fa;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-        
-        h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0,123,255,0.3);
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        input[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-        
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #007bff;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        
-        .back-link:hover {
-            text-decoration: underline;
-        }
-        
-        /* Định dạng thông báo lỗi */
-        .error-message {
-            color: #dc3545; /* Màu đỏ */
-            background-color: #f8d7da; /* Nền hồng nhạt */
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        /* Định dạng input lỗi */
-        .input-error {
-            border-color: #dc3545;
-        }
-        
-        span {
-            color: red;
-        }
-        
-        @media (max-width: 600px) {
+    <head>
+        <title>Add Service</title>
+
+        <%-- CSS tùy chỉnh để tạo giao diện đẹp và responsive --%>
+        <style>
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background-color: #f5f6fa;
+                margin: 0;
+                /*padding: 20px;*/
+                display: flex;
+                /*justify-content: center;*/
+                min-height: 100vh;
+            }
+
             .container {
-                padding: 20px;
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 800px;
             }
+
             h2 {
-                font-size: 20px;
+                color: #333;
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 24px;
             }
-        }
-    </style>
-    
+
+            .form-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .form-column {
+                flex: 1;
+                min-width: 280px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #555;
+                font-weight: 500;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            textarea,
+            select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 16px;
+                box-sizing: border-box;
+                transition: border-color 0.3s;
+            }
+
+            input[type="text"]:focus,
+            input[type="number"]:focus,
+            textarea:focus,
+            select:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0,123,255,0.3);
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+
+            input[type="submit"] {
+                background-color: #007bff;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                width: 100%;
+                transition: background-color 0.3s;
+            }
+
+            input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+
+            .back-link {
+                display: block;
+                text-align: center;
+                margin-top: 20px;
+                color: #007bff;
+                text-decoration: none;
+                font-size: 16px;
+            }
+
+            .back-link:hover {
+                text-decoration: underline;
+            }
+
+            /* Định dạng thông báo lỗi */
+            .error-message {
+                color: #dc3545; /* Màu đỏ */
+                background-color: #f8d7da; /* Nền hồng nhạt */
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                font-size: 14px;
+            }
+
+            /* Định dạng input lỗi */
+            .input-error {
+                border-color: #dc3545;
+            }
+
+            @media (max-width: 600px) {
+                .container {
+                    padding: 20px;
+                }
+                h2 {
+                    font-size: 20px;
+                }
+                .form-column {
+                    min-width: 100%;
+                }
+            }
+
+            .search-box input {
+                padding-left: 2.5rem;
+                width: 250px;
+            }
+        </style>
+
         <%-- JavaScript để validate phía client --%>
         <script>
             async function isDupeServiceName(input) {
@@ -261,70 +276,68 @@
                 }
             }
         </script>
-</head>
-<body>
-    <div class="container">
-        <h2>Add New Service</h2>
-        
-        <%-- Hiển thị thông báo lỗi nếu có --%>
-        <c:if test="${not empty errorMessage}">
-            <div class="error-message">${errorMessage}</div>
-        </c:if>
-        
-        <%-- Form thêm dịch vụ --%>
-        <form action="${pageContext.request.contextPath}/addService" method="post" onsubmit="event.preventDefault(); validateForm(this);">
-            <div class="form-group">
-                <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
-                <input type="text" id="name" name="name" value="${service.name}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">Mô tả: <span title="Tối đa 1000 ký tự"></span></label>
-                <textarea id="description" name="description" rows="4" maxlength="1000">${service.description}</textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
-                <input 
-                    type="number" 
-                    id="price" 
-                    name="price" 
-                    step="1" 
-                    min="0" 
-                    max="1000000000" 
-                    value="" 
-                    required />
-            </div>
-            
-            <div class="form-group">
-                <label for="status">Trạng thái:</label>
-                <select id="status" name="status">
-                    <option value="1" ${service.status == '1' ? 'selected' : ''}>Hoạt động</option>
-                    <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt động</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="serviceType">Loại dịch vụ: <span title="Chọn một loại từ danh sách">*</span></label>
-                <select id="serviceType" name="serviceType" required>
-                    <option value="">Chọn loại</option>
-                    <c:forEach var="type" items="${serviceTypes}">
-                        <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif), tối đa 255 ký tự"></span></label>
-                <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}"
-                       maxlength="255" pattern="^(https?://|/).+\.(jpg|jpeg|png|gif)$"
-                       title="URL hợp lệ với định dạng jpg, jpeg, png, gif">
-            </div>
-            
-            <input type="submit" value="Lưu">
-        </form>
-        
-        <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Quay lại danh sách</a>
-    </div>
-</body>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Add New Service</h2>
+
+            <%-- Hiển thị thông báo lỗi nếu có --%>
+            <c:if test="${not empty errorMessage}">
+                <div class="error-message">${errorMessage}</div>
+            </c:if>
+
+            <%-- Form thêm dịch vụ --%>
+            <form action="${pageContext.request.contextPath}/addService" method="post" onsubmit="event.preventDefault(); validateForm(this);">
+                <div class="form-container">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
+                            <input type="text" id="name" name="name" value="${service.name}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
+                            <input type="number" id="price" name="price" step="1" min="0" max="1000000000" value="" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serviceType">Loại dịch vụ: <span title="Chọn một loại từ danh sách">*</span></label>
+                            <select id="serviceType" name="serviceType" required>
+                                <option value="">Chọn loại</option>
+                                <c:forEach var="type" items="${serviceTypes}">
+                                    <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="description">Mô tả: <span title="Tối đa 1000 ký tự"></span></label>
+                            <textarea id="description" name="description" rows="4" maxlength="1000">${service.description}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Trạng thái:</label>
+                            <select id="status" name="status">
+                                <option value="1" ${service.status == '1' ? 'selected' : ''}>Hoạt động</option>
+                                <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt động</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif), tối đa 255 ký tự"></span></label>
+                            <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}"
+                                   maxlength="255" pattern="^(https?://|/).+\.(jpg|jpeg|png|gif)$"
+                                   title="URL hợp lệ với định dạng jpg, jpeg, png, gif">
+                        </div>
+                    </div>
+                </div>
+
+                <input type="submit" value="Save">
+            </form>
+
+            <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Back to Service List</a>
+        </div>
+    </body>
 </html>

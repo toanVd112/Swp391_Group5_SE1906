@@ -45,7 +45,7 @@ public class addService extends HttpServlet {
 
         // Chuyển tiếp (forward) yêu cầu tới file addService.jsp để hiển thị form thêm dịch vụ
         // Đường dẫn "../Manager/addService.jsp" giả sử JSP nằm trong thư mục Manager
-        request.getRequestDispatcher("../Manager/addService.jsp").forward(request, response);
+        request.getRequestDispatcher("Manager/manager.jsp?page=addService.jsp").forward(request, response);
     }
 
     /**
