@@ -8,13 +8,26 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
     <%@ page contentType="text/html" pageEncoding="UTF-8"%>
-    <%@ page import="model.Room, model.RoomType" %>
 
     <head>
-
+        <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
         <style>
+            body, h1, h2, h3, h4, h5, h6, p, ul, li, .ttr-post-title h2 {
+                font-family: 'Roboto', sans-serif !important;
+            }
             /* === MODAL WRAPPER === */
-
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 99999 !important;
+                overflow-y: auto;
+                animation: fadeIn 0.3s ease;
+            }
 
             @keyframes fadeIn {
                 from {
@@ -25,39 +38,96 @@
                 }
             }
 
+
             /* === MODAL CONTENT === */
+            .modal-content {
+                margin: 40px auto;
+                padding: 20px;
+                background: #fff;
+                width: 100%;
+                max-width: 1280px;
+                border-radius: 16px;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+                position: relative;
+                max-height: 92vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                border-radius: 20px !important;
+            }
 
 
-            /* === CATEGORY FILTER TABS === */
+            .close-btn {
+                position: absolute;
+                top: 16px;
+                left: 16px;
+                background-color: transparent;
+                padding: 6px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                cursor: pointer;
+                z-index: 999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.25s ease;
+            }
+
+
+            .close-btn i {
+                font-size: 16px;
+                color: #5a3d91;
+                transition: transform 0.2s ease, color 0.2s ease;
+            }
+
+            .close-btn:hover {
+                background: linear-gradient(135deg, #d3bfff, #c9aeff);
+            }
+
+            .close-btn:hover i {
+                transform: scale(1.15);
+                color: #432d7b;
+            }
+
+            /* === CATEGORY FILTER TABS (nút lọc ảnh) === */
             .category-tabs {
                 flex-shrink: 0;
                 position: sticky;
                 top: 0;
                 z-index: 10;
                 background: #fff;
-                padding-bottom: 10px;
+                padding: 6px 10px;
                 margin-bottom: 10px;
                 border-bottom: 1px solid #dee2e6;
                 overflow-x: auto;
                 display: flex;
-                gap: 10px;
+                gap: 8px;
+                padding-left: 56px;
             }
 
             .category-tabs button {
-                padding: 10px 18px;
+                padding: 6px 14px;
                 white-space: nowrap;
                 border: none;
-                border-radius: 30px;
-                background: #e9ecef;
-                font-size: 14px;
+                border-radius: 20px;
+                background: transparent; /* <-- trong suốt */
+                font-size: 13px;
+                color: #666;
                 cursor: pointer;
                 flex-shrink: 0;
+                transition: all 0.25s;
+                border: 1px solid #ccc;
             }
 
-            .category-tabs button.active,
+            .category-tabs button.active {
+                background: linear-gradient(135deg, #cdb6ff, #d4bfff);
+                color: #4c2a84;
+                font-weight: bold;
+            }
+
             .category-tabs button:hover {
-                background: #007bff;
-                color: #fff;
+                background: #e4d4fb;
+                color: #5a3d91;
             }
 
             /* === SCROLLABLE IMAGE AREA === */
@@ -73,24 +143,26 @@
             }
 
             .gallery-item {
-                background: #f8f9fa;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                background: none; /* bỏ viền và nền trắng */
+                box-shadow: none; /* bỏ đổ bóng */
+                overflow: visible;
             }
 
             .gallery-item img {
                 width: 100%;
+                max-height: 100%;
                 height: auto;
                 object-fit: contain;
                 display: block;
-                background-color: #f5f5f5;
+                margin: 0 auto;
             }
 
             .image-caption {
-                padding: 12px;
-                font-size: 14px;
+                font-size: 16px;
                 color: #333;
+                text-align: left;
+                padding: 0;
+                margin: 0;
             }
 
             @media (max-width: 768px) {
@@ -135,80 +207,6 @@
                 border-radius: 8px;
                 cursor: pointer;
             }
-            /* Thay thế CSS cũ cho modal bằng CSS này */
-
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 9999;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(2px);
-                align-items: center;
-                justify-content: center;
-            }
-
-            .modal-content {
-                background: #fff;
-                padding: 30px 24px;
-                border-radius: 12px;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-                width: 90%;
-                max-width: 400px;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .modal-content h3 {
-                margin-bottom: 20px;
-                font-size: 20px;
-                color: #1f2937;
-                text-align: center;
-            }
-
-            .modal-content label {
-                display: block;
-                font-weight: 600;
-                margin-bottom: 6px;
-                color: #374151;
-            }
-
-            .modal-content input[type="date"] {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 16px;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                font-size: 14px;
-                font-family: inherit;
-
-                /* Force dd/mm/yyyy format trên một số browser */
-                -webkit-locale: "vi-VN";
-                locale: "vi-VN";
-            }
-
-            /* Styling cho Webkit browsers (Chrome, Safari) */
-            More actions
-            .modal-content button {
-                padding: 10px 16px;
-                margin-right: 8px;
-                font-size: 14px;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-            }
-
-            .modal-content button[type="submit"] {
-                background-color: #2563eb;
-                color: white;
-            }
-
-            .modal-content button[type="button"] {
-                background-color: #e5e7eb;
-                color: #1f2937;
-            }
         </style>
 
         <script>
@@ -239,12 +237,18 @@
                 modal.style.display = "block";
                 modal.setAttribute('aria-hidden', 'false');
 
-                // Lọc ảnh theo danh mục nếu có
-                const defaultBtn = document.querySelector(`.category-tabs button[onclick*="${category}"]`)
-                        || document.querySelector('.category-tabs .tab-btn');
-                filterCategory(category, defaultBtn);
+                // ✅ Tìm đúng nút theo data-category
+                let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
 
-                // Đăng ký sự kiện
+                // Nếu không có, fallback về 'all'
+                if (!button) {
+                    button = document.querySelector(`.category-tabs button[data-category="all"]`);
+                    category = "all";
+                }
+
+                filterCategory(category, button);
+
+                // Đăng ký sự kiện ngoài và phím ESC
                 setTimeout(() => {
                     document.addEventListener('click', handleClickOutside);
                 }, 0);
@@ -521,8 +525,7 @@
                                             <h4 class="price">$${room.roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
-                                            <button class="btn radius-xl text-uppercase" onclick="openBookingModal()">Đặt ngay</button>
-
+                                            <a href="#" class="btn radius-xl text-uppercase">BOOK NOW</a>
                                         </div>
                                         <div class="teacher-bx">
                                             <div class="teacher-info">
@@ -584,17 +587,12 @@
                                         <h4>Overview</h4>
                                         <div class="row">
                                             <div class="col-md-12 col-lg-4">
-                                                <ul class="course-features">    
-                                                    <li><i class="ri-hotel-bed-line"></i> 2 giường đơn</li>
-                                                    <li><i class="ri-windy-line"></i> Máy điều hòa</li>
-                                                    <li><i class="ri-building-line"></i> Ban công</li>
-                                                    <li><i class="ph ph-shower"></i> Phòng tắm riêng</li>
-                                                    <li><i class="ri-custom-size"></i> 19 mét vuông</li>
-                                                    <li><i class="ri-restaurant-line"></i> ban cong</li>
-                                                    <li><i class="ri-rss-line"></i> Wifi miễn phí</li>
-                                                    <li><i class="ri-customer-service-2-line"></i> phuc vu day du</li>
-
-
+                                                <ul class="course-features">
+                                                    <c:forEach var="a" items="${amenities}">
+                                                        <li>
+                                                            <i class="${a.icon}"></i> ${a.amenityName}
+                                                        </li>
+                                                    </c:forEach>
                                                 </ul>
                                             </div>
                                             <div class="col-md-12 col-lg-8">
@@ -630,59 +628,59 @@
                                     </div>
 
                                     <!-- Tiêu đề gallery -->
-                                    <h2 class="photo-gallery-title" style="margin: 20px 0 16px; font-size: 24px;">Thư viện ảnh phòng</h2>
+                                    <div class="photo-gallery-title" id="pictures">
+                                        <h4>Pictures</h4>
 
-                                    <!-- Phần hiển thị ảnh -->
-                                    <div class="image-gallery-row">
-                                        <!-- Ảnh chính bên trái -->
-                                        <div class="main-photo-box">
-                                            <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
-                                                 alt="Ảnh chính"
-                                                 onclick="openGallery('all')"
-                                                 loading="lazy"
-                                                 class="gallery-clickable"
-                                                 aria-label="Mở tất cả ảnh"
-                                                 role="button" />
-                                        </div>
+                                        <!-- Phần hiển thị ảnh chính và ảnh phụ -->
+                                        <div class="image-gallery-row">
+                                            <!-- Ảnh chính -->
+                                            <div class="main-photo-box">
+                                                <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
+                                                     alt="Ảnh chính"
+                                                     onclick="openGallery('all')"
+                                                     loading="lazy" />
+                                            </div>
 
-                                        <!-- Nhóm 4 ảnh phụ bên phải -->
-                                        <div class="thumb-2x2-box">
-                                            <c:forEach var="img" items="${images}" begin="1" end="4">
-                                                <img src="${pageContext.request.contextPath}/${img.imageUrl}"
-                                                     alt="Ảnh phụ ${img.category}"
-                                                     onclick="openGallery('${fn:toLowerCase(img.category)}')"
-                                                     loading="lazy"
-                                                     class="gallery-clickable"
-                                                     aria-label="Mở ảnh theo danh mục ${img.category}"
-                                                     role="button" />
-                                            </c:forEach>
+                                            <!-- Nhóm 4 ảnh phụ -->
+                                            <div class="thumb-2x2-box">
+                                                <c:forEach var="img" items="${images}" begin="1" end="4">
+                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}"
+                                                         alt="Ảnh phụ ${img.category}"
+                                                         onclick="openGallery('${fn:toLowerCase(img.category)}')"
+                                                         loading="lazy" />
+                                                </c:forEach>
+                                            </div>
                                         </div>
                                     </div>
 
-
-                                    <div id="galleryModal" class="modal" role="dialog" aria-hidden="true">
+                                    <!-- Modal gallery popup -->
+                                    <div id="galleryModal" class="modal">
                                         <div class="modal-content">
-                                            <span class="close-btn" onclick="closeGallery()" role="button" aria-label="Đóng thư viện ảnh">&times;</span>
+                                            <span class="close-btn" onclick="closeGallery()">
+                                                <i class="ti-control-backward"></i>
+                                            </span>
 
-                                            <!-- Thanh danh mục cố định -->
+                                            <!-- Tabs danh mục -->
                                             <div class="category-tabs">
-                                                <button class="tab-btn active" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
-                                                <c:set var="usedCats" value="" />
+                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+
                                                 <c:forEach var="img" items="${images}">
                                                     <c:if test="${not fn:contains(usedCats, img.category)}">
-                                                        <button class="tab-btn" onclick="filterCategory('${fn:toLowerCase(img.category)}', this)" aria-pressed="false">${img.category}</button>
+                                                        <button class="tab-btn" data-category="${fn:toLowerCase(img.category)}"
+                                                                onclick="filterCategory('${fn:toLowerCase(img.category)}', this)"
+                                                                aria-pressed="false">${img.category}</button>
                                                         <c:set var="usedCats" value="${usedCats}${img.category}," />
                                                     </c:if>
                                                 </c:forEach>
                                             </div>
 
-                                            <!-- Chỉ phần này được scroll -->
+                                            <!-- Vùng ảnh -->
                                             <div class="gallery-scroll" id="galleryImages">
                                                 <div class="gallery-grid">
                                                     <c:forEach var="img" items="${images}">
-                                                        <div class="gallery-item ${fn:toLowerCase(img.category)}" style="display: block;" data-category="${fn:toLowerCase(img.category)}">
+                                                        <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
                                                             <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
-                                                            <p class="image-caption">Ảnh: ${img.category}</p>
+                                                            <p class="image-caption">${img.category}</p>
                                                         </div>
                                                     </c:forEach>
                                                 </div>
@@ -946,110 +944,7 @@
         <script src="assets/js/contact.js"></script>
         <script src="assets/vendors/switcher/switcher.js"></script>
 
-        <!-- 🧾 Popup Booking Modal -->
-
-        <%
-            Room room = (Room) request.getAttribute("room");
-            RoomType roomType = (room != null) ? room.getRoomType() : null;
-
-            String safeRoomID = (room != null) ? String.valueOf(room.getRoomID()) : "";
-            String safeRoomType = (roomType != null) ? roomType.getName() : "";
-            String safePrice = (roomType != null) ? String.valueOf(roomType.getBasePrice()) : "";
-            String roomDetail = (roomType != null) ? String.valueOf(roomType.getRoomDetail()) : "";
-        %>
-
-
-        <div id="bookingModal" class="modal">
-            <div class="modal-content">
-                <form method="get" action="booking.jsp">
-                    <h3>Chọn ngày đặt phòng</h3>
-
-                    <input type="hidden" name="roomID" value="<%= safeRoomID %>">
-                    <input type="hidden" name="roomTypeName" value="<%= safeRoomType %>">
-                    <input type="hidden" name="pricePerNight" value="<%= safePrice %>">
-                    <input type="hidden" name="roomDetail" value="<%= roomDetail %>">
-
-                    <label for="checkInDate">Ngày nhận phòng:</label>
-                    <input type="date" name="checkInDate" id="checkInDate" required 
-                           lang="vi" locale="vi-VN">
-
-                    <label for="checkOutDate">Ngày trả phòng:</label>
-                    <input type="date" name="checkOutDate" id="checkOutDate" required 
-                           lang="vi" locale="vi-VN">
-
-                    <div style="text-align: right;">
-                        <button type="submit">Tiếp tục đặt</button>
-                        <button type="button" onclick="closeBookingModal()">Huỷ</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-
 
     </body>
-
-
-    <script>
-        // Thêm script này vào cuối file JSP, thay thế script cũ
-
-        function openBookingModal() {
-            document.getElementById("bookingModal").style.display = "flex";
-
-            // Set ngày mặc định
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            // Format: yyyy-mm-dd cho value của input (chuẩn HTML5)
-            document.getElementById('checkInDate').value = today.toISOString().split('T')[0];
-            document.getElementById('checkOutDate').value = tomorrow.toISOString().split('T')[0];
-        }
-
-        function closeBookingModal() {
-            document.getElementById("bookingModal").style.display = "none";
-        }
-
-// Validation trước khi submit
-        function validateBookingDates() {
-            const checkInInput = document.getElementById('checkInDate');
-            const checkOutInput = document.getElementById('checkOutDate');
-
-            const checkInDate = new Date(checkInInput.value);
-            const checkOutDate = new Date(checkOutInput.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (checkInDate < today) {
-                alert('Ngày nhận phòng không thể là ngày trong quá khứ');
-                return false;
-            }
-
-            if (checkOutDate <= checkInDate) {
-                alert('Ngày trả phòng phải sau ngày nhận phòng');
-                return false;
-            }
-
-            return true;
-        }
-
-// Thêm event listener khi DOM load
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('#bookingModal form');
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    if (!validateBookingDates()) {
-                        e.preventDefault();
-                    }
-                });
-            }
-        });
-
-        window.onclick = function (event) {
-            const modal = document.getElementById("bookingModal");
-            if (event.target === modal)
-                closeBookingModal();
-        }
-    </script>
 
 </html>
