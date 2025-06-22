@@ -15,6 +15,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Account;
 import model.Room;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.lang.reflect.Type;
+import model.Room;
+import model.SelectedRoom;
 
 /**
  *
@@ -61,35 +67,55 @@ public class MyRoomsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.getSession().setAttribute("isGuest", false);
 
         Account user = (Account) request.getSession().getAttribute("user");
 
-        if (user == null) {
-            request.getRequestDispatcher("myrooms_local.jsp").forward(request, response);
-            return;
-        }
-        CartRoomDAO o = new CartRoomDAO();
-        List<Integer> roomIds = o.getRoomIdsByAccount(user.getAccountID());
-        List<Room> selectedRooms = o.getRoomsByIds(roomIds);
-        double total = selectedRooms.stream().mapToDouble(r -> r.getRoomType().getBasePrice()).sum();
+        if (user != null) {
+            // 👉 Đã login: lấy phòng từ DB
+            CartRoomDAO dao = new CartRoomDAO();
+            List<Integer> roomIds = dao.getRoomIdsByAccount(user.getAccountID());
+            List<Room> selectedRooms = dao.getRoomsByIds(roomIds);
+            double total = selectedRooms.stream().mapToDouble(r -> r.getRoomType().getBasePrice()).sum();
 
-        request.setAttribute("selectedRooms", selectedRooms);
-        request.setAttribute("totalPrice", total);
-        request.getRequestDispatcher("myrooms_db.jsp").forward(request, response);
+            request.setAttribute("selectedRooms", selectedRooms);
+            request.setAttribute("totalPrice", total);
+            request.getRequestDispatcher("myrooms_db.jsp").forward(request, response);
+        } else {
+            // 👉 Chưa login: client phải gửi localStorage bằng JavaScript → POST
+            request.getRequestDispatcher("myrooms_local_redirect.jsp").forward(request, response);
+        }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getSession().setAttribute("isGuest", true);
+
+        // 👉 Nhận JSON từ localStorage
+        BufferedReader reader = request.getReader();
+        StringBuilder json = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            json.append(line);
+        }
+
+        // 👉 Parse JSON thành List<SelectedRoom>
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<SelectedRoom>>() {
+        }.getType();
+        List<SelectedRoom> selectedRooms = gson.fromJson(json.toString(), listType);
+
+        // 👉 Tính tổng tiền
+        double total = selectedRooms.stream()
+                .mapToDouble(SelectedRoom::getPrice)
+                .sum();
+
+        // 👉 Lưu vào session để JSP đọc
+        request.getSession().setAttribute("selectedRooms", selectedRooms);
+        request.getSession().setAttribute("totalPrice", total);
+
+        response.sendRedirect("myrooms_db.jsp");
     }
 
     /**

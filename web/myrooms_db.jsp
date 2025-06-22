@@ -65,358 +65,12 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
         <!-- REVOLUTION SLIDER END -->	
         <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
 
-            .room-selection-container {
-                max-width: 1400px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-
-            .room-card {
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                margin-bottom: 20px;
-                overflow: hidden;
-            }
-
-            .room-image-container {
-                position: relative;
-                height: 200px;
-                overflow: hidden;
-            }
-
-            .room-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .image-nav {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                background: rgba(255,255,255,0.9);
-                border: none;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-
-            .image-nav:hover {
-                background: white;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            }
-
-            .image-nav.prev {
-                left: 15px;
-            }
-
-            .image-nav.next {
-                right: 15px;
-            }
-
-            .room-info {
-                padding: 20px;
-            }
-
-            .room-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 10px;
-            }
-
-            .room-details {
-                display: flex;
-                gap: 20px;
-                margin-bottom: 15px;
-                color: #666;
-                font-size: 0.9rem;
-            }
-
-            .room-amenities {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 15px;
-            }
-
-            .amenity-icon {
-                color: #007bff;
-                font-size: 1.1rem;
-            }
-
-            .room-tags {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-
-            .tag {
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 0.75rem;
-                font-weight: 500;
-            }
-
-            .tag-lastminute {
-                background: #fee2e2;
-                color: #dc2626;
-            }
-
-            .tag-breakfast {
-                background: #dcfce7;
-                color: #16a34a;
-            }
-
-            .tag-cancellation {
-                background: #dbeafe;
-                color: #2563eb;
-            }
-
-            .price-section {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            .original-price {
-                text-decoration: line-through;
-                color: #999;
-                font-size: 0.9rem;
-            }
-
-            .current-price {
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #f59e0b;
-            }
-
-            .price-unit {
-                font-size: 0.9rem;
-                color: #666;
-            }
-
-            .room-selection-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-            }
-
-            .select-room-btn {
-                background: #f59e0b;
-                border: none;
-                color: white;
-                padding: 10px 24px;
-                border-radius: 6px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-
-            .select-room-btn:hover {
-                background: #d97706;
-            }
-
-            .guest-selection {
-                border-top: 1px solid #e5e7eb;
-                padding-top: 20px;
-                margin-top: 20px;
-                display: none;
-            }
-
-            .guest-selection.show {
-                display: block;
-            }
-
-            .guest-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
-                gap: 15px;
-                margin-top: 15px;
-            }
-
-            .guest-select {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .guest-select label {
-                font-weight: 500;
-                margin-bottom: 5px;
-                font-size: 0.9rem;
-            }
-
-            .booking-info-card {
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                padding: 24px;
-                position: sticky;
-                top: 20px;
-            }
-
-            .booking-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                margin-bottom: 20px;
-            }
-
-            .hotel-info {
-                margin-bottom: 20px;
-            }
-
-            .hotel-name {
-                font-weight: 600;
-                color: #333;
-            }
-
-            .booking-dates {
-                color: #666;
-                font-size: 0.9rem;
-            }
-
-            .room-list {
-                max-height: 300px;
-                overflow-y: auto;
-                margin-bottom: 20px;
-            }
-
-            .selected-room-item {
-                background: #f8f9fa;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 12px;
-                position: relative;
-            }
-
-            .room-item-header {
-                display: flex;
-                justify-content: between;
-                align-items: flex-start;
-            }
-
-            .room-item-info {
-                flex: 1;
-            }
-
-            .room-item-title {
-                font-weight: 600;
-                font-size: 0.9rem;
-                margin-bottom: 5px;
-            }
-
-            .room-item-details {
-                font-size: 0.8rem;
-                color: #666;
-                margin-bottom: 8px;
-            }
-
-            .room-item-price {
-                font-weight: 600;
-                color: #f59e0b;
-            }
-
-            .remove-room-btn {
-                background: none;
-                border: none;
-                color: #dc2626;
-                cursor: pointer;
-                padding: 5px;
-                border-radius: 4px;
-                transition: all 0.3s;
-            }
-
-            .remove-room-btn:hover {
-                background: #fee2e2;
-            }
-
-            .total-section {
-                border-top: 1px solid #e5e7eb;
-                padding-top: 20px;
-                margin-bottom: 20px;
-            }
-
-            .total-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .total-label {
-                font-size: 1.1rem;
-                font-weight: 600;
-            }
-
-            .total-price {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: #f59e0b;
-            }
-
-            .book-now-btn {
-                width: 100%;
-                background: #f59e0b;
-                border: none;
-                color: white;
-                padding: 15px;
-                border-radius: 8px;
-                font-size: 1.1rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-
-            .book-now-btn:hover {
-                background: #d97706;
-            }
-
-            .collapse-btn {
-                background: none;
-                border: none;
-                color: #666;
-                font-size: 0.9rem;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-
-            @media (max-width: 768px) {
-                .room-selection-container {
-                    padding: 10px;
-                }
-
-                .guest-row {
-                    grid-template-columns: 1fr;
-                    gap: 10px;
-                }
-
-                .booking-info-card {
-                    position: static;
-                    margin-top: 20px;
-                }
-            }
         </style>
     </head>
 
     <body id="bg">
         <div class="page-wraper">
-
-
-
             <div id="loading-icon-bx"></div>
             <!-- Header Top ==== -->
             <header class="header rs-nav">
@@ -587,7 +241,7 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -600,157 +254,192 @@
                     </div>
                 </div>
             </header>
-            <!-- Header Top END ==== -->
-            <!-- Content -->
+
+
+            <p>DEBUG size: ${fn:length(selectedRooms)}</p>
+
             <div class="page-content bg-white">
+                <div class="container">
+                    <c:choose>
+                        <c:when test="${isGuest}">
+                            <!-- Hiển thị nếu là Guest (SelectedRoom) -->
+                            <c:forEach var="room" items="${selectedRooms}">
+                                <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                                    <img src="${room.image}" width="120" height="90">
+                                    <h3>Phòng ${room.roomNumber}</h3>
+                                    <p>Loại: ${room.type}</p>
+                                    <p>Tầng: ${room.floor}</p>
+                                    <p>Giá/đêm: $${room.price}</p>
+                                    <p style="color:red">DEBUG ID: ${room.id}</p>
 
-                <c:forEach var="room" items="${selectedRooms}">
-                    <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                        <img src="${pageContext.request.contextPath}/${room.roomImage}" width="120" height="90">
-                        <div class="room-info">
-                            <h3>Phòng ${room.roomnumber}</h3>
-                            <p>Loại: ${room.roomType.name}</p>
-                            <p>Tầng: ${room.floor}</p>
-                            <p>Giá/đêm: $${room.roomType.basePrice}</p>
+                                    <button onclick="removeRoom('${room.id}')" class="btn btn-danger btn-sm mt-2">
+                                        <i class="fa fa-trash"></i> Xoá phòng này
+                                    </button>
 
-                            <form method="post" action="removeRoomFromCart">
-                                <input type="hidden" name="roomId" value="${room.roomID}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
-                            </form>
-                        </div>
-                    </div>
-                </c:forEach>
+
+                                </div>
+
+                            </c:forEach>
+                        </c:when>
+
+                        <c:otherwise>
+                            <!-- Hiển thị nếu là user đã login (Room) -->
+                            <c:forEach var="room" items="${selectedRooms}">
+                                <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                                    <img src="${pageContext.request.contextPath}/${room.roomImage}" width="120" height="90">
+                                    <div class="room-info">
+                                        <h3>Phòng ${room.roomnumber}</h3>
+                                        <p>Loại: ${room.roomType.name}</p>
+                                        <p>Tầng: ${room.floor}</p>
+                                        <p>Giá/đêm: $${room.roomType.basePrice}</p>
+                                        <form method="post" action="removeRoomFromCart">
+                                            <input type="hidden" name="roomId" value="${room.roomID}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+                <!-- Content -->
+
+
+
+
 
 
 
                 <!-- contact area END -->
             </div>
-            <!-- Content END-->
-            <!-- Footer ==== -->
-            <footer>
-                <div class="footer-top">
-                    <div class="pt-exebar">
-                        <div class="container">
-                            <div class="d-flex align-items-stretch">
-                                <div class="pt-logo mr-auto">
-                                    <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
-                                </div>
-                                <div class="pt-social-link">
-                                    <ul class="list-inline m-a0">
-                                        <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div class="pt-btn-join">
-                                    <a href="#" class="btn ">Join Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                                <div class="widget">
-                                    <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                    <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                                    <div class="subscribe-form m-b20">
-                                        <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-                                            <div class="ajax-message"></div>
-                                            <div class="input-group">
-                                                <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-                                                <span class="input-group-btn">
-                                                    <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-                                                </span> 
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                                <div class="row">
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Company</h5>
-                                            <ul>
-                                                <li><a href="Home">Home</a></li>
-                                                <li><a href="about-1.html">About</a></li>
-                                                <li><a href="faq-1.jsp">FAQs</a></li>
-                                                <li><a href="contact-1.html">Contact</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Get In Touch</h5>
-                                            <ul>
-                                                <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-                                                <li><a href="blog-classic-grid.html">Blog</a></li>
-                                                <li><a href="portfolio.html">Portfolio</a></li>
-                                                <li><a href="event.html">Event</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Rooms</h5>
-                                            <ul>
-                                                <li><a href="roomlist">Rooms</a></li>
-                                                <li><a href="rooms-details.jsp">Details</a></li>
-                                                <li><a href="membership.html">Membership</a></li>
-                                                <li><a href="profile.html">Profile</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                                <div class="widget widget_gallery gallery-grid-4">
-                                    <h5 class="footer-title">Our Gallery</h5>
-                                    <ul class="magnific-image">
-                                        <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- Footer END ==== -->
-            <button class="back-to-top fa fa-chevron-up" ></button>
         </div>
+        <!-- Content END-->
+        <!-- Footer ==== -->
+        <footer>
+            <div class="footer-top">
+                <div class="pt-exebar">
+                    <div class="container">
+                        <div class="d-flex align-items-stretch">
+                            <div class="pt-logo mr-auto">
+                                <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                            </div>
+                            <div class="pt-social-link">
+                                <ul class="list-inline m-a0">
+                                    <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                    <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="pt-btn-join">
+                                <a href="#" class="btn ">Join Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                            <div class="widget">
+                                <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                                <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                                <div class="subscribe-form m-b20">
+                                    <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                        <div class="ajax-message"></div>
+                                        <div class="input-group">
+                                            <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                            <span class="input-group-btn">
+                                                <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                            </span> 
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                            <div class="row">
+                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                    <div class="widget footer_widget">
+                                        <h5 class="footer-title">Company</h5>
+                                        <ul>
+                                            <li><a href="Home">Home</a></li>
+                                            <li><a href="about-1.html">About</a></li>
+                                            <li><a href="faq-1.jsp">FAQs</a></li>
+                                            <li><a href="contact-1.html">Contact</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                    <div class="widget footer_widget">
+                                        <h5 class="footer-title">Get In Touch</h5>
+                                        <ul>
+                                            <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                            <li><a href="blog-classic-grid.html">Blog</a></li>
+                                            <li><a href="portfolio.html">Portfolio</a></li>
+                                            <li><a href="event.html">Event</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                    <div class="widget footer_widget">
+                                        <h5 class="footer-title">Rooms</h5>
+                                        <ul>
+                                            <li><a href="roomlist">Rooms</a></li>
+                                            <li><a href="rooms-details.jsp">Details</a></li>
+                                            <li><a href="membership.html">Membership</a></li>
+                                            <li><a href="profile.html">Profile</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                            <div class="widget widget_gallery gallery-grid-4">
+                                <h5 class="footer-title">Our Gallery</h5>
+                                <ul class="magnific-image">
+                                    <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                    <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer END ==== -->
+        <button class="back-to-top fa fa-chevron-up" ></button>
+    </div>
 
-        <!-- External JavaScripts -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-        <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-        <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-        <script src="assets/vendors/counter/waypoints-min.js"></script>
-        <script src="assets/vendors/counter/counterup.min.js"></script>
-        <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-        <script src="assets/vendors/masonry/masonry.js"></script>
-        <script src="assets/vendors/masonry/filter.js"></script>
-        <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-        <script src="assets/js/functions.js"></script>
-        <script src="assets/js/contact.js"></script>
-        <script src='assets/vendors/switcher/switcher.js'></script>
-    </body>
+    <!-- External JavaScripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+    <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+    <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+    <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+    <script src="assets/vendors/counter/waypoints-min.js"></script>
+    <script src="assets/vendors/counter/counterup.min.js"></script>
+    <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+    <script src="assets/vendors/masonry/masonry.js"></script>
+    <script src="assets/vendors/masonry/filter.js"></script>
+    <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+    <script src="assets/js/functions.js"></script>
+    <script src="assets/js/contact.js"></script>
+    <script src='assets/vendors/switcher/switcher.js'></script>
+    <script src="assets/js/hotel-cart.js"></script>
+</body>
 
 </html>

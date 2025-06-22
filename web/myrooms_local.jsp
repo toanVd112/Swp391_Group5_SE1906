@@ -254,7 +254,8 @@
             </header>
             <!-- Header Top END ==== -->
             <!-- Content -->
-            <div class="page-content bg-white">
+            <div class="content-block">
+                
                 <h2><i class="fa fa-bed"></i> Danh sách phòng đã chọn (Local)</h2>
 
                 <button class="btn-clear" onclick="clearRoomCart()">
