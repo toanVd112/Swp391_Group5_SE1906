@@ -4,6 +4,7 @@
  */
 package controller.staff;
 
+import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -76,7 +77,7 @@ public class PendingCheckout extends HttpServlet {
 
         int pageSize = 5;
 
-        RoomDAO dao = new RoomDAO();
+        ManageRoomDAO dao = new ManageRoomDAO();
 
         HttpSession session = request.getSession();
         Account acc = (Account) session.getAttribute("account");

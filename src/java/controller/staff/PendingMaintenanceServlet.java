@@ -4,6 +4,7 @@ package controller.staff;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -77,7 +78,7 @@ public class PendingMaintenanceServlet extends HttpServlet {
 
         int offset = (page - 1) * pageSize;
         int limit = pageSize;
-        RoomDAO dao = new RoomDAO();
+        ManageRoomDAO dao = new ManageRoomDAO();
         HttpSession session = request.getSession();
         Account acc = (Account) session.getAttribute("account");
 

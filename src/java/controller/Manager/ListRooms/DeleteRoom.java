@@ -5,6 +5,7 @@
 
 package controller.Manager.ListRooms;
 
+import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -57,7 +58,7 @@ public class DeleteRoom extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         String id = request.getParameter("rid");
-        RoomDAO rd = new RoomDAO();
+        ManageRoomDAO rd = new ManageRoomDAO();
         rd.deleteRoom(id);
         
         response.sendRedirect("managerR");

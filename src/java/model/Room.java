@@ -7,20 +7,27 @@ package model;
 import java.util.List;
 
 /**
+ * Model đại diện cho phòng trong khách sạn.
  *
  * @author Arcueid
  */
-
 public class Room {
+
     private int roomID;
     private int roomTypeID;
     private String roomnumber;
     private int floor;
-    private String status;   
+    private String status;
     private String roomImage;
-    private RoomType roomType; // Liên kết với RoomType
-    private List<Amenity> amenities;         // Danh sách tiện ích
-    private List<PageContent> contents;       // Danh sách nội dung trang
+
+    private RoomType roomType;
+    private List<Amenity> amenities;
+    private List<PageContent> contents;
+
+    // === Constructors ===
+    public Room() {
+    }
+
     public Room(int roomID) {
         this.roomID = roomID;
     }
@@ -33,18 +40,20 @@ public class Room {
         this.status = status;
         this.roomImage = roomImage;
     }
-    
 
-   public Room(int roomID, String roomnumber, int floor, String status, String roomImage, RoomType roomType) {
-    this.roomID = roomID;
-    this.roomnumber = roomnumber;
-    this.floor = floor;
-    this.status = status;
-    this.roomImage = roomImage;
-    this.roomType = roomType;
-}
-    public Room() {}
+    public Room(int roomID, String roomnumber, int floor, String status, String roomImage, RoomType roomType) {
+        this.roomID = roomID;
+        this.roomnumber = roomnumber;
+        this.floor = floor;
+        this.status = status;
+        this.roomImage = roomImage;
+        this.roomType = roomType;
+        if (roomType != null) {
+            this.roomTypeID = roomType.getRoomTypeID();
+        }
+    }
 
+    // === Getters & Setters ===
     public int getRoomID() {
         return roomID;
     }
@@ -60,7 +69,6 @@ public class Room {
     public void setRoomTypeID(int roomTypeID) {
         this.roomTypeID = roomTypeID;
     }
-    
 
     public String getRoomnumber() {
         return roomnumber;
@@ -86,12 +94,33 @@ public class Room {
         this.status = status;
     }
 
+    public String getRoomImage() {
+        return roomImage;
+    }
+
+    public void setRoomImage(String roomImage) {
+        this.roomImage = roomImage;
+    }
+
     public RoomType getRoomType() {
         return roomType;
     }
 
     public void setRoomType(RoomType roomType) {
         this.roomType = roomType;
+        if (roomType != null) {
+            this.roomTypeID = roomType.getRoomTypeID();
+        }
+    }
+
+    private List<String> detailImageUrls;
+
+    public List<String> getDetailImageUrls() {
+        return detailImageUrls;
+    }
+
+    public void setDetailImageUrls(List<String> detailImageUrls) {
+        this.detailImageUrls = detailImageUrls;
     }
 
     public List<Amenity> getAmenities() {
@@ -109,25 +138,18 @@ public class Room {
     public void setContents(List<PageContent> contents) {
         this.contents = contents;
     }
-    public String getRoomImage() {
-    return roomImage;
-}
 
-public void setRoomImage(String roomImage) {
-    this.roomImage = roomImage;
-}
-
+    // === ToString for debug ===
     @Override
     public String toString() {
-        return "Room{" +
-                "roomID=" + roomID +
-                ", roomnumber='" + roomnumber + '\'' +
-                ", floor=" + floor +
-                ", status='" + status + '\'' +
-                ", roomType=" + (roomType != null ? roomType.getName() : "null") +
-                ", amenitiesCount=" + (amenities != null ? amenities.size() : 0) +
-                ", contentsCount=" + (contents != null ? contents.size() : 0) +
-                '}';
+        return "Room{"
+                + "roomID=" + roomID
+                + ", roomnumber='" + roomnumber + '\''
+                + ", floor=" + floor
+                + ", status='" + status + '\''
+                + ", roomType=" + (roomType != null ? roomType.getName() : "null")
+                + ", amenitiesCount=" + (amenities != null ? amenities.size() : 0)
+                + ", contentsCount=" + (contents != null ? contents.size() : 0)
+                + '}';
     }
 }
-

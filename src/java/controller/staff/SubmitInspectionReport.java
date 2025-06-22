@@ -4,6 +4,7 @@
  */
 package controller.staff;
 
+import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -79,7 +80,7 @@ public class SubmitInspectionReport extends HttpServlet {
             boolean isRoomOk = "1".equals(request.getParameter("isRoomOk"));
             String notes = request.getParameter("notes");
 
-            RoomDAO dao = new RoomDAO();
+            ManageRoomDAO dao = new ManageRoomDAO();
             boolean success = dao.updateInspectionReport(reportID, isRoomOk, notes);
 
             if (success) {

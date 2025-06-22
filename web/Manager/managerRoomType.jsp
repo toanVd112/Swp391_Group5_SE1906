@@ -45,7 +45,7 @@
             }
         </style>
     </head>
-    <body class="p-4 bg-light">
+    <body class="bg-light" style="padding: 0;">
         <div class="container">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">

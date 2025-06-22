@@ -6,6 +6,7 @@ package controller.staff;
  */
 
 
+import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -71,7 +72,7 @@ public class ResolveMaintenanceRequestServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         int requestID = Integer.parseInt(request.getParameter("requestID"));
-        RoomDAO dao = new RoomDAO();
+        ManageRoomDAO dao = new ManageRoomDAO();
         dao.markAsResolved(requestID);
         response.sendRedirect(request.getContextPath() + "/pendingMaintenance");
     }
