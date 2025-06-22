@@ -161,7 +161,7 @@
                 localStorage.setItem("openSections", JSON.stringify(openSections));
             }
 
-       // Tự động mở lại nhiều phần đã lưu sau reload
+            // Tự động mở lại nhiều phần đã lưu sau reload
             window.addEventListener("DOMContentLoaded", () => {
                 const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
 
@@ -351,8 +351,9 @@
                                                     <li><a href="admin/mailbox-read.html">Mail Read</a></li>
                                                 </ul>
                                             </li>
+
                                         </ul>
-                                    </li>
+                                    </li> <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -574,6 +575,7 @@
                                                         <span>${r.roomType.name}</span> <!-- Tên loại phòng -->
                                                     </div>
                                                     <div class="cours-more-info">
+
                                                         <div class="review">
                                                             <span>3 Review</span>
                                                             <ul class="cours-star">
@@ -591,6 +593,31 @@
                                                             <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
                                                         </div>
                                                     </div>
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.user == null}">
+                                                            <!-- Chưa đăng nhập: thêm vào localStorage -->
+                                                            <button class="btn btn-warning btn-sm m-t10"
+                                                                    onclick="addRoomFromElement(this)"
+                                                                    data-id="${r.roomID}"
+                                                                    data-roomnumber="${r.roomnumber}"
+                                                                    data-floor="${r.floor}"
+                                                                    data-type="${fn:escapeXml(r.roomType.name)}"
+                                                                    data-price="${r.roomType.basePrice}"
+                                                                    data-image="${pageContext.request.contextPath}/${r.roomImage}">
+                                                                <i class="fa fa-plus"></i> Thêm vào danh sách 
+                                                            </button>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <!-- Đã đăng nhập: gửi về servlet -->
+                                                            <form method="post" action="${pageContext.request.contextPath}/addRoomToDB" style="display:inline;">
+                                                                <input type="hidden" name="roomId" value="${r.roomID}" />
+                                                                <button type="submit" class="btn btn-success btn-sm m-t10">
+                                                                    <i class="fa fa-plus"></i> Thêm vào danh sách 
+                                                                </button>
+                                                            </form>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
                                                 </div>
                                             </div>
                                         </c:forEach>
@@ -773,8 +800,9 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
+        <script src="assets/js/hotel-cart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     </body>
 
 </html>
-
-

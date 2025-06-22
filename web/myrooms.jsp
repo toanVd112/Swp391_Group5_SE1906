@@ -88,7 +88,7 @@
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="user-profile">Hello, ${sessionScope.user.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
@@ -235,6 +235,7 @@
                                             </li>
                                         </ul>
                                     </li>
+                                    <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -249,6 +250,41 @@
             </header>
             <!-- Header Top END ==== -->
             <!-- Content -->
+            <div class="page-content bg-white">
+                <button class="btn-clear" onclick="clearRoomCart()">
+                    <i class="fa fa-trash"></i> Xoá tất cả phòng đã chọn
+                </button>
+
+                <h2><i class="fa fa-bed"></i> Danh sách phòng bạn đã chọn</h2>
+                <div id="selectedRoomsContainer"></div>
+
+                <div class="summary-box">
+                    <h3>Tóm tắt</h3>
+                    <p>Tổng số phòng: <span id="totalRooms">0</span></p>
+                    <p>Tổng tiền: <span id="totalPrice">$0.00</span></p>
+                    <button class="btn-submit">Tiến hành đặt phòng</button>
+                </div>
+
+                <!-- Include file chứa add/remove/render logic -->
+                <script src="${pageContext.request.contextPath}/assets/js/hotel-cart.js"></script>
+
+                <!-- Chỉ cần gọi renderCart khi DOM đã load -->
+                <script>
+                    const isLoggedIn = ${sessionScope.user != null};
+                    document.addEventListener("DOMContentLoaded", function () {
+                        if (!isLoggedIn) {
+                            renderCart();
+                        } else {
+                            fetch("getSelectedRooms")
+                                    .then(res => res.json())
+                                    .then(data => renderCartFromSession(data))
+                                    .catch(err => console.error("Lỗi tải phòng từ session:", err));
+                        }
+                    });
+                </script>
+
+                <!-- contact area END -->
+            </div>
             <!-- Content END-->
             <!-- Footer ==== -->
             <footer>

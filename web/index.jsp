@@ -235,6 +235,7 @@
                                             </li>
                                         </ul>
                                     </li>
+                                    <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -342,7 +343,7 @@
                                                         </ul>
                                                     </div>
                                                     <div class="price">
-                                                        
+
                                                         <h5>$${room.basePrice}</h5>
                                                     </div>
                                                 </div>
