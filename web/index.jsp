@@ -19,11 +19,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
+        <meta name="description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
-        <meta property="og:description" content="Khï¿½ch s?n Hoï¿½ng Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -88,7 +88,7 @@
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="user-profile">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="user_profile2.html">Hello, ${sessionScope.user.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
@@ -323,7 +323,7 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
                                                     <img src="${room.imageUrl}" alt="">
-                                                    <a href="${roomUrl}" class="btn">Xem phÃ²ng</a>
+                                                    <a href="${roomUrl}" class="btn">Xem phòng</a>
                                                 </div>
                                                 <div class="info-bx text-center">
                                                     <h5>
