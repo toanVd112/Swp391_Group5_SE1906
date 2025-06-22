@@ -6,6 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -60,11 +64,359 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
         <!-- REVOLUTION SLIDER END -->	
+        <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
 
+            .room-selection-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .room-card {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                overflow: hidden;
+            }
+
+            .room-image-container {
+                position: relative;
+                height: 200px;
+                overflow: hidden;
+            }
+
+            .room-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .image-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(255,255,255,0.9);
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .image-nav:hover {
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+
+            .image-nav.prev {
+                left: 15px;
+            }
+
+            .image-nav.next {
+                right: 15px;
+            }
+
+            .room-info {
+                padding: 20px;
+            }
+
+            .room-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .room-details {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 15px;
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            .room-amenities {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .amenity-icon {
+                color: #007bff;
+                font-size: 1.1rem;
+            }
+
+            .room-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+
+            .tag {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
+            .tag-lastminute {
+                background: #fee2e2;
+                color: #dc2626;
+            }
+
+            .tag-breakfast {
+                background: #dcfce7;
+                color: #16a34a;
+            }
+
+            .tag-cancellation {
+                background: #dbeafe;
+                color: #2563eb;
+            }
+
+            .price-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .original-price {
+                text-decoration: line-through;
+                color: #999;
+                font-size: 0.9rem;
+            }
+
+            .current-price {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #f59e0b;
+            }
+
+            .price-unit {
+                font-size: 0.9rem;
+                color: #666;
+            }
+
+            .room-selection-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .select-room-btn {
+                background: #f59e0b;
+                border: none;
+                color: white;
+                padding: 10px 24px;
+                border-radius: 6px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .select-room-btn:hover {
+                background: #d97706;
+            }
+
+            .guest-selection {
+                border-top: 1px solid #e5e7eb;
+                padding-top: 20px;
+                margin-top: 20px;
+                display: none;
+            }
+
+            .guest-selection.show {
+                display: block;
+            }
+
+            .guest-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 15px;
+                margin-top: 15px;
+            }
+
+            .guest-select {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .guest-select label {
+                font-weight: 500;
+                margin-bottom: 5px;
+                font-size: 0.9rem;
+            }
+
+            .booking-info-card {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                padding: 24px;
+                position: sticky;
+                top: 20px;
+            }
+
+            .booking-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 20px;
+            }
+
+            .hotel-info {
+                margin-bottom: 20px;
+            }
+
+            .hotel-name {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .booking-dates {
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            .room-list {
+                max-height: 300px;
+                overflow-y: auto;
+                margin-bottom: 20px;
+            }
+
+            .selected-room-item {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 12px;
+                position: relative;
+            }
+
+            .room-item-header {
+                display: flex;
+                justify-content: between;
+                align-items: flex-start;
+            }
+
+            .room-item-info {
+                flex: 1;
+            }
+
+            .room-item-title {
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 5px;
+            }
+
+            .room-item-details {
+                font-size: 0.8rem;
+                color: #666;
+                margin-bottom: 8px;
+            }
+
+            .room-item-price {
+                font-weight: 600;
+                color: #f59e0b;
+            }
+
+            .remove-room-btn {
+                background: none;
+                border: none;
+                color: #dc2626;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 4px;
+                transition: all 0.3s;
+            }
+
+            .remove-room-btn:hover {
+                background: #fee2e2;
+            }
+
+            .total-section {
+                border-top: 1px solid #e5e7eb;
+                padding-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .total-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .total-label {
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .total-price {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #f59e0b;
+            }
+
+            .book-now-btn {
+                width: 100%;
+                background: #f59e0b;
+                border: none;
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .book-now-btn:hover {
+                background: #d97706;
+            }
+
+            .collapse-btn {
+                background: none;
+                border: none;
+                color: #666;
+                font-size: 0.9rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            @media (max-width: 768px) {
+                .room-selection-container {
+                    padding: 10px;
+                }
+
+                .guest-row {
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                }
+
+                .booking-info-card {
+                    position: static;
+                    margin-top: 20px;
+                }
+            }
+        </style>
     </head>
 
     <body id="bg">
         <div class="page-wraper">
+
+
+
             <div id="loading-icon-bx"></div>
             <!-- Header Top ==== -->
             <header class="header rs-nav">
@@ -251,37 +603,25 @@
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
-                <button class="btn-clear" onclick="clearRoomCart()">
-                    <i class="fa fa-trash"></i> Xoá tất cả phòng đã chọn
-                </button>
 
-                <h2><i class="fa fa-bed"></i> Danh sách phòng bạn đã chọn</h2>
-                <div id="selectedRoomsContainer"></div>
+                <c:forEach var="room" items="${selectedRooms}">
+                    <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                        <img src="${pageContext.request.contextPath}/${room.roomImage}" width="120" height="90">
+                        <div class="room-info">
+                            <h3>Phòng ${room.roomnumber}</h3>
+                            <p>Loại: ${room.roomType.name}</p>
+                            <p>Tầng: ${room.floor}</p>
+                            <p>Giá/đêm: $${room.roomType.basePrice}</p>
 
-                <div class="summary-box">
-                    <h3>Tóm tắt</h3>
-                    <p>Tổng số phòng: <span id="totalRooms">0</span></p>
-                    <p>Tổng tiền: <span id="totalPrice">$0.00</span></p>
-                    <button class="btn-submit">Tiến hành đặt phòng</button>
-                </div>
+                            <form method="post" action="removeRoomFromCart">
+                                <input type="hidden" name="roomId" value="${room.roomID}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
+                            </form>
+                        </div>
+                    </div>
+                </c:forEach>
 
-                <!-- Include file chứa add/remove/render logic -->
-                <script src="${pageContext.request.contextPath}/assets/js/hotel-cart.js"></script>
 
-                <!-- Chỉ cần gọi renderCart khi DOM đã load -->
-                <script>
-                    const isLoggedIn = ${sessionScope.user != null};
-                    document.addEventListener("DOMContentLoaded", function () {
-                        if (!isLoggedIn) {
-                            renderCart();
-                        } else {
-                            fetch("getSelectedRooms")
-                                    .then(res => res.json())
-                                    .then(data => renderCartFromSession(data))
-                                    .catch(err => console.error("Lỗi tải phòng từ session:", err));
-                        }
-                    });
-                </script>
 
                 <!-- contact area END -->
             </div>

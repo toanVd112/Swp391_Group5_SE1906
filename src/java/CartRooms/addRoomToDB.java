@@ -73,22 +73,21 @@ public class addRoomToDB extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CartRoomDAO o =new CartRoomDAO();
-       
+        CartRoomDAO o = new CartRoomDAO();
+
         Account user = (Account) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-
         String roomIdStr = request.getParameter("roomId");
         if (roomIdStr != null) {
             int roomId = Integer.parseInt(roomIdStr);
             o.insertIfNotExists(user.getAccountID(), roomId);
         }
 
-        // Quay lại trang hiện tại hoặc chuyển tới myrooms.jsp
-        response.sendRedirect("myrooms.jsp");
+        response.setContentType("text/plain");
+        response.getWriter().write("Phòng đã được thêm vào danh sách.");
     }
 
     /**

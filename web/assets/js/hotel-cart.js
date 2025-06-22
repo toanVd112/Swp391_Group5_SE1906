@@ -112,3 +112,38 @@ function updateRoomCount() {
         badge.textContent = cart.length;
     }
 }
+function addRoomToDatabase(button) {
+    const roomId = button.getAttribute("data-id");
+
+    fetch("addRoomToDB", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `roomId=${roomId}`
+    })
+    .then(res => res.text())
+    .then(msg => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Phòng đã được thêm!',
+            text: msg || 'Bạn có thể xem lại ở mục "My Rooms"',
+            showCancelButton: true,
+            confirmButtonText: 'Xem phòng đã chọn',
+            cancelButtonText: 'Tiếp tục chọn phòng'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'myrooms.jsp';
+            }
+        });
+    })
+    .catch(err => {
+        console.error("Lỗi khi thêm phòng vào DB:", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Không thể thêm phòng vào danh sách.'
+        });
+    });
+}
+

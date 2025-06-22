@@ -12,14 +12,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import model.Account;
+import model.Room;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "removeRoomFromCart", urlPatterns = {"/removeRoomFromCart"})
-public class removeRoomFromCart extends HttpServlet {
+@WebServlet(name = "MyRoomsServlet", urlPatterns = {"/myrooms"})
+public class MyRoomsServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +40,10 @@ public class removeRoomFromCart extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet removeRoomFromCart</title>");
+            out.println("<title>Servlet MyRoomsServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet removeRoomFromCart at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MyRoomsServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,7 +61,21 @@ public class removeRoomFromCart extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        Account user = (Account) request.getSession().getAttribute("user");
+
+        if (user == null) {
+            request.getRequestDispatcher("myrooms_local.jsp").forward(request, response);
+            return;
+        }
+        CartRoomDAO o = new CartRoomDAO();
+        List<Integer> roomIds = o.getRoomIdsByAccount(user.getAccountID());
+        List<Room> selectedRooms = o.getRoomsByIds(roomIds);
+        double total = selectedRooms.stream().mapToDouble(r -> r.getRoomType().getBasePrice()).sum();
+
+        request.setAttribute("selectedRooms", selectedRooms);
+        request.setAttribute("totalPrice", total);
+        request.getRequestDispatcher("myrooms_db.jsp").forward(request, response);
     }
 
     /**
@@ -70,29 +86,10 @@ public class removeRoomFromCart extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private CartRoomDAO dao = new CartRoomDAO();
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        Account user = (Account) request.getSession().getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-
-        String roomIdStr = request.getParameter("roomId");
-        if (roomIdStr != null) {
-            try {
-                int roomId = Integer.parseInt(roomIdStr);
-                dao.deleteRoomFromCart(user.getAccountID(), roomId);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        response.sendRedirect("myrooms");
+        processRequest(request, response);
     }
 
     /**

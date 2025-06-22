@@ -98,7 +98,7 @@ public class CartRoomDAO {
             }
         }
 
-        String sql = "SELECT r.RoomID, r.RoomNumber, r.Floor, r.RoomImage, "
+        String sql = "SELECT r.RoomID, r.RoomNumber, r.Floor, r.RoomImage, r.Status, "
                 + "rt.Name AS RoomTypeName, rt.BasePrice "
                 + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
                 + "WHERE r.RoomID IN (" + placeholders + ")";
@@ -116,13 +116,12 @@ public class CartRoomDAO {
                 room.setRoomnumber(rs.getString("RoomNumber"));
                 room.setFloor(rs.getInt("Floor"));
                 room.setRoomImage(rs.getString("RoomImage"));
-
+               room.setStatus(rs.getString("Status"));
                 RoomType rt = new RoomType();
                 rt.setBasePrice(rs.getDouble("BasePrice"));
                 rt.setName(rs.getString("RoomTypeName"));
                 room.setRoomType(rt);
 
-               
                 rooms.add(room);
             }
 
@@ -131,5 +130,12 @@ public class CartRoomDAO {
         }
 
         return rooms;
+    }
+
+    public static void main(String[] args) {
+        CartRoomDAO o = new CartRoomDAO();
+        List<Integer> roomIds = o.getRoomIdsByAccount(28);
+        List<Room> selectedRooms = o.getRoomsByIds(roomIds);
+        System.out.println(selectedRooms);
     }
 }

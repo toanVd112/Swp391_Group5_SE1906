@@ -6,6 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -235,7 +239,7 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -251,271 +255,27 @@
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
-                <!-- Main Slider -->
-                <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-12 text-center text-white">
-                                <h2>Welcome to Hoang Nam Hotel</h2>
-                                <h5>The Best Place To Stay</h5>
-                                <form class="cours-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="What do you want to learn today?	">
-                                        <div class="input-group-append">
-                                            <button class="btn" type="submit">Search</button> 
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="mw800 m-auto">
-                            <div class="row">
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-user"></i><span class="counter">5</span>M</h3>
-                                        </div>
-                                        <span class="cours-search-text">Over 5 million customer</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-book"></i><span class="counter">50</span></h3>
-                                        </div>
-                                        <span class="cours-search-text"> 50 Room</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-sm-12">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-layout-list-post"></i><span class="counter">20</span>K</h3>
-                                        </div>
-                                        <span class="cours-search-text">View Anythink Online.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h2><i class="fa fa-bed"></i> Danh sách phòng đã chọn (Local)</h2>
+
+                <button class="btn-clear" onclick="clearRoomCart()">
+                    <i class="fa fa-trash"></i> Xoá tất cả
+                </button>
+
+                <div id="selectedRoomsContainer"></div>
+
+                <div class="summary-box">
+                    <h3>Tóm tắt</h3>
+                    <p>Tổng số phòng: <span id="totalRooms">0</span></p>
+                    <p>Tổng tiền: <span id="totalPrice">$0.00</span></p>
+                    <button class="btn-submit">Tiến hành đặt phòng</button>
                 </div>
-                <!-- Main Slider -->
-                <div class="content-block">
-                    <!-- Popular Rooms -->
-                    <div class="section-area section-sp2 popular-rooms-bx">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12 heading-bx left">
-                                    <h2 class="title-head">Popular <span>Rooms</span></h2>
-                                    <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
-                                    <c:forEach var="room" items="${roomTypes}">
-                                        <c:url var="roomUrl" value="roomlist">
-                                            <c:param name="typeId" value="${room.roomTypeID}" />
-                                            <c:if test="${selectedFloor != null}">
-                                                <c:param name="floor" value="${selectedFloor}" />
-                                            </c:if>
-                                        </c:url>
 
-                                        <div class="item">
-                                            <div class="cours-bx">
-                                                <div class="action-box">
-                                                    <img src="${room.imageUrl}" alt="">
-                                                    <a href="${roomUrl}" class="btn">Xem phòng</a>
-                                                </div>
-                                                <div class="info-bx text-center">
-                                                    <h5>
-                                                        <a href="${roomUrl}">${room.name}</a>
-                                                    </h5>
-                                                    <span>${room.description}</span>
-                                                </div>
-                                                <div class="cours-more-info">
-                                                    <div class="review">
-                                                        <span>3 Review</span>
-                                                        <ul class="cours-star">
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="price">
-
-                                                        <h5>$${room.basePrice}</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Popular Rooms END -->
-                    <div class="section-area section-sp2 bg-fix ovbl-dark join-bx text-center" style="background-image:url(assets/images/background/bg1.jpg);">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="join-content-bx text-white">
-                                        <h2>Book a room online on <br> your time</h2>
-                                        <h4><span class="counter">50</span> Rooms </h4>
-                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                                        <a href="#" class="btn button-md">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Form END -->
-                    <div class="section-area section-sp1">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-6 m-b30">
-                                    <h2 class="title-head ">Book a new room online<br> <span class="text-primary"> on your time</span></h2>
-                                    <h4><span class="counter">50</span> Rooms</h4>
-                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.</p>
-                                    <a href="#" class="btn button-md">Book Now</a>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon1.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Our Philosophy</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon2.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Kingster's Principle</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon3.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Key Of Success</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon4.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Our Philosophy</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Testimonials -->
-                    <div class="section-area section-sp1 bg-fix ovbl-dark text-white" style="background-image:url(assets/images/background/bg1.jpg);">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">3000</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Completed Projects</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">2500</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Happy Clients</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">1500</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Questions Answered</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">1000</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Ordered Coffee's</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonials END -->
-                    <!-- Testimonials ==== -->
-                    <div class="section-area section-sp2">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12 heading-bx left">
-                                    <h2 class="title-head text-uppercase">what people <span>say</span></h2>
-                                    <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-carousel owl-carousel owl-btn-1 col-12 p-lr0">
-                                <div class="item">
-                                    <div class="testimonial-bx">
-                                        <div class="testimonial-thumb">
-                                            <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                        </div>
-                                        <div class="testimonial-info">
-                                            <h5 class="name">Peter Packer</h5>
-                                            <p>-Art Director</p>
-                                        </div>
-                                        <div class="testimonial-content">
-                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="testimonial-bx">
-                                        <div class="testimonial-thumb">
-                                            <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                        </div>
-                                        <div class="testimonial-info">
-                                            <h5 class="name">Peter Packer</h5>
-                                            <p>-Art Director</p>
-                                        </div>
-                                        <div class="testimonial-content">
-                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonials END ==== -->
-                </div>
+                <script src="assets/js/hotel-cart.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        renderCart();
+                    });
+                </script>
                 <!-- contact area END -->
             </div>
             <!-- Content END-->
