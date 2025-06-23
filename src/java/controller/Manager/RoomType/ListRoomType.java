@@ -88,4 +88,4 @@ public class ListRoomType extends HttpServlet {
         // Chuyển hướng POST về GET để giữ logic nhất quán
         doGet(request, response);
     }
-}
+}   

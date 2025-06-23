@@ -51,13 +51,14 @@ public class AddEditRoomServlet extends HttpServlet {
                 }
             }
 
-            // Forward to JSP
-            request.getRequestDispatcher("Manager/AddEditRoom.jsp").forward(request, response);
+            // Thay đổi này: sử dụng layout system
+            request.getRequestDispatcher("Manager/manager.jsp?page=AddEditRoom.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
-            request.getRequestDispatcher("Manager/AddEditRoom.jsp").forward(request, response);
+            // Thay đổi này: sử dụng layout system
+            request.getRequestDispatcher("Manager/manager.jsp?page=AddEditRoom.jsp").forward(request, response);
         }
     }
 
@@ -132,7 +133,7 @@ public class AddEditRoomServlet extends HttpServlet {
                                             mainImageUrl, detailImages);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/ManagerRoomServlet?success=add");
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=add");
             } else {
                 request.setAttribute("errorMessage", "Không thể thêm phòng. Vui lòng thử lại.");
                 doGet(request, response);
@@ -192,7 +193,7 @@ public class AddEditRoomServlet extends HttpServlet {
                                                mainImageUrl, detailImages);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/ManagerRoomServlet?success=edit");
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=edit");
             } else {
                 request.setAttribute("errorMessage", "Không thể cập nhật phòng. Vui lòng thử lại.");
                 doGet(request, response);

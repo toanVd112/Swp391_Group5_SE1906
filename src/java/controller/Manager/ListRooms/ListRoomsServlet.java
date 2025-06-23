@@ -1,66 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.Manager.ListRooms;
 
-import DAO.ManageRoomList;
+import DAO.ManageRoomDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import model.Room2;
+import model.Room;
 import model.RoomType;
 
-/**
- *
- * @author Admin
- */
 @WebServlet(name = "ListRoomsServlet", urlPatterns = {"/ListRoomsServlet"})
 public class ListRoomsServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ListRoomsServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ListRoomsServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    private ManageRoomDAO roomDAO;
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     public void init() {
-        ManageRoomList dao = new ManageRoomList();
+        roomDAO = new ManageRoomDAO();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException ignored) {
@@ -68,52 +26,198 @@ public class ListRoomsServlet extends HttpServlet {
     }
 
     @Override
-
-    protected void doGet(HttpServletRequest req, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ManageRoomList dao = new ManageRoomList();
 
-        Integer roomTypeId = parseIntOrNull(req.getParameter("roomTypeId"));
-        String status = emptyToNull(req.getParameter("status"));
-        String keyword = emptyToNull(req.getParameter("keyword"));
-        Integer minFloor = parseIntOrNull(req.getParameter("minFloor"));
-        Integer maxFloor = parseIntOrNull(req.getParameter("maxFloor"));
-        Double minPrice = parseDoubleOrNull(req.getParameter("minPrice"));
-        Double maxPrice = parseDoubleOrNull(req.getParameter("maxPrice"));
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
-        int page = parseIntOrDefault(req.getParameter("page"), 1);
-        int pageSize = 5;
+        String action = request.getParameter("action");
+
+        try {
+            if ("delete".equals(action)) {
+                handleDeleteRoom(request, response);
+            } else {
+                handleListRooms(request, response);
+            }
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
+            handleListRooms(request, response);
+        }
+    }
+
+    private void handleListRooms(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Integer roomTypeId = parseIntOrNull(request.getParameter("roomTypeId"));
+        String status = emptyToNull(request.getParameter("status"));
+        String keyword = emptyToNull(request.getParameter("keyword"));
+        Integer minFloor = parseIntOrNull(request.getParameter("minFloor"));
+        Integer maxFloor = parseIntOrNull(request.getParameter("maxFloor"));
+        Double minPrice = parseDoubleOrNull(request.getParameter("minPrice"));
+        Double maxPrice = parseDoubleOrNull(request.getParameter("maxPrice"));
+
+        int page = parseIntOrDefault(request.getParameter("page"), 1);
+        int pageSize = parseIntOrDefault(request.getParameter("pageSize"), 5);
+
+        if (page < 1) page = 1;
+        if (pageSize < 5) pageSize = 5;
+        if (pageSize > 50) pageSize = 50;
+
         int offset = (page - 1) * pageSize;
 
         try {
-            List<RoomType> roomTypes = dao.getRoomTypes();
-            int totalRooms = dao.countRooms(roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice);
+            List<RoomType> roomTypes = roomDAO.getAllRoomTypes();
+            String searchTerm = keyword;
+            String sortOrder = request.getParameter("sort");
+
+            List<Room> rooms = roomDAO.getRoomsByPage(searchTerm, sortOrder, offset, pageSize);
+            int totalRooms = roomDAO.countRooms(searchTerm);
             int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
 
-            List<Room2> rooms = dao.searchRoomsPaginated(
-                    roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice, offset, pageSize
-            );
+            request.setAttribute("roomTypes", roomTypes);
+            request.setAttribute("rooms", rooms);
 
-            // Dữ liệu
-            req.setAttribute("roomTypes", roomTypes);
-            req.setAttribute("rooms", rooms);
+            request.setAttribute("f_type", roomTypeId);
+            request.setAttribute("f_status", status);
+            request.setAttribute("f_keyword", keyword);
+            request.setAttribute("f_minFloor", minFloor);
+            request.setAttribute("f_maxFloor", maxFloor);
+            request.setAttribute("f_minPrice", minPrice);
+            request.setAttribute("f_maxPrice", maxPrice);
 
-            // Filter giữ nguyên
-            req.setAttribute("f_type", roomTypeId);
-            req.setAttribute("f_status", status);
-            req.setAttribute("f_keyword", keyword);
-            req.setAttribute("f_minFloor", minFloor);
-            req.setAttribute("f_maxFloor", maxFloor);
-            req.setAttribute("f_minPrice", minPrice);
-            req.setAttribute("f_maxPrice", maxPrice);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalRooms", totalRooms);
+            request.setAttribute("pageSize", pageSize);
 
-            // Phân trang
-            req.setAttribute("currentPage", page);
-            req.setAttribute("totalPages", totalPages);
+            int startRecord = offset + 1;
+            int endRecord = Math.min(offset + pageSize, totalRooms);
+            request.setAttribute("startRecord", startRecord);
+            request.setAttribute("endRecord", endRecord);
 
-            req.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(req, response);
+            String successMessage = getSuccessMessage(request.getParameter("success"), request);
+            if (successMessage != null) {
+                request.setAttribute("successMessage", successMessage);
+            }
+
+            String errorMessage = getErrorMessage(request.getParameter("error"));
+            if (errorMessage != null) {
+                request.setAttribute("errorMessage", errorMessage);
+            }
+
+            // Thay đổi này: sử dụng layout system
+            request.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(request, response);
+
         } catch (Exception e) {
-            throw new ServletException(e);
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Không thể tải danh sách phòng: " + e.getMessage());
+            request.setAttribute("rooms", List.of());
+            request.setAttribute("roomTypes", List.of());
+            request.setAttribute("currentPage", 1);
+            request.setAttribute("totalPages", 0);
+            request.setAttribute("totalRooms", 0);
+            // Thay đổi này: sử dụng layout system
+            request.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(request, response);
+        }
+    }
+
+    private void handleDeleteRoom(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String roomIdStr = request.getParameter("roomId");
+
+        if (roomIdStr == null || roomIdStr.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=invalidId");
+            return;
+        }
+
+        try {
+            int roomId = Integer.parseInt(roomIdStr);
+            Room room = roomDAO.getRoomById(roomId);
+            if (room == null) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=notFound");
+                return;
+            }
+            if ("Occupied".equals(room.getStatus())) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=occupied");
+                return;
+            }
+            boolean success = roomDAO.deleteRoom(roomId);
+            if (success) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=delete&roomNumber=" + room.getRoomnumber());
+            } else {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=deleteFailed");
+            }
+
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=invalidId");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=system");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        String action = request.getParameter("action");
+
+        try {
+            if ("delete".equals(action)) {
+                handleDeleteRoom(request, response);
+            } else if ("bulkDelete".equals(action)) {
+                handleBulkDelete(request, response);
+            } else {
+                handleListRooms(request, response);
+            }
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Lỗi xử lý: " + e.getMessage());
+            handleListRooms(request, response);
+        }
+    }
+
+    private void handleBulkDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String[] roomIds = request.getParameterValues("selectedRooms");
+
+        if (roomIds == null || roomIds.length == 0) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=noSelection");
+            return;
+        }
+
+        int deletedCount = 0;
+        int failedCount = 0;
+
+        try {
+            for (String roomIdStr : roomIds) {
+                try {
+                    int roomId = Integer.parseInt(roomIdStr);
+                    Room room = roomDAO.getRoomById(roomId);
+                    if (room != null && !"Occupied".equals(room.getStatus())) {
+                        if (roomDAO.deleteRoom(roomId)) {
+                            deletedCount++;
+                        } else {
+                            failedCount++;
+                        }
+                    } else {
+                        failedCount++;
+                    }
+                } catch (NumberFormatException e) {
+                    failedCount++;
+                }
+            }
+
+            String result = "bulkDelete&deleted=" + deletedCount + "&failed=" + failedCount;
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=" + result);
+
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=bulkDeleteFailed");
         }
     }
 
@@ -137,28 +241,53 @@ public class ListRoomsServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    private String getSuccessMessage(String success, HttpServletRequest request) {
+        if (success == null) return null;
+
+        switch (success) {
+            case "add":
+                return "Thêm phòng thành công!";
+            case "edit":
+                return "Cập nhật phòng thành công!";
+            case "delete":
+                String roomNumber = request.getParameter("roomNumber");
+                return "Xóa phòng " + (roomNumber != null ? roomNumber : "") + " thành công!";
+            case "bulkDelete":
+                String deleted = request.getParameter("deleted");
+                String failed = request.getParameter("failed");
+                return String.format("Xóa thành công %s phòng. %s phòng không thể xóa.",
+                        deleted != null ? deleted : "0",
+                        failed != null ? failed : "0");
+            default:
+                return null;
+        }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+    private String getErrorMessage(String error) {
+        if (error == null) return null;
+
+        switch (error) {
+            case "invalidId":
+                return "ID phòng không hợp lệ!";
+            case "notFound":
+                return "Không tìm thấy phòng!";
+            case "occupied":
+                return "Không thể xóa phòng đang được thuê!";
+            case "deleteFailed":
+                return "Xóa phòng thất bại!";
+            case "noSelection":
+                return "Vui lòng chọn ít nhất một phòng để xóa!";
+            case "bulkDeleteFailed":
+                return "Xóa nhiều phòng thất bại!";
+            case "system":
+                return "Lỗi hệ thống, vui lòng thử lại!";
+            default:
+                return "Có lỗi xảy ra!";
+        }
+    }
+
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "List Rooms Servlet - handles room listing with advanced filtering and management";
+    }
 }
