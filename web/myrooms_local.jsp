@@ -6,6 +6,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -250,12 +254,14 @@
             </header>
             <!-- Header Top END ==== -->
             <!-- Content -->
-            <div class="page-content bg-white">
+            <div class="content-block">
+                
+                <h2><i class="fa fa-bed"></i> Danh sách phòng đã chọn (Local)</h2>
+
                 <button class="btn-clear" onclick="clearRoomCart()">
-                    <i class="fa fa-trash"></i> Xoá tất cả phòng đã chọn
+                    <i class="fa fa-trash"></i> Xoá tất cả
                 </button>
 
-                <h2><i class="fa fa-bed"></i> Danh sách phòng bạn đã chọn</h2>
                 <div id="selectedRoomsContainer"></div>
 
                 <div class="summary-box">
@@ -265,24 +271,12 @@
                     <button class="btn-submit">Tiến hành đặt phòng</button>
                 </div>
 
-                <!-- Include file chứa add/remove/render logic -->
-                <script src="${pageContext.request.contextPath}/assets/js/hotel-cart.js"></script>
-
-                <!-- Chỉ cần gọi renderCart khi DOM đã load -->
+                <script src="assets/js/hotel-cart.js"></script>
                 <script>
-                    const isLoggedIn = ${sessionScope.user != null};
                     document.addEventListener("DOMContentLoaded", function () {
-                        if (!isLoggedIn) {
-                            renderCart();
-                        } else {
-                            fetch("getSelectedRooms")
-                                    .then(res => res.json())
-                                    .then(data => renderCartFromSession(data))
-                                    .catch(err => console.error("Lỗi tải phòng từ session:", err));
-                        }
+                        renderCart();
                     });
                 </script>
-
                 <!-- contact area END -->
             </div>
             <!-- Content END-->

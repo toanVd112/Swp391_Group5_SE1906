@@ -353,7 +353,7 @@
                                             </li>
 
                                         </ul>
-                                    </li> <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    </li> <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -608,14 +608,14 @@
                                                             </button>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <!-- Đã đăng nhập: gửi về servlet -->
-                                                            <form method="post" action="${pageContext.request.contextPath}/addRoomToDB" style="display:inline;">
-                                                                <input type="hidden" name="roomId" value="${r.roomID}" />
-                                                                <button type="submit" class="btn btn-success btn-sm m-t10">
-                                                                    <i class="fa fa-plus"></i> Thêm vào danh sách 
-                                                                </button>
-                                                            </form>
+                                                            <!-- Đã login: gửi bằng fetch đến servlet -->
+                                                            <button class="btn btn-success btn-sm m-t10"
+                                                                    onclick="addRoomToDatabase(this)"
+                                                                    data-id="${r.roomID}">
+                                                                <i class="fa fa-plus"></i> Thêm vào danh sách (DB)
+                                                            </button>
                                                         </c:otherwise>
+
                                                     </c:choose>
 
                                                 </div>
