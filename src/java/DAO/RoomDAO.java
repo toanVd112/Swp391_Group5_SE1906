@@ -62,12 +62,13 @@ public class RoomDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("TypeName"),
+                         rs.getInt("RoomtypeID"),
+                        rs.getString("Name"),
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
                         rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
+                        rs.getString("RoomDetail"),
+                        rs.getInt("MaxGuest")
                 );
                 Room room = new Room(
                         rs.getInt("RoomID"),
@@ -132,7 +133,8 @@ public class RoomDAO {
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
                         rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
+                        rs.getString("RoomDetail"),
+                        rs.getInt("MaxGuests")
                 );
                 list.add(roomType);
             }
@@ -158,12 +160,13 @@ public class RoomDAO {
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
+                         rs.getInt("RoomtypeID"),
                         rs.getString("Name"),
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
                         rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
+                        rs.getString("RoomDetail"),
+                        rs.getInt("MaxGuest")
                 );
                 return new Room(
                         rs.getInt("RoomID"),
@@ -180,5 +183,4 @@ public class RoomDAO {
         return null;
     }
 
-   
 }

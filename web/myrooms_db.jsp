@@ -63,6 +63,8 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
+        <link rel="stylesheet" href="assets/css/booking-interface.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <!-- REVOLUTION SLIDER END -->	
         <style>
 
@@ -258,188 +260,478 @@
 
             <p>DEBUG size: ${fn:length(selectedRooms)}</p>
 
-            <div class="page-content bg-white">
-                <div class="container">
+            <div class="booking-content">
+                <!-- Room Selection Panel -->
+                <div class="room-selection-panel">
+                    <h2 class="panel-title"><i class="fas fa-bed"></i> Available Rooms</h2>
+
                     <c:choose>
-                        <c:when test="${isGuest}">
-                            <!-- Hiển thị nếu là Guest (SelectedRoom) -->
-                            <c:forEach var="room" items="${selectedRooms}">
-                                <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                                    <img src="${room.image}" width="120" height="90">
-                                    <h3>Phòng ${room.roomNumber}</h3>
-                                    <p>Loại: ${room.type}</p>
-                                    <p>Tầng: ${room.floor}</p>
-                                    <p>Giá/đêm: $${room.price}</p>
-                                    <p style="color:red">DEBUG ID: ${room.id}</p>
+                        <c:when test="${not empty guestCart}">
+                            <c:forEach var="room" items="${guestCart}" varStatus="status">
+                                <div class="room-card" data-room-type-id="${room.roomTypeId}">
+                                    <img src="${room.imageUrl}" width="120" height="90" style="object-fit:cover; border-radius:6px;">
+                                    <div class="room-header">
+                                        <div class="room-info">
+                                            <h3>Phòng loại: ${room.roomName}</h3>
+                                            <div class="room-details">
+                                                <div><i class="fas fa-users"></i> Sức chứa: ${room.maxguest} người</div>
+                                            </div>
+                                        </div>
+                                        <div class="room-price">
+                                            <div class="price-amount">
+                                                <fmt:formatNumber value="${room.basePrice}" type="number" groupingUsed="true"/> VND
+                                            </div>
+                                            <div class="price-unit">/ đêm</div>
+                                        </div>
+                                    </div>
 
-                                    <button onclick="removeRoom('${room.id}')" class="btn btn-danger btn-sm mt-2">
-                                        <i class="fa fa-trash"></i> Xoá phòng này
-                                    </button>
+                                    <!-- Guest Selection -->
+                                    <div class="guest-selection">
+                                        <h4 style="margin-bottom: 10px; color: #374151; font-size: 0.9rem;">
+                                            <i class="fas fa-user-friends"></i> Chọn số lượng khách
+                                        </h4>
+                                        <div class="guest-controls">
+                                            <div class="guest-control">
+                                                <label>Người lớn</label>
+                                                <div class="counter-group">
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'adults', -1)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <span class="counter-value" id="adults_${room.roomTypeId}">2</span>
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'adults', 1)">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="guest-control">
+                                                <label>Trẻ em (6-12)</label>
+                                                <div class="counter-group">
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'children', -1)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <span class="counter-value" id="children_${room.roomTypeId}">0</span>
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'children', 1)">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="guest-control">
+                                                <label>Em bé (0-5)</label>
+                                                <div class="counter-group">
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'babies', -1)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <span class="counter-value" id="babies_${room.roomTypeId}">0</span>
+                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'babies', 1)">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-
-                                </div>
-
-                            </c:forEach>
-                        </c:when>
-
-                        <c:otherwise>
-                            <!-- Hiển thị nếu là user đã login (Room) -->
-                            <c:forEach var="room" items="${selectedRooms}">
-                                <div class="room-card" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                                    <img src="${pageContext.request.contextPath}/${room.roomImage}" width="120" height="90">
-                                    <div class="room-info">
-                                        <h3>Phòng ${room.roomnumber}</h3>
-                                        <p>Loại: ${room.roomType.name}</p>
-                                        <p>Tầng: ${room.floor}</p>
-                                        <p>Giá/đêm: $${room.roomType.basePrice}</p>
-                                        <form method="post" action="removeRoomFromCart">
-                                            <input type="hidden" name="roomId" value="${room.roomID}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
+                                    <!-- Action Buttons -->
+                                    <div class="room-actions">
+                                        <button type="button" class="btn btn-primary" onclick="addToBooking('${room.roomTypeId}')">
+                                            <i class="fas fa-plus"></i> Thêm vào đặt phòng
+                                        </button>
+                                        <form method="post" action="RemoveFromGuestCartServlet" style="display: inline;">
+                                            <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
                             </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-state">
+                                <i class="fas fa-bed"></i>
+                                <h3>Không có phòng nào được chọn</h3>
+                                <p>Vui lòng quay lại trang tìm kiếm để chọn phòng</p>
+                                <a href="searchRooms" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Tìm kiếm phòng
+                                </a>
+                            </div>
                         </c:otherwise>
                     </c:choose>
+
                 </div>
-                <!-- Content -->
 
+                <!-- Booking Summary Panel -->
+                <div class="booking-summary">
+                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Thông tin đặt phòng</h2>
 
+                    <!-- Date Selection -->
+                    <div class="summary-section">
+                        <h3 class="summary-title">Thời gian lưu trú</h3>
+                        <div class="date-inputs">
+                            <div class="date-input">
+                                <label>Ngày nhận phòng</label>
+                                <input type="date" id="checkInDate" onchange="calculateTotal()" value="2025-06-22">
+                            </div>
+                            <div class="date-input">
+                                <label>Ngày trả phòng</label>
+                                <input type="date" id="checkOutDate" onchange="calculateTotal()" value="2025-06-23">
+                            </div>
+                        </div>
+                        <div style="text-align: center; color: #6b7280; font-size: 0.9rem; margin-top: 10px;">
+                            <span id="nightsCount">1 đêm</span>
+                        </div>
+                    </div>
 
+                    <!-- Selected Rooms -->
+                    <div class="summary-section">
+                        <h3 class="summary-title">Phòng đã chọn</h3>
+                        <div class="selected-rooms" id="selectedRoomsList">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
 
+                    <!-- Price Breakdown -->
+                    <div class="summary-section">
+                        <h3 class="summary-title">Chi tiết giá</h3>
+                        <div class="price-breakdown" id="priceBreakdown">
+                            <div class="price-row">
+                                <span>Tổng tiền phòng:</span>
+                                <span class="price-value" id="roomsTotal">0 VND</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Thuế VAT (10%):</span>
+                                <span class="price-value" id="taxAmount">0 VND</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Tổng cộng:</span>
+                                <span class="price-value total" id="grandTotal">0 VND</span>
+                            </div>
+                        </div>
+                    </div>
 
-
-
-                <!-- contact area END -->
+                    <!-- Booking Button -->
+                    <button type="button" class="booking-button" id="bookingBtn" onclick="proceedToBooking()" disabled>
+                        <i class="fas fa-calendar-check"></i> Đặt phòng ngay
+                    </button>
+                </div>
             </div>
         </div>
-        <!-- Content END-->
-        <!-- Footer ==== -->
-        <footer>
-            <div class="footer-top">
-                <div class="pt-exebar">
-                    <div class="container">
-                        <div class="d-flex align-items-stretch">
-                            <div class="pt-logo mr-auto">
-                                <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
-                            </div>
-                            <div class="pt-social-link">
-                                <ul class="list-inline m-a0">
-                                    <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="pt-btn-join">
-                                <a href="#" class="btn ">Join Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                            <div class="widget">
-                                <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                                <div class="subscribe-form m-b20">
-                                    <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-                                        <div class="ajax-message"></div>
-                                        <div class="input-group">
-                                            <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-                                            <span class="input-group-btn">
-                                                <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-                                            </span> 
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                            <div class="row">
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Company</h5>
-                                        <ul>
-                                            <li><a href="Home">Home</a></li>
-                                            <li><a href="about-1.html">About</a></li>
-                                            <li><a href="faq-1.jsp">FAQs</a></li>
-                                            <li><a href="contact-1.html">Contact</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Get In Touch</h5>
-                                        <ul>
-                                            <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-                                            <li><a href="blog-classic-grid.html">Blog</a></li>
-                                            <li><a href="portfolio.html">Portfolio</a></li>
-                                            <li><a href="event.html">Event</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Rooms</h5>
-                                        <ul>
-                                            <li><a href="roomlist">Rooms</a></li>
-                                            <li><a href="rooms-details.jsp">Details</a></li>
-                                            <li><a href="membership.html">Membership</a></li>
-                                            <li><a href="profile.html">Profile</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                            <div class="widget widget_gallery gallery-grid-4">
-                                <h5 class="footer-title">Our Gallery</h5>
-                                <ul class="magnific-image">
-                                    <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                    <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- Footer END ==== -->
-        <button class="back-to-top fa fa-chevron-up" ></button>
-    </div>
 
-    <!-- External JavaScripts -->
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-    <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-    <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-    <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-    <script src="assets/vendors/counter/waypoints-min.js"></script>
-    <script src="assets/vendors/counter/counterup.min.js"></script>
-    <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-    <script src="assets/vendors/masonry/masonry.js"></script>
-    <script src="assets/vendors/masonry/filter.js"></script>
-    <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-    <script src="assets/js/functions.js"></script>
-    <script src="assets/js/contact.js"></script>
-    <script src='assets/vendors/switcher/switcher.js'></script>
-    <script src="assets/js/hotel-cart.js"></script>
+        <script>
+            // Booking data
+            const bookingData = {
+                rooms: {},
+                checkIn: '2025-06-22',
+                checkOut: '2025-06-23',
+                nights: 1
+            };
+
+            // Room prices from backend
+            const roomPrices = {};
+            <c:forEach var="room" items="${selectedRooms}">
+            roomPrices[${room.roomID}] = {
+                price: ${room.roomType.basePrice},
+                name: "${room.roomType.name}",
+                roomNumber: "${room.roomnumber}"
+            };
+            </c:forEach>
+
+            // Change guest count
+            function changeGuest(roomId, type, delta) {
+                const element = document.getElementById(type + '_' + roomId);
+                let currentValue = parseInt(element.textContent);
+                let newValue = currentValue + delta;
+
+                // Minimum constraints
+                if (type === 'adults' && newValue < 1)
+                    newValue = 1;
+                if ((type === 'children' || type === 'babies') && newValue < 0)
+                    newValue = 0;
+
+                element.textContent = newValue;
+
+                // Update booking data if room is already added
+                if (bookingData.rooms[roomId]) {
+                    bookingData.rooms[roomId][type] = newValue;
+                    updateSelectedRoomsList();
+                    calculateTotal();
+                }
+            }
+
+            // Add room to booking
+            function addToBooking(roomId) {
+                const adults = parseInt(document.getElementById('adults_' + roomId).textContent);
+                const children = parseInt(document.getElementById('children_' + roomId).textContent);
+                const babies = parseInt(document.getElementById('babies_' + roomId).textContent);
+
+                bookingData.rooms[roomId] = {
+                    adults: adults,
+                    children: children,
+                    babies: babies,
+                    price: roomPrices[roomId].price,
+                    name: roomPrices[roomId].name,
+                    roomNumber: roomPrices[roomId].roomNumber
+                };
+
+                updateSelectedRoomsList();
+                calculateTotal();
+                updateBookingButton();
+            }
+
+            // Remove room from booking
+            function removeFromBooking(roomId) {
+                delete bookingData.rooms[roomId];
+                updateSelectedRoomsList();
+                calculateTotal();
+                updateBookingButton();
+            }
+
+            // Update selected rooms list
+            function updateSelectedRoomsList() {
+                const container = document.getElementById('selectedRoomsList');
+                let html = '';
+
+                for (let roomId in bookingData.rooms) {
+                    const room = bookingData.rooms[roomId];
+                    const totalGuests = room.adults + room.children + room.babies;
+
+                    html += `
+                        <div class="selected-room-item">
+                            <div class="selected-room-header">
+    <div>
+        <div class="selected-room-name">Phòng ${room.roomNumber} - ${room.name}</div>
+        <div class="selected-room-details">
+            ${totalGuests} khách (${room.adults} NL, ${room.children} TE, ${room.babies} EB)
+        </div>
+        <div class="selected-room-price">
+            <fmt:formatNumber value="${room.price}" type="number" groupingUsed="true" /> VND/đêm
+        </div>
+    </div>
+    <button class="remove-room" onclick="removeFromBooking(${roomId})" title="Xóa phòng">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+                    `;
+                }
+
+                if (html === '') {
+                    html = '<div style="text-align: center; color: #6b7280; padding: 20px;">Chưa có phòng nào được chọn</div>';
+                }
+
+                container.innerHTML = html;
+            }
+
+            // Calculate total price
+            function calculateTotal() {
+                updateDates();
+
+                let roomsTotal = 0;
+                for (let roomId in bookingData.rooms) {
+                    roomsTotal += bookingData.rooms[roomId].price * bookingData.nights;
+                }
+
+                const taxAmount = roomsTotal * 0.1;
+                const grandTotal = roomsTotal + taxAmount;
+
+                document.getElementById('roomsTotal').textContent = formatPrice(roomsTotal) + ' VND';
+                document.getElementById('taxAmount').textContent = formatPrice(taxAmount) + ' VND';
+                document.getElementById('grandTotal').textContent = formatPrice(grandTotal) + ' VND';
+            }
+
+            // Update dates and calculate nights
+            function updateDates() {
+                const checkIn = document.getElementById('checkInDate').value;
+                const checkOut = document.getElementById('checkOutDate').value;
+
+                if (checkIn && checkOut) {
+                    const checkInDate = new Date(checkIn);
+                    const checkOutDate = new Date(checkOut);
+                    const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                    bookingData.checkIn = checkIn;
+                    bookingData.checkOut = checkOut;
+                    bookingData.nights = Math.max(1, nights);
+
+                    document.getElementById('nightsCount').textContent = bookingData.nights + ' đêm';
+                }
+            }
+
+            // Format price
+            function formatPrice(price) {
+                return new Intl.NumberFormat('vi-VN').format(Math.round(price));
+            }
+
+            // Update booking button state
+            function updateBookingButton() {
+                const btn = document.getElementById('bookingBtn');
+                const hasRooms = Object.keys(bookingData.rooms).length > 0;
+
+                btn.disabled = !hasRooms;
+                if (hasRooms) {
+                    btn.innerHTML = '<i class="fas fa-calendar-check"></i> Đặt phòng ngay (' + Object.keys(bookingData.rooms).length + ' phòng)';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-calendar-check"></i> Đặt phòng ngay';
+                }
+            }
+
+            // Proceed to booking
+            function proceedToBooking() {
+                if (Object.keys(bookingData.rooms).length === 0) {
+                    alert('Vui lòng chọn ít nhất một phòng!');
+                    return;
+                }
+
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'booking-confirmation';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'bookingData';
+                input.value = JSON.stringify(bookingData);
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', function () {
+                updateDates();
+                calculateTotal();
+                updateBookingButton();
+            });
+        </script>
+    </div>
+    <!-- Content END-->
+    <!-- Footer ==== -->
+    <footer>
+        <div class="footer-top">
+            <div class="pt-exebar">
+                <div class="container">
+                    <div class="d-flex align-items-stretch">
+                        <div class="pt-logo mr-auto">
+                            <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                        </div>
+                        <div class="pt-social-link">
+                            <ul class="list-inline m-a0">
+                                <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="pt-btn-join">
+                            <a href="#" class="btn ">Join Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                        <div class="widget">
+                            <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                            <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                            <div class="subscribe-form m-b20">
+                                <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                    <div class="ajax-message"></div>
+                                    <div class="input-group">
+                                        <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                        <span class="input-group-btn">
+                                            <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                        </span> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                        <div class="row">
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Company</h5>
+                                    <ul>
+                                        <li><a href="Home">Home</a></li>
+                                        <li><a href="about-1.html">About</a></li>
+                                        <li><a href="faq-1.jsp">FAQs</a></li>
+                                        <li><a href="contact-1.html">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Get In Touch</h5>
+                                    <ul>
+                                        <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                        <li><a href="blog-classic-grid.html">Blog</a></li>
+                                        <li><a href="portfolio.html">Portfolio</a></li>
+                                        <li><a href="event.html">Event</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                <div class="widget footer_widget">
+                                    <h5 class="footer-title">Rooms</h5>
+                                    <ul>
+                                        <li><a href="roomlist">Rooms</a></li>
+                                        <li><a href="rooms-details.jsp">Details</a></li>
+                                        <li><a href="membership.html">Membership</a></li>
+                                        <li><a href="profile.html">Profile</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                        <div class="widget widget_gallery gallery-grid-4">
+                            <h5 class="footer-title">Our Gallery</h5>
+                            <ul class="magnific-image">
+                                <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer END ==== -->
+    <button class="back-to-top fa fa-chevron-up" ></button>
+</div>
+
+<!-- External JavaScripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+<script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+<script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+<script src="assets/vendors/counter/waypoints-min.js"></script>
+<script src="assets/vendors/counter/counterup.min.js"></script>
+<script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+<script src="assets/vendors/masonry/masonry.js"></script>
+<script src="assets/vendors/masonry/filter.js"></script>
+<script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+<script src="assets/js/functions.js"></script>
+<script src="assets/js/contact.js"></script>
+<script src='assets/vendors/switcher/switcher.js'></script>
+<script src="assets/js/hotel-cart.js"></script>
 </body>
 
 </html>

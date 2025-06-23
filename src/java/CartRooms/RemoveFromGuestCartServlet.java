@@ -4,7 +4,6 @@
  */
 package CartRooms;
 
-import DAO.CartRoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,14 +11,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Account;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "addRoomToDB", urlPatterns = {"/addRoomToDB"})
-public class addRoomToDB extends HttpServlet {
+@WebServlet(name = "RemoveFromGuestCartServlet", urlPatterns = {"/RemoveFromGuestCartServlet"})
+public class RemoveFromGuestCartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +39,10 @@ public class addRoomToDB extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet addRoomToDB</title>");
+            out.println("<title>Servlet RemoveFromGuestCartServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet addRoomToDB at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RemoveFromGuestCartServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -73,21 +74,18 @@ public class addRoomToDB extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CartRoomDAO o = new CartRoomDAO();
+        HttpSession session = request.getSession();
+        String roomTypeId = request.getParameter("roomTypeId");
 
-        Account user = (Account) request.getSession().getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        String roomIdStr = request.getParameter("roomId");
-        if (roomIdStr != null) {
-            int roomId = Integer.parseInt(roomIdStr);
-            o.insertIfNotExists(user.getAccountID(), roomId);
+        // Lấy danh sách giỏ từ session
+        List<Map<String, String>> cart = (List<Map<String, String>>) session.getAttribute("guestCart");
+        if (cart != null && roomTypeId != null) {
+            // Xoá phòng có roomTypeId tương ứng
+            cart.removeIf(item -> roomTypeId.equals(item.get("roomTypeId")));
         }
 
-        response.setContentType("text/plain");
-        response.getWriter().write("Phòng đã được thêm vào danh sách.");
+        session.setAttribute("guestCart", cart); // Cập nhật lại
+        response.sendRedirect("myrooms_db.jsp");
     }
 
     /**

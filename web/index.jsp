@@ -60,7 +60,92 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
         <!-- REVOLUTION SLIDER END -->	
+        <style>
+            /* Responsive cho form tìm kiếm */
+            @media (max-width: 1200px) {
+                .cours-search {
+                    flex-wrap: wrap !important;
+                    gap: 15px !important;
+                }
 
+                .cours-search > div {
+                    min-width: auto !important;
+                    flex: 1 1 200px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .cours-search {
+                    flex-direction: column !important;
+                    align-items: stretch !important;
+                }
+
+                .cours-search > div {
+                    width: 100% !important;
+                    min-width: auto !important;
+                }
+
+                .cours-search > div:last-child button {
+                    margin-top: 5px !important;
+                }
+
+                .guest-room-dropdown {
+                    position: fixed !important;
+                    left: 10px !important;
+                    right: 10px !important;
+                    top: auto !important;
+                    width: auto !important;
+                }
+            }
+
+            /* Style cho date inputs */
+            .cours-search input[type="date"] {
+                color: #333;
+                font-size: 14px;
+            }
+
+            .cours-search input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                filter: invert(0);
+            }
+
+            /* Style cho select và input */
+            .cours-search select,
+            .cours-search input {
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+            }
+
+            .cours-search select:focus,
+            .cours-search input:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.5);
+            }
+
+            /* Label styling */
+            .cours-search label {
+                font-weight: 500;
+                white-space: nowrap;
+            }
+
+            /* Button hover effects */
+            .guest-room-dropdown button:hover {
+                background-color: #f8f9fa !important;
+                border-color: #007bff !important;
+                color: #007bff !important;
+            }
+
+            /* Dropdown animation */
+            .guest-room-dropdown {
+                transition: all 0.3s ease;
+            }
+
+            /* Selector display hover */
+            .selector-display:hover {
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        </style>
     </head>
 
     <body id="bg">
@@ -257,45 +342,14 @@
                         <div class="row">
                             <div class="col-md-12 text-center text-white">
                                 <h2>Welcome to Hoang Nam Hotel</h2>
+
+
                                 <h5>The Best Place To Stay</h5>
-                                <form class="cours-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="What do you want to learn today?	">
-                                        <div class="input-group-append">
-                                            <button class="btn" type="submit">Search</button> 
-                                        </div>
-                                    </div>
-                                </form>
+
+
                             </div>
                         </div>
-                        <div class="mw800 m-auto">
-                            <div class="row">
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-user"></i><span class="counter">5</span>M</h3>
-                                        </div>
-                                        <span class="cours-search-text">Over 5 million customer</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-book"></i><span class="counter">50</span></h3>
-                                        </div>
-                                        <span class="cours-search-text"> 50 Room</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-sm-12">
-                                    <div class="cours-search-bx m-b30">
-                                        <div class="icon-box">
-                                            <h3><i class="ti-layout-list-post"></i><span class="counter">20</span>K</h3>
-                                        </div>
-                                        <span class="cours-search-text">View Anythink Online.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 <!-- Main Slider -->
@@ -312,25 +366,47 @@
                             <div class="row">
                                 <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
                                     <c:forEach var="room" items="${roomTypes}">
-                                        <c:url var="roomUrl" value="roomlist">
-                                            <c:param name="typeId" value="${room.roomTypeID}" />
-                                            <c:if test="${selectedFloor != null}">
-                                                <c:param name="floor" value="${selectedFloor}" />
-                                            </c:if>
-                                        </c:url>
-
                                         <div class="item">
                                             <div class="cours-bx">
                                                 <div class="action-box">
-                                                    <img src="${room.imageUrl}" alt="">
-                                                    <a href="${roomUrl}" class="btn">Xem ph�ng</a>
+
+                                                
+                                                  
+
+                                                    <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
+                                                    <!-- Thay nút xem phòng bằng nút đặt -->
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.account == null}">
+                                                            <form method="post" action="addToGuestCart">
+                                                                <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
+                                                                <input type="hidden" name="roomName" value="${room.name}">
+                                                                <input type="hidden" name="basePrice" value="${room.basePrice}">
+                                                                <input type="hidden" name="imageUrl" value="${room.imageUrl}">
+                                                                 <input type="hidden" name="maxguest" value="${room.maxGuests}">
+                                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                                    <i class="fa fa-plus"></i> Đặt phòng
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+
+                                                        <c:otherwise>
+                                                            <!-- Đã login: gọi servlet (gửi về DB) -->
+                                                            <button class="btn btn-success btn-sm"
+                                                                    onclick="addRoomTypeToDatabase(this)"
+                                                                    data-id="${room.roomTypeID}">
+                                                                <i class="fa fa-plus"></i> Đặt phòng 
+                                                            </button>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+
                                                 </div>
+
                                                 <div class="info-bx text-center">
-                                                    <h5>
-                                                        <a href="${roomUrl}">${room.name}</a>
-                                                    </h5>
+                                                    <h5>${room.name}</h5>
                                                     <span>${room.description}</span>
                                                 </div>
+
                                                 <div class="cours-more-info">
                                                     <div class="review">
                                                         <span>3 Review</span>
@@ -343,16 +419,15 @@
                                                         </ul>
                                                     </div>
                                                     <div class="price">
-
                                                         <h5>$${room.basePrice}</h5>
+                                                        <h5><i class="fa fa-user"></i> ${room.maxGuests}</h5>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </c:forEach>
-
-
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -644,6 +719,93 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
+        <script src="assets/js/hotel-cart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+// Guest and room selection variables
+                                                                        let roomCount = 1;
+                                                                        let adultsCount = 2;
+                                                                        let childrenCount = 0;
+                                                                        let babiesCount = 0;
+
+// Toggle dropdown
+                                                                        function toggleGuestRoomDropdown() {
+                                                                            const dropdown = document.getElementById('guestRoomDropdown');
+                                                                            const isVisible = dropdown.style.display === 'block';
+
+                                                                            if (isVisible) {
+                                                                                dropdown.style.display = 'none';
+                                                                            } else {
+                                                                                dropdown.style.display = 'block';
+                                                                            }
+                                                                        }
+
+// Change room count
+                                                                        function changeRoomCount(delta) {
+                                                                            roomCount = Math.max(1, roomCount + delta);
+                                                                            document.getElementById('roomCount').textContent = roomCount;
+                                                                            document.getElementById('numRoomsInput').value = roomCount;
+                                                                            updateDisplayText();
+                                                                        }
+
+// Change guest count
+                                                                        function changeGuestCount(type, delta) {
+                                                                            switch (type) {
+                                                                                case 'adults':
+                                                                                    adultsCount = Math.max(1, adultsCount + delta);
+                                                                                    document.getElementById('adultsCount').textContent = adultsCount;
+                                                                                    document.getElementById('numAdultsInput').value = adultsCount;
+                                                                                    break;
+                                                                                case 'children':
+                                                                                    childrenCount = Math.max(0, childrenCount + delta);
+                                                                                    document.getElementById('childrenCount').textContent = childrenCount;
+                                                                                    document.getElementById('numChildrenInput').value = childrenCount;
+                                                                                    break;
+                                                                                case 'babies':
+                                                                                    babiesCount = Math.max(0, babiesCount + delta);
+                                                                                    document.getElementById('babiesCount').textContent = babiesCount;
+                                                                                    document.getElementById('numBabiesInput').value = babiesCount;
+                                                                                    break;
+                                                                            }
+                                                                            updateDisplayText();
+                                                                        }
+
+// Update display text
+                                                                        function updateDisplayText() {
+                                                                            const totalGuests = adultsCount + childrenCount + babiesCount;
+                                                                            let text = `${roomCount} Phòng, ${totalGuests} Người`;
+
+                                                                            if (childrenCount > 0 || babiesCount > 0) {
+                                                                                text = `${roomCount} Phòng, ${adultsCount} NL`;
+                                                                                if (childrenCount > 0)
+                                                                                    text += `, ${childrenCount} TE`;
+                                                                                if (babiesCount > 0)
+                                                                                    text += `, ${babiesCount} EB`;
+                                                                            }
+
+                                                                            document.getElementById('guestRoomText').textContent = text;
+                                                                        }
+
+// Close dropdown when clicking outside
+                                                                        document.addEventListener('click', function (event) {
+                                                                            const dropdown = document.getElementById('guestRoomDropdown');
+                                                                            const selector = document.querySelector('.guest-room-selector');
+
+                                                                            if (!selector.contains(event.target)) {
+                                                                                dropdown.style.display = 'none';
+                                                                            }
+                                                                        });
+
+// Prevent dropdown from closing when clicking inside
+                                                                        document.getElementById('guestRoomDropdown').addEventListener('click', function (event) {
+                                                                            event.stopPropagation();
+                                                                        });
+
+// Initialize display text
+                                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                                            updateDisplayText();
+                                                                        });
+        </script>
     </body>
 
 </html>
