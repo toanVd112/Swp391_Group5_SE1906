@@ -19,6 +19,7 @@ import model.RoomType;
  */
 @WebServlet(name = "RoomTypeListServlet", urlPatterns = {"/RoomTypeListServlet"})
 public class ListRoomType extends HttpServlet {
+
     private static final int PAGE_SIZE = 10;
     private static final Logger LOGGER = Logger.getLogger(ListRoomType.class.getName());
     private RoomTypeDAO roomTypeDAO;
@@ -47,7 +48,9 @@ public class ListRoomType extends HttpServlet {
         if (pageParam != null && !pageParam.isEmpty()) {
             try {
                 currentPage = Integer.parseInt(pageParam);
-                if (currentPage < 1) currentPage = 1;
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
             } catch (NumberFormatException e) {
                 LOGGER.warning("Số trang không hợp lệ: " + pageParam);
                 currentPage = 1;
@@ -60,6 +63,13 @@ public class ListRoomType extends HttpServlet {
         int totalRoomTypes = 0;
         try {
             roomTypes = roomTypeDAO.searchRoomTypes(keyword, minPrice, maxPrice, sortBy, offset, PAGE_SIZE);
+
+            // ✅ Gán số phòng bằng truy vấn riêng
+            for (RoomType rt : roomTypes) {
+                int roomCount = roomTypeDAO.getRoomCountByRoomTypeId(rt.getRoomTypeID());
+                rt.setAvailableRooms(roomCount);
+            }
+
             totalRoomTypes = roomTypeDAO.countRoomTypes(keyword, minPrice, maxPrice);
         } catch (SQLException e) {
             LOGGER.severe("Lỗi khi truy vấn danh sách loại phòng: " + e.getMessage());
@@ -67,7 +77,9 @@ public class ListRoomType extends HttpServlet {
         }
 
         int totalPages = (totalRoomTypes > 0) ? (int) Math.ceil((double) totalRoomTypes / PAGE_SIZE) : 1;
-        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
 
         // Gửi dữ liệu sang JSP
         request.setAttribute("roomTypes", roomTypes != null ? roomTypes : new ArrayList<>());
@@ -88,4 +100,4 @@ public class ListRoomType extends HttpServlet {
         // Chuyển hướng POST về GET để giữ logic nhất quán
         doGet(request, response);
     }
-}   
+}
