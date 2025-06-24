@@ -6,8 +6,16 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="isCustomer" value="${not empty sessionScope.user}" />
+
 <!DOCTYPE html>
 <html lang="en">
+    <c:if test="${isCustomer}">
+        <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
+        </c:if>
+        <c:if test="${not isCustomer}">
+        <li><a href="myrooms_db.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+        </c:if>
 
     <head>
 
@@ -350,6 +358,9 @@
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
+                <p style="color:red;">DEBUG: isCustomer = ${isCustomer}</p>
+                <p style="color:blue;">Session user = ${sessionScope.user}</p>
+
                 <!-- Main Slider -->
                 <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
                     <div class="container">
@@ -396,17 +407,23 @@
 
 
 
+
                                                     <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
                                                     <!-- Thay nút xem phòng bằng nút đặt -->
-
+                                                    <c:set var="isCustomer" value="${not empty sessionScope.user}" />
                                                     <c:choose>
                                                         <c:when test="${isCustomer}">
-                                                            <form method="post" action="customerCart">
-                                                                <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
-                                                                <button type="submit" class="btn btn-success btn-sm">
-                                                                    <i class="fa fa-plus"></i> Đặt phòngppp
-                                                                </button>
-                                                            </form>
+                                                            <button 
+                                                                type="button"
+                                                                class="btn btn-warning btn-sm"
+                                                                onclick="addToCustomerCart(this)"
+                                                                data-room-type-id="${room.roomTypeID}"
+                                                                data-room-name="${room.name}"
+                                                                data-base-price="${room.basePrice}"
+                                                                data-image-url="${room.imageUrl}"
+                                                                data-max-guest="${room.maxGuests}">
+                                                                <i class="fa fa-plus"></i> Đặt 
+                                                            </button>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);">
@@ -751,7 +768,8 @@
         <!-- JS -->
         <script src="${pageContext.request.contextPath}/assets/js/confirm-add-room.js"></script>
         <!-- Modal Confirm -->
-        <div id="confirmModal" class="confirm-modal">
+        <!-- Modal dùng chung cho cả Guest và Customer -->
+        <div id="confirmModal" class="confirm-modal" style="display: none;">
             <div class="confirm-modal-content">
                 <p>Phòng đã được thêm vào giỏ.</p>
                 <p>Bạn muốn làm gì tiếp theo?</p>

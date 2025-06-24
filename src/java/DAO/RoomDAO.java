@@ -2,6 +2,7 @@ package DAO;
 
 import java.util.*;
 import java.sql.*;
+import model.CartRoom;
 import model.MaintenanceRequest;
 import model.Room;
 import model.RoomInspectionReport;
@@ -185,29 +186,27 @@ public class RoomDAO {
     // --- Lấy thống kê tỷ lệ lấp đầy phòng theo loại phòng ---
     public List<RoomTypeOccupancy> getRoomOccupancyStatistics() {
         List<RoomTypeOccupancy> occupancyList = new ArrayList<>();
-        String sql = "SELECT rt.RoomTypeID, rt.Name AS TypeName, " +
-                     "SUM(CASE WHEN r.Status = 'Occupied' THEN 1 ELSE 0 END) AS occupiedRooms, " +
-                     "COUNT(r.RoomID) AS totalRooms " +
-                     "FROM roomtypes rt " +
-                     "LEFT JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID " +
-                     "GROUP BY rt.RoomTypeID, rt.Name";
+        String sql = "SELECT rt.RoomTypeID, rt.Name AS TypeName, "
+                + "SUM(CASE WHEN r.Status = 'Occupied' THEN 1 ELSE 0 END) AS occupiedRooms, "
+                + "COUNT(r.RoomID) AS totalRooms "
+                + "FROM roomtypes rt "
+                + "LEFT JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID "
+                + "GROUP BY rt.RoomTypeID, rt.Name";
 
-        try (Connection conn = DBConnect.getConnection(); 
-             PreparedStatement ps = conn.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
-            
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 RoomTypeOccupancy occupancy = new RoomTypeOccupancy();
                 occupancy.setRoomTypeID(rs.getInt("RoomTypeID"));
                 occupancy.setTypeName(rs.getString("TypeName"));
                 occupancy.setOccupiedRooms(rs.getInt("occupiedRooms"));
                 occupancy.setTotalRooms(rs.getInt("totalRooms"));
-                
-                double rate = occupancy.getTotalRooms() > 0 
-                    ? (occupancy.getOccupiedRooms() * 100.0) / occupancy.getTotalRooms() 
-                    : 0.0;
+
+                double rate = occupancy.getTotalRooms() > 0
+                        ? (occupancy.getOccupiedRooms() * 100.0) / occupancy.getTotalRooms()
+                        : 0.0;
                 occupancy.setOccupancyRate(Math.round(rate * 100.0) / 100.0); // Round to 2 decimals
-                
+
                 occupancyList.add(occupancy);
             }
         } catch (Exception e) {
@@ -215,4 +214,51 @@ public class RoomDAO {
         }
         return occupancyList;
     }
+
+    public int getAvailableRoomCount(String roomTypeId) {
+        String sql = "SELECT COUNT(*) FROM Rooms WHERE RoomTypeID = ? AND Status = 'Available'";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+public List<CartRoom> getCartByAccountId(int accountId) {
+    List<CartRoom> list = new ArrayList<>();
+    String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, " +
+                 "       rt.MaxGuests, " +
+                 "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity " +
+                 "FROM CartRooms c " +
+                 "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID " +
+                 "WHERE c.AccountID = ?";
+
+    try (Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, accountId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            CartRoom room = new CartRoom();
+            room.setRoomTypeId(rs.getInt("RoomTypeID"));
+            room.setRoomName(rs.getString("RoomName"));
+            room.setBasePrice(rs.getDouble("BasePrice"));
+            room.setImageUrl(rs.getString("imageUrl"));
+            room.setMaxguest(rs.getInt("MaxGuests"));
+            room.setAvailableQuantity(rs.getInt("availableQuantity"));
+            list.add(room);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
 }

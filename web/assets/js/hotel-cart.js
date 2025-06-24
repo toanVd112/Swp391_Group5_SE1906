@@ -74,6 +74,7 @@ function changeGuest(roomTypeId, guestType, change) {
         updateSelectedRoomsDisplay();
         calculateTotal();
     }
+    saveToLocalStorage();
 }
 
 // Function to update guest display
@@ -95,6 +96,14 @@ function addToBooking(roomTypeId) {
     if (!roomCard)
         return;
 
+    // Check if room is already selected
+    const existingRoom = selectedRooms.find(room => room.roomTypeId === roomTypeId);
+    if (existingRoom) {
+        alert('Phòng này đã được thêm vào đặt phòng');
+        return;
+    }
+
+    // Extract room information
     const roomName = roomCard.querySelector('h3').textContent.replace('Phòng loại: ', '');
     const priceText = roomCard.querySelector('.price-amount').textContent;
     const basePrice = parseInt(priceText.replace(/[^\d]/g, ''));
@@ -102,36 +111,27 @@ function addToBooking(roomTypeId) {
     const maxGuestText = roomCard.querySelector('.room-details div').textContent;
     const maxGuest = parseInt(maxGuestText.match(/\d+/)[0]);
 
-    const quantity = quantityDrafts[roomTypeId] || 1;
-    const adults = guestCounts[roomTypeId].adults;
-    const children = guestCounts[roomTypeId].children || 0;
+    // Create room object
+    const roomData = {
+        roomTypeId: roomTypeId,
+        roomName: roomName,
+        basePrice: basePrice,
+        imageUrl: imageUrl,
+        maxGuest: maxGuest,
+        adults: guestCounts[roomTypeId].adults,
+        children: guestCounts[roomTypeId].children || 0,
+        quantity: 1
+    };
 
-    const existingRoom = selectedRooms.find(room => room.roomTypeId === roomTypeId);
-    if (existingRoom) {
-        // 🔄 Cập nhật lại nếu đã có
-        existingRoom.quantity = quantity;
-        existingRoom.adults = adults;
-        existingRoom.children = children;
-        showNotification('Đã cập nhật lại thông tin phòng.', 'info');
-    } else {
-        // ➕ Thêm mới nếu chưa có
-        const roomData = {
-            roomTypeId,
-            roomName,
-            basePrice,
-            imageUrl,
-            maxGuest,
-            adults,
-            children,
-            quantity
-        };
-        selectedRooms.push(roomData);
-        showNotification('Đã thêm phòng vào đặt phòng thành công!', 'success');
-    }
+    // Add to selected rooms
+    selectedRooms.push(roomData);
 
+    // Update displays
     updateSelectedRoomsDisplay();
     calculateTotal();
-    persistBookingData();
+    saveToLocalStorage();
+    // Show success message
+    showNotification('Đã thêm phòng vào đặt phòng thành công!', 'success');
 }
 
 // Function to remove room from booking
@@ -139,6 +139,7 @@ function removeFromBooking(roomTypeId) {
     selectedRooms = selectedRooms.filter(room => room.roomTypeId !== roomTypeId);
     updateSelectedRoomsDisplay();
     calculateTotal();
+    saveToLocalStorage();
     showNotification('Đã xóa phòng khỏi đặt phòng', 'info');
 }
 
@@ -161,7 +162,7 @@ function updateSelectedRoomsDisplay() {
             <div class="selected-room-info">
                 <img src="${room.imageUrl}" alt="${room.roomName}" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px;">
                 <div class="selected-room-details">
-                    <h4>${room.roomName}</h4>
+                   <h4>${room.roomName} <span style="font-weight: normal;">x${room.quantity}</span></h4>
                     <div class="guest-info">
                         <i class="fas fa-users"></i> 
                         ${room.adults} người lớn${room.children > 0 ? `, ${room.children} trẻ em` : ''}
@@ -304,6 +305,7 @@ function updateRoomQuantity(roomTypeId, change) {
     room.quantity = newQuantity;
     updateSelectedRoomsDisplay();
     calculateTotal();
+    saveToLocalStorage();
 }
 
 // Event listeners for date changes
@@ -337,74 +339,106 @@ function clearAllSelections() {
     selectedRooms = [];
     updateSelectedRoomsDisplay();
     calculateTotal();
+    saveToLocalStorage();
     showNotification('Đã xóa tất cả phòng đã chọn', 'info');
 }
-
-function changeRoomQty(roomTypeId, delta) {
-    const max = parseInt(document.getElementById(`maxQty_${roomTypeId}`).value);
-    const span = document.getElementById(`roomQty_${roomTypeId}`);
-
-    // Tìm phòng đã chọn
-    const room = selectedRooms.find(r => r.roomTypeId === roomTypeId);
-    if (!room) {
-        showNotification('Bạn cần thêm phòng này trước khi chỉnh số lượng.', 'error');
-        return;
-    }
-
-    let newQty = room.quantity + delta;
+function updateRoomQuantityUI(roomTypeId, change) {
+    const quantityEl = document.getElementById(`quantity_${roomTypeId}`);
+    let current = parseInt(quantityEl.textContent);
+    const newQty = current + change;
     if (newQty < 1)
-        newQty = 1;
-    if (newQty > max)
-        newQty = max;
+        return;
+    quantityEl.textContent = newQty;
 
-    // Cập nhật dữ liệu và giao diện
-    room.quantity = newQty;
-    span.textContent = newQty;
+    const room = selectedRooms.find(r => r.roomTypeId === roomTypeId);
+    if (room) {
+        room.quantity = newQty;
+        updateSelectedRoomsDisplay();
+        calculateTotal();
+        saveToLocalStorage();
+    }
+}
 
+// Local Storage Persistence
+function saveToLocalStorage() {
+    localStorage.setItem('selectedRooms', JSON.stringify(selectedRooms));
+    localStorage.setItem('guestCounts', JSON.stringify(guestCounts));
+}
+
+function loadFromLocalStorage() {
+    const storedRooms = localStorage.getItem('selectedRooms');
+    const storedGuests = localStorage.getItem('guestCounts');
+    if (storedRooms)
+        selectedRooms = JSON.parse(storedRooms);
+    if (storedGuests)
+        guestCounts = JSON.parse(storedGuests);
+}
+
+// Load data on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromLocalStorage();
     updateSelectedRoomsDisplay();
     calculateTotal();
-}
-let quantityDrafts = {}; // lưu quantity tạm thời theo roomTypeId
-function updateQuantityDraft(roomTypeId, delta, maxAvailable) {
-    if (!quantityDrafts[roomTypeId]) {
-        quantityDrafts[roomTypeId] = 1;
-    }
+});
+function addToCustomerCart(button) {
 
-    let newQty = quantityDrafts[roomTypeId] + delta;
-    if (newQty < 1)
-        newQty = 1;
-    if (newQty > maxAvailable)
-        newQty = maxAvailable;
+    const roomTypeId = button.dataset.roomTypeId;
+    const roomName = button.dataset.roomName;
+    const basePrice = parseInt(button.dataset.basePrice);
+    const imageUrl = button.dataset.imageUrl;
+    const maxGuest = parseInt(button.dataset.maxGuest);
 
-    quantityDrafts[roomTypeId] = newQty;
-    document.getElementById(`roomQty_${roomTypeId}`).textContent = newQty;
+    const quantity = parseInt(document.getElementById(`quantity_${roomTypeId}`)?.textContent || '1');
+    const numGuests = parseInt(document.getElementById(`adults_${roomTypeId}`)?.textContent || '2');
+
+    const payload = {
+        roomTypeId: parseInt(roomTypeId),
+        roomName,
+        basePrice,
+        imageUrl,
+        maxGuest,
+        quantity,
+        numGuests
+    };
+
+    fetch('AddToCustomerCartServlet', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showConfirmModal(); // mới
+                } else {
+                    showNotification("Thêm thất bại", "error");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showNotification("Lỗi kết nối máy chủ", "error");
+            });
 }
-function persistBookingData() {
-    if (!isCustomer) {
-        sessionStorage.setItem('bookingData', JSON.stringify({
-            selectedRooms,
-            guestCounts,
-            checkInDate: document.getElementById('checkInDate').value,
-            checkOutDate: document.getElementById('checkOutDate').value
-        }));
+function showConfirmModal() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) {
+        modal.style.display = 'block';
     }
 }
-if (!isCustomer) {
-    const stored = sessionStorage.getItem('bookingData');
-    if (stored) {
-        try {
-            const data = JSON.parse(stored);
-            selectedRooms = data.selectedRooms || [];
-            guestCounts = data.guestCounts || {};
-            document.getElementById('checkInDate').value = data.checkInDate || '';
-            document.getElementById('checkOutDate').value = data.checkOutDate || '';
-            updateSelectedRoomsDisplay();
-            calculateTotal();
-        } catch (e) {
-            console.warn('Lỗi khi khôi phục dữ liệu đặt phòng:', e);
-        }
+window.onclick = function (event) {
+    const modal = document.getElementById('confirmModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
     }
+};
+function submitAndStay() {
+    document.getElementById('confirmModal').style.display = 'none';
 }
+
+function submitAndGo() {
+    window.location.href = 'cart.jsp';
+}
+
 
 // Export functions for global access
 window.changeGuest = changeGuest;
@@ -413,4 +447,3 @@ window.removeFromBooking = removeFromBooking;
 window.proceedToBooking = proceedToBooking;
 window.updateRoomQuantity = updateRoomQuantity;
 window.clearAllSelections = clearAllSelections;
-window.addEventListener('beforeunload', persistBookingData);
