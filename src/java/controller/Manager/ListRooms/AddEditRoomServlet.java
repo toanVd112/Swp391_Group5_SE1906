@@ -26,7 +26,7 @@ public class AddEditRoomServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
         String roomIdStr = request.getParameter("roomId");
 
@@ -40,7 +40,7 @@ public class AddEditRoomServlet extends HttpServlet {
                 try {
                     int roomId = Integer.parseInt(roomIdStr);
                     Room room = roomDAO.getRoomById(roomId);
-                    
+
                     if (room != null) {
                         request.setAttribute("room", room);
                     } else {
@@ -65,13 +65,13 @@ public class AddEditRoomServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Set encoding for Vietnamese characters
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-        
+
         try {
             if ("add".equals(action)) {
                 handleAddRoom(request, response);
@@ -89,18 +89,14 @@ public class AddEditRoomServlet extends HttpServlet {
 
     private void handleAddRoom(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        // Get form parameters
+
         String roomNumber = request.getParameter("roomNumber");
         String floorStr = request.getParameter("floor");
         String roomTypeIdStr = request.getParameter("roomTypeId");
         String status = request.getParameter("status");
-        String mainImageUrl = request.getParameter("mainImageUrl");
-        String[] detailImageUrls = request.getParameterValues("detailImageUrls");
 
-        // Validate required fields
         List<String> errors = validateRoomData(roomNumber, floorStr, roomTypeIdStr, status, null);
-        
+
         if (!errors.isEmpty()) {
             request.setAttribute("errorMessage", String.join(", ", errors));
             doGet(request, response);
@@ -111,26 +107,13 @@ public class AddEditRoomServlet extends HttpServlet {
             int floor = Integer.parseInt(floorStr);
             int roomTypeId = Integer.parseInt(roomTypeIdStr);
 
-            // Check if room number already exists
             if (roomDAO.isRoomNumberExists(roomNumber, null)) {
                 request.setAttribute("errorMessage", "Số phòng " + roomNumber + " đã tồn tại");
                 doGet(request, response);
                 return;
             }
 
-            // Process detail image URLs
-            List<String> detailImages = new ArrayList<>();
-            if (detailImageUrls != null) {
-                for (String url : detailImageUrls) {
-                    if (url != null && !url.trim().isEmpty()) {
-                        detailImages.add(url.trim());
-                    }
-                }
-            }
-
-            // Add room
-            boolean success = roomDAO.addRoom(roomNumber, floor, roomTypeId, status, 
-                                            mainImageUrl, detailImages);
+            boolean success = roomDAO.addRoom(roomNumber, floor, roomTypeId, status);
 
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=add");
@@ -147,19 +130,15 @@ public class AddEditRoomServlet extends HttpServlet {
 
     private void handleEditRoom(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        // Get form parameters
+
         String roomIdStr = request.getParameter("roomId");
         String roomNumber = request.getParameter("roomNumber");
         String floorStr = request.getParameter("floor");
         String roomTypeIdStr = request.getParameter("roomTypeId");
         String status = request.getParameter("status");
-        String mainImageUrl = request.getParameter("mainImageUrl");
-        String[] detailImageUrls = request.getParameterValues("detailImageUrls");
 
-        // Validate required fields
         List<String> errors = validateRoomData(roomNumber, floorStr, roomTypeIdStr, status, roomIdStr);
-        
+
         if (!errors.isEmpty()) {
             request.setAttribute("errorMessage", String.join(", ", errors));
             doGet(request, response);
@@ -171,26 +150,13 @@ public class AddEditRoomServlet extends HttpServlet {
             int floor = Integer.parseInt(floorStr);
             int roomTypeId = Integer.parseInt(roomTypeIdStr);
 
-            // Check if room number already exists (excluding current room)
             if (roomDAO.isRoomNumberExists(roomNumber, roomId)) {
                 request.setAttribute("errorMessage", "Số phòng " + roomNumber + " đã tồn tại");
                 doGet(request, response);
                 return;
             }
 
-            // Process detail image URLs
-            List<String> detailImages = new ArrayList<>();
-            if (detailImageUrls != null) {
-                for (String url : detailImageUrls) {
-                    if (url != null && !url.trim().isEmpty()) {
-                        detailImages.add(url.trim());
-                    }
-                }
-            }
-
-            // Update room
-            boolean success = roomDAO.updateRoom(roomId, roomNumber, floor, roomTypeId, status, 
-                                               mainImageUrl, detailImages);
+            boolean success = roomDAO.updateRoom(roomId, roomNumber, floor, roomTypeId, status);
 
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=edit");
@@ -205,8 +171,8 @@ public class AddEditRoomServlet extends HttpServlet {
         }
     }
 
-    private List<String> validateRoomData(String roomNumber, String floorStr, String roomTypeIdStr, 
-                                         String status, String roomIdStr) {
+    private List<String> validateRoomData(String roomNumber, String floorStr, String roomTypeIdStr,
+            String status, String roomIdStr) {
         List<String> errors = new ArrayList<>();
 
         // Validate room number

@@ -23,10 +23,9 @@ public class RoomType {
     public void setMaxGuests(int MaxGuests) {
         this.MaxGuests = MaxGuests;
     }
+
     public RoomType() {
     }
-
-    
 
     public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxguest) {
         this.roomTypeID = roomTypeID;
@@ -35,7 +34,7 @@ public class RoomType {
         this.basePrice = basePrice;
         this.imageUrl = imageUrl;
         this.roomDetail = roomDetail;
-        this.MaxGuests=maxguest;
+        this.MaxGuests = maxguest;
     }
 
     public RoomType(int roomTypeID, String name) {
@@ -119,6 +118,14 @@ public class RoomType {
         images.add(image);
     }
 
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String roomDetail, int maxGuests) {
+        this.roomTypeID = roomTypeID;
+        this.name = name;
+        this.description = description;
+        this.basePrice = basePrice;
+        this.roomDetail = roomDetail;
+        this.MaxGuests = maxGuests;
+    }
     private java.util.List<model.Amenity> amenities;
 
     public java.util.List<model.Amenity> getAmenities() {
