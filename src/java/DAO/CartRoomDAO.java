@@ -155,9 +155,12 @@ public class CartRoomDAO {
 
     public List<CartRoom> getCartByAccountId(int accountId) {
         List<CartRoom> list = new ArrayList<>();
-        String sql = "SELECT cr.RoomTypeID, rt.RoomName, rt.BasePrice, rt.ImageURL "
-                + "FROM CartRooms cr JOIN RoomTypes rt ON cr.RoomTypeID = rt.RoomTypeID "
-                + "WHERE cr.AccountID = ?";
+        String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, "
+                + "       rt.MaxGuests, "
+                + "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
+                + "FROM CartRooms c "
+                + "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID "
+                + "WHERE c.AccountID = ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -169,23 +172,60 @@ public class CartRoomDAO {
                 room.setRoomTypeId(rs.getInt("RoomTypeID"));
                 room.setRoomName(rs.getString("RoomName"));
                 room.setBasePrice(rs.getDouble("BasePrice"));
-                room.setImageUrl(rs.getString("ImageURL"));
+                room.setImageUrl(rs.getString("imageUrl"));
                 room.setMaxguest(rs.getInt("MaxGuests"));
                 room.setAvailableQuantity(rs.getInt("availableQuantity"));
                 list.add(room);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return list;
     }
 
+    public static boolean addToCart(int accountId, int roomTypeId, int quantity, int numGuests) {
+        String checkSql = "SELECT 1 FROM CartRooms WHERE AccountID = ? AND RoomTypeID = ?";
+        String updateSql = "UPDATE CartRooms SET Quantity = ?, NumGuests = ? WHERE AccountID = ? AND RoomTypeID = ?";
+        String insertSql = "INSERT INTO CartRooms (AccountID, RoomTypeID, Quantity, NumGuests) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DBConnect.getConnection()) {
+            // Check if exists
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, accountId);
+                checkStmt.setInt(2, roomTypeId);
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    // Update
+                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                        updateStmt.setInt(1, quantity);
+                        updateStmt.setInt(2, numGuests);
+                        updateStmt.setInt(3, accountId);
+                        updateStmt.setInt(4, roomTypeId);
+                        return updateStmt.executeUpdate() > 0;
+                    }
+                } else {
+                    // Insert
+                    try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                        insertStmt.setInt(1, accountId);
+                        insertStmt.setInt(2, roomTypeId);
+                        insertStmt.setInt(3, quantity);
+                        insertStmt.setInt(4, numGuests);
+                        return insertStmt.executeUpdate() > 0;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static void main(String[] args) {
         CartRoomDAO o = new CartRoomDAO();
-        List<Integer> roomIds = o.getRoomIdsByAccount(28);
-        List<Room> selectedRooms = o.getRoomsByIds(roomIds);
-        System.out.println(selectedRooms);
+        List<CartRoom> getCartByAccountId = o.getCartByAccountId(33);
+        System.out.println(getCartByAccountId.toString());
     }
 }

@@ -30,6 +30,10 @@
                     <i class="fas fa-tag"></i>
                     <span>Discount Code List</span>
                 </a>
+                <a href="${pageContext.request.contextPath}/roomoccupancy" class="menu-item" data-page="roomoccupancy">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Room Occupancy</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="menu-item" data-page="ListRoomsServlet">
                     <i class="fas fa-building"></i>
                     <span>View Room Status</span>
@@ -90,7 +94,6 @@
         </a>
     </div>
 </div>
-
 <style>
     /* Enhanced Sidebar Styles with Active States */
     .sidebar {

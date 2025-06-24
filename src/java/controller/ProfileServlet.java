@@ -19,6 +19,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.util.regex.Pattern;
+import java.util.Date;
 
 /**
  *
@@ -80,8 +81,20 @@ public class ProfileServlet extends HttpServlet {
         User user = userDao.getUserByAccountId(accountId);
         if (user != null) {
             session.setAttribute("user", user);
+                    // Chuyển đổi ngày sinh từ "dd/MM/yyyy" sang "yyyy-MM-dd" để hiển thị trên <input type="date">
+            String rawDob = user.getDateOfBirth();
+            String formattedDob = "";
+            if (rawDob != null && !rawDob.isEmpty()) {
+                try {
+                    Date parsedDate = new java.text.SimpleDateFormat("dd/MM/yyyy").parse(rawDob);
+                    formattedDob = new java.text.SimpleDateFormat("yyyy-MM-dd").format(parsedDate);
+                } catch (java.text.ParseException e) {
+                    formattedDob = ""; // fallback nếu lỗi định dạng
+                }
+            }
+            request.setAttribute("formattedDob", formattedDob);
         }
-        // Forward về JSP
+        // Forward về JSP   
         request.getRequestDispatcher("user_profile2.jsp")
            .forward(request, response);
     } 
@@ -108,7 +121,7 @@ public class ProfileServlet extends HttpServlet {
         String fullName = request.getParameter("fullName").trim();
         String email    = request.getParameter("email").trim();
         String phone    = request.getParameter("phone").trim();
-        String dob      = request.getParameter("dateOfBirth").trim();
+        String rawDob   = request.getParameter("dateOfBirth").trim(); // yyyy-MM-dd
         String address  = request.getParameter("address").trim();
 
         // Validate
@@ -117,19 +130,30 @@ public class ProfileServlet extends HttpServlet {
             error = "Họ tên chỉ chứa chữ và khoảng trắng, tối đa 30 ký tự.";
         } else if (!PHONE_RE.matcher(phone).matches()) {
             error = "Số điện thoại phải đúng 10 chữ số.";
-        } else if (!DOB_RE.matcher(dob).matches()) {
+        } else if (!DOB_RE.matcher(rawDob.replace("-", "/")).matches()) {
             error = "Ngày sinh chỉ số và '/', tối đa 15 ký tự.";
         } else if (address.length() > 30) {
             error = "Địa chỉ tối đa 30 ký tự.";
         }
 
+        // Chuyển định dạng ngày sinh: yyyy-MM-dd → dd/MM/yyyy
+        String dobFormatted = "";
+        if (error == null) {
+            try {
+                java.util.Date parsed = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(rawDob);
+                dobFormatted = new java.text.SimpleDateFormat("dd/MM/yyyy").format(parsed);
+            } catch (java.text.ParseException e) {
+                error = "Định dạng ngày sinh không hợp lệ.";
+            }
+        }
+        
         if (error != null) {
             // Trả lại lỗi và giữ tạm giá trị đã nhập
             request.setAttribute("errorMessage", error);
             request.setAttribute("tempFullName", fullName);
             request.setAttribute("tempEmail", email);
             request.setAttribute("tempPhone", phone);
-            request.setAttribute("tempDob", dob);
+            request.setAttribute("tempDob", rawDob);
             request.setAttribute("tempAddress", address);
             request.getRequestDispatcher("user_profile2.jsp")
                .forward(request, response);
@@ -143,7 +167,7 @@ public class ProfileServlet extends HttpServlet {
         user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
-        user.setDateOfBirth(dob);
+        user.setDateOfBirth(dobFormatted);
         user.setAddress(address);
 
         boolean ok = userDao.updateUser(user);
