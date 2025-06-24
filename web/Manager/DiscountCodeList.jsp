@@ -30,29 +30,33 @@
         .table th {
             background-color: #f8f9fa;
         }
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container mt-4">
         <h2>Discount Code Management</h2>
         <div class="d-flex justify-content-between mb-3 align-items-center">
-            <form method="GET" action="${pageContext.request.contextPath}/discountcodes/list" class="d-flex gap-2">
-                <input type="text" class="form-control" name="searchKeyword" placeholder="Search by code..." value="${currentSearchKeyword}" style="width: 200px;">
-                <select class="form-select" name="filterType" style="width: 150px;">
-                    <option value="">All Types</option>
-                    <option value="1" ${"1" == currentFilterType ? 'selected' : ''}>Percentage</option>
-                    <option value="2" ${"2" == currentFilterType ? 'selected' : ''}>Fixed Amount</option>
-                </select>
-                <select class="form-select" name="filterStatus" style="width: 150px;">
-                    <option value="">All Status</option>
-                    <option value="Active" ${"Active" == currentFilterStatus ? 'selected' : ''}>Active</option>
-                    <option value="Inactive" ${"Inactive" == currentFilterStatus ? 'selected' : ''}>Inactive</option>
-                </select>
-                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                <a href="${pageContext.request.contextPath}/discountcodes/list" class="btn btn-secondary btn-sm">Clear</a>
-            </form>
-            <button class="btn btn-success btn-sm ms-2" onclick="window.location.href = '${pageContext.request.contextPath}/Manager/manager.jsp?page=addDiscountCode.jsp'">Add New</button>
-        </div>
+    <form id="searchForm" method="GET" action="${pageContext.request.contextPath}/discountcodes/list" class="d-flex gap-2">
+        <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="Search by code..." value="${currentSearchKeyword}" style="width: 200px;" maxlength="50">
+        <select class="form-select" id="filterType" name="filterType" style="width: 150px;">
+            <option value="">All Types</option>
+            <option value="1" ${"1" == currentFilterType ? 'selected' : ''}>Percentage</option>
+            <option value="2" ${"2" == currentFilterType ? 'selected' : ''}>Fixed Amount</option>
+        </select>
+        <select class="form-select" id="filterStatus" name="filterStatus" style="width: 150px;">
+            <option value="">All Status</option>
+            <option value="Active" ${"Active" == currentFilterStatus ? 'selected' : ''}>Active</option>
+            <option value="Inactive" ${"Inactive" == currentFilterStatus ? 'selected' : ''}>Inactive</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <a href="${pageContext.request.contextPath}/discountcodes/list" class="btn btn-secondary btn-sm">Clear</a>
+    </form>
+    <button class="btn btn-success btn-sm ms-2" onclick="window.location.href = '${pageContext.request.contextPath}/Manager/manager.jsp?page=addDiscountCode.jsp'">Add New</button>
+</div>
 
         <table class="table table-bordered table-striped">
             <thead>
@@ -105,7 +109,48 @@
             </tbody>
         </table>
 
+        <!-- Pagination -->
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <!-- First Page -->
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="${pageContext.request.contextPath}/discountcodes/list?page=1&searchKeyword=${currentSearchKeyword}&filterType=${currentFilterType}&filterStatus=${currentFilterStatus}">««</a>
+                    </li>
+                    <!-- Previous Page -->
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="${pageContext.request.contextPath}/discountcodes/list?page=${currentPage - 1}&searchKeyword=${currentSearchKeyword}&filterType=${currentFilterType}&filterStatus=${currentFilterStatus}">«</a>
+                    </li>
+                    <!-- Page Numbers -->
+                    <c:forEach begin="${currentPage - 2 > 0 ? currentPage - 2 : 1}" end="${currentPage + 2 <= totalPages ? currentPage + 2 : totalPages}" var="i">
+                        <li class="page-item ${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" href="${pageContext.request.contextPath}/discountcodes/list?page=${i}&searchKeyword=${currentSearchKeyword}&filterType=${currentFilterType}&filterStatus=${currentFilterStatus}">${i}</a>
+                        </li>
+                    </c:forEach>
+                    <!-- Next Page -->
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="${pageContext.request.contextPath}/discountcodes/list?page=${currentPage + 1}&searchKeyword=${currentSearchKeyword}&filterType=${currentFilterType}&filterStatus=${currentFilterStatus}">»</a>
+                    </li>
+                    <!-- Last Page -->
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="${pageContext.request.contextPath}/discountcodes/list?page=${totalPages}&searchKeyword=${currentSearchKeyword}&filterType=${currentFilterType}&filterStatus=${currentFilterStatus}">»»</a>
+                    </li>
+                </ul>
+            </nav>
+        </c:if>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        const searchKeyword = document.getElementById('searchKeyword').value.trim();
+        if (searchKeyword.length > 50) {
+            alert('Search keyword must not exceed 50 characters.');
+            event.preventDefault();
+            return;
+        }
+        // Type and status are restricted by <select> options, no additional validation needed
+    });
+</script>
         <script>
             let msg = '${msg}';
             if (msg !== '') {
@@ -113,7 +158,7 @@
             }
 
             function toggleStatus(discountCodeId) {
-                console.log("Toggling status for ID:", discountCodeId); // Debug log
+                console.log("Toggling status for ID:", discountCodeId);
                 if (!Number.isInteger(discountCodeId) || discountCodeId <= 0) {
                     alert("Invalid discount code ID.");
                     return;
@@ -141,7 +186,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error("Toggle error:", error); // Debug log
+                    console.error("Toggle error:", error);
                     if (error.message.includes("Unauthorized")) {
                         alert("Your session has expired. Please log in again.");
                         window.location.href = '${pageContext.request.contextPath}/login.jsp';

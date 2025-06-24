@@ -9,29 +9,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscountCodeDAO {
+    // Check if code is duplicated
+    public boolean isDuplicatedCode(String code) {
+        String sql = "SELECT COUNT(*) FROM discountcodes WHERE Code = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-    // Get a single discount code by ID
+    // Add discount code
+    public boolean addDiscountCode(DiscountCode dc) {
+        String sql = "INSERT INTO discountcodes (Code, DiscountPercent, ExpiryDate, type, status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, dc.getCode());
+            ps.setDouble(2, dc.getDiscountPercent());
+            ps.setObject(3, dc.getExpiryDate());
+            ps.setString(4, dc.getType());
+            ps.setString(5, dc.getStatus());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Update discount code
+    public boolean updateDiscountCode(DiscountCode dc) {
+        String sql = "UPDATE discountcodes SET Code = ?, DiscountPercent = ?, ExpiryDate = ?, type = ?, status = ? WHERE DiscountCodeID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, dc.getCode());
+            ps.setDouble(2, dc.getDiscountPercent());
+            ps.setObject(3, dc.getExpiryDate());
+            ps.setString(4, dc.getType());
+            ps.setString(5, dc.getStatus());
+            ps.setInt(6, dc.getDiscountCodeID());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Get discount code by ID
     public DiscountCode getDiscountCodeByID(int id) {
-        DiscountCode dc = null;
         String sql = "SELECT * FROM discountcodes WHERE DiscountCodeID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    dc = new DiscountCode();
+                    DiscountCode dc = new DiscountCode();
                     dc.setDiscountCodeID(rs.getInt("DiscountCodeID"));
                     dc.setCode(rs.getString("Code"));
                     dc.setDiscountPercent(rs.getDouble("DiscountPercent"));
                     dc.setExpiryDate(rs.getObject("ExpiryDate", LocalDate.class));
                     dc.setType(rs.getString("type"));
                     dc.setStatus(rs.getString("status"));
+                    return dc;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dc;
+        return null;
     }
+
+    
 
     // Get all distinct discount code types
     public List<String> getAllDistinctDiscountTypes() {
@@ -46,9 +96,7 @@ public class DiscountCodeDAO {
         }
         return types;
     }
-
-    // Get filtered discount codes
-    public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, String status) {
+public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, String status, int page, int recordsPerPage) {
         List<DiscountCode> discountCodes = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM discountcodes WHERE 1=1");
         List<Object> params = new ArrayList<>();
@@ -67,6 +115,13 @@ public class DiscountCodeDAO {
         }
 
         sql.append(" ORDER BY DiscountCodeID ASC");
+
+        // Add pagination
+        if (recordsPerPage > 0) {
+            sql.append(" LIMIT ? OFFSET ?");
+            params.add(recordsPerPage);
+            params.add((page - 1) * recordsPerPage);
+        }
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
@@ -90,62 +145,53 @@ public class DiscountCodeDAO {
         return discountCodes;
     }
 
-    // Add a new discount code
-    public boolean addDiscountCode(DiscountCode dc) {
-        String sql = "INSERT INTO discountcodes (Code, DiscountPercent, ExpiryDate, type, status) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dc.getCode());
-            ps.setDouble(2, dc.getDiscountPercent());
-            ps.setObject(3, dc.getExpiryDate());
-            ps.setString(4, dc.getType());
-            ps.setString(5, dc.getStatus());
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    // Count total discount codes for pagination
+    public int getTotalDiscountCodes(String keyword, String type, String status) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM discountcodes WHERE 1=1");
+        List<Object> params = new ArrayList<>();
 
-    // Update an existing discount code
-    public boolean updateDiscountCode(DiscountCode dc) {
-        String sql = "UPDATE discountcodes SET Code = ?, DiscountPercent = ?, ExpiryDate = ?, type = ?, status = ? WHERE DiscountCodeID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dc.getCode());
-            ps.setDouble(2, dc.getDiscountPercent());
-            ps.setObject(3, dc.getExpiryDate());
-            ps.setString(4, dc.getType());
-            ps.setString(5, dc.getStatus());
-            ps.setInt(6, dc.getDiscountCodeID());
-            return ps.executeUpdate() > 0;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND Code LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (type != null && !type.trim().isEmpty()) {
+            sql.append(" AND type = ?");
+            params.add(type.trim());
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND status = ?");
+            params.add(status.trim());
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return 0;
     }
+    
+    
 
     // Toggle discount code status (Active/Inactive)
     public boolean toggleDiscountCodeStatus(int id) {
         String sql = "UPDATE discountcodes SET status = CASE WHEN status = 'Active' THEN 'Inactive' ELSE 'Active' END WHERE DiscountCodeID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Check for duplicate discount code
-    public boolean isDuplicatedCode(String code) {
-        String sql = "SELECT 1 FROM discountcodes WHERE Code = ? LIMIT 1";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, code);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+   
 }

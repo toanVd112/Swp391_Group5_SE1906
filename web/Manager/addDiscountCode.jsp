@@ -20,18 +20,21 @@
 <body>
     <div class="container mt-4">
         <h2>Add New Discount Code</h2>
-        <form method="POST" action="${pageContext.request.contextPath}/discountcodes/add">
+        <form id="addDiscountForm" method="POST" action="${pageContext.request.contextPath}/discountcodes/add">
             <div class="mb-3">
                 <label for="code" class="form-label">Code</label>
-                <input type="text" class="form-control" id="code" name="code" required>
+                <input type="text" class="form-control" id="code" name="code" maxlength="50" required pattern="[A-Za-z0-9]+">
+                <div class="invalid-feedback">Code must be alphanumeric, up to 50 characters.</div>
             </div>
             <div class="mb-3">
                 <label for="discountPercent" class="form-label">Discount Value</label>
-                <input type="number" step="0.01" class="form-control" id="discountPercent" name="discountPercent" required>
+                <input type="number" step="0.01" min="0" class="form-control" id="discountPercent" name="discountPercent" required>
+                <div class="invalid-feedback" id="discountPercentFeedback">Discount must be valid.</div>
             </div>
             <div class="mb-3">
                 <label for="expiryDate" class="form-label">Expiry Date</label>
                 <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+                <div class="invalid-feedback">Expiry date must be today or later.</div>
             </div>
             <div class="mb-3">
                 <label for="type" class="form-label">Type</label>
@@ -58,5 +61,74 @@
         </c:if>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const typeSelect = document.getElementById('type');
+        const discountPercentInput = document.getElementById('discountPercent');
+        const discountPercentFeedback = document.getElementById('discountPercentFeedback');
+
+        // Update discountPercent validation based on type
+        function updateDiscountValidation() {
+            if (typeSelect.value === '1') {
+                discountPercentInput.setAttribute('max', '99');
+                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 99.00 for Percentage.';
+            } else {
+                discountPercentInput.setAttribute('max', '999.99');
+                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 999.99 for Fixed Amount.';
+            }
+        }
+
+        // Initialize validation on page load
+        updateDiscountValidation();
+
+        // Update validation when type changes
+        typeSelect.addEventListener('change', updateDiscountValidation);
+
+        // Form submission validation
+        document.getElementById('addDiscountForm').addEventListener('submit', function(event) {
+            const code = document.getElementById('code').value.trim();
+            const discountPercent = parseFloat(discountPercentInput.value);
+            const expiryDate = new Date(document.getElementById('expiryDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let isValid = true;
+
+            // Validate code
+            if (!/^[A-Za-z0-9]+$/.test(code) || code.length > 50 || code.length === 0) {
+                document.getElementById('code').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('code').classList.remove('is-invalid');
+            }
+
+            // Validate discountPercent based on type
+            if (isNaN(discountPercent) || discountPercent < 0) {
+                discountPercentInput.classList.add('is-invalid');
+                isValid = false;
+            } else if (typeSelect.value === '1' && discountPercent > 99) {
+                discountPercentInput.classList.add('is-invalid');
+                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 99.00 for Percentage.';
+                isValid = false;
+            } else if (typeSelect.value === '2' && discountPercent > 999.99) {
+                discountPercentInput.classList.add('is-invalid');
+                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 999.99 for Fixed Amount.';
+                isValid = false;
+            } else {
+                discountPercentInput.classList.remove('is-invalid');
+            }
+
+            // Validate expiryDate
+            if (isNaN(expiryDate.getTime()) || expiryDate < today) {
+                document.getElementById('expiryDate').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('expiryDate').classList.remove('is-invalid');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
