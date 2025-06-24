@@ -15,7 +15,7 @@ public class RoomType {
     private int availableRooms;
     private java.util.List<model.RoomImage> images; // Thêm danh sách ảnh
     private int MaxGuests;
-
+    
     public int getMaxGuests() {
         return MaxGuests;
     }
@@ -35,6 +35,16 @@ public class RoomType {
         this.imageUrl = imageUrl;
         this.roomDetail = roomDetail;
         this.MaxGuests = maxguest;
+    }
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxguest,int available) {
+        this.roomTypeID = roomTypeID;
+        this.name = name;
+        this.description = description;
+        this.basePrice = basePrice;
+        this.imageUrl = imageUrl;
+        this.roomDetail = roomDetail;
+        this.MaxGuests = maxguest;
+        this.availableRooms=available;
     }
 
     public RoomType(int roomTypeID, String name) {

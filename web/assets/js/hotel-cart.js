@@ -3,7 +3,7 @@ let selectedRooms = [];
 let guestCounts = {};
 
 // Initialize guest counts for all rooms
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize guest counts for each room
     const roomCards = document.querySelectorAll('.room-card');
     roomCards.forEach(card => {
@@ -16,54 +16,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         updateGuestDisplay(roomTypeId);
     });
-    
+
     // Set default dates if not set
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     const checkInInput = document.getElementById('checkInDate');
     const checkOutInput = document.getElementById('checkOutDate');
-    
+
     if (!checkInInput.value) {
         checkInInput.value = today.toISOString().split('T')[0];
     }
     if (!checkOutInput.value) {
         checkOutInput.value = tomorrow.toISOString().split('T')[0];
     }
-    
+
     calculateTotal();
 });
 
 // Function to change guest count
 function changeGuest(roomTypeId, guestType, change) {
     if (!guestCounts[roomTypeId]) {
-        guestCounts[roomTypeId] = { adults: 2, children: 0 };
+        guestCounts[roomTypeId] = {adults: 2, children: 0};
     }
-    
+
     const currentCount = guestCounts[roomTypeId][guestType];
     const newCount = currentCount + change;
-    
+
     // Validation
-    if (guestType === 'adults' && newCount < 1) return;
-    if (guestType === 'children' && newCount < 0) return;
-    
+    if (guestType === 'adults' && newCount < 1)
+        return;
+    if (guestType === 'children' && newCount < 0)
+        return;
+
     // Get max guest limit from room card
     const roomCard = document.querySelector(`[data-room-type-id="${roomTypeId}"]`);
     const maxGuestText = roomCard.querySelector('.room-details div').textContent;
     const maxGuest = parseInt(maxGuestText.match(/\d+/)[0]);
-    
-    const totalGuests = (guestType === 'adults' ? newCount : guestCounts[roomTypeId].adults) + 
-                       (guestType === 'children' ? newCount : guestCounts[roomTypeId].children);
-    
+
+    const totalGuests = (guestType === 'adults' ? newCount : guestCounts[roomTypeId].adults) +
+            (guestType === 'children' ? newCount : guestCounts[roomTypeId].children);
+
     if (totalGuests > maxGuest) {
         alert(`Số lượng khách không được vượt quá ${maxGuest} người`);
         return;
     }
-    
+
     guestCounts[roomTypeId][guestType] = newCount;
     updateGuestDisplay(roomTypeId);
-    
+
     // Update selected room if it exists
     const selectedRoom = selectedRooms.find(room => room.roomTypeId === roomTypeId);
     if (selectedRoom) {
@@ -78,7 +80,7 @@ function changeGuest(roomTypeId, guestType, change) {
 function updateGuestDisplay(roomTypeId) {
     const adultsElement = document.getElementById(`adults_${roomTypeId}`);
     const childrenElement = document.getElementById(`children_${roomTypeId}`);
-    
+
     if (adultsElement) {
         adultsElement.textContent = guestCounts[roomTypeId].adults;
     }
@@ -90,44 +92,46 @@ function updateGuestDisplay(roomTypeId) {
 // Function to add room to booking
 function addToBooking(roomTypeId) {
     const roomCard = document.querySelector(`[data-room-type-id="${roomTypeId}"]`);
-    if (!roomCard) return;
-    
-    // Check if room is already selected
-    const existingRoom = selectedRooms.find(room => room.roomTypeId === roomTypeId);
-    if (existingRoom) {
-        alert('Phòng này đã được thêm vào đặt phòng');
+    if (!roomCard)
         return;
-    }
-    
-    // Extract room information
+
     const roomName = roomCard.querySelector('h3').textContent.replace('Phòng loại: ', '');
     const priceText = roomCard.querySelector('.price-amount').textContent;
     const basePrice = parseInt(priceText.replace(/[^\d]/g, ''));
     const imageUrl = roomCard.querySelector('img').src;
     const maxGuestText = roomCard.querySelector('.room-details div').textContent;
     const maxGuest = parseInt(maxGuestText.match(/\d+/)[0]);
-    
-    // Create room object
-    const roomData = {
-        roomTypeId: roomTypeId,
-        roomName: roomName,
-        basePrice: basePrice,
-        imageUrl: imageUrl,
-        maxGuest: maxGuest,
-        adults: guestCounts[roomTypeId].adults,
-        children: guestCounts[roomTypeId].children || 0,
-        quantity: 1
-    };
-    
-    // Add to selected rooms
-    selectedRooms.push(roomData);
-    
-    // Update displays
+
+    const quantity = quantityDrafts[roomTypeId] || 1;
+    const adults = guestCounts[roomTypeId].adults;
+    const children = guestCounts[roomTypeId].children || 0;
+
+    const existingRoom = selectedRooms.find(room => room.roomTypeId === roomTypeId);
+    if (existingRoom) {
+        // 🔄 Cập nhật lại nếu đã có
+        existingRoom.quantity = quantity;
+        existingRoom.adults = adults;
+        existingRoom.children = children;
+        showNotification('Đã cập nhật lại thông tin phòng.', 'info');
+    } else {
+        // ➕ Thêm mới nếu chưa có
+        const roomData = {
+            roomTypeId,
+            roomName,
+            basePrice,
+            imageUrl,
+            maxGuest,
+            adults,
+            children,
+            quantity
+        };
+        selectedRooms.push(roomData);
+        showNotification('Đã thêm phòng vào đặt phòng thành công!', 'success');
+    }
+
     updateSelectedRoomsDisplay();
     calculateTotal();
-    
-    // Show success message
-    showNotification('Đã thêm phòng vào đặt phòng thành công!', 'success');
+    persistBookingData();
 }
 
 // Function to remove room from booking
@@ -141,7 +145,7 @@ function removeFromBooking(roomTypeId) {
 // Function to update selected rooms display
 function updateSelectedRoomsDisplay() {
     const selectedRoomsList = document.getElementById('selectedRoomsList');
-    
+
     if (selectedRooms.length === 0) {
         selectedRoomsList.innerHTML = `
             <div class="empty-selection">
@@ -151,7 +155,7 @@ function updateSelectedRoomsDisplay() {
         `;
         return;
     }
-    
+
     selectedRoomsList.innerHTML = selectedRooms.map(room => `
         <div class="selected-room-item" data-room-id="${room.roomTypeId}">
             <div class="selected-room-info">
@@ -178,36 +182,37 @@ function updateSelectedRoomsDisplay() {
 function calculateTotal() {
     const checkInDate = document.getElementById('checkInDate').value;
     const checkOutDate = document.getElementById('checkOutDate').value;
-    
-    if (!checkInDate || !checkOutDate) return;
-    
+
+    if (!checkInDate || !checkOutDate)
+        return;
+
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
     const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-    
+
     if (nights <= 0) {
         alert('Ngày trả phòng phải sau ngày nhận phòng');
         return;
     }
-    
+
     // Update nights display
     document.getElementById('nightsCount').textContent = `${nights} đêm`;
-    
+
     // Calculate room total
     let roomsTotal = 0;
     selectedRooms.forEach(room => {
         roomsTotal += room.basePrice * nights * room.quantity;
     });
-    
+
     // Calculate tax (10%)
     const taxAmount = Math.round(roomsTotal * 0.1);
     const grandTotal = roomsTotal + taxAmount;
-    
+
     // Update price display
     document.getElementById('roomsTotal').textContent = formatPrice(roomsTotal) + ' VND';
     document.getElementById('taxAmount').textContent = formatPrice(taxAmount) + ' VND';
     document.getElementById('grandTotal').textContent = formatPrice(grandTotal) + ' VND';
-    
+
     // Enable/disable booking button
     const bookingBtn = document.getElementById('bookingBtn');
     if (selectedRooms.length > 0 && nights > 0) {
@@ -230,15 +235,15 @@ function proceedToBooking() {
         alert('Vui lòng chọn ít nhất một phòng');
         return;
     }
-    
+
     const checkInDate = document.getElementById('checkInDate').value;
     const checkOutDate = document.getElementById('checkOutDate').value;
-    
+
     if (!checkInDate || !checkOutDate) {
         alert('Vui lòng chọn ngày nhận phòng và trả phòng');
         return;
     }
-    
+
     // Prepare booking data
     const bookingData = {
         checkInDate: checkInDate,
@@ -246,10 +251,10 @@ function proceedToBooking() {
         selectedRooms: selectedRooms,
         totalAmount: document.getElementById('grandTotal').textContent.replace(/[^\d]/g, '')
     };
-    
+
     // Store in session storage for next page
     sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
-    
+
     // Redirect to booking confirmation page
     window.location.href = 'booking-confirmation.jsp';
 }
@@ -261,7 +266,7 @@ function showNotification(message, type = 'info') {
     if (existingNotification) {
         existingNotification.remove();
     }
-    
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `booking-notification ${type}`;
@@ -274,10 +279,10 @@ function showNotification(message, type = 'info') {
             </button>
         </div>
     `;
-    
+
     // Add to page
     document.body.appendChild(notification);
-    
+
     // Auto remove after 3 seconds
     setTimeout(() => {
         if (notification.parentElement) {
@@ -289,37 +294,39 @@ function showNotification(message, type = 'info') {
 // Function to update room quantity (if needed)
 function updateRoomQuantity(roomTypeId, change) {
     const room = selectedRooms.find(r => r.roomTypeId === roomTypeId);
-    if (!room) return;
-    
+    if (!room)
+        return;
+
     const newQuantity = room.quantity + change;
-    if (newQuantity < 1) return;
-    
+    if (newQuantity < 1)
+        return;
+
     room.quantity = newQuantity;
     updateSelectedRoomsDisplay();
     calculateTotal();
 }
 
 // Event listeners for date changes
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const checkInInput = document.getElementById('checkInDate');
     const checkOutInput = document.getElementById('checkOutDate');
-    
+
     if (checkInInput) {
-        checkInInput.addEventListener('change', function() {
+        checkInInput.addEventListener('change', function () {
             // Ensure check-out is after check-in
             const checkInDate = new Date(this.value);
             const checkOutDate = new Date(checkOutInput.value);
-            
+
             if (checkOutDate <= checkInDate) {
                 const newCheckOut = new Date(checkInDate);
                 newCheckOut.setDate(newCheckOut.getDate() + 1);
                 checkOutInput.value = newCheckOut.toISOString().split('T')[0];
             }
-            
+
             calculateTotal();
         });
     }
-    
+
     if (checkOutInput) {
         checkOutInput.addEventListener('change', calculateTotal);
     }
@@ -333,6 +340,72 @@ function clearAllSelections() {
     showNotification('Đã xóa tất cả phòng đã chọn', 'info');
 }
 
+function changeRoomQty(roomTypeId, delta) {
+    const max = parseInt(document.getElementById(`maxQty_${roomTypeId}`).value);
+    const span = document.getElementById(`roomQty_${roomTypeId}`);
+
+    // Tìm phòng đã chọn
+    const room = selectedRooms.find(r => r.roomTypeId === roomTypeId);
+    if (!room) {
+        showNotification('Bạn cần thêm phòng này trước khi chỉnh số lượng.', 'error');
+        return;
+    }
+
+    let newQty = room.quantity + delta;
+    if (newQty < 1)
+        newQty = 1;
+    if (newQty > max)
+        newQty = max;
+
+    // Cập nhật dữ liệu và giao diện
+    room.quantity = newQty;
+    span.textContent = newQty;
+
+    updateSelectedRoomsDisplay();
+    calculateTotal();
+}
+let quantityDrafts = {}; // lưu quantity tạm thời theo roomTypeId
+function updateQuantityDraft(roomTypeId, delta, maxAvailable) {
+    if (!quantityDrafts[roomTypeId]) {
+        quantityDrafts[roomTypeId] = 1;
+    }
+
+    let newQty = quantityDrafts[roomTypeId] + delta;
+    if (newQty < 1)
+        newQty = 1;
+    if (newQty > maxAvailable)
+        newQty = maxAvailable;
+
+    quantityDrafts[roomTypeId] = newQty;
+    document.getElementById(`roomQty_${roomTypeId}`).textContent = newQty;
+}
+function persistBookingData() {
+    if (!isCustomer) {
+        sessionStorage.setItem('bookingData', JSON.stringify({
+            selectedRooms,
+            guestCounts,
+            checkInDate: document.getElementById('checkInDate').value,
+            checkOutDate: document.getElementById('checkOutDate').value
+        }));
+    }
+}
+if (!isCustomer) {
+    const stored = sessionStorage.getItem('bookingData');
+    if (stored) {
+        try {
+            const data = JSON.parse(stored);
+            selectedRooms = data.selectedRooms || [];
+            guestCounts = data.guestCounts || {};
+            document.getElementById('checkInDate').value = data.checkInDate || '';
+            document.getElementById('checkOutDate').value = data.checkOutDate || '';
+            updateSelectedRoomsDisplay();
+            calculateTotal();
+        } catch (e) {
+            console.warn('Lỗi khi khôi phục dữ liệu đặt phòng:', e);
+        }
+    }
+}
+
 // Export functions for global access
 window.changeGuest = changeGuest;
 window.addToBooking = addToBooking;
@@ -340,3 +413,4 @@ window.removeFromBooking = removeFromBooking;
 window.proceedToBooking = proceedToBooking;
 window.updateRoomQuantity = updateRoomQuantity;
 window.clearAllSelections = clearAllSelections;
+window.addEventListener('beforeunload', persistBookingData);
