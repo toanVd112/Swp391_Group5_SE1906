@@ -89,9 +89,10 @@ public class LoginCustomerServlet extends HttpServlet {
             // 60 phút (3600 giây)
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
 
-            session.setAttribute("user", account);
-//            session.setAttribute("accountId", account.getAccountID());
+            session.setAttribute("account", account);
+            session.setAttribute("accountId", account.getAccountID());
 
+            
             response.sendRedirect("Home");
         } else {
             request.setAttribute("username", username);
