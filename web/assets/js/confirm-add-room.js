@@ -1,14 +1,10 @@
 let currentForm = null;
 
-function confirmAddRoom(form) {
-    currentForm = form;
-    document.getElementById("confirmModal").style.display = "block";
-    return false; // Ngăn form submit ngay
-}
+
 
 function submitAndStay() {
     document.getElementById("confirmModal").style.display = "none";
-    currentForm.action = "Home";
+    currentForm.action = "addToGuestCart?redirect=Home";
     currentForm.submit();
 }
 

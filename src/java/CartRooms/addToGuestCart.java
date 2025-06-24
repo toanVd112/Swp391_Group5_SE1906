@@ -4,6 +4,7 @@
  */
 package CartRooms;
 
+import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -38,7 +39,7 @@ public class addToGuestCart extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-           response.sendRedirect("Home");
+            response.sendRedirect("Home");
         }
     }
 
@@ -54,8 +55,7 @@ public class addToGuestCart extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-      
-         response.sendRedirect("Home");
+
     }
 
     /**
@@ -67,6 +67,7 @@ public class addToGuestCart extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+   
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -87,11 +88,22 @@ public class addToGuestCart extends HttpServlet {
             item.put("basePrice", request.getParameter("basePrice"));
             item.put("imageUrl", request.getParameter("imageUrl"));
             item.put("maxguest", request.getParameter("maxguest"));
+
+            // 👇 Thêm số lượng phòng còn trống hiện tại
+            int availableQty = new RoomDAO().getAvailableRoomCount(roomTypeId);
+            item.put("availableQuantity", String.valueOf(availableQty));
+
             cart.add(item);
         }
 
         session.setAttribute("guestCart", cart);
-        response.sendRedirect("myrooms_db.jsp"); // hoặc trang hiện tại
+
+        String redirect = request.getParameter("redirect");
+        if (redirect != null && !redirect.isEmpty()) {
+            response.sendRedirect(redirect);
+        } else {
+            response.sendRedirect("myrooms_db.jsp");
+        }
     }
 
     /**

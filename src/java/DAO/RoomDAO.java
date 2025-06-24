@@ -62,7 +62,7 @@ public class RoomDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 RoomType roomType = new RoomType(
-                         rs.getInt("RoomtypeID"),
+                        rs.getInt("RoomtypeID"),
                         rs.getString("Name"),
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
@@ -160,7 +160,7 @@ public class RoomDAO {
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                         rs.getInt("RoomtypeID"),
+                        rs.getInt("RoomtypeID"),
                         rs.getString("Name"),
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
@@ -183,4 +183,17 @@ public class RoomDAO {
         return null;
     }
 
+    public int getAvailableRoomCount(String roomTypeId) {
+        String sql = "SELECT COUNT(*) FROM Rooms WHERE RoomTypeID = ? AND Status = 'Available'";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

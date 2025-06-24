@@ -22,7 +22,7 @@
         <meta name="description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Kh?ch s?n HoĐ?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
@@ -326,7 +326,7 @@
                                     <c:choose>
                                         <%-- Nếu người dùng đã đăng nhập --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="UserCartServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
                                         <%-- Nếu chưa đăng nhập --%>
@@ -368,6 +368,15 @@
                 </div>
                 <!-- Main Slider -->
                 <div class="content-block">
+                    <c:choose>
+                        <c:when test="${sessionScope.account != null}">
+                            <c:set var="isCustomer" value="true"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="isCustomer" value="false"/>
+                        </c:otherwise>
+                    </c:choose>
+
                     <!-- Popular Rooms -->
                     <div class="section-area section-sp2 popular-rooms-bx">
                         <div class="container">
@@ -389,8 +398,17 @@
 
                                                     <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
                                                     <!-- Thay nút xem phòng bằng nút đặt -->
+
                                                     <c:choose>
-                                                        <c:when test="${sessionScope.account == null}">
+                                                        <c:when test="${isCustomer}">
+                                                            <form method="post" action="customerCart">
+                                                                <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
+                                                                <button type="submit" class="btn btn-success btn-sm">
+                                                                    <i class="fa fa-plus"></i> Đặt phòngppp
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                        <c:otherwise>
                                                             <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);">
                                                                 <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
                                                                 <input type="hidden" name="roomName" value="${room.name}">
@@ -401,18 +419,9 @@
                                                                     <i class="fa fa-plus"></i> Đặt phòng
                                                                 </button>
                                                             </form>
-
-                                                        </c:when>
-
-                                                        <c:otherwise>
-                                                            <!-- Đã login: gọi servlet (gửi về DB) -->
-                                                            <button class="btn btn-success btn-sm"
-                                                                    onclick="addRoomTypeToDatabase(this)"
-                                                                    data-id="${room.roomTypeID}">
-                                                                <i class="fa fa-plus"></i> Đặt phòng 
-                                                            </button>
                                                         </c:otherwise>
                                                     </c:choose>
+
 
 
                                                 </div>
@@ -736,7 +745,7 @@
         <script src='assets/vendors/switcher/switcher.js'></script>
         <script src="assets/js/hotel-cart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      
+
         <!-- CSS (nếu dùng modal/custom style) -->
 
         <!-- JS -->
@@ -775,15 +784,6 @@
         </div>
 
         <!-- Confirm Modal -->
-        <div id="confirmModal" class="confirm-modal">
-            <div class="confirm-modal-content">
-                <p>Phòng đã được thêm vào giỏ. Bạn muốn làm gì tiếp theo?</p>
-                <div class="confirm-modal-actions">
-                    <button onclick="submitAndStay()">🛏 Đặt tiếp</button>
-                    <button onclick="submitAndGo()">📋 Xem phòng đã chọn</button>
-                </div>
-            </div>
-        </div>
 
     </body>
 

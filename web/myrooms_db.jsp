@@ -261,15 +261,28 @@
             <p>DEBUG size: ${fn:length(selectedRooms)}</p>
 
             <div class="booking-content">
+                <c:choose>
+                    <c:when test="${sessionScope.account != null}">
+                        <c:set var="isCustomer" value="true"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="isCustomer" value="false"/>
+                    </c:otherwise>
+                </c:choose>
+                <script>
+                    const isCustomer = ${sessionScope.account != null ? "true" : "false"};
+                </script>
                 <!-- Room Selection Panel -->
                 <div class="room-selection-panel">
+
                     <h2 class="panel-title"><i class="fas fa-bed"></i> Available Rooms</h2>
+
 
                     <c:choose>
                         <c:when test="${not empty guestCart}">
                             <c:forEach var="room" items="${guestCart}" varStatus="status">
                                 <div class="room-card" data-room-type-id="${room.roomTypeId}">
-                                    <img src="${room.imageUrl}" width="120" height="90" style="object-fit:cover; border-radius:6px;">
+                                    <img src="${room.imageUrl}" width="200" height="150" style="object-fit:cover; border-radius:6px;">
                                     <div class="room-header">
                                         <div class="room-info">
                                             <h3>Phòng loại: ${room.roomName}</h3>
@@ -292,7 +305,7 @@
                                         </h4>
                                         <div class="guest-controls">
                                             <div class="guest-control">
-                                                <label>Người lớn</label>
+                                                <label>Thành viên</label>
                                                 <div class="counter-group">
                                                     <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'adults', -1)">
                                                         <i class="fas fa-minus"></i>
@@ -302,6 +315,18 @@
                                                         <i class="fas fa-plus"></i>
                                                     </button>
                                                 </div>
+
+                                                <label>Số lượng phòng</label>
+                                                <div class="counter-group">
+                                                    <button class="counter-btn" onclick="updateQuantityDraft('${room.roomTypeId}', -1, ${room.availableQuantity})"> <i class="fas fa-minus"></i></button>
+                                                    <span class="counter-value"  id="roomQty_${room.roomTypeId}">1</span>
+                                                    <button class="counter-btn" onclick="updateQuantityDraft('${room.roomTypeId}', 1, ${room.availableQuantity})"> <i class="fas fa-plus"></i></button>
+                                                </div>
+
+                                                <input type="hidden" id="maxQty_${room.roomTypeId}" value="${room.availableQuantity}" />
+                                                <div><i class="fas fa-users"></i> Số phòng còn lại: ${room.availableQuantity} </div>
+
+
                                             </div>
 
                                         </div>
@@ -309,9 +334,29 @@
 
                                     <!-- Action Buttons -->
                                     <div class="room-actions">
-                                        <button type="button" class="btn btn-primary" onclick="addToBooking('${room.roomTypeId}')">
-                                            <i class="fas fa-plus"></i> Thêm vào đặt phòng
-                                        </button>
+                                        <c:choose>
+                                            <c:when test="${isCustomer}">
+                                                <form method="post" action="customerCart" style="display: inline;">
+                                                    <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fa fa-plus"></i> Thêm vào đặt phòng
+                                                    </button>
+                                                </form>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);" style="display: inline;">
+                                                    <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
+                                                    <input type="hidden" name="roomName" value="${room.roomName}">
+                                                    <input type="hidden" name="basePrice" value="${room.basePrice}">
+                                                    <input type="hidden" name="imageUrl" value="${room.imageUrl}">
+                                                    <input type="hidden" name="maxguest" value="${room.maxguest}">
+                                                    <button type="submit" class="btn btn-warning btn-sm">
+                                                        <i class="fa fa-plus"></i> Đặt phòng
+                                                    </button>
+                                                </form>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                         <form method="post" action="RemoveFromGuestCartServlet" style="display: inline;">
                                             <input type="hidden" name="roomTypeId" value="${room.roomTypeId}">
                                             <button type="submit" class="btn btn-danger">

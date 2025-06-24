@@ -6,6 +6,7 @@ package DAO;
 
 import java.util.*;
 import java.sql.*;
+import model.CartRoom;
 import model.MaintenanceRequest;
 import model.Room;
 import model.RoomInspectionReport;
@@ -116,7 +117,7 @@ public class CartRoomDAO {
                 room.setRoomnumber(rs.getString("RoomNumber"));
                 room.setFloor(rs.getInt("Floor"));
                 room.setRoomImage(rs.getString("RoomImage"));
-               room.setStatus(rs.getString("Status"));
+                room.setStatus(rs.getString("Status"));
                 RoomType rt = new RoomType();
                 rt.setBasePrice(rs.getDouble("BasePrice"));
                 rt.setName(rs.getString("RoomTypeName"));
@@ -130,6 +131,55 @@ public class CartRoomDAO {
         }
 
         return rooms;
+    }
+
+    public boolean addToCart(int accountId, int roomTypeId) {
+        String sql = "INSERT INTO CartRooms (AccountID, RoomTypeID) VALUES (?, ?)";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, accountId);
+            ps.setInt(2, roomTypeId);
+            ps.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            // Nếu đã có rồi (do UNIQUE), không thêm lại
+            if (e.getMessage().contains("Duplicate")) {
+                return false;
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<CartRoom> getCartByAccountId(int accountId) {
+        List<CartRoom> list = new ArrayList<>();
+        String sql = "SELECT cr.RoomTypeID, rt.RoomName, rt.BasePrice, rt.ImageURL "
+                + "FROM CartRooms cr JOIN RoomTypes rt ON cr.RoomTypeID = rt.RoomTypeID "
+                + "WHERE cr.AccountID = ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                CartRoom room = new CartRoom();
+                room.setRoomTypeId(rs.getInt("RoomTypeID"));
+                room.setRoomName(rs.getString("RoomName"));
+                room.setBasePrice(rs.getDouble("BasePrice"));
+                room.setImageUrl(rs.getString("ImageURL"));
+                room.setMaxguest(rs.getInt("MaxGuests"));
+                room.setAvailableQuantity(rs.getInt("availableQuantity"));
+                list.add(room);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     public static void main(String[] args) {
