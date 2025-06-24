@@ -55,12 +55,13 @@ public class RoomDetailDAO {
 
             if (rs.next()) {
                 RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("TypeName"),
+                     rs.getInt("RoomtypeID"),
+                        rs.getString("Name"),
                         rs.getString("Description"),
                         rs.getDouble("BasePrice"),
                         rs.getString("RoomTypeImage"),
-                        rs.getString("RoomDetail")
+                        rs.getString("RoomDetail"),
+                        rs.getInt("MaxGuest")
                 );
 
                 return new Room(

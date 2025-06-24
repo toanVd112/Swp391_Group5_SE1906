@@ -59,6 +59,8 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
+        <link rel="stylesheet" href="assets/css/confirm-add-room.css">
+
         <!-- REVOLUTION SLIDER END -->	
         <style>
             /* Responsive cho form tìm kiếm */
@@ -145,6 +147,7 @@
             .selector-display:hover {
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
+
         </style>
     </head>
 
@@ -320,7 +323,18 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    <c:choose>
+                                        <%-- Nếu người dùng đã đăng nhập --%>
+                                        <c:when test="${not empty sessionScope.user}">
+                                            <li><a href="UserCartServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            </c:when>
+
+                                        <%-- Nếu chưa đăng nhập --%>
+                                        <c:otherwise>
+                                            <li><a href="myrooms_db.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -370,23 +384,24 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
 
-                                                
-                                                  
+
+
 
                                                     <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
                                                     <!-- Thay nút xem phòng bằng nút đặt -->
                                                     <c:choose>
                                                         <c:when test="${sessionScope.account == null}">
-                                                            <form method="post" action="addToGuestCart">
+                                                            <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);">
                                                                 <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
                                                                 <input type="hidden" name="roomName" value="${room.name}">
                                                                 <input type="hidden" name="basePrice" value="${room.basePrice}">
                                                                 <input type="hidden" name="imageUrl" value="${room.imageUrl}">
-                                                                 <input type="hidden" name="maxguest" value="${room.maxGuests}">
+                                                                <input type="hidden" name="maxguest" value="${room.maxGuests}">
                                                                 <button type="submit" class="btn btn-warning btn-sm">
                                                                     <i class="fa fa-plus"></i> Đặt phòng
                                                                 </button>
                                                             </form>
+
                                                         </c:when>
 
                                                         <c:otherwise>
@@ -721,91 +736,55 @@
         <script src='assets/vendors/switcher/switcher.js'></script>
         <script src="assets/js/hotel-cart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      
+        <!-- CSS (nếu dùng modal/custom style) -->
+
+        <!-- JS -->
+        <script src="${pageContext.request.contextPath}/assets/js/confirm-add-room.js"></script>
+        <!-- Modal Confirm -->
+        <div id="confirmModal" class="confirm-modal">
+            <div class="confirm-modal-content">
+                <p>Phòng đã được thêm vào giỏ.</p>
+                <p>Bạn muốn làm gì tiếp theo?</p>
+                <div class="confirm-modal-actions">
+                    <button onclick="submitAndStay()">🛏 Đặt tiếp</button>
+                    <button onclick="submitAndGo()">📋 Xem phòng đã chọn</button>
+                </div>
+            </div>
+        </div>
         <script>
-// Guest and room selection variables
-                                                                        let roomCount = 1;
-                                                                        let adultsCount = 2;
-                                                                        let childrenCount = 0;
-                                                                        let babiesCount = 0;
+            // Gửi guestCart từ session vào biến JS
+            var guestCart = [];
 
-// Toggle dropdown
-                                                                        function toggleGuestRoomDropdown() {
-                                                                            const dropdown = document.getElementById('guestRoomDropdown');
-                                                                            const isVisible = dropdown.style.display === 'block';
-
-                                                                            if (isVisible) {
-                                                                                dropdown.style.display = 'none';
-                                                                            } else {
-                                                                                dropdown.style.display = 'block';
-                                                                            }
-                                                                        }
-
-// Change room count
-                                                                        function changeRoomCount(delta) {
-                                                                            roomCount = Math.max(1, roomCount + delta);
-                                                                            document.getElementById('roomCount').textContent = roomCount;
-                                                                            document.getElementById('numRoomsInput').value = roomCount;
-                                                                            updateDisplayText();
-                                                                        }
-
-// Change guest count
-                                                                        function changeGuestCount(type, delta) {
-                                                                            switch (type) {
-                                                                                case 'adults':
-                                                                                    adultsCount = Math.max(1, adultsCount + delta);
-                                                                                    document.getElementById('adultsCount').textContent = adultsCount;
-                                                                                    document.getElementById('numAdultsInput').value = adultsCount;
-                                                                                    break;
-                                                                                case 'children':
-                                                                                    childrenCount = Math.max(0, childrenCount + delta);
-                                                                                    document.getElementById('childrenCount').textContent = childrenCount;
-                                                                                    document.getElementById('numChildrenInput').value = childrenCount;
-                                                                                    break;
-                                                                                case 'babies':
-                                                                                    babiesCount = Math.max(0, babiesCount + delta);
-                                                                                    document.getElementById('babiesCount').textContent = babiesCount;
-                                                                                    document.getElementById('numBabiesInput').value = babiesCount;
-                                                                                    break;
-                                                                            }
-                                                                            updateDisplayText();
-                                                                        }
-
-// Update display text
-                                                                        function updateDisplayText() {
-                                                                            const totalGuests = adultsCount + childrenCount + babiesCount;
-                                                                            let text = `${roomCount} Phòng, ${totalGuests} Người`;
-
-                                                                            if (childrenCount > 0 || babiesCount > 0) {
-                                                                                text = `${roomCount} Phòng, ${adultsCount} NL`;
-                                                                                if (childrenCount > 0)
-                                                                                    text += `, ${childrenCount} TE`;
-                                                                                if (babiesCount > 0)
-                                                                                    text += `, ${babiesCount} EB`;
-                                                                            }
-
-                                                                            document.getElementById('guestRoomText').textContent = text;
-                                                                        }
-
-// Close dropdown when clicking outside
-                                                                        document.addEventListener('click', function (event) {
-                                                                            const dropdown = document.getElementById('guestRoomDropdown');
-                                                                            const selector = document.querySelector('.guest-room-selector');
-
-                                                                            if (!selector.contains(event.target)) {
-                                                                                dropdown.style.display = 'none';
-                                                                            }
-                                                                        });
-
-// Prevent dropdown from closing when clicking inside
-                                                                        document.getElementById('guestRoomDropdown').addEventListener('click', function (event) {
-                                                                            event.stopPropagation();
-                                                                        });
-
-// Initialize display text
-                                                                        document.addEventListener('DOMContentLoaded', function () {
-                                                                            updateDisplayText();
-                                                                        });
+            <c:if test="${not empty sessionScope.guestCart}">
+            guestCart = [
+                <c:forEach var="item" items="${sessionScope.guestCart}" varStatus="status">
+            {
+            roomTypeId: "${item.roomTypeId}"
+            }<c:if test="${!status.last}">,</c:if>
+                </c:forEach>
+            ];
+            </c:if>
         </script>
+        <!-- Custom Alert Box -->
+        <div id="customAlert" class="custom-alert">
+            <div class="custom-alert-box">
+                <p id="customAlertMessage"></p>
+                <button onclick="closeCustomAlert()">OK</button>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div id="confirmModal" class="confirm-modal">
+            <div class="confirm-modal-content">
+                <p>Phòng đã được thêm vào giỏ. Bạn muốn làm gì tiếp theo?</p>
+                <div class="confirm-modal-actions">
+                    <button onclick="submitAndStay()">🛏 Đặt tiếp</button>
+                    <button onclick="submitAndGo()">📋 Xem phòng đã chọn</button>
+                </div>
+            </div>
+        </div>
+
     </body>
 
 </html>

@@ -303,30 +303,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="guest-control">
-                                                <label>Trẻ em (6-12)</label>
-                                                <div class="counter-group">
-                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'children', -1)">
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                    <span class="counter-value" id="children_${room.roomTypeId}">0</span>
-                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'children', 1)">
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="guest-control">
-                                                <label>Em bé (0-5)</label>
-                                                <div class="counter-group">
-                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'babies', -1)">
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                    <span class="counter-value" id="babies_${room.roomTypeId}">0</span>
-                                                    <button type="button" class="counter-btn" onclick="changeGuest('${room.roomTypeId}', 'babies', 1)">
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
+
                                         </div>
                                     </div>
 
@@ -416,194 +393,7 @@
             </div>
         </div>
 
-        <script>
-            // Booking data
-            const bookingData = {
-                rooms: {},
-                checkIn: '2025-06-22',
-                checkOut: '2025-06-23',
-                nights: 1
-            };
 
-            // Room prices from backend
-            const roomPrices = {};
-            <c:forEach var="room" items="${selectedRooms}">
-            roomPrices[${room.roomID}] = {
-                price: ${room.roomType.basePrice},
-                name: "${room.roomType.name}",
-                roomNumber: "${room.roomnumber}"
-            };
-            </c:forEach>
-
-            // Change guest count
-            function changeGuest(roomId, type, delta) {
-                const element = document.getElementById(type + '_' + roomId);
-                let currentValue = parseInt(element.textContent);
-                let newValue = currentValue + delta;
-
-                // Minimum constraints
-                if (type === 'adults' && newValue < 1)
-                    newValue = 1;
-                if ((type === 'children' || type === 'babies') && newValue < 0)
-                    newValue = 0;
-
-                element.textContent = newValue;
-
-                // Update booking data if room is already added
-                if (bookingData.rooms[roomId]) {
-                    bookingData.rooms[roomId][type] = newValue;
-                    updateSelectedRoomsList();
-                    calculateTotal();
-                }
-            }
-
-            // Add room to booking
-            function addToBooking(roomId) {
-                const adults = parseInt(document.getElementById('adults_' + roomId).textContent);
-                const children = parseInt(document.getElementById('children_' + roomId).textContent);
-                const babies = parseInt(document.getElementById('babies_' + roomId).textContent);
-
-                bookingData.rooms[roomId] = {
-                    adults: adults,
-                    children: children,
-                    babies: babies,
-                    price: roomPrices[roomId].price,
-                    name: roomPrices[roomId].name,
-                    roomNumber: roomPrices[roomId].roomNumber
-                };
-
-                updateSelectedRoomsList();
-                calculateTotal();
-                updateBookingButton();
-            }
-
-            // Remove room from booking
-            function removeFromBooking(roomId) {
-                delete bookingData.rooms[roomId];
-                updateSelectedRoomsList();
-                calculateTotal();
-                updateBookingButton();
-            }
-
-            // Update selected rooms list
-            function updateSelectedRoomsList() {
-                const container = document.getElementById('selectedRoomsList');
-                let html = '';
-
-                for (let roomId in bookingData.rooms) {
-                    const room = bookingData.rooms[roomId];
-                    const totalGuests = room.adults + room.children + room.babies;
-
-                    html += `
-                        <div class="selected-room-item">
-                            <div class="selected-room-header">
-    <div>
-        <div class="selected-room-name">Phòng ${room.roomNumber} - ${room.name}</div>
-        <div class="selected-room-details">
-            ${totalGuests} khách (${room.adults} NL, ${room.children} TE, ${room.babies} EB)
-        </div>
-        <div class="selected-room-price">
-            <fmt:formatNumber value="${room.price}" type="number" groupingUsed="true" /> VND/đêm
-        </div>
-    </div>
-    <button class="remove-room" onclick="removeFromBooking(${roomId})" title="Xóa phòng">
-        <i class="fas fa-times"></i>
-    </button>
-</div>
-
-                    `;
-                }
-
-                if (html === '') {
-                    html = '<div style="text-align: center; color: #6b7280; padding: 20px;">Chưa có phòng nào được chọn</div>';
-                }
-
-                container.innerHTML = html;
-            }
-
-            // Calculate total price
-            function calculateTotal() {
-                updateDates();
-
-                let roomsTotal = 0;
-                for (let roomId in bookingData.rooms) {
-                    roomsTotal += bookingData.rooms[roomId].price * bookingData.nights;
-                }
-
-                const taxAmount = roomsTotal * 0.1;
-                const grandTotal = roomsTotal + taxAmount;
-
-                document.getElementById('roomsTotal').textContent = formatPrice(roomsTotal) + ' VND';
-                document.getElementById('taxAmount').textContent = formatPrice(taxAmount) + ' VND';
-                document.getElementById('grandTotal').textContent = formatPrice(grandTotal) + ' VND';
-            }
-
-            // Update dates and calculate nights
-            function updateDates() {
-                const checkIn = document.getElementById('checkInDate').value;
-                const checkOut = document.getElementById('checkOutDate').value;
-
-                if (checkIn && checkOut) {
-                    const checkInDate = new Date(checkIn);
-                    const checkOutDate = new Date(checkOut);
-                    const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
-                    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                    bookingData.checkIn = checkIn;
-                    bookingData.checkOut = checkOut;
-                    bookingData.nights = Math.max(1, nights);
-
-                    document.getElementById('nightsCount').textContent = bookingData.nights + ' đêm';
-                }
-            }
-
-            // Format price
-            function formatPrice(price) {
-                return new Intl.NumberFormat('vi-VN').format(Math.round(price));
-            }
-
-            // Update booking button state
-            function updateBookingButton() {
-                const btn = document.getElementById('bookingBtn');
-                const hasRooms = Object.keys(bookingData.rooms).length > 0;
-
-                btn.disabled = !hasRooms;
-                if (hasRooms) {
-                    btn.innerHTML = '<i class="fas fa-calendar-check"></i> Đặt phòng ngay (' + Object.keys(bookingData.rooms).length + ' phòng)';
-                } else {
-                    btn.innerHTML = '<i class="fas fa-calendar-check"></i> Đặt phòng ngay';
-                }
-            }
-
-            // Proceed to booking
-            function proceedToBooking() {
-                if (Object.keys(bookingData.rooms).length === 0) {
-                    alert('Vui lòng chọn ít nhất một phòng!');
-                    return;
-                }
-
-                // Create form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'booking-confirmation';
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'bookingData';
-                input.value = JSON.stringify(bookingData);
-
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
-            }
-
-            // Initialize
-            document.addEventListener('DOMContentLoaded', function () {
-                updateDates();
-                calculateTotal();
-                updateBookingButton();
-            });
-        </script>
     </div>
     <!-- Content END-->
     <!-- Footer ==== -->
@@ -731,7 +521,12 @@
 <script src="assets/js/functions.js"></script>
 <script src="assets/js/contact.js"></script>
 <script src='assets/vendors/switcher/switcher.js'></script>
+<script>
+
+</script>
+
 <script src="assets/js/hotel-cart.js"></script>
+
 </body>
 
 </html>
