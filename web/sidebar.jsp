@@ -5,7 +5,6 @@
     <!-- Sidebar Header -->
     <div class="sidebar-header">
         <div class="d-flex align-items-center">
-        
         </div>
     </div>
 
@@ -14,10 +13,10 @@
         <!-- Role-based Menu -->
         <div class="menu-section">
             <div class="menu-title">${role}</div>
-               <a href="${pageContext.request.contextPath}/Manager/manager.jsp" class="menu-item" data-page="Dashboard">
-                    <i class="fas fa-users"></i>
-                    <span>Dashboard</span>
-                </a>
+            <a href="${pageContext.request.contextPath}/Manager/manager.jsp" class="menu-item" data-page="Dashboard">
+                <i class="fas fa-users"></i>
+                <span>Dashboard</span>
+            </a>
             <c:if test="${role eq 'Manager'}">
                 <a href="${pageContext.request.contextPath}/managerAccount" class="menu-item" data-page="managerAccount">
                     <i class="fas fa-users"></i>
@@ -26,6 +25,10 @@
                 <a href="${pageContext.request.contextPath}/serviceslist" class="menu-item" data-page="serviceslist">
                     <i class="fas fa-bell"></i>
                     <span>Service List</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/discountcodes/list" class="menu-item" data-page="discountcodeslist">
+                    <i class="fas fa-tag"></i>
+                    <span>Discount Code List</span>
                 </a>
                 <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="menu-item" data-page="ListRoomsServlet">
                     <i class="fas fa-building"></i>
@@ -349,7 +352,7 @@
         }
     });
 
-// Function to manually set active menu item (can be called from other pages)
+    // Function to manually set active menu item (can be called from other pages)
     function setActiveMenu(pageName) {
         const menuItems = document.querySelectorAll('.menu-item');
         menuItems.forEach(item => {
