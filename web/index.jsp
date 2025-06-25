@@ -505,7 +505,11 @@
                                                 </div>
 
                                                 <div class="info-bx text-center">
-                                                    <h5>${room.name}</h5>
+                                                    <h5>
+    <a href="RoomDetail?id=${room.roomTypeID}" class="text-primary" style="text-decoration: none;">
+        ${room.name}
+    </a>
+</h5>
                                                     <span>${room.description}</span>
                                                 </div>
 

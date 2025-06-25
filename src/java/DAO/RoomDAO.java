@@ -73,7 +73,6 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        rs.getString("RoomImage"),
                         roomType
                 );
                 list.add(room);
@@ -173,7 +172,7 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        rs.getString("RoomImage"),
+                       
                         roomType
                 );
             }

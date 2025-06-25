@@ -18,8 +18,7 @@ public class Room {
     private String roomnumber;
     private int floor;
     private String status;
-    private String roomImage;
-
+  
     private RoomType roomType;
     private List<Amenity> amenities;
     private List<PageContent> contents;
@@ -32,21 +31,21 @@ public class Room {
         this.roomID = roomID;
     }
 
-    public Room(int roomID, int roomTypeID, String roomnumber, int floor, String status, String roomImage) {
+    public Room(int roomID, int roomTypeID, String roomnumber, int floor, String status) {
         this.roomID = roomID;
         this.roomTypeID = roomTypeID;
         this.roomnumber = roomnumber;
         this.floor = floor;
         this.status = status;
-        this.roomImage = roomImage;
+    
     }
 
-    public Room(int roomID, String roomnumber, int floor, String status, String roomImage, RoomType roomType) {
+    public Room(int roomID, String roomnumber, int floor, String status,RoomType roomType) {
         this.roomID = roomID;
         this.roomnumber = roomnumber;
         this.floor = floor;
         this.status = status;
-        this.roomImage = roomImage;
+       
         this.roomType = roomType;
         if (roomType != null) {
             this.roomTypeID = roomType.getRoomTypeID();
@@ -92,14 +91,6 @@ public class Room {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getRoomImage() {
-        return roomImage;
-    }
-
-    public void setRoomImage(String roomImage) {
-        this.roomImage = roomImage;
     }
 
     public RoomType getRoomType() {

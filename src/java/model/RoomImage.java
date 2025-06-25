@@ -10,7 +10,6 @@ package model;
  */
 public class RoomImage {
     private int imageID;
-    private Integer roomID;       // Dùng Integer để cho phép null
     private Integer roomTypeID;
     private String imageUrl;
     private boolean isPrimary;
@@ -19,29 +18,21 @@ public class RoomImage {
     public RoomImage() {
     }
 
-    public RoomImage(int imageID, Integer roomID, Integer roomTypeID, String imageUrl, boolean isPrimary, String category) {
+    public RoomImage(int imageID, Integer roomTypeID, String imageUrl, boolean isPrimary, String category) {
         this.imageID = imageID;
-        this.roomID = roomID;
         this.roomTypeID = roomTypeID;
         this.imageUrl = imageUrl;
         this.isPrimary = isPrimary;
         this.category = category;
     }
 
+    // Getters and Setters
     public int getImageID() {
         return imageID;
     }
 
     public void setImageID(int imageID) {
         this.imageID = imageID;
-    }
-
-    public Integer getRoomID() {
-        return roomID;
-    }
-
-    public void setRoomID(Integer roomID) {
-        this.roomID = roomID;
     }
 
     public Integer getRoomTypeID() {
@@ -80,7 +71,6 @@ public class RoomImage {
     public String toString() {
         return "RoomImage{" +
                 "imageID=" + imageID +
-                ", roomID=" + roomID +
                 ", roomTypeID=" + roomTypeID +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", isPrimary=" + isPrimary +
@@ -88,4 +78,3 @@ public class RoomImage {
                 '}';
     }
 }
-

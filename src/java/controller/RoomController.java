@@ -36,9 +36,7 @@ public class RoomController extends HttpServlet {
             roomTypes = dao.getAllRoomTypes();
             floors = dao.getAllFloors();
             latestRoom = dao.getLatestRoom();
-            if (latestRoom != null && (latestRoom.getRoomImage() == null || latestRoom.getRoomImage().trim().isEmpty())) {
-                latestRoom.setRoomImage(latestRoom.getRoomType().getImageUrl());
-            }
+            
         } catch (SQLException e) {
             roomTypes = null;
             floors = null;
@@ -82,10 +80,7 @@ public class RoomController extends HttpServlet {
         // Truy vấn danh sách phòng
         List<Room> paginatedRooms = dao.getRooms(floor, typeId, sortFloor, sortPrice, offset, pageSize);
         for (Room r : paginatedRooms) {
-            if (r.getRoomImage() == null || r.getRoomImage().trim().isEmpty()) {
-                // Gán ảnh loại phòng làm mặc định nếu phòng không có ảnh
-                r.setRoomImage(r.getRoomType().getImageUrl());
-            }
+            
         }
         int totalRooms = dao.countRoomsByFilter(floor, typeId);
         int totalPages = (int) Math.ceil((double) totalRooms / pageSize);

@@ -15,8 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import model.PageContent;
-import model.Room;
-import model.RoomImage;
+import model.RoomType;
 
 /**
  *
@@ -59,49 +58,38 @@ public class RoomDetail extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+   @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int roomId = Integer.parseInt(request.getParameter("id"));
+            int roomTypeId = Integer.parseInt(request.getParameter("id"));
             RoomDetailDAO dao = new RoomDetailDAO();
 
-            Room room = dao.getRoomById(roomId);
-            if (room == null) {
-                throw new ServletException("Không tìm thấy phòng với ID = " + roomId);
+            // Lấy thông tin loại phòng
+            RoomType roomType = dao.getRoomTypeDetailById(roomTypeId);
+            if (roomType == null) {
+                throw new ServletException("Không tìm thấy loại phòng với ID = " + roomTypeId);
             }
 
-            if (room.getRoomImage() == null || room.getRoomImage().trim().isEmpty()) {
-                room.setRoomImage(room.getRoomType().getImageUrl());
-            }
-        List<model.Amenity> amenities = dao.getAmenitiesByRoomTypeId(room.getRoomType().getRoomTypeID());
-
-
-            // Phân loại nội dung
-            List<PageContent> contents = dao.getPageContent();
+            // Lấy nội dung trang
+            List<PageContent> contents = dao.getPageContentsByRoomTypeId(roomTypeId);
             List<PageContent> policies = new ArrayList<>();
             List<PageContent> importantInfos = new ArrayList<>();
             List<PageContent> faqs = new ArrayList<>();
 
             for (PageContent pc : contents) {
                 switch (pc.getPageSection().toLowerCase()) {
-                    case "policy" ->
-                        policies.add(pc);
-                    case "important_info" ->
-                        importantInfos.add(pc);
-                    case "faq" ->
-                        faqs.add(pc);
+                    case "policy" -> policies.add(pc);
+                    case "important_info" -> importantInfos.add(pc);
+                    case "faq" -> faqs.add(pc);
                 }
             }
 
-            // Lấy ảnh theo RoomID hoặc RoomTypeID
-            List<RoomImage> images = dao.getImagesByRoomOrType(roomId);
-
-            request.setAttribute("room", room);
-            request.setAttribute("amenities", amenities);
-            request.setAttribute("images", images);
-            request.setAttribute("roomID", roomId);
+            // Truyền sang view
+            request.setAttribute("roomType", roomType);
+            request.setAttribute("images", roomType.getImages());
+            request.setAttribute("amenities", roomType.getAmenities());
             request.setAttribute("policies", policies);
             request.setAttribute("importantInfos", importantInfos);
             request.setAttribute("faqs", faqs);
@@ -113,7 +101,6 @@ public class RoomDetail extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý: " + e.getMessage());
         }
     }
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *

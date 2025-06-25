@@ -3,71 +3,67 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!-- Statistics Cards -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-icon rooms">
+<div class="rs-stats-grid">
+    <div class="rs-stat-card">
+        <div class="rs-stat-icon rooms">
             <i class="fas fa-bed"></i>
         </div>
-        <div class="stat-info">
+        <div class="rs-stat-info">
             <h3>${totalRooms != null ? totalRooms : 0}</h3>
             <p>ROOMS</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon floors">
+    <div class="rs-stat-card">
+        <div class="rs-stat-icon floors">
             <i class="fas fa-building"></i>
         </div>
-        <div class="stat-info">
+        <div class="rs-stat-info">
             <h3>4</h3>
             <p>FLOORS</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon types">
+    <div class="rs-stat-card">
+        <div class="rs-stat-icon types">
             <i class="fas fa-list"></i>
         </div>
-        <div class="stat-info">
+        <div class="rs-stat-info">
             <h3>${roomTypes != null ? roomTypes.size() : 0}</h3>
             <p>ROOM TYPES</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon booked">
+    <div class="rs-stat-card">
+        <div class="rs-stat-icon booked">
             <i class="fas fa-users"></i>
         </div>
-        <div class="stat-info">
+        <div class="rs-stat-info">
             <h3>0</h3>
             <p>BOOKED ROOM TODAY</p>
         </div>
     </div>
 </div>
 
-<!-- Page Header -->
-<div class="page-header">
-    <h1 class="page-title">Rooms</h1>
-    <a href="${pageContext.request.contextPath}/AddEditRoomServlet" class="add-btn">
+<div class="rs-page-header">
+    <h1 class="rs-page-title">Rooms</h1>
+    <a href="${pageContext.request.contextPath}/AddEditRoomServlet" class="rs-add-btn">
         <i class="fas fa-plus"></i> Add
     </a>
 </div>
 
-<!-- Messages -->
 <c:if test="${not empty successMessage}">
-    <div class="alert alert-success">
+    <div class="rs-alert rs-alert-success">
         <i class="fas fa-check-circle"></i> ${successMessage}
     </div>
 </c:if>
 <c:if test="${not empty errorMessage}">
-    <div class="alert alert-error">
+    <div class="rs-alert rs-alert-error">
         <i class="fas fa-exclamation-circle"></i> ${errorMessage}
     </div>
 </c:if>
 
-<!-- Main Card -->
-<div class="main-card">
-    <div class="card-header">
-        <!-- Controls -->
-        <div class="controls">
-            <div class="show-entries">
+<div class="rs-main-card">
+    <div class="rs-card-header">
+        <div class="rs-controls">
+            <div class="rs-show-entries">
                 <label>Show</label>
                 <select onchange="changePageSize(this.value)">
                     <option value="5" ${pageSize == 5 ? 'selected' : ''}>5</option>
@@ -77,19 +73,17 @@
                 </select>
                 <label>entries</label>
             </div>
-            <div class="search-box">
+            <div class="rs-search-box">
                 <label>Search:</label>
                 <input type="text" id="quickSearch" placeholder="Tìm kiếm..." value="${f_keyword}">
             </div>
         </div>
 
-        <!-- Filters -->
-        <form class="filters" method="get" action="ListRoomsServlet">
+        <form class="rs-filters" method="get" action="ListRoomsServlet">
             <select name="roomTypeId">
                 <option value="">--Loại phòng--</option>
                 <c:forEach var="rt" items="${roomTypes}">
-                    <option value="${rt.roomTypeID}" 
-                            <c:if test="${rt.roomTypeID == f_type}">selected</c:if>>
+                    <option value="${rt.roomTypeID}" <c:if test="${rt.roomTypeID == f_type}">selected</c:if>>
                         ${rt.name}
                     </option>
                 </c:forEach>
@@ -104,41 +98,30 @@
             </select>
 
             <input type="text" name="keyword" placeholder="Số phòng..." value="${f_keyword}" />
-
             <input type="number" name="minFloor" placeholder="Tầng từ" style="width:100px" value="${f_minFloor}" />
             <input type="number" name="maxFloor" placeholder="đến" style="width:80px" value="${f_maxFloor}" />
-
             <input type="number" step="0.01" name="minPrice" placeholder="Giá từ" style="width:120px" value="${f_minPrice}" />
             <input type="number" step="0.01" name="maxPrice" placeholder="đến" style="width:120px" value="${f_maxPrice}" />
 
-            <button type="submit" class="filter-btn">
+            <button type="submit" class="rs-filter-btn">
                 <i class="fas fa-search"></i> Tìm kiếm
             </button>
-            <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="reset-link">
+            <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="rs-reset-link">
                 <i class="fas fa-undo"></i> Reset
             </a>
         </form>
     </div>
 
-    <!-- Table -->
-    <div class="table-container">
-        <table>
+    <div class="rs-table-container">
+        <table class="rs-table">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>
-                        <i class="fas fa-sort"></i> Room Number
-                    </th>
-                    <th>
-                        <i class="fas fa-sort"></i> Room Type
-                    </th>
-                    <th>
-                        <i class="fas fa-sort"></i> Floor Number
-                    </th>
+                    <th><i class="fas fa-sort"></i> Room Number</th>
+                    <th><i class="fas fa-sort"></i> Room Type</th>
+                    <th><i class="fas fa-sort"></i> Floor Number</th>
                     <th>Status</th>
-                    <th>
-                        <i class="fas fa-cog"></i> Action
-                    </th>
+                    <th><i class="fas fa-cog"></i> Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -158,24 +141,20 @@
                         </td>
                         <td>${room.floor} - Floor</td>
                         <td>
-                            <span class="status-badge ${room.status != null ? room.status.toLowerCase() : 'unknown'}">
+                            <span class="rs-status-badge ${room.status != null ? room.status.toLowerCase() : 'unknown'}">
                                 ${room.status != null ? room.status : 'Unknown'}
                             </span>
                         </td>
                         <td>
-                            <div class="action-buttons">
-                                <a href="#" class="btn btn-housekeeping" 
-                                   onclick="updateRoomStatus(${room.roomID}, 'Available')"
-                                   title="Housekeeping">
+                            <div class="rs-action-buttons">
+                                <a href="#" class="rs-btn rs-btn-housekeeping" onclick="updateRoomStatus(${room.roomID}, 'Available')" title="Housekeeping">
                                     <i class="fas fa-broom"></i> Housekeeping
                                 </a>
                                 <a href="${pageContext.request.contextPath}/AddEditRoomServlet?action=edit&roomId=${room.roomID}" 
-                                   class="btn btn-edit" title="Edit">
+                                   class="rs-btn rs-btn-edit" title="Edit">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <a href="#" class="btn btn-delete" 
-                                   onclick="confirmDelete(${room.roomID}, '${room.roomnumber}')"
-                                   title="Delete">
+                                <a href="#" class="rs-btn rs-btn-delete" onclick="confirmDelete(${room.roomID}, '${room.roomnumber}')" title="Delete">
                                     <i class="fas fa-trash"></i> Delete
                                 </a>
                             </div>
@@ -194,14 +173,13 @@
         </table>
     </div>
 
-    <!-- Table Footer -->
-    <div class="table-footer">
-        <div class="showing-info">
+    <div class="rs-table-footer">
+        <div class="rs-showing-info">
             Showing ${startRecord} to ${endRecord} of ${totalRooms} entries
         </div>
 
         <c:if test="${totalPages > 1}">
-            <ul class="pagination">
+            <ul class="rs-pagination">
                 <li class="${currentPage <= 1 ? 'disabled' : ''}">
                     <a href="${currentPage > 1 ? 'ListRoomsServlet?page='.concat(currentPage - 1).concat('&').concat(pageContext.request.queryString != null ? pageContext.request.queryString.replaceAll('page=\\d+&?', '') : '') : '#'}">
                         Previous
@@ -226,23 +204,24 @@
     </div>
 </div>
 
+
 <!-- CSS Styles -->
 <style>
-    .container {
+    .rs-container {
         max-width: 1400px;
         margin: 0 auto;
         padding: 20px;
     }
 
     /* Statistics Cards */
-    .stats-grid {
+    .rs-stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
         margin-bottom: 30px;
     }
 
-    .stat-card {
+    .rs-stat-card {
         background: white;
         border-radius: 12px;
         padding: 20px;
@@ -252,7 +231,7 @@
         gap: 15px;
     }
 
-    .stat-icon {
+    .rs-stat-icon {
         width: 60px;
         height: 60px;
         border-radius: 8px;
@@ -263,39 +242,39 @@
         color: white;
     }
 
-    .stat-icon.rooms { background: #0ea5e9; }
-    .stat-icon.floors { background: #f97316; }
-    .stat-icon.types { background: #10b981; }
-    .stat-icon.booked { background: #f59e0b; }
+    .rs-stat-icon.rooms { background: #0ea5e9; }
+    .rs-stat-icon.floors { background: #f97316; }
+    .rs-stat-icon.types { background: #10b981; }
+    .rs-stat-icon.booked { background: #f59e0b; }
 
-    .stat-info h3 {
+    .rs-stat-info h3 {
         font-size: 28px;
         font-weight: 700;
         margin-bottom: 5px;
     }
 
-    .stat-info p {
+    .rs-stat-info p {
         color: #64748b;
         font-size: 14px;
         text-transform: uppercase;
         font-weight: 500;
     }
 
-    /* Header */
-    .page-header {
+    /* Page Header */
+    .rs-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 25px;
     }
 
-    .page-title {
+    .rs-page-title {
         font-size: 24px;
         font-weight: 600;
         color: #1e293b;
     }
 
-    .add-btn {
+    .rs-add-btn {
         background: #10b981;
         color: white;
         border: none;
@@ -309,26 +288,26 @@
         transition: all 0.2s;
     }
 
-    .add-btn:hover {
+    .rs-add-btn:hover {
         background: #059669;
         transform: translateY(-1px);
     }
 
     /* Main Card */
-    .main-card {
+    .rs-main-card {
         background: white;
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
     }
 
-    .card-header {
+    .rs-card-header {
         padding: 20px;
         border-bottom: 1px solid #e2e8f0;
     }
 
     /* Controls */
-    .controls {
+    .rs-controls {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -337,26 +316,26 @@
         margin-bottom: 20px;
     }
 
-    .show-entries {
+    .rs-show-entries {
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .show-entries select {
+    .rs-show-entries select {
         padding: 8px 12px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         font-size: 14px;
     }
 
-    .search-box {
+    .rs-search-box {
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .search-box input {
+    .rs-search-box input {
         padding: 8px 12px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
@@ -365,7 +344,7 @@
     }
 
     /* Filters */
-    .filters {
+    .rs-filters {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
@@ -373,15 +352,15 @@
         align-items: center;
     }
 
-    .filters select,
-    .filters input {
+    .rs-filters select,
+    .rs-filters input {
         padding: 8px 12px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         font-size: 14px;
     }
 
-    .filter-btn {
+    .rs-filter-btn {
         background: #3b82f6;
         color: white;
         border: none;
@@ -392,32 +371,32 @@
         transition: background 0.2s;
     }
 
-    .filter-btn:hover {
+    .rs-filter-btn:hover {
         background: #2563eb;
     }
 
-    .reset-link {
+    .rs-reset-link {
         color: #6b7280;
         text-decoration: none;
         font-weight: 500;
         margin-left: 10px;
     }
 
-    .reset-link:hover {
+    .rs-reset-link:hover {
         color: #374151;
     }
 
     /* Table */
-    .table-container {
+    .rs-table-container {
         overflow-x: auto;
     }
 
-    table {
+    .rs-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    table th {
+    .rs-table th {
         background: #f8fafc;
         padding: 15px 12px;
         text-align: left;
@@ -427,18 +406,18 @@
         font-size: 14px;
     }
 
-    table td {
+    .rs-table td {
         padding: 15px 12px;
         border-bottom: 1px solid #f1f5f9;
         font-size: 14px;
     }
 
-    table tbody tr:hover {
+    .rs-table tbody tr:hover {
         background: #f8fafc;
     }
 
     /* Status badges */
-    .status-badge {
+    .rs-status-badge {
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 12px;
@@ -446,33 +425,33 @@
         text-transform: uppercase;
     }
 
-    .status-badge.available {
+    .rs-status-badge.available {
         background: #dcfce7;
         color: #166534;
     }
 
-    .status-badge.occupied {
+    .rs-status-badge.occupied {
         background: #fed7aa;
         color: #9a3412;
     }
 
-    .status-badge.maintenance {
+    .rs-status-badge.maintenance {
         background: #fecaca;
         color: #991b1b;
     }
 
-    .status-badge.dirty {
+    .rs-status-badge.dirty {
         background: #fef3c7;
         color: #92400e;
     }
 
     /* Action buttons */
-    .action-buttons {
+    .rs-action-buttons {
         display: flex;
         gap: 5px;
     }
 
-    .btn {
+    .rs-btn {
         padding: 6px 12px;
         border: none;
         border-radius: 4px;
@@ -486,35 +465,35 @@
         transition: all 0.2s;
     }
 
-    .btn-housekeeping {
+    .rs-btn-housekeeping {
         background: #0ea5e9;
         color: white;
     }
 
-    .btn-housekeeping:hover {
+    .rs-btn-housekeeping:hover {
         background: #0284c7;
     }
 
-    .btn-edit {
+    .rs-btn-edit {
         background: #3b82f6;
         color: white;
     }
 
-    .btn-edit:hover {
+    .rs-btn-edit:hover {
         background: #2563eb;
     }
 
-    .btn-delete {
+    .rs-btn-delete {
         background: #ef4444;
         color: white;
     }
 
-    .btn-delete:hover {
+    .rs-btn-delete:hover {
         background: #dc2626;
     }
 
     /* Pagination */
-    .table-footer {
+    .rs-table-footer {
         padding: 20px;
         display: flex;
         justify-content: space-between;
@@ -524,18 +503,18 @@
         gap: 15px;
     }
 
-    .showing-info {
+    .rs-showing-info {
         color: #6b7280;
         font-size: 14px;
     }
 
-    .pagination {
+    .rs-pagination {
         display: flex;
         gap: 5px;
         list-style: none;
     }
 
-    .pagination a {
+    .rs-pagination a {
         padding: 8px 12px;
         border: 1px solid #d1d5db;
         color: #374151;
@@ -545,40 +524,40 @@
         transition: all 0.2s;
     }
 
-    .pagination a:hover {
+    .rs-pagination a:hover {
         background: #f3f4f6;
     }
 
-    .pagination .active a {
+    .rs-pagination .active a {
         background: #3b82f6;
         color: white;
         border-color: #3b82f6;
     }
 
-    .pagination .disabled a {
+    .rs-pagination .disabled a {
         color: #9ca3af;
         cursor: not-allowed;
     }
 
-    .pagination .disabled a:hover {
+    .rs-pagination .disabled a:hover {
         background: transparent;
     }
 
     /* Messages */
-    .alert {
+    .rs-alert {
         padding: 12px 16px;
         border-radius: 8px;
         margin-bottom: 20px;
         font-weight: 500;
     }
 
-    .alert-success {
+    .rs-alert-success {
         background: #dcfce7;
         color: #166534;
         border: 1px solid #bbf7d0;
     }
 
-    .alert-error {
+    .rs-alert-error {
         background: #fecaca;
         color: #991b1b;
         border: 1px solid #fca5a5;
@@ -586,31 +565,32 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-        .controls {
+        .rs-controls {
             flex-direction: column;
             align-items: stretch;
         }
 
-        .filters {
+        .rs-filters {
             flex-direction: column;
             align-items: stretch;
         }
 
-        .filters select,
-        .filters input {
+        .rs-filters select,
+        .rs-filters input {
             width: 100%;
         }
 
-        .action-buttons {
+        .rs-action-buttons {
             flex-direction: column;
         }
 
-        .table-footer {
+        .rs-table-footer {
             flex-direction: column;
             text-align: center;
         }
     }
 </style>
+
 
 <!-- JavaScript -->
 <script>

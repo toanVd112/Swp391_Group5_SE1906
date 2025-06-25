@@ -25,6 +25,7 @@ public class RoomTypeDAO {
                         0
                 );
                 roomType.setImages(getImagesByRoomTypeId(id));
+                
                 return roomType;
             }
         }
@@ -193,7 +194,6 @@ public class RoomTypeDAO {
             while (rs.next()) {
                 RoomImage img = new RoomImage(
                         rs.getInt("ImageID"),
-                        (Integer) rs.getObject("RoomID"),
                         roomTypeId,
                         rs.getString("ImageUrl"),
                         rs.getBoolean("IsPrimary"),
@@ -209,14 +209,13 @@ public class RoomTypeDAO {
         if (images == null || images.isEmpty()) {
             return;
         }
-        String sql = "INSERT INTO roomimages (RoomID, ImageUrl, IsPrimary, Category, RoomTypeID) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO roomimages (ImageUrl, IsPrimary, Category, RoomTypeID) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             for (RoomImage img : images) {
-                ps.setObject(1, img.getRoomID());
-                ps.setString(2, img.getImageUrl());
-                ps.setBoolean(3, img.isPrimary());
-                ps.setString(4, img.getCategory());
-                ps.setInt(5, roomTypeId);
+                ps.setString(1, img.getImageUrl());
+                ps.setBoolean(2, img.isPrimary());
+                ps.setString(3, img.getCategory());
+                ps.setInt(4, roomTypeId);
                 ps.addBatch();
             }
             ps.executeBatch();

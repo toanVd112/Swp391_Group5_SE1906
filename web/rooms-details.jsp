@@ -16,6 +16,7 @@
             body, h1, h2, h3, h4, h5, h6, p, ul, li, .ttr-post-title h2 {
                 font-family: 'Roboto', sans-serif !important;
             }
+
             /* === MODAL WRAPPER === */
             .modal {
                 position: fixed;
@@ -38,7 +39,6 @@
                 }
             }
 
-
             /* === MODAL CONTENT === */
             .modal-content {
                 margin: 40px auto;
@@ -46,94 +46,107 @@
                 background: #fff;
                 width: 100%;
                 max-width: 1280px;
-                border-radius: 16px;
+                border-radius: 20px !important;
                 box-shadow: 0 8px 30px rgba(0,0,0,0.35);
                 position: relative;
                 max-height: 92vh;
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
-                border-radius: 20px !important;
             }
 
-
+            /* === NÚT ĐÓNG CẢI THIỆN === */
             .close-btn {
                 position: absolute;
-                top: 16px;
-                left: 16px;
-                background-color: transparent;
-                padding: 6px;
+                top: 20px;
+                left: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 10px;
                 border-radius: 50%;
-                border: 2px solid transparent;
+                border: 1px solid #e0e0e0;
                 cursor: pointer;
                 z-index: 999;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.25s ease;
+                transition: all 0.3s ease;
+                width: 40px;
+                height: 40px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
-
 
             .close-btn i {
                 font-size: 16px;
-                color: #5a3d91;
-                transition: transform 0.2s ease, color 0.2s ease;
+                color: #666;
+                transition: all 0.3s ease;
             }
 
             .close-btn:hover {
-                background: linear-gradient(135deg, #d3bfff, #c9aeff);
+                background: #f8f9fa;
+                border-color: #8b5cf6;
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
             }
 
             .close-btn:hover i {
-                transform: scale(1.15);
-                color: #432d7b;
+                color: #8b5cf6;
+                transform: rotate(90deg);
             }
 
-            /* === CATEGORY FILTER TABS (nút lọc ảnh) === */
+            /* === CATEGORY TABS CẢI THIỆN === */
             .category-tabs {
                 flex-shrink: 0;
                 position: sticky;
                 top: 0;
                 z-index: 10;
-                background: #fff;
-                padding: 6px 10px;
+                background: #f8f9fa;
+                padding: 15px 20px 15px 70px;
                 margin-bottom: 10px;
-                border-bottom: 1px solid #dee2e6;
+                border-bottom: 1px solid #e9ecef;
                 overflow-x: auto;
                 display: flex;
-                gap: 8px;
-                padding-left: 56px;
+                gap: 12px;
+                border-radius: 20px 20px 0 0;
             }
 
             .category-tabs button {
-                padding: 6px 14px;
+                padding: 10px 18px;
                 white-space: nowrap;
-                border: none;
-                border-radius: 20px;
-                background: transparent; /* <-- trong suốt */
-                font-size: 13px;
+                border: 1px solid #ddd;
+                border-radius: 25px;
+                background: #fff;
+                font-size: 14px;
                 color: #666;
                 cursor: pointer;
                 flex-shrink: 0;
-                transition: all 0.25s;
-                border: 1px solid #ccc;
+                transition: all 0.3s ease;
+                font-weight: 500;
+                text-transform: capitalize;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
 
             .category-tabs button.active {
-                background: linear-gradient(135deg, #cdb6ff, #d4bfff);
-                color: #4c2a84;
-                font-weight: bold;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #fff;
+                border-color: #8b5cf6;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+                font-weight: 600;
             }
 
-            .category-tabs button:hover {
-                background: #e4d4fb;
-                color: #5a3d91;
+            .category-tabs button:hover:not(.active) {
+                background: #f3f4f6;
+                border-color: #8b5cf6;
+                color: #8b5cf6;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
             }
 
             /* === SCROLLABLE IMAGE AREA === */
             .gallery-scroll {
                 overflow-y: auto;
                 flex-grow: 1;
+                padding: 0 20px 20px 20px;
             }
 
             .gallery-grid {
@@ -143,8 +156,8 @@
             }
 
             .gallery-item {
-                background: none; /* bỏ viền và nền trắng */
-                box-shadow: none; /* bỏ đổ bóng */
+                background: none;
+                box-shadow: none;
                 overflow: visible;
             }
 
@@ -155,19 +168,39 @@
                 object-fit: contain;
                 display: block;
                 margin: 0 auto;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+            }
+
+            .gallery-item:hover img {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
 
             .image-caption {
                 font-size: 16px;
                 color: #333;
-                text-align: left;
-                padding: 0;
+                text-align: center;
+                padding: 12px 0 0 0;
                 margin: 0;
+                font-weight: 600;
+                text-transform: capitalize;
             }
 
             @media (max-width: 768px) {
                 .gallery-grid {
                     grid-template-columns: 1fr;
+                }
+
+                .category-tabs {
+                    padding: 12px 15px 12px 50px;
+                    gap: 8px;
+                }
+
+                .category-tabs button {
+                    padding: 8px 14px;
+                    font-size: 13px;
                 }
             }
 
@@ -522,7 +555,7 @@
                                     <div class="course-detail-bx">
                                         <div class="course-price">
 
-                                            <h4 class="price">$${room.roomType.basePrice}</h4>
+                                            <h4 class="price">$${roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
                                             <a href="#" class="btn radius-xl text-uppercase">BOOK NOW</a>
@@ -567,18 +600,18 @@
                                 <div class="col-lg-9 col-md-8 col-sm-12">
                                     <div class="rooms-post">
                                         <div class="ttr-post-media media-effect">
-                                            <a href="#">
-                                                <img src="${pageContext.request.contextPath}/${room.roomImage}" alt="Room ${room.roomnumber}" />
+                                            <a>
+                                                <img src="${roomType.imageUrl}" alt="${roomType.name}" />
                                             </a>
                                         </div>
 
                                         <div class="ttr-post-info">
                                             <div class="ttr-post-title">
-                                                <h2 class="post-title"> Phòng ${room.roomnumber}</h2>
+                                                <h2 class="post-title">${roomType.name}</h2>
                                             </div>
 
                                             <div class="ttr-post-text">
-                                                <p>${room.roomType.roomDetail}</p>
+                                                <p>${roomType.roomDetail}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -633,6 +666,7 @@
 
                                         <!-- Phần hiển thị ảnh chính và ảnh phụ -->
                                         <div class="image-gallery-row">
+
                                             <!-- Ảnh chính -->
                                             <div class="main-photo-box">
                                                 <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
@@ -641,7 +675,7 @@
                                                      loading="lazy" />
                                             </div>
 
-                                            <!-- Nhóm 4 ảnh phụ -->
+                                            <!-- Ảnh phụ -->
                                             <div class="thumb-2x2-box">
                                                 <c:forEach var="img" items="${images}" begin="1" end="4">
                                                     <img src="${pageContext.request.contextPath}/${img.imageUrl}"
@@ -650,6 +684,7 @@
                                                          loading="lazy" />
                                                 </c:forEach>
                                             </div>
+
                                         </div>
                                     </div>
 

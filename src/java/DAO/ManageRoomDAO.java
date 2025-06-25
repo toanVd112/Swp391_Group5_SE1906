@@ -63,7 +63,6 @@ public class ManageRoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        null, // roomImage đã bị loại
                         roomType
                 );
 
@@ -126,7 +125,6 @@ public class ManageRoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                        null,
                         roomType
                 );
 

@@ -99,7 +99,7 @@ public class CartRoomDAO {
             }
         }
 
-        String sql = "SELECT r.RoomID, r.RoomNumber, r.Floor, r.RoomImage, r.Status, "
+        String sql = "SELECT r.RoomID, r.RoomNumber, r.Floor, r.Status, "
                 + "rt.Name AS RoomTypeName, rt.BasePrice "
                 + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
                 + "WHERE r.RoomID IN (" + placeholders + ")";
@@ -116,7 +116,7 @@ public class CartRoomDAO {
                 room.setRoomID(rs.getInt("RoomID"));
                 room.setRoomnumber(rs.getString("RoomNumber"));
                 room.setFloor(rs.getInt("Floor"));
-                room.setRoomImage(rs.getString("RoomImage"));
+             
                 room.setStatus(rs.getString("Status"));
                 RoomType rt = new RoomType();
                 rt.setBasePrice(rs.getDouble("BasePrice"));

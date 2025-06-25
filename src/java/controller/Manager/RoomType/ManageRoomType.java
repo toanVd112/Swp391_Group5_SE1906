@@ -115,8 +115,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
     String[] imageUrls = request.getParameterValues("imageUrls[]");
     if (imageUrls != null) {
         for (String url : imageUrls) {
-            if (url != null && !url.trim().isEmpty()) {
-                images.add(new RoomImage(0, null, 0, url.trim(), false, ""));
+            if (url != null && !url.trim().isEmpty()) {              
             }
         }
     }
