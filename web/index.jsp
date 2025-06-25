@@ -402,10 +402,7 @@
                         <label for="guests">Người</label>
                         <input type="number" class="form-control" id="guests" name="guests" min="1" value="1">
                     </div>
-                    <div class="form-group">
-                        <label for="rooms">Phòng</label>
-                        <input type="number" class="form-control" id="rooms" name="rooms" min="1" value="1">
-                    </div>
+
                     <div class="form-group invisible-label">
                         <label>&nbsp;</label>
                         <button type="submit" class="btn btn-warning btn-lg px-4">
@@ -506,10 +503,10 @@
 
                                                 <div class="info-bx text-center">
                                                     <h5>
-    <a href="RoomDetail?id=${room.roomTypeID}" class="text-primary" style="text-decoration: none;">
-        ${room.name}
-    </a>
-</h5>
+                                                        <a href="RoomDetail?id=${room.roomTypeID}" class="text-primary" style="text-decoration: none;">
+                                                            ${room.name}
+                                                        </a>
+                                                    </h5>
                                                     <span>${room.description}</span>
                                                 </div>
 

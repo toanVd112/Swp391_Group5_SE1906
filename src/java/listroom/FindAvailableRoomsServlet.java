@@ -73,36 +73,42 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             // 1. Lấy input từ request
             SearchParams params = getSearchParams(request);
 
-            // 2. Truy vấn DB để lấy loại phòng còn trống
+            // 2. Truy vấn DB để lấy loại phòng còn trống theo bộ lọc từng phòng
             RoomTypeDAO dao = new RoomTypeDAO();
-
-            // 1. Lấy tham số lọc
             java.sql.Date checkin = (java.sql.Date) params.checkin;
             java.sql.Date checkout = (java.sql.Date) params.checkout;
-            String roomTypeFilter = params.roomTypeFilter;
-            Integer minGuests = params.minGuests;
 
-            Double maxPrice = params.maxPrice;
-
-// 2. Gọi DAO để lấy danh sách RoomType còn trống phù hợp
             List<RoomType> availableRoomTypes = dao.getAvailableRoomTypes(
                     checkin,
                     checkout,
-                    roomTypeFilter,
-                    minGuests,
-                    maxPrice
+                    params.roomTypeFilter,
+                    params.minGuestsPerRoom,
+                    params.maxPrice
             );
 
             List<RoomType> allRoomTypes = dao.getAllRoomTypes(); // cho dropdown filter
 
-            // 3. Tính toán gợi ý tổ hợp phòng
-            int maxRooms = Math.min(10, availableRoomTypes.size());
-
+            // 3. Tính toán tổ hợp phòng phù hợp với số người
             List<List<RoomSuggestion>> combos = generateSuggestions(availableRoomTypes, params.guests);
 
-            // 4. Phân trang (giả định)
-            int currentPage = 1;
-            int totalPages = 1;
+            // 4. Lọc tổ hợp theo tổng giá và tổng sức chứa
+            if (params.maxPrice != null || params.minTotalGuests != null) {
+                combos = combos.stream()
+                        .filter(combo -> {
+                            double totalPrice = combo.stream()
+                                    .mapToDouble(s -> s.getQuantity() * s.getRoomType().getBasePrice())
+                                    .sum();
+
+                            int totalGuests = combo.stream()
+                                    .mapToInt(s -> s.getQuantity() * s.getRoomType().getMaxGuests())
+                                    .sum();
+
+                            return (params.maxPrice == null || totalPrice <= params.maxPrice)
+                                    && (params.minTotalGuests == null || totalGuests >= params.minTotalGuests);
+                        })
+                        .limit(10)
+                        .collect(Collectors.toList());
+            }
 
             // 5. Gán dữ liệu cho JSP
             request.setAttribute("checkin", params.checkinStr);
@@ -112,8 +118,10 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             request.setAttribute("availableRooms", availableRoomTypes);
             request.setAttribute("roomTypes", allRoomTypes);
             request.setAttribute("suggestions", combos);
-            request.setAttribute("currentPage", currentPage);
-            request.setAttribute("totalPages", totalPages);
+
+            // Nếu bạn dùng phân trang sau này
+            request.setAttribute("currentPage", 1);
+            request.setAttribute("totalPages", 1);
 
             request.getRequestDispatcher("roomlist.jsp").forward(request, response);
 
@@ -211,16 +219,20 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         String guestsStr = request.getParameter("guests");
 
         String roomTypeFilter = request.getParameter("roomType");
-        String minGuestsStr = request.getParameter("minGuests");
+        String minGuestsPerRoomStr = request.getParameter("minGuestsPerRoom");
+        String minTotalGuestsStr = request.getParameter("minTotalGuests");
         String maxPriceStr = request.getParameter("maxPrice");
 
         java.sql.Date checkin = java.sql.Date.valueOf(checkinStr);
         java.sql.Date checkout = java.sql.Date.valueOf(checkoutStr);
         int guests = Integer.parseInt(guestsStr);
 
-        // ✅ Cho phép số phòng là null
-        Integer minGuests = (minGuestsStr != null && !minGuestsStr.isBlank())
-                ? Integer.parseInt(minGuestsStr)
+        Integer minGuestsPerRoom = (minGuestsPerRoomStr != null && !minGuestsPerRoomStr.isBlank())
+                ? Integer.parseInt(minGuestsPerRoomStr)
+                : null;
+
+        Integer minTotalGuests = (minTotalGuestsStr != null && !minTotalGuestsStr.isBlank())
+                ? Integer.parseInt(minTotalGuestsStr)
                 : null;
 
         Double maxPrice = (maxPriceStr != null && !maxPriceStr.isBlank())
@@ -231,7 +243,7 @@ public class FindAvailableRoomsServlet extends HttpServlet {
                 checkinStr, checkoutStr,
                 checkin, checkout,
                 guests,
-                roomTypeFilter, minGuests, maxPrice
+                roomTypeFilter, minGuestsPerRoom, minTotalGuests, maxPrice
         );
     }
 
@@ -242,20 +254,21 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         Date checkin, checkout;
         int guests;
 
-        Integer minGuests;
+        Integer minGuestsPerRoom;     // lọc trong DAO
+        Integer minTotalGuests;       // lọc sau khi generate tổ hợp
         Double maxPrice;
 
         public SearchParams(String checkinStr, String checkoutStr, Date checkin, Date checkout,
                 int guests, String roomTypeFilter,
-                Integer minGuests, Double maxPrice) {
+                Integer minGuestsPerRoom, Integer minTotalGuests, Double maxPrice) {
             this.checkinStr = checkinStr;
             this.checkoutStr = checkoutStr;
             this.checkin = checkin;
             this.checkout = checkout;
             this.guests = guests;
-
             this.roomTypeFilter = roomTypeFilter;
-            this.minGuests = minGuests;
+            this.minGuestsPerRoom = minGuestsPerRoom;
+            this.minTotalGuests = minTotalGuests;
             this.maxPrice = maxPrice;
         }
     }

@@ -411,7 +411,7 @@
                         <label>Số người</label><br>
                         <input type="number" name="guests" value="${param.guests}" min="1" required>
                     </div>
-                   
+
                     <div>
                         <label>Loại phòng</label><br>
                         <select name="roomType">
@@ -425,10 +425,15 @@
                         <label>Giá tối đa</label><br>
                         <input type="number" name="maxPrice" value="${param.maxPrice}">
                     </div>
-                    <div>
-                        <label>Sức chứa tối thiểu</label><br>
-                        <input type="number" name="minGuests" value="${param.minGuests}">
-                    </div>
+                    
+                    <!-- Lọc từng phòng -->
+                    <label>Sức chứa tối thiểu của từng phòng:</label>
+                    <input type="number" name="minGuestsPerRoom" value="${param.minGuestsPerRoom}"/>
+
+                    <!-- Lọc tổ hợp -->
+                    <label>Tổng sức chứa tối thiểu của tổ hợp:</label>
+                    <input type="number" name="minTotalGuests" value="${param.minTotalGuests}"/>
+
                     <div>
                         <button type="submit" style="margin-top: 6px;">🔍 Tìm và Gợi ý</button>
                     </div>
@@ -444,7 +449,7 @@
                 <c:when test="${empty rooms}">
                     <p>Hệ thống đang tự động gợi ý tổ hợp phòng tối ưu cho <strong>${guests}</strong> người.</p>
                 </c:when>
-               
+
             </c:choose>
 
             <!-- 3. GỢI Ý PHÂN BỔ PHÒNG -->
@@ -499,6 +504,26 @@
                     </tr>
                 </c:forEach>
             </table>
+            <div style="text-align:center; margin-top: 15px;">
+                <c:if test="${totalPages > 1}">
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <c:choose>
+                            <c:when test="${i == currentPage}">
+                                <strong>[${i}]</strong>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="FindAvailableRoomsServlet?checkin=${checkin}
+                                   &checkout=${checkout}
+                                   &guests=${guests}
+                                   &roomType=${param.roomType}
+                                   &minGuests=${param.minGuests}
+                                   &maxPrice=${param.maxPrice}
+                                   &suggestPage=${i}">[${i}]</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </c:if>
+            </div>
 
             <hr/>
 
@@ -524,15 +549,13 @@
                     <div style="clear:both;"></div>
                 </div>
             </c:forEach>
+
+
+
             <hr/>
 
             <!-- 5. PHÂN TRANG -->
-            <div>
-                <p>Trang ${currentPage} / ${totalPages}</p>
-                <c:forEach begin="1" end="${totalPages}" var="i">
-                    <a href="roomlist.jsp?page=${i}">${i}</a>
-                </c:forEach>
-            </div>
+
             <footer>
                 <div class="footer-top">
                     <div class="pt-exebar">

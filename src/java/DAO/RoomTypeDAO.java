@@ -25,7 +25,7 @@ public class RoomTypeDAO {
                         0
                 );
                 roomType.setImages(getImagesByRoomTypeId(id));
-                
+
                 return roomType;
             }
         }
@@ -373,54 +373,51 @@ public class RoomTypeDAO {
         }
     }
 
-    public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout, String roomTypeFilter, Integer minGuests, Double maxPrice) throws SQLException {
+    public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout,
+            String roomTypeFilter, Integer minGuests, Double maxPrice) throws SQLException {
         List<RoomType> list = new ArrayList<>();
 
-        String sql = """
-           SELECT rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail,
-                  COUNT(r.RoomID) AS AvailableRooms
-           FROM roomtypes rt
-           JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID
-           WHERE r.Status = 'Available'
-             AND r.RoomID NOT IN (
-                 SELECT bd.RoomID
-                 FROM bookingdetails bd
-                 JOIN bookings b ON bd.BookingID = b.BookingID
-                 WHERE b.CheckOutDate > ? AND b.CheckInDate < ?
-             )
-             AND (? IS NULL OR rt.Name = ?)
-             AND (? IS NULL OR rt.MaxGuests >= ?)
-             AND (? IS NULL OR rt.BasePrice <= ?)
-           GROUP BY rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail
-        """;
+        StringBuilder sql = new StringBuilder("""
+        SELECT rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail,
+               COUNT(r.RoomID) AS AvailableRooms
+        FROM roomtypes rt
+        JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID
+        WHERE r.Status = 'Available'
+          AND r.RoomID NOT IN (
+              SELECT bd.RoomID
+              FROM bookingdetails bd
+              JOIN bookings b ON bd.BookingID = b.BookingID
+              WHERE b.CheckOutDate > ? AND b.CheckInDate < ?
+          )
+    """);
 
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setDate(1, checkin);
-            ps.setDate(2, checkout);
+        if (roomTypeFilter != null && !roomTypeFilter.isBlank()) {
+            sql.append(" AND rt.Name = ?");
+        }
+        if (minGuests != null) {
+            sql.append(" AND rt.MaxGuests >= ?");
+        }
+        if (maxPrice != null) {
+            sql.append(" AND rt.BasePrice <= ?");
+        }
 
-            if (roomTypeFilter == null || roomTypeFilter.isBlank()) {
-                ps.setNull(3, Types.VARCHAR);
-                ps.setNull(4, Types.VARCHAR);
-            } else {
-                ps.setString(3, roomTypeFilter);
-                ps.setString(4, roomTypeFilter);
-            }  // 2nd ?
+        sql.append("""
+        GROUP BY rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail
+    """);
 
-            
-            if (minGuests == null) {
-                ps.setNull(5, Types.INTEGER);
-                ps.setNull(6, Types.INTEGER);
-            } else {
-                ps.setInt(5, minGuests);
-                ps.setInt(6, minGuests);
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int index = 1;
+            ps.setDate(index++, checkin);
+            ps.setDate(index++, checkout);
+
+            if (roomTypeFilter != null && !roomTypeFilter.isBlank()) {
+                ps.setString(index++, roomTypeFilter);
             }
-
-            if (maxPrice == null) {
-                ps.setNull(7, Types.DOUBLE);
-                ps.setNull(8, Types.DOUBLE);
-            } else {
-                ps.setDouble(7, maxPrice);
-                ps.setDouble(8, maxPrice);
+            if (minGuests != null) {
+                ps.setInt(index++, minGuests);
+            }
+            if (maxPrice != null) {
+                ps.setDouble(index++, maxPrice);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -452,5 +449,32 @@ public class RoomTypeDAO {
             }
         }
         return list;
+    }
+
+    public static void main(String[] args) {
+        try {
+            RoomTypeDAO dao = new RoomTypeDAO();
+
+            // Thông tin test
+            Date checkin = Date.valueOf("2025-06-25");
+            Date checkout = Date.valueOf("2025-06-28");
+            String roomTypeFilter = "";      // để trống nếu không muốn lọc theo tên
+            Integer minGuests = 5;           // null nếu không muốn lọc
+            Double maxPrice = 600.0;         // null nếu không muốn lọc
+
+            List<RoomType> roomTypes = dao.getAvailableRoomTypes(checkin, checkout, roomTypeFilter, minGuests, maxPrice);
+
+            // In kết quả
+            for (RoomType rt : roomTypes) {
+                System.out.println("RoomType: " + rt.getName());
+                System.out.println(" - Max Guests: " + rt.getMaxGuests());
+                System.out.println(" - Price: " + rt.getBasePrice());
+                System.out.println(" - Available Rooms: " + rt.getAvailableRooms());
+                System.out.println("-----------");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
