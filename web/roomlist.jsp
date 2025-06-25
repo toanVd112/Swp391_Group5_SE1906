@@ -1,8 +1,3 @@
-<%-- 
-    Document   : index.jsp
-    Created on : May 23, 2025, 9:14:16 AM
-    Author     : Admin
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -387,316 +382,148 @@
                     </div>
                 </div>
             </header>
-            <div id="booking-bar" class="shadow-sm">
-                <form method="get" action="FindAvailableRoomsServlet"
-                      class="container d-flex flex-wrap justify-content-between align-items-end py-3 gap-3">
-                    <div class="form-group">
-                        <label for="checkin">Ngày đến</label>
-                        <input type="date" class="form-control" id="checkin" name="checkin">
+
+            <!-- 1. THÔNG TIN TÌM KIẾM -->
+            <h2>Kết quả tìm kiếm</h2>
+            <p>
+                Ngày đến: <strong>${checkin}</strong> |
+                Ngày đi: <strong>${checkout}</strong> |
+                Số người: <strong>${guests}</strong> |
+                Số phòng yêu cầu: <strong>${rooms}</strong>
+            </p>
+            <hr/>
+
+            <!-- 2. FILTER PANEL -->
+            <h2>Tìm phòng và bộ lọc nâng cao</h2>
+
+            <form method="get" action="FindAvailableRoomsServlet" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
+
+                    <div>
+                        <label>Ngày đến</label><br>
+                        <input type="date" name="checkin" value="${param.checkin}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="checkout">Ngày đi</label>
-                        <input type="date" class="form-control" id="checkout" name="checkout">
+                    <div>
+                        <label>Ngày đi</label><br>
+                        <input type="date" name="checkout" value="${param.checkout}" required>
                     </div>
-                    <div class="form-group">
-                        <label for="guests">Người</label>
-                        <input type="number" class="form-control" id="guests" name="guests" min="1" value="1">
+                    <div>
+                        <label>Số người</label><br>
+                        <input type="number" name="guests" value="${param.guests}" min="1" required>
                     </div>
-                    <div class="form-group">
-                        <label for="rooms">Phòng</label>
-                        <input type="number" class="form-control" id="rooms" name="rooms" min="1" value="1">
+                    <div>
+                        <label>Số phòng</label><br>
+                        <input type="number" name="rooms" value="${param.rooms}" min="1" required>
                     </div>
-                    <div class="form-group invisible-label">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="btn btn-warning btn-lg px-4">
-                            🔍 Tìm phòng
-                        </button>
+                    <div>
+                        <label>Loại phòng</label><br>
+                        <select name="roomType">
+                            <option value="">-- Tất cả --</option>
+                            <c:forEach var="type" items="${roomTypes}">
+                                <option value="${type.name}" <c:if test="${param.roomType == type.name}">selected</c:if>>${type.name}</option>
+                            </c:forEach>
+                        </select>
                     </div>
-
-                </form>
-            </div>
-
-            <!-- Header Top END ==== -->
-            <!-- Content -->
-            <div class="page-content bg-white">
-                <p style="color:red;">DEBUG: isCustomer = ${isCustomer}</p>
-                <p style="color:blue;">Session user = ${sessionScope.user}</p>
-
-                <!-- Main Slider -->
-                <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-12 text-center text-white">
-                                <h2>Welcome to Hoang Nam Hotel</h2>
-
-
-                                <h5>The Best Place To Stay</h5>
-
-
-                            </div>
-                        </div>
-
+                    <div>
+                        <label>Giá tối đa</label><br>
+                        <input type="number" name="maxPrice" value="${param.maxPrice}">
+                    </div>
+                    <div>
+                        <label>Sức chứa tối thiểu</label><br>
+                        <input type="number" name="minGuests" value="${param.minGuests}">
+                    </div>
+                    <div>
+                        <button type="submit" style="margin-top: 6px;">🔍 Tìm và Gợi ý</button>
                     </div>
                 </div>
-                <!-- Main Slider -->
-                <div class="content-block">
-                    <c:choose>
-                        <c:when test="${sessionScope.account != null}">
-                            <c:set var="isCustomer" value="true"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="isCustomer" value="false"/>
-                        </c:otherwise>
-                    </c:choose>
+            </form>
 
-                    <!-- Popular Rooms -->
-                    <div class="section-area section-sp2 popular-rooms-bx">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12 heading-bx left">
-                                    <h2 class="title-head">Popular <span>Rooms</span></h2>
-                                    <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="rooms-carousel owl-carousel owl-btn-1 col-12 p-lr0">
-                                    <c:forEach var="room" items="${roomTypes}">
-                                        <div class="item">
-                                            <div class="cours-bx">
-                                                <div class="action-box">
+            <hr/>
 
+            <!-- 3. GỢI Ý PHÂN BỔ PHÒNG -->
+            <h3>Gợi ý tổ hợp phòng cho ${guests} người</h3>
+            <table border="1" cellpadding="10">
+                <tr>
+                    <th>#</th>
+                    <th>Tổ hợp</th>
+                    <th>Sức chứa</th>
+                    <th>Số phòng</th>
+                    <th>Hành động</th>
+                    <th>Tổng giá tạm tính</th>
+                </tr>
+                <c:forEach var="combo" items="${suggestionCombos}" varStatus="idx">
+                    <tr>
+                        <td>${idx.count}</td>
+                        <td>
+                            <c:forEach var="sug" items="${combo}">
+                                ${sug.quantity} x ${sug.roomType.name}<br/>
+                            </c:forEach>
+                        </td>
+                        <td>
+                            <c:set var="total" value="0"/>
+                            <c:forEach var="sug" items="${combo}">
+                                <c:set var="total" value="${total + sug.quantity * sug.roomType.maxGuests}" />
+                            </c:forEach>
+                            ${total}
+                        </td>
+                        <td>
+                            <c:set var="totalRooms" value="0"/>
+                            <c:forEach var="sug" items="${combo}">
+                                <c:set var="totalRooms" value="${totalRooms + sug.quantity}" />
+                            </c:forEach>
+                            ${totalRooms}
+                        </td>
+                        <td>
+                            <form action="addComboToCart" method="post">
+                                <c:forEach var="sug" items="${combo}">
+                                    <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}" />
+                                    <input type="hidden" name="quantity" value="${sug.quantity}" />
+                                </c:forEach>
+                                <button>Chọn tổ hợp</button>
+                            </form>
+                        </td>
+                        <td>
+                            <c:set var="totalPrice" value="0"/>
+                            <c:forEach var="sug" items="${combo}">
+                                <c:set var="totalPrice" value="${totalPrice + sug.quantity * sug.roomType.basePrice}" />
+                            </c:forEach>
+                            $${totalPrice}
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
 
+            <hr/>
 
-
-
-                                                    <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
-                                                    <!-- Thay nút xem phòng bằng nút đặt -->
-                                                    <c:set var="isCustomer" value="${not empty sessionScope.user}" />
-                                                    <c:choose>
-                                                        <c:when test="${isCustomer}">
-                                                            <button 
-                                                                type="button"
-                                                                class="btn btn-warning btn-sm"
-                                                                onclick="addToCustomerCart(this)"
-                                                                data-room-type-id="${room.roomTypeID}"
-                                                                data-room-name="${room.name}"
-                                                                data-base-price="${room.basePrice}"
-                                                                data-image-url="${room.imageUrl}"
-                                                                data-max-guest="${room.maxGuests}">
-                                                                <i class="fa fa-plus"></i> Đặt 
-                                                            </button>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);">
-                                                                <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
-                                                                <input type="hidden" name="roomName" value="${room.name}">
-                                                                <input type="hidden" name="basePrice" value="${room.basePrice}">
-                                                                <input type="hidden" name="imageUrl" value="${room.imageUrl}">
-                                                                <input type="hidden" name="maxguest" value="${room.maxGuests}">
-                                                                <button type="submit" class="btn btn-warning btn-sm">
-                                                                    <i class="fa fa-plus"></i> Đặt phòng
-                                                                </button>
-                                                            </form>
-                                                        </c:otherwise>
-                                                    </c:choose>
-
-
-
-                                                </div>
-
-                                                <div class="info-bx text-center">
-                                                    <h5>${room.name}</h5>
-                                                    <span>${room.description}</span>
-                                                </div>
-
-                                                <div class="cours-more-info">
-                                                    <div class="review">
-                                                        <span>3 Review</span>
-                                                        <ul class="cours-star">
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li class="active"><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                            <li><i class="fa fa-star"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="price">
-                                                        <h5>$${room.basePrice}</h5>
-                                                        <h5><i class="fa fa-user"></i> ${room.maxGuests}</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Popular Rooms END -->
-                    <div class="section-area section-sp2 bg-fix ovbl-dark join-bx text-center" style="background-image:url(assets/images/background/bg1.jpg);">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="join-content-bx text-white">
-                                        <h2>Book a room online on <br> your time</h2>
-                                        <h4><span class="counter">50</span> Rooms </h4>
-                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                                        <a href="#" class="btn button-md">Book Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Form END -->
-                    <div class="section-area section-sp1">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-6 m-b30">
-                                    <h2 class="title-head ">Book a new room online<br> <span class="text-primary"> on your time</span></h2>
-                                    <h4><span class="counter">50</span> Rooms</h4>
-                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.</p>
-                                    <a href="#" class="btn button-md">Book Now</a>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon1.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Our Philosophy</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon2.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Kingster's Principle</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon3.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Key Of Success</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 m-b30">
-                                            <div class="feature-container">
-                                                <div class="feature-md text-white m-b20">
-                                                    <a href="#" class="icon-cell"><img src="assets/images/icon/icon4.png" alt=""></a> 
-                                                </div>
-                                                <div class="icon-content">
-                                                    <h5 class="ttr-tilte">Our Philosophy</h5>
-                                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Testimonials -->
-                    <div class="section-area section-sp1 bg-fix ovbl-dark text-white" style="background-image:url(assets/images/background/bg1.jpg);">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">3000</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Completed Projects</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">2500</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Happy Clients</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">1500</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Questions Answered</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-6 col-6 m-b30">
-                                    <div class="counter-style-1">
-                                        <div class="text-white">
-                                            <span class="counter">1000</span><span>+</span>
-                                        </div>
-                                        <span class="counter-text">Ordered Coffee's</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonials END -->
-                    <!-- Testimonials ==== -->
-                    <div class="section-area section-sp2">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12 heading-bx left">
-                                    <h2 class="title-head text-uppercase">what people <span>say</span></h2>
-                                    <p>It is a long established fact that a reader will be distracted by the readable content of a page</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-carousel owl-carousel owl-btn-1 col-12 p-lr0">
-                                <div class="item">
-                                    <div class="testimonial-bx">
-                                        <div class="testimonial-thumb">
-                                            <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                        </div>
-                                        <div class="testimonial-info">
-                                            <h5 class="name">Peter Packer</h5>
-                                            <p>-Art Director</p>
-                                        </div>
-                                        <div class="testimonial-content">
-                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="testimonial-bx">
-                                        <div class="testimonial-thumb">
-                                            <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                        </div>
-                                        <div class="testimonial-info">
-                                            <h5 class="name">Peter Packer</h5>
-                                            <p>-Art Director</p>
-                                        </div>
-                                        <div class="testimonial-content">
-                                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Testimonials END ==== -->
+            <!-- 4. DANH SÁCH PHÒNG CÓ SẴN -->
+            <h3>Danh sách phòng còn trống</h3>
+            <c:forEach var="room" items="${availableRooms}">
+                <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+                    <img src="${room.imageUrl}" width="200px" style="float:left; margin-right:10px;">
+                    <h4>${room.name}</h4>
+                    <p>${room.description}</p>
+                    <p>Sức chứa: ${room.maxGuests} người</p>
+                    <p>Giá: <fmt:formatNumber value="${room.basePrice}" type="currency"/></p>
+                    <p>Phòng còn trống: ${room.availableRooms}</p>
+                    <form method="post" action="addToCart">
+                        <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
+                        <input type="hidden" name="checkin" value="${checkin}">
+                        <input type="hidden" name="checkout" value="${checkout}">
+                        <input type="number" name="quantity" min="1" max="${room.availableRooms}" value="1">
+                        <button>Đặt phòng</button>
+                    </form>
+                    <div style="clear:both;"></div>
                 </div>
-                <!-- contact area END -->
+            </c:forEach>
+            <hr/>
+
+            <!-- 5. PHÂN TRANG -->
+            <div>
+                <p>Trang ${currentPage} / ${totalPages}</p>
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <a href="roomlist.jsp?page=${i}">${i}</a>
+                </c:forEach>
             </div>
-            <!-- Content END-->
-            <!-- Footer ==== -->
             <footer>
                 <div class="footer-top">
                     <div class="pt-exebar">
@@ -823,47 +650,5 @@
         <script src='assets/vendors/switcher/switcher.js'></script>
         <script src="assets/js/hotel-cart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <!-- CSS (nếu dùng modal/custom style) -->
-
-        <!-- JS -->
-        <script src="${pageContext.request.contextPath}/assets/js/confirm-add-room.js"></script>
-        <!-- Modal Confirm -->
-        <!-- Modal dùng chung cho cả Guest và Customer -->
-        <div id="confirmModal" class="confirm-modal" style="display: none;">
-            <div class="confirm-modal-content">
-                <p>Phòng đã được thêm vào giỏ.</p>
-                <p>Bạn muốn làm gì tiếp theo?</p>
-                <div class="confirm-modal-actions">
-                    <button onclick="submitAndStay()">🛏 Đặt tiếp</button>
-                    <button onclick="submitAndGo()">📋 Xem phòng đã chọn</button>
-                </div>
-            </div>
-        </div>
-        <script>
-            // Gửi guestCart từ session vào biến JS
-            var guestCart = [];
-
-            <c:if test="${not empty sessionScope.guestCart}">
-            guestCart = [
-                <c:forEach var="item" items="${sessionScope.guestCart}" varStatus="status">
-            {
-            roomTypeId: "${item.roomTypeId}"
-            }<c:if test="${!status.last}">,</c:if>
-                </c:forEach>
-            ];
-            </c:if>
-        </script>
-        <!-- Custom Alert Box -->
-        <div id="customAlert" class="custom-alert">
-            <div class="custom-alert-box">
-                <p id="customAlertMessage"></p>
-                <button onclick="closeCustomAlert()">OK</button>
-            </div>
-        </div>
-
-        <!-- Confirm Modal -->
-
     </body>
-
 </html>

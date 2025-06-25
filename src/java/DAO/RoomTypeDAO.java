@@ -373,4 +373,79 @@ public class RoomTypeDAO {
             e.printStackTrace();
         }
     }
+
+    public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout, String roomTypeFilter, Integer minGuests, Double maxPrice) throws SQLException {
+        List<RoomType> list = new ArrayList<>();
+
+        String sql = """
+           SELECT rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail,
+                  COUNT(r.RoomID) AS AvailableRooms
+           FROM roomtypes rt
+           JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID
+           WHERE r.Status = 'Available'
+             AND r.RoomID NOT IN (
+                 SELECT bd.RoomID
+                 FROM bookingdetails bd
+                 JOIN bookings b ON bd.BookingID = b.BookingID
+                 WHERE b.CheckOutDate > ? AND b.CheckInDate < ?
+             )
+             AND (? IS NULL OR rt.Name = ?)
+             AND (? IS NULL OR rt.MaxGuests >= ?)
+             AND (? IS NULL OR rt.BasePrice <= ?)
+           GROUP BY rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail
+        """;
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, checkin);
+            ps.setDate(2, checkout);
+
+            ps.setString(3, roomTypeFilter);        // 1st ?
+            ps.setString(4, roomTypeFilter);        // 2nd ?
+
+            if (minGuests == null) {
+                ps.setNull(5, Types.INTEGER);
+                ps.setNull(6, Types.INTEGER);
+            } else {
+                ps.setInt(5, minGuests);
+                ps.setInt(6, minGuests);
+            }
+
+            if (maxPrice == null) {
+                ps.setNull(7, Types.DOUBLE);
+                ps.setNull(8, Types.DOUBLE);
+            } else {
+                ps.setDouble(7, maxPrice);
+                ps.setDouble(8, maxPrice);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RoomType rt = new RoomType();
+                rt.setRoomTypeID(rs.getInt("RoomTypeID"));
+                rt.setName(rs.getString("Name"));
+                rt.setDescription(rs.getString("Description"));
+                rt.setBasePrice(rs.getDouble("BasePrice"));
+                rt.setMaxGuests(rs.getInt("MaxGuests"));
+                rt.setImageUrl(rs.getString("RoomTypeImage"));
+                rt.setAvailableRooms(rs.getInt("AvailableRooms"));
+                list.add(rt);
+            }
+        }
+
+        return list;
+    }
+
+    public List<RoomType> getAllRoomTypes() throws SQLException {
+        List<RoomType> list = new ArrayList<>();
+        String sql = "SELECT * FROM roomtypes";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                RoomType rt = new RoomType();
+                rt.setRoomTypeID(rs.getInt("RoomTypeID"));
+                rt.setName(rs.getString("Name"));
+                list.add(rt);
+            }
+        }
+        return list;
+    }
 }

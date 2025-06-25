@@ -16,6 +16,7 @@ public class RoomType {
     private java.util.List<model.RoomImage> images; // Thêm danh sách ảnh
     private int MaxGuests;
     
+    
     public int getMaxGuests() {
         return MaxGuests;
     }
