@@ -18,6 +18,10 @@ import java.util.List;
 import model.RoomSuggestion;
 import model.RoomType;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -92,7 +96,9 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             List<RoomType> allRoomTypes = dao.getAllRoomTypes(); // cho dropdown filter
 
             // 3. Tính toán gợi ý tổ hợp phòng
-            List<List<RoomSuggestion>> suggestionCombos = generateSuggestions(availableRoomTypes, params.guests);
+            int maxRooms = Math.min(10, availableRoomTypes.size());
+
+            List<List<RoomSuggestion>> combos = generateSuggestions(availableRoomTypes, params.guests);
 
             // 4. Phân trang (giả định)
             int currentPage = 1;
@@ -102,10 +108,10 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             request.setAttribute("checkin", params.checkinStr);
             request.setAttribute("checkout", params.checkoutStr);
             request.setAttribute("guests", params.guests);
-            request.setAttribute("rooms", params.requestedRooms);
+
             request.setAttribute("availableRooms", availableRoomTypes);
             request.setAttribute("roomTypes", allRoomTypes);
-            request.setAttribute("suggestions", suggestionCombos);
+            request.setAttribute("suggestions", combos);
             request.setAttribute("currentPage", currentPage);
             request.setAttribute("totalPages", totalPages);
 
@@ -118,45 +124,115 @@ public class FindAvailableRoomsServlet extends HttpServlet {
     }
 
     private List<List<RoomSuggestion>> generateSuggestions(List<RoomType> roomTypes, int totalGuests) {
-        List<List<RoomSuggestion>> combos = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        List<List<RoomSuggestion>> result = new ArrayList<>();
 
+        // ✅ Bước 1: Ưu tiên gợi ý 1 phòng nếu đủ
         for (RoomType rt : roomTypes) {
-            int maxPerRoom = rt.getMaxGuests();
-            int needed = (int) Math.ceil((double) totalGuests / maxPerRoom);
-            if (needed <= rt.getAvailableRooms()) {
-                List<RoomSuggestion> combo = new ArrayList<>();
-                combo.add(new RoomSuggestion(rt, needed));
-                combos.add(combo);
+            if (rt.getMaxGuests() >= totalGuests && rt.getAvailableRooms() >= 1) {
+                List<RoomSuggestion> single = List.of(new RoomSuggestion(rt, 1));
+                String key = "1x" + rt.getName();
+                if (seen.add(key)) {
+                    result.add(single);
+                }
             }
         }
 
-        // TODO: Bổ sung logic tổ hợp nhiều loại phòng
-        return combos;
+// Nếu đã có phòng đủ 1 phòng, không sinh thêm tổ hợp nhiều phòng nữa
+        if (!result.isEmpty()) {
+            return result;
+        }
+
+        // ✅ Bước 2: Sinh tổ hợp nhiều phòng
+        backtrackSmart(roomTypes, 0, totalGuests, new ArrayList<>(), result, seen);
+
+        // ✅ Bước 3: Sắp xếp ưu tiên ít phòng và giá rẻ nhất
+        return result.stream()
+                .sorted(Comparator
+                        .comparingInt((List<RoomSuggestion> combo)
+                                -> combo.stream().mapToInt(RoomSuggestion::getQuantity).sum()) // tổng số phòng
+                        .thenComparingDouble(combo
+                                -> combo.stream().mapToDouble(s -> s.getQuantity() * s.getRoomType().getBasePrice()).sum()) // tổng giá
+                )
+                .limit(10) // giới hạn gợi ý hiển thị
+                .collect(Collectors.toList());
+    }
+
+    private void backtrackSmart(List<RoomType> roomTypes, int index, int requiredGuests,
+            List<RoomSuggestion> current, List<List<RoomSuggestion>> result, Set<String> seen) {
+
+        int totalGuests = current.stream()
+                .mapToInt(s -> s.getQuantity() * s.getRoomType().getMaxGuests())
+                .sum();
+
+        int totalRooms = current.stream()
+                .mapToInt(RoomSuggestion::getQuantity)
+                .sum();
+
+        // ✅ Nếu đã đủ sức chứa
+        if (totalGuests >= requiredGuests) {
+            // Bỏ qua nếu sức chứa vượt quá nhiều (giới hạn dư 50%)
+            if (totalGuests > requiredGuests * 1.5) {
+                return;
+            }
+
+            // Khóa tổ hợp theo tên phòng
+            String key = current.stream()
+                    .sorted(Comparator.comparing(s -> s.getRoomType().getName()))
+                    .map(s -> s.getQuantity() + "x" + s.getRoomType().getName())
+                    .collect(Collectors.joining("+"));
+
+            if (seen.add(key)) {
+                result.add(new ArrayList<>(current));
+            }
+            return;
+        }
+
+        if (index >= roomTypes.size()) {
+            return;
+        }
+
+        RoomType rt = roomTypes.get(index);
+        int maxQty = rt.getAvailableRooms();
+
+        for (int qty = 1; qty <= maxQty; qty++) {
+            current.add(new RoomSuggestion(rt, qty));
+            backtrackSmart(roomTypes, index + 1, requiredGuests, current, result, seen);
+            current.remove(current.size() - 1);
+        }
+
+        // Thử nhánh không chọn loại phòng này
+        backtrackSmart(roomTypes, index + 1, requiredGuests, current, result, seen);
     }
 
     private SearchParams getSearchParams(HttpServletRequest request) {
         String checkinStr = request.getParameter("checkin");
         String checkoutStr = request.getParameter("checkout");
         String guestsStr = request.getParameter("guests");
-        String roomsStr = request.getParameter("rooms");
+
         String roomTypeFilter = request.getParameter("roomType");
         String minGuestsStr = request.getParameter("minGuests");
         String maxPriceStr = request.getParameter("maxPrice");
 
-        java.sql.Date checkin = java.sql.Date.valueOf(request.getParameter("checkin"));
-        java.sql.Date checkout = java.sql.Date.valueOf(request.getParameter("checkout"));
-
+        java.sql.Date checkin = java.sql.Date.valueOf(checkinStr);
+        java.sql.Date checkout = java.sql.Date.valueOf(checkoutStr);
         int guests = Integer.parseInt(guestsStr);
-        int requestedRooms = Integer.parseInt(roomsStr);
 
+        // ✅ Cho phép số phòng là null
         Integer minGuests = (minGuestsStr != null && !minGuestsStr.isBlank())
                 ? Integer.parseInt(minGuestsStr)
                 : null;
+
         Double maxPrice = (maxPriceStr != null && !maxPriceStr.isBlank())
                 ? Double.parseDouble(maxPriceStr)
                 : null;
 
-        return new SearchParams(checkinStr, checkoutStr, checkin, checkout, guests, requestedRooms, roomTypeFilter, minGuests, maxPrice);
+        return new SearchParams(
+                checkinStr, checkoutStr,
+                checkin, checkout,
+                guests,
+                roomTypeFilter, minGuests, maxPrice
+        );
     }
 
     // Class phụ trợ để gom các input
@@ -164,19 +240,20 @@ public class FindAvailableRoomsServlet extends HttpServlet {
 
         String checkinStr, checkoutStr, roomTypeFilter;
         Date checkin, checkout;
-        int guests, requestedRooms;
+        int guests;
+
         Integer minGuests;
         Double maxPrice;
 
         public SearchParams(String checkinStr, String checkoutStr, Date checkin, Date checkout,
-                int guests, int requestedRooms, String roomTypeFilter,
+                int guests, String roomTypeFilter,
                 Integer minGuests, Double maxPrice) {
             this.checkinStr = checkinStr;
             this.checkoutStr = checkoutStr;
             this.checkin = checkin;
             this.checkout = checkout;
             this.guests = guests;
-            this.requestedRooms = requestedRooms;
+
             this.roomTypeFilter = roomTypeFilter;
             this.minGuests = minGuests;
             this.maxPrice = maxPrice;

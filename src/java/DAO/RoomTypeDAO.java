@@ -399,9 +399,15 @@ public class RoomTypeDAO {
             ps.setDate(1, checkin);
             ps.setDate(2, checkout);
 
-            ps.setString(3, roomTypeFilter);        // 1st ?
-            ps.setString(4, roomTypeFilter);        // 2nd ?
+            if (roomTypeFilter == null || roomTypeFilter.isBlank()) {
+                ps.setNull(3, Types.VARCHAR);
+                ps.setNull(4, Types.VARCHAR);
+            } else {
+                ps.setString(3, roomTypeFilter);
+                ps.setString(4, roomTypeFilter);
+            }  // 2nd ?
 
+            
             if (minGuests == null) {
                 ps.setNull(5, Types.INTEGER);
                 ps.setNull(6, Types.INTEGER);
