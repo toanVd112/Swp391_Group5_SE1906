@@ -411,10 +411,7 @@
                         <label>Số người</label><br>
                         <input type="number" name="guests" value="${param.guests}" min="1" required>
                     </div>
-                    <div>
-                        <label>Số phòng</label><br>
-                        <input type="number" name="rooms" value="${param.rooms}" min="1" required>
-                    </div>
+                   
                     <div>
                         <label>Loại phòng</label><br>
                         <select name="roomType">
@@ -436,9 +433,19 @@
                         <button type="submit" style="margin-top: 6px;">🔍 Tìm và Gợi ý</button>
                     </div>
                 </div>
+                <c:if test="${not empty error}">
+                    <div style="color:red; margin-bottom:10px;">${error}</div>
+                </c:if>
+
             </form>
 
             <hr/>
+            <c:choose>
+                <c:when test="${empty rooms}">
+                    <p>Hệ thống đang tự động gợi ý tổ hợp phòng tối ưu cho <strong>${guests}</strong> người.</p>
+                </c:when>
+               
+            </c:choose>
 
             <!-- 3. GỢI Ý PHÂN BỔ PHÒNG -->
             <h3>Gợi ý tổ hợp phòng cho ${guests} người</h3>
@@ -451,7 +458,7 @@
                     <th>Hành động</th>
                     <th>Tổng giá tạm tính</th>
                 </tr>
-                <c:forEach var="combo" items="${suggestionCombos}" varStatus="idx">
+                <c:forEach var="combo" items="${suggestions}" varStatus="idx">
                     <tr>
                         <td>${idx.count}</td>
                         <td>
@@ -503,7 +510,9 @@
                     <h4>${room.name}</h4>
                     <p>${room.description}</p>
                     <p>Sức chứa: ${room.maxGuests} người</p>
-                    <p>Giá: <fmt:formatNumber value="${room.basePrice}" type="currency"/></p>
+
+                    <p>Giá : <c:out value="${room.basePrice}" default="(null)" /></p>
+
                     <p>Phòng còn trống: ${room.availableRooms}</p>
                     <form method="post" action="addToCart">
                         <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
