@@ -89,7 +89,14 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             List<RoomType> allRoomTypes = dao.getAllRoomTypes(); // cho dropdown filter
 
             // 3. Tính toán tổ hợp phòng phù hợp với số người
-            List<List<RoomSuggestion>> combos = generateSuggestions(availableRoomTypes, params.guests);
+            List<List<RoomSuggestion>> combos = generateSuggestions(availableRoomTypes, params.guests, params.roomTypeFilter);
+            if (params.guests <= 2) {  // hoặc chỉ cần: if (params.guests == 1)
+                // loại bỏ các combo chứa phòng quá lớn
+                combos = combos.stream()
+                        .filter(combo -> combo.stream()
+                        .noneMatch(s -> s.getRoomType().getMaxGuests() > params.guests * 1.5))
+                        .collect(Collectors.toList());
+            }
 
             // 4. Lọc tổ hợp theo tổng giá và tổng sức chứa
             if (params.maxPrice != null || params.minTotalGuests != null) {
@@ -103,8 +110,16 @@ public class FindAvailableRoomsServlet extends HttpServlet {
                                     .mapToInt(s -> s.getQuantity() * s.getRoomType().getMaxGuests())
                                     .sum();
 
-                            return (params.maxPrice == null || totalPrice <= params.maxPrice)
-                                    && (params.minTotalGuests == null || totalGuests >= params.minTotalGuests);
+                            boolean priceOk = params.maxPrice == null || totalPrice <= params.maxPrice;
+                            boolean totalGuestsOk = params.minTotalGuests == null || totalGuests >= params.minTotalGuests;
+
+                            boolean roomTooBig = combo.size() == 1
+                                    && combo.stream().mapToInt(s -> s.getRoomType().getMaxGuests()).sum() > params.guests * 1.5;
+
+                            // ✅ Sửa lại comboTooBig cho đúng yêu cầu
+                            boolean comboTooBig = totalGuests > params.guests + 2;
+
+                            return priceOk && totalGuestsOk && !roomTooBig && !comboTooBig;
                         })
                         .limit(10)
                         .collect(Collectors.toList());
@@ -126,18 +141,37 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             request.getRequestDispatcher("roomlist.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Lỗi xử lý: " + e.getMessage());
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("roomlist.jsp").forward(request, response);
         }
     }
 
-    private List<List<RoomSuggestion>> generateSuggestions(List<RoomType> roomTypes, int totalGuests) {
+    private List<List<RoomSuggestion>> generateSuggestions(List<RoomType> roomTypes, int totalGuests, String requiredRoomTypeName) {
         Set<String> seen = new HashSet<>();
         List<List<RoomSuggestion>> result = new ArrayList<>();
 
-        // ✅ Bước 1: Ưu tiên gợi ý 1 phòng nếu đủ
+        // ✅ BƯỚC 0: Ưu tiên tổ hợp chỉ dùng 1 loại phòng (nếu đủ)
         for (RoomType rt : roomTypes) {
-            if (rt.getMaxGuests() >= totalGuests && rt.getAvailableRooms() >= 1) {
+            int maxGuestPerRoom = rt.getMaxGuests();
+            int maxQty = rt.getAvailableRooms();
+
+            // Tính số phòng tối thiểu cần để đủ chỗ cho totalGuests
+            int neededRooms = (int) Math.ceil((double) totalGuests / maxGuestPerRoom);
+
+            if (neededRooms <= maxQty) {
+                List<RoomSuggestion> singleTypeCombo = List.of(new RoomSuggestion(rt, neededRooms));
+                String key = neededRooms + "x" + rt.getName();
+                if (seen.add(key)) {
+                    result.add(singleTypeCombo);
+                }
+            }
+        }
+
+        // ✅ BƯỚC 1: tổ hợp 1 phòng nếu phòng đơn đã đủ
+        for (RoomType rt : roomTypes) {
+            if (rt.getMaxGuests() >= totalGuests
+                    && rt.getMaxGuests() <= totalGuests * 1.5 // 👈 giới hạn dư công suất
+                    && rt.getAvailableRooms() >= 1) {
                 List<RoomSuggestion> single = List.of(new RoomSuggestion(rt, 1));
                 String key = "1x" + rt.getName();
                 if (seen.add(key)) {
@@ -146,23 +180,25 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             }
         }
 
-// Nếu đã có phòng đủ 1 phòng, không sinh thêm tổ hợp nhiều phòng nữa
-        if (!result.isEmpty()) {
-            return result;
-        }
-
-        // ✅ Bước 2: Sinh tổ hợp nhiều phòng
+        // ✅ BƯỚC 2: tổ hợp nhiều loại phòng
         backtrackSmart(roomTypes, 0, totalGuests, new ArrayList<>(), result, seen);
 
-        // ✅ Bước 3: Sắp xếp ưu tiên ít phòng và giá rẻ nhất
+        // ✅ BƯỚC 3: lọc theo loại phòng bắt buộc nếu có
+        if (requiredRoomTypeName != null && !requiredRoomTypeName.isBlank()) {
+            result = result.stream()
+                    .filter(combo -> combo.stream()
+                    .anyMatch(s -> s.getRoomType().getName().equalsIgnoreCase(requiredRoomTypeName)))
+                    .collect(Collectors.toList());
+        }
+
+        // ✅ BƯỚC 4: sắp xếp tổ hợp (ưu tiên ít phòng, giá rẻ)
         return result.stream()
                 .sorted(Comparator
                         .comparingInt((List<RoomSuggestion> combo)
-                                -> combo.stream().mapToInt(RoomSuggestion::getQuantity).sum()) // tổng số phòng
+                                -> combo.stream().mapToInt(RoomSuggestion::getQuantity).sum())
                         .thenComparingDouble(combo
-                                -> combo.stream().mapToDouble(s -> s.getQuantity() * s.getRoomType().getBasePrice()).sum()) // tổng giá
-                )
-                .limit(10) // giới hạn gợi ý hiển thị
+                                -> combo.stream().mapToDouble(s -> s.getQuantity() * s.getRoomType().getBasePrice()).sum()))
+                .limit(10)
                 .collect(Collectors.toList());
     }
 
@@ -173,18 +209,12 @@ public class FindAvailableRoomsServlet extends HttpServlet {
                 .mapToInt(s -> s.getQuantity() * s.getRoomType().getMaxGuests())
                 .sum();
 
-        int totalRooms = current.stream()
-                .mapToInt(RoomSuggestion::getQuantity)
-                .sum();
-
-        // ✅ Nếu đã đủ sức chứa
         if (totalGuests >= requiredGuests) {
-            // Bỏ qua nếu sức chứa vượt quá nhiều (giới hạn dư 50%)
+            // Giới hạn dư tối đa 50%
             if (totalGuests > requiredGuests * 1.5) {
                 return;
             }
 
-            // Khóa tổ hợp theo tên phòng
             String key = current.stream()
                     .sorted(Comparator.comparing(s -> s.getRoomType().getName()))
                     .map(s -> s.getQuantity() + "x" + s.getRoomType().getName())
@@ -203,17 +233,27 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         RoomType rt = roomTypes.get(index);
         int maxQty = rt.getAvailableRooms();
 
-        for (int qty = 1; qty <= maxQty; qty++) {
+        // ✅ Ưu tiên ít phòng → duyệt từ max → 1
+        for (int qty = maxQty; qty >= 1; qty--) {
+           
+
+            int totalGuestsFromThis = qty * rt.getMaxGuests();
+
+            // ❗️Bỏ qua nếu từng phòng quá dư công suất
+            if (rt.getMaxGuests() > requiredGuests * 1.5) {
+                continue;
+            }
+
             current.add(new RoomSuggestion(rt, qty));
             backtrackSmart(roomTypes, index + 1, requiredGuests, current, result, seen);
             current.remove(current.size() - 1);
         }
 
-        // Thử nhánh không chọn loại phòng này
+        // Nhánh bỏ qua phòng này
         backtrackSmart(roomTypes, index + 1, requiredGuests, current, result, seen);
     }
 
-    private SearchParams getSearchParams(HttpServletRequest request) {
+    private SearchParams getSearchParams(HttpServletRequest request) throws ServletException {
         String checkinStr = request.getParameter("checkin");
         String checkoutStr = request.getParameter("checkout");
         String guestsStr = request.getParameter("guests");
@@ -223,9 +263,26 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         String minTotalGuestsStr = request.getParameter("minTotalGuests");
         String maxPriceStr = request.getParameter("maxPrice");
 
-        java.sql.Date checkin = java.sql.Date.valueOf(checkinStr);
-        java.sql.Date checkout = java.sql.Date.valueOf(checkoutStr);
-        int guests = Integer.parseInt(guestsStr);
+        java.sql.Date checkin;
+        java.sql.Date checkout;
+        int guests;
+
+        try {
+            checkin = java.sql.Date.valueOf(checkinStr);
+            checkout = java.sql.Date.valueOf(checkoutStr);
+        } catch (IllegalArgumentException e) {
+            throw new ServletException("❌ Ngày không hợp lệ. Vui lòng chọn đúng định dạng yyyy-MM-dd.");
+        }
+
+        if (!checkout.after(checkin)) {
+            throw new ServletException("❌ Ngày đi phải sau ngày đến ít nhất 1 ngày.");
+        }
+
+        try {
+            guests = Integer.parseInt(guestsStr);
+        } catch (NumberFormatException e) {
+            throw new ServletException("❌ Số lượng khách không hợp lệ.");
+        }
 
         Integer minGuestsPerRoom = (minGuestsPerRoomStr != null && !minGuestsPerRoomStr.isBlank())
                 ? Integer.parseInt(minGuestsPerRoomStr)

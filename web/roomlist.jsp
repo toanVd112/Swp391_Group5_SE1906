@@ -1,5 +1,7 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 
@@ -384,17 +386,17 @@
             </header>
 
             <!-- 1. THÔNG TIN TÌM KIẾM -->
-            <h2>Kết quả tìm kiếm</h2>
+            <h2>🔍 Kết quả tìm phòng cho <strong>${guests}</strong> người</h2>
             <p>
                 Ngày đến: <strong>${checkin}</strong> |
                 Ngày đi: <strong>${checkout}</strong> |
                 Số người: <strong>${guests}</strong> |
-                Số phòng yêu cầu: <strong>${rooms}</strong>
+
             </p>
             <hr/>
 
             <!-- 2. FILTER PANEL -->
-            <h2>Tìm phòng và bộ lọc nâng cao</h2>
+            <h2>	🛠 Bộ lọc nâng cao</h2>
 
             <form method="get" action="FindAvailableRoomsServlet" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
                 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
@@ -425,7 +427,7 @@
                         <label>Giá tối đa</label><br>
                         <input type="number" name="maxPrice" value="${param.maxPrice}">
                     </div>
-                    
+
                     <!-- Lọc từng phòng -->
                     <label>Sức chứa tối thiểu của từng phòng:</label>
                     <input type="number" name="minGuestsPerRoom" value="${param.minGuestsPerRoom}"/>
@@ -441,6 +443,10 @@
                 <c:if test="${not empty error}">
                     <div style="color:red; margin-bottom:10px;">${error}</div>
                 </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <div style="color:red; font-weight:bold;">${errorMessage}</div>
+                </c:if>
+
 
             </form>
 
@@ -453,7 +459,8 @@
             </c:choose>
 
             <!-- 3. GỢI Ý PHÂN BỔ PHÒNG -->
-            <h3>Gợi ý tổ hợp phòng cho ${guests} người</h3>
+
+            <h3>  🤖 Gợi ý tổ hợp phòng phù hợp cho ${guests} người</h3>
             <table border="1" cellpadding="10">
                 <tr>
                     <th>#</th>
@@ -528,7 +535,7 @@
             <hr/>
 
             <!-- 4. DANH SÁCH PHÒNG CÓ SẴN -->
-            <h3>Danh sách phòng còn trống</h3>
+            <h3>🏨 Tự chọn phòng từ danh sách còn trống</h3>
             <c:forEach var="room" items="${availableRooms}">
                 <div style="border:1px solid #ccc; margin:10px; padding:10px;">
                     <img src="${room.imageUrl}" width="200px" style="float:left; margin-right:10px;">

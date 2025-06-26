@@ -392,15 +392,15 @@
                       class="container d-flex flex-wrap justify-content-between align-items-end py-3 gap-3">
                     <div class="form-group">
                         <label for="checkin">Ngày đến</label>
-                        <input type="date" class="form-control" id="checkin" name="checkin">
+                        <input type="date" class="form-control" id="checkin" name="checkin" required="">
                     </div>
                     <div class="form-group">
                         <label for="checkout">Ngày đi</label>
-                        <input type="date" class="form-control" id="checkout" name="checkout">
+                        <input type="date" class="form-control" id="checkout" name="checkout" required="">
                     </div>
                     <div class="form-group">
                         <label for="guests">Người</label>
-                        <input type="number" class="form-control" id="guests" name="guests" min="1" value="1">
+                        <input type="number" class="form-control" id="guests" name="guests" min="1" value="1" required="">
                     </div>
 
                     <div class="form-group invisible-label">
