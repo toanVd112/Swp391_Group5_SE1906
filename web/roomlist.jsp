@@ -475,8 +475,11 @@
                         <td>${idx.count}</td>
                         <td>
                             <c:forEach var="sug" items="${combo}">
-                                ${sug.quantity} x ${sug.roomType.name}<br/>
+                                ${sug.quantity} x  <a href="RoomDetail?id=${sug.roomType.roomTypeID}" class="text-primary" style="text-decoration: none;">
+                                    ${sug.roomType.name}
+                                </a><br/>
                             </c:forEach>
+                               
                         </td>
                         <td>
                             <c:set var="total" value="0"/>
@@ -531,32 +534,51 @@
                     </c:forEach>
                 </c:if>
             </div>
+            <c:if test="${noSuggestions}">
+                <div class="alert alert-warning">
+                    Không tìm thấy tổ hợp phòng phù hợp với yêu cầu của bạn.
+                    Vui lòng thử điều chỉnh lại số người, loại phòng, hoặc ngày nhận/trả phòng.
+                </div>
+            </c:if>
 
             <hr/>
 
             <!-- 4. DANH SÁCH PHÒNG CÓ SẴN -->
             <h3>🏨 Tự chọn phòng từ danh sách còn trống</h3>
-            <c:forEach var="room" items="${availableRooms}">
-                <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-                    <img src="${room.imageUrl}" width="200px" style="float:left; margin-right:10px;">
-                    <h4>${room.name}</h4>
-                    <p>${room.description}</p>
-                    <p>Sức chứa: ${room.maxGuests} người</p>
 
-                    <p>Giá : <c:out value="${room.basePrice}" default="(null)" /></p>
+            <c:choose>
+                <c:when test="${not empty availableRooms}">
+                    <c:forEach var="room" items="${availableRooms}">
+                        <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+                            <img src="${room.imageUrl}" width="200px" style="float:left; margin-right:10px;">
 
-                    <p>Phòng còn trống: ${room.availableRooms}</p>
-                    <form method="post" action="addToCart">
-                        <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
-                        <input type="hidden" name="checkin" value="${checkin}">
-                        <input type="hidden" name="checkout" value="${checkout}">
-                        <input type="number" name="quantity" min="1" max="${room.availableRooms}" value="1">
-                        <button>Đặt phòng</button>
-                    </form>
-                    <div style="clear:both;"></div>
-                </div>
-            </c:forEach>
+                            <h4><a href="RoomDetail?id=${room.roomTypeID}" class="text-primary" style="text-decoration: none;">
+                                    ${room.name}
+                                </a></h4>
+                            <p>${room.description}</p>
+                            <p>Sức chứa: ${room.maxGuests} người</p>
+                            <p>Giá: <c:out value="${room.basePrice}" default="(null)"/></p>
+                            <p>Phòng còn trống: ${room.availableRooms}</p>
 
+                            <form method="post" action="addToCart">
+                                <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
+                                <input type="hidden" name="checkin" value="${checkin}">
+                                <input type="hidden" name="checkout" value="${checkout}">
+                                <input type="number" name="quantity" min="1" max="${room.availableRooms}" value="1">
+                                <button>Đặt phòng</button>
+                            </form>
+
+                            <div style="clear:both;"></div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+
+                <c:otherwise>
+                    <div style="padding: 10px; color: red; font-weight: bold;">
+                        ⚠️ Hiện tại không còn phòng nào trống trong khoảng thời gian bạn chọn.
+                    </div>
+                </c:otherwise>
+            </c:choose>
 
 
             <hr/>

@@ -461,44 +461,8 @@
                                         <div class="item">
                                             <div class="cours-bx">
                                                 <div class="action-box">
-
-
-
-
-
-                                                    <img src="${room.imageUrl}" alt="" style="height:200px; object-fit:cover;">
-                                                    <!-- Thay nút xem phòng bằng nút đặt -->
-                                                    <c:set var="isCustomer" value="${not empty sessionScope.user}" />
-                                                    <c:choose>
-                                                        <c:when test="${isCustomer}">
-                                                            <button 
-                                                                type="button"
-                                                                class="btn btn-warning btn-sm"
-                                                                onclick="addToCustomerCart(this)"
-                                                                data-room-type-id="${room.roomTypeID}"
-                                                                data-room-name="${room.name}"
-                                                                data-base-price="${room.basePrice}"
-                                                                data-image-url="${room.imageUrl}"
-                                                                data-max-guest="${room.maxGuests}">
-                                                                <i class="fa fa-plus"></i> Đặt 
-                                                            </button>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <form method="post" action="addToGuestCart" onsubmit="return confirmAddRoom(this);">
-                                                                <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
-                                                                <input type="hidden" name="roomName" value="${room.name}">
-                                                                <input type="hidden" name="basePrice" value="${room.basePrice}">
-                                                                <input type="hidden" name="imageUrl" value="${room.imageUrl}">
-                                                                <input type="hidden" name="maxguest" value="${room.maxGuests}">
-                                                                <button type="submit" class="btn btn-warning btn-sm">
-                                                                    <i class="fa fa-plus"></i> Đặt phòng
-                                                                </button>
-                                                            </form>
-                                                        </c:otherwise>
-                                                    </c:choose>
-
-
-
+                                                    <img src="${room.imageUrl}" alt="">
+                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem phòng</a>
                                                 </div>
 
                                                 <div class="info-bx text-center">
