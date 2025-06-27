@@ -18,10 +18,9 @@ public class Room {
     private String roomnumber;
     private int floor;
     private String status;
-  
+
     private RoomType roomType;
     private List<Amenity> amenities;
-    private List<PageContent> contents;
 
     // === Constructors ===
     public Room() {
@@ -37,15 +36,15 @@ public class Room {
         this.roomnumber = roomnumber;
         this.floor = floor;
         this.status = status;
-    
+
     }
 
-    public Room(int roomID, String roomnumber, int floor, String status,RoomType roomType) {
+    public Room(int roomID, String roomnumber, int floor, String status, RoomType roomType) {
         this.roomID = roomID;
         this.roomnumber = roomnumber;
         this.floor = floor;
         this.status = status;
-       
+
         this.roomType = roomType;
         if (roomType != null) {
             this.roomTypeID = roomType.getRoomTypeID();
@@ -122,14 +121,6 @@ public class Room {
         this.amenities = amenities;
     }
 
-    public List<PageContent> getContents() {
-        return contents;
-    }
-
-    public void setContents(List<PageContent> contents) {
-        this.contents = contents;
-    }
-
     // === ToString for debug ===
     @Override
     public String toString() {
@@ -140,7 +131,6 @@ public class Room {
                 + ", status='" + status + '\''
                 + ", roomType=" + (roomType != null ? roomType.getName() : "null")
                 + ", amenitiesCount=" + (amenities != null ? amenities.size() : 0)
-                + ", contentsCount=" + (contents != null ? contents.size() : 0)
                 + '}';
     }
 }

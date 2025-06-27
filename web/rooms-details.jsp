@@ -617,367 +617,378 @@
                                     </div>
 
                                     <div class="courese-overview" id="overview">
-                                        <h4>Overview</h4>
-                                        <div class="row">
-                                            <div class="col-md-12 col-lg-4">
-                                                <ul class="course-features">
-                                                    <c:forEach var="a" items="${amenities}">
-                                                        <li>
-                                                            <i class="${a.icon}"></i> ${a.amenityName}
-                                                        </li>
-                                                    </c:forEach>
-                                                </ul>
-                                            </div>
-                                            <div class="col-md-12 col-lg-8">
-                                                <!-- Chính sách -->
-                                                <c:if test="${not empty policies}">
-                                                    <h5 class="m-b5">Policy</h5>
-                                                    <c:forEach var="item" items="${policies}">
-                                                        <h6>${item.title}</h6>
-                                                        <p>${item.content}</p>
-                                                    </c:forEach>
-                                                </c:if>
-
-                                                <!-- Thông tin quan tr?ng -->
-                                                <c:if test="${not empty importantInfos}">
-                                                    <h5 class="m-b5">Important Information</h5>
-                                                    <c:forEach var="item" items="${importantInfos}">
-                                                        <h6>${item.title}</h6>
-                                                        <p>${item.content}</p>
-                                                    </c:forEach>
-                                                </c:if>
-
-                                                <!-- Câu h?i th??ng g?p -->
-                                                <c:if test="${not empty faqs}">
-                                                    <h5 class="m-b5">FAQ</h5>
-                                                    <ul class="list-checked primary">
-                                                        <c:forEach var="item" items="${faqs}">
-                                                            <li><strong>${item.title}</strong><br/>${item.content}</li>
-                                                                </c:forEach>
+                                        <div class="courese-overview" id="overview">
+                                            <h4>Overview</h4>
+                                            <div class="row">
+                                                <!-- Cột trái: Tiện ích -->
+                                                <div class="col-md-12 col-lg-4">
+                                                    <ul class="course-features">
+                                                        <c:forEach var="a" items="${amenities}">
+                                                            <li>
+                                                                <i class="${a.icon}"></i> ${a.amenityName}
+                                                            </li>
+                                                        </c:forEach>
                                                     </ul>
-                                                </c:if>
+                                                </div>
+
+                                                <!-- Cột phải: Policy, Info, FAQ -->
+                                                <div class="col-md-12 col-lg-8">
+                                                    <!-- Chính sách (KHÔNG có ô check) -->
+                                                    <h5 class="m-b5">Chính sách</h5>
+                                                    <ul>
+                                                        <li>Trả phòng: Trước 12:00</li>
+                                                        <li>Có thể nhận/trả phòng sớm hoặc muộn, tùy tình hình thực tế và có thể thu phí.</li>
+                                                        <li>Tuổi tối thiểu để nhận phòng: 18 tuổi.</li>
+                                                        <li>Không cho phép mang vật nuôi (trừ vật nuôi hỗ trợ người khuyết tật).</li>
+                                                        <li>Khách chưa kết hôn có thể không được lưu trú chung phòng theo quy định địa phương.</li>
+                                                        <li>Không được mang đồ ăn/thức uống bên ngoài vào khuôn viên khách sạn.</li>                                                
+                                                    </ul>
+
+                                                    <!-- Thông tin quan trọng (KHÔNG có ô check) -->
+                                                    <h5 class="m-b5">Thông tin quan trọng</h5>
+                                                    <ul>
+                                                        <li>Có dịch vụ đưa đón sân bay, cần đặt trước ít nhất 48 giờ (phí: 270,000 VND/người/lượt).</li>
+                                                        <li>Phụ phí bữa sáng buffet: 345,000 VND (người lớn), 172,500 VND (trẻ em).</li>
+                                                        <li>Phí giường phụ: 900,000 VND/đêm.</li>
+                                                        <li>Cần mang theo giấy tờ tùy thân và đặt cọc bằng tiền mặt/thẻ khi nhận phòng.</li>
+                                                        <li>Khách sạn có không gian ngoài trời (ban công, sân thượng) – không phù hợp với trẻ nhỏ nếu không giám sát.</li>
+                                                        <li>Khách dưới 18 tuổi được sử dụng spa dưới sự giám sát của người lớn.</li>
+                                                        <li>Chấp nhận thanh toán bằng tiền mặt, thẻ ghi nợ và thẻ tín dụng.</li>
+                                                    </ul>
+
+                                                    <!-- Câu hỏi thường gặp (GIỮ ô check) -->
+                                                    <h5 class="m-b5">Câu hỏi thường gặp (FAQ)</h5>
+                                                    <ul class="list-checked primary">
+                                                        <li><strong>Khách sạn Hoàng Nam có hồ bơi không?</strong><br/>Có, khách sạn có hồ bơi phục vụ khách lưu trú.</li>
+                                                        <li><strong>Khách sạn có cho phép mang theo vật nuôi không?</strong><br/>Không, khách sạn không cho phép vật nuôi.</li>
+                                                        <li><strong>Phí đậu xe là bao nhiêu?</strong><br/>Vui lòng liên hệ trực tiếp để biết chi tiết.</li>
+                                                        <li><strong>Giờ nhận phòng tại khách sạn Hoàng Nam?</strong><br/>Từ 15:00 mỗi ngày.</li>
+                                                        <li><strong>Giờ trả phòng?</strong><br/>Trước 12:00 trưa.</li>
+                                                        <li><strong>Khách sạn có dịch vụ đưa đón sân bay không?</strong><br/>Có, với phụ phí và cần đặt trước ít nhất 48 giờ.</li>
+                                                        <li><strong>Khách sạn Hoàng Nam tọa lạc ở đâu?</strong><br/>Khách sạn nằm tại trung tâm thành phố, gần biển và các điểm tham quan nổi bật.</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Tiêu đề gallery -->
-                                    <div class="photo-gallery-title" id="pictures">
-                                        <h4>Pictures</h4>
+                                        <!-- Tiêu đề gallery -->
+                                        <div class="photo-gallery-title" id="pictures">
+                                            <h4>Pictures</h4>
 
-                                        <!-- Phần hiển thị ảnh chính và ảnh phụ -->
-                                        <div class="image-gallery-row">
+                                            <!-- Phần hiển thị ảnh chính và ảnh phụ -->
+                                            <div class="image-gallery-row">
 
-                                            <!-- Ảnh chính -->
-                                            <div class="main-photo-box">
-                                                <img src="${pageContext.request.contextPath}/${images[0].imageUrl}"
-                                                     alt="Ảnh chính"
-                                                     onclick="openGallery('all')"
-                                                     loading="lazy" />
-                                            </div>
-
-                                            <!-- Ảnh phụ -->
-                                            <div class="thumb-2x2-box">
-                                                <c:forEach var="img" items="${images}" begin="1" end="4">
-                                                    <img src="${pageContext.request.contextPath}/${img.imageUrl}"
-                                                         alt="Ảnh phụ ${img.category}"
-                                                         onclick="openGallery('${fn:toLowerCase(img.category)}')"
+                                                <!-- Ảnh chính -->
+                                                <div class="main-photo-box">
+                                                    <img src="${images[0].imageUrl}"
+                                                         alt="Ảnh chính"
+                                                         onclick="openGallery('all')"
                                                          loading="lazy" />
-                                                </c:forEach>
-                                            </div>
+                                                </div>
 
-                                        </div>
-                                    </div>
-
-                                    <!-- Modal gallery popup -->
-                                    <div id="galleryModal" class="modal">
-                                        <div class="modal-content">
-                                            <span class="close-btn" onclick="closeGallery()">
-                                                <i class="ti-control-backward"></i>
-                                            </span>
-
-                                            <!-- Tabs danh mục -->
-                                            <div class="category-tabs">
-                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
-
-                                                <c:forEach var="img" items="${images}">
-                                                    <c:if test="${not fn:contains(usedCats, img.category)}">
-                                                        <button class="tab-btn" data-category="${fn:toLowerCase(img.category)}"
-                                                                onclick="filterCategory('${fn:toLowerCase(img.category)}', this)"
-                                                                aria-pressed="false">${img.category}</button>
-                                                        <c:set var="usedCats" value="${usedCats}${img.category}," />
-                                                    </c:if>
-                                                </c:forEach>
-                                            </div>
-
-                                            <!-- Vùng ảnh -->
-                                            <div class="gallery-scroll" id="galleryImages">
-                                                <div class="gallery-grid">
-                                                    <c:forEach var="img" items="${images}">
-                                                        <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
-                                                            <img src="${pageContext.request.contextPath}/${img.imageUrl}" alt="${img.category}" />
-                                                            <p class="image-caption">${img.category}</p>
-                                                        </div>
+                                                <!-- Ảnh phụ -->
+                                                <div class="thumb-2x2-box">
+                                                    <c:forEach var="img" items="${images}" begin="1" end="4">
+                                                        <img src="${img.imageUrl}"
+                                                             alt="Ảnh phụ ${img.category}"
+                                                             onclick="openGallery('${fn:toLowerCase(img.category)}')"
+                                                             loading="lazy" />
                                                     </c:forEach>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="" id="instructor">
-                                        <h4>Instructor</h4>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
                                             </div>
                                         </div>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="" id="reviews">
-                                        <h4>Reviews</h4>
 
-                                        <div class="review-bx">
-                                            <div class="all-review">
-                                                <h2 class="rating-type">3</h2>
-                                                <ul class="cours-star">
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                </ul>
-                                                <span>3 Rating</span>
-                                            </div>
-                                            <div class="review-bar">
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>5 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:90%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>150</div>
-                                                    </div>
+                                        <!-- Modal gallery popup -->
+                                        <div id="galleryModal" class="modal">
+                                            <div class="modal-content">
+                                                <span class="close-btn" onclick="closeGallery()">
+                                                    <i class="ti-control-backward"></i>
+                                                </span>
+
+                                                <!-- Tabs danh mục -->
+                                                <div class="category-tabs">
+                                                    <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+
+                                                    <c:forEach var="img" items="${images}">
+                                                        <c:if test="${not fn:contains(usedCats, img.category)}">
+                                                            <button class="tab-btn" data-category="${fn:toLowerCase(img.category)}"
+                                                                    onclick="filterCategory('${fn:toLowerCase(img.category)}', this)"
+                                                                    aria-pressed="false">${img.category}</button>
+                                                            <c:set var="usedCats" value="${usedCats}${img.category}," />
+                                                        </c:if>
+                                                    </c:forEach>
                                                 </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>4 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:70%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>140</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>3 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:50%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>120</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>2 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:40%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>110</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>1 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:20%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>80</div>
+
+                                                <!-- Vùng ảnh -->
+                                                <div class="gallery-scroll" id="galleryImages">
+                                                    <div class="gallery-grid">
+                                                        <c:forEach var="img" items="${images}">
+                                                            <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
+                                                                <img src="${img.imageUrl}" alt="${img.category}" />
+                                                                <p class="image-caption">${img.category}</p>
+                                                            </div>
+                                                        </c:forEach>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="" id="instructor">
+                                            <h4>Instructor</h4>
+                                            <div class="instructor-bx">
+                                                <div class="instructor-author">
+                                                    <img src="assets/images/testimonials/pic1.jpg" alt="">
+                                                </div>
+                                                <div class="instructor-info">
+                                                    <h6>Keny White </h6>
+                                                    <span>Professor</span>
+                                                    <ul class="list-inline m-tb10">
+                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                    </ul>
+                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                                                </div>
+                                            </div>
+                                            <div class="instructor-bx">
+                                                <div class="instructor-author">
+                                                    <img src="assets/images/testimonials/pic2.jpg" alt="">
+                                                </div>
+                                                <div class="instructor-info">
+                                                    <h6>Keny White </h6>
+                                                    <span>Professor</span>
+                                                    <ul class="list-inline m-tb10">
+                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                    </ul>
+                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="" id="reviews">
+                                            <h4>Reviews</h4>
+
+                                            <div class="review-bx">
+                                                <div class="all-review">
+                                                    <h2 class="rating-type">3</h2>
+                                                    <ul class="cours-star">
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li class="active"><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                        <li><i class="fa fa-star"></i></li>
+                                                    </ul>
+                                                    <span>3 Rating</span>
+                                                </div>
+                                                <div class="review-bar">
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>5 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:90%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>150</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>4 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:70%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>140</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>3 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:50%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>120</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>2 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:40%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>110</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-bx">
+                                                        <div class="side">
+                                                            <div>1 star</div>
+                                                        </div>
+                                                        <div class="middle">
+                                                            <div class="bar-container">
+                                                                <div class="bar-5" style="width:20%;"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="side right">
+                                                            <div>80</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- contact area END -->
+                    <!-- contact area END -->
 
-            </div>
-            <!-- Content END-->
-            <!-- Footer ==== -->
-            <footer>
-                <div class="footer-top">
-                    <div class="pt-exebar">
+                </div>
+                <!-- Content END-->
+                <!-- Footer ==== -->
+                <footer>
+                    <div class="footer-top">
+                        <div class="pt-exebar">
+                            <div class="container">
+                                <div class="d-flex align-items-stretch">
+                                    <div class="pt-logo mr-auto">
+                                        <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                                    </div>
+                                    <div class="pt-social-link">
+                                        <ul class="list-inline m-a0">
+                                            <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                            <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="pt-btn-join">
+                                        <a href="#" class="btn ">Join Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="container">
-                            <div class="d-flex align-items-stretch">
-                                <div class="pt-logo mr-auto">
-                                    <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                                    <div class="widget">
+                                        <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                                        <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                                        <div class="subscribe-form m-b20">
+                                            <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                                <div class="ajax-message"></div>
+                                                <div class="input-group">
+                                                    <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                                    <span class="input-group-btn">
+                                                        <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                                    </span> 
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="pt-social-link">
-                                    <ul class="list-inline m-a0">
-                                        <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-                                        <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div class="pt-btn-join">
-                                    <a href="#" class="btn ">Join Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                                <div class="widget">
-                                    <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                    <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                                    <div class="subscribe-form m-b20">
-                                        <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-                                            <div class="ajax-message"></div>
-                                            <div class="input-group">
-                                                <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-                                                <span class="input-group-btn">
-                                                    <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-                                                </span> 
+                                <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                                    <div class="row">
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Company</h5>
+                                                <ul>
+                                                    <li><a href="Home">Home</a></li>
+                                                    <li><a href="about-1.html">About</a></li>
+                                                    <li><a href="faq-1.jsp">FAQs</a></li>
+                                                    <li><a href="contact-1.html">Contact</a></li>
+                                                </ul>
                                             </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                                <div class="row">
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Company</h5>
-                                            <ul>
-                                                <li><a href="Home">Home</a></li>
-                                                <li><a href="about-1.html">About</a></li>
-                                                <li><a href="faq-1.jsp">FAQs</a></li>
-                                                <li><a href="contact-1.html">Contact</a></li>
-                                            </ul>
                                         </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Get In Touch</h5>
-                                            <ul>
-                                                <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-                                                <li><a href="blog-classic-grid.html">Blog</a></li>
-                                                <li><a href="portfolio.html">Portfolio</a></li>
-                                                <li><a href="event.html">Event</a></li>
-                                            </ul>
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Get In Touch</h5>
+                                                <ul>
+                                                    <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                                    <li><a href="blog-classic-grid.html">Blog</a></li>
+                                                    <li><a href="portfolio.html">Portfolio</a></li>
+                                                    <li><a href="event.html">Event</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                        <div class="widget footer_widget">
-                                            <h5 class="footer-title">Rooms</h5>
-                                            <ul>
-                                                <li><a href="roomlist">Rooms</a></li>
-                                                <li><a href="rooms-details.html">Details</a></li>
-                                                <li><a href="membership.html">Membership</a></li>
-                                                <li><a href="profile.html">Profile</a></li>
-                                            </ul>
+                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                            <div class="widget footer_widget">
+                                                <h5 class="footer-title">Rooms</h5>
+                                                <ul>
+                                                    <li><a href="roomlist">Rooms</a></li>
+                                                    <li><a href="rooms-details.html">Details</a></li>
+                                                    <li><a href="membership.html">Membership</a></li>
+                                                    <li><a href="profile.html">Profile</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                                <div class="widget widget_gallery gallery-grid-4">
-                                    <h5 class="footer-title">Our Gallery</h5>
-                                    <ul class="magnific-image">
-                                        <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-                                    </ul>
+                                <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                                    <div class="widget widget_gallery gallery-grid-4">
+                                        <h5 class="footer-title">Our Gallery</h5>
+                                        <ul class="magnific-image">
+                                            <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                    <div class="footer-bottom">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </footer>
-            <!-- Footer END ==== -->
-            <button class="back-to-top fa fa-chevron-up" ></button>
-        </div>
-        <!-- External JavaScripts -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-        <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-        <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-        <script src="assets/vendors/counter/waypoints-min.js"></script>
-        <script src="assets/vendors/counter/counterup.min.js"></script>
-        <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-        <script src="assets/vendors/masonry/masonry.js"></script>
-        <script src="assets/vendors/masonry/filter.js"></script>
-        <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-        <script src="assets/js/jquery.scroller.js"></script>
-        <script src="assets/js/functions.js"></script>
-        <script src="assets/js/contact.js"></script>
-        <script src="assets/vendors/switcher/switcher.js"></script>
+                </footer>
+                <!-- Footer END ==== -->
+                <button class="back-to-top fa fa-chevron-up" ></button>
+            </div>
+            <!-- External JavaScripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+            <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+            <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+            <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+            <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+            <script src="assets/vendors/counter/waypoints-min.js"></script>
+            <script src="assets/vendors/counter/counterup.min.js"></script>
+            <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+            <script src="assets/vendors/masonry/masonry.js"></script>
+            <script src="assets/vendors/masonry/filter.js"></script>
+            <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+            <script src="assets/js/jquery.scroller.js"></script>
+            <script src="assets/js/functions.js"></script>
+            <script src="assets/js/contact.js"></script>
+            <script src="assets/vendors/switcher/switcher.js"></script>
 
 
     </body>

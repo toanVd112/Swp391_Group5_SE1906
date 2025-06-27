@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Amenity;
-import model.PageContent;
 import model.RoomImage;
 import model.RoomType;
 
@@ -88,29 +87,4 @@ public class RoomDetailDAO {
         return list;
     }
 
-    public List<PageContent> getPageContentsByRoomTypeId(int roomTypeId) {
-        List<PageContent> list = new ArrayList<>();
-        String sql = "SELECT * FROM pagecontents WHERE RoomTypeID = ?";
-
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                PageContent pc = new PageContent(
-                        rs.getInt("ContentID"),
-                        null,
-                        rs.getString("PageSection"),
-                        rs.getString("Title"),
-                        rs.getString("Content")
-                );
-                list.add(pc);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
 }
-    

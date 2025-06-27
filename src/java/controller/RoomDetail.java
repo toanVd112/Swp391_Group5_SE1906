@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import model.PageContent;
+
 import model.RoomType;
 
 /**
@@ -73,26 +73,13 @@ public class RoomDetail extends HttpServlet {
             }
 
             // Lấy nội dung trang
-            List<PageContent> contents = dao.getPageContentsByRoomTypeId(roomTypeId);
-            List<PageContent> policies = new ArrayList<>();
-            List<PageContent> importantInfos = new ArrayList<>();
-            List<PageContent> faqs = new ArrayList<>();
-
-            for (PageContent pc : contents) {
-                switch (pc.getPageSection().toLowerCase()) {
-                    case "policy" -> policies.add(pc);
-                    case "important_info" -> importantInfos.add(pc);
-                    case "faq" -> faqs.add(pc);
-                }
-            }
+            
 
             // Truyền sang view
             request.setAttribute("roomType", roomType);
             request.setAttribute("images", roomType.getImages());
             request.setAttribute("amenities", roomType.getAmenities());
-            request.setAttribute("policies", policies);
-            request.setAttribute("importantInfos", importantInfos);
-            request.setAttribute("faqs", faqs);
+          
 
             request.getRequestDispatcher("/rooms-details.jsp").forward(request, response);
 
