@@ -34,6 +34,10 @@
                     <i class="fas fa-chart-bar"></i>
                     <span>Room Occupancy</span>
                 </a>
+                <a href="${pageContext.request.contextPath}/revenuestats" class="menu-item" data-page="revenuestats">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Revenue Statistics</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="menu-item" data-page="ListRoomsServlet">
                     <i class="fas fa-building"></i>
                     <span>View Room Status</span>
@@ -302,9 +306,10 @@
             // Check for exact URL match first
             menuItems.forEach(item => {
                 const href = item.getAttribute('href');
-                if (href && currentUrl.includes(href.split('/').pop())) {
-                    activeItem = item;
-                }
+               if (href && currentPath === new URL(href, window.location.origin).pathname) {
+    activeItem = item;
+}
+
             });
 
             // If no exact match, check by data-page attribute
