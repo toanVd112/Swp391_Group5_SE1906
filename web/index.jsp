@@ -62,7 +62,7 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
-        <link rel="stylesheet" href="assets/css/confirm-add-room.css">
+
         <!-- REVOLUTION SLIDER END -->	
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="assets/css/listRoom.css">
@@ -70,7 +70,7 @@
 
         <!-- REVOLUTION SLIDER END -->	
         <style>
-          
+
         </style>
 
     </head>
@@ -272,30 +272,34 @@
                 </div>
             </header>
             <div id="booking-bar" class="shadow-sm">
-                <form method="get" action="FindAvailableRoomsServlet"
-                      class="container d-flex flex-wrap justify-content-between align-items-end py-3 gap-3">
-                    <div class="form-group">
-                        <label for="checkin">Ngày đến</label>
-                        <input type="text" id="checkin" name="checkin" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkin}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="checkout">Ngày đi</label>
-                        <input type="text" id="checkout" name="checkout" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkout}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="guests">Người</label>
-                        <input type="number" class="form-control" id="guests" name="guests" min="1" value="1" required="">
+                <form method="get" action="FindAvailableRoomsServlet" class="booking-bar" onsubmit="return validateForm()">
+                    <!-- Box: Check-in & Check-out -->
+                    <div class="booking-box">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div class="booking-box-content">
+                            <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date" value="${param.checkin}" required>
+                            —
+                            <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date" value="${param.checkout}" required>
+                        </div>
                     </div>
 
-                    <div class="form-group invisible-label">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="btn btn-warning btn-lg px-4">
-                            🔍 Tìm phòng
-                        </button>
+                    <!-- Box: Guests -->
+                    <div class="booking-box">
+                        <i class="fas fa-user"></i>
+                        <div class="booking-box-content">
+                            <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required> guests
+                        </div>
                     </div>
+
+                    <!-- Box: Button -->
+                    <button type="submit" class="booking-btn">
+                        🔍 Tìm phòng
+                    </button>
 
                 </form>
             </div>
+
+
 
             <!-- Header Top END ==== -->
             <!-- Content -->
@@ -675,18 +679,56 @@
 
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
-            flatpickr("#checkin", {
-                dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
-                defaultDate: "${param.checkin}"   // Ngày từ request param
-            });
+                    flatpickr("#checkin", {
+                        dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
+                        defaultDate: "${param.checkin}"   // Ngày từ request param
+                    });
 
-            flatpickr("#checkout", {
-                dateFormat: "d/m/Y",
-                defaultDate: "${param.checkout}"
-            });
+                    flatpickr("#checkout", {
+                        dateFormat: "d/m/Y",
+                        defaultDate: "${param.checkout}"
+                    });
         </script>
 
         <!-- Confirm Modal -->
+        <script>
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+
+            checkinInput.addEventListener('change', validateDates);
+            checkoutInput.addEventListener('change', validateDates);
+
+            function parseDate(dateStr) {
+                // format: dd/MM/yyyy
+                const parts = dateStr.split('/');
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
+                const year = parseInt(parts[2], 10);
+                return new Date(year, month, day);
+            }
+
+            function validateDates() {
+                const checkin = parseDate(checkinInput.value);
+                const checkout = parseDate(checkoutInput.value);
+
+                if (checkin && checkout && checkout <= checkin) {
+                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    checkoutInput.value = '';
+                }
+            }
+
+            function validateForm() {
+                const checkin = parseDate(checkinInput.value);
+                const checkout = parseDate(checkoutInput.value);
+
+                if (checkout <= checkin) {
+                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    return false;
+                }
+                return true;
+            }
+        </script>
+
 
     </body>
 

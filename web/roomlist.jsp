@@ -268,19 +268,38 @@
             <!-- Search Results Header -->
             <div class="search-header">
                 <div class="container">
-                    <div class="search-info">
-                        <span>
-                            <i class="fas fa-calendar-alt"></i>
-                            ${checkin} - ${checkout}
-                        </span>
-                        <span>|</span>
-                        <span>
-                            <i class="fas fa-users"></i>
-                            ${guests} người
-                        </span>
+                    <div id="booking-bar" class="shadow-sm">
+                        <form method="get" action="FindAvailableRoomsServlet" class="booking-bar" onsubmit="return validateForm()">
+                            <!-- Box: Check-in & Check-out -->
+                            <div class="booking-box">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div class="booking-box-content">
+                                    <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date" value="${param.checkin}" required>
+                                    —
+                                    <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date" value="${param.checkout}" required>
+                                </div>
+                            </div>
+
+                            <!-- Box: Guests -->
+                            <div class="booking-box">
+                                <i class="fas fa-user"></i>
+                                <div class="booking-box-content">
+                                    <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required> guests
+                                </div>
+                            </div>
+
+                            <!-- Box: Button -->
+                            <button type="submit" class="booking-btn">
+                                🔍 Tìm phòng
+                            </button>
+
+                        </form>
                     </div>
-                    <h1 class="search-title">Kết quả tìm phòng cho ${guests} người</h1>
-                    <p class="search-subtitle">Tìm thấy các tổ hợp phòng phù hợp và phòng trống cho kỳ nghỉ của bạn</p>
+                    <div class="search-header text-center">
+                        <h1 class="search-title">Kết quả tìm phòng cho ${guests} người</h1>
+                        <p class="search-subtitle">Tìm thấy các tổ hợp phòng phù hợp và phòng trống cho kỳ nghỉ của bạn</p>
+                    </div>
+
                 </div>
             </div>
 
@@ -319,20 +338,10 @@
                     <div class="card-content">
                         <form method="get" action="FindAvailableRoomsServlet">
                             <div class="filter-grid">
-                                <div class="form-group">
-                                    <label class="form-label" for="checkin">Ngày đến</label>
-                                    <input type="text" id="checkin" name="checkin" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkin}" required>
+                                <input type="hidden" name="checkin" value="${param.checkin}">
+                                <input type="hidden" name="checkout" value="${param.checkout}">
+                                <input type="hidden" name="guests" value="${param.guests}">
 
-
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="checkout">Ngày đi</label>
-                                    <input type="text" id="checkout" name="checkout" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkout}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="guests">Số người</label>
-                                    <input type="number" id="guests" name="guests" class="form-input" min="1" value="${param.guests}" required>
-                                </div>
                                 <div class="form-group">
                                     <label class="form-label" for="roomType">Loại phòng</label>
                                     <select id="roomType" name="roomType" class="form-select">
@@ -390,20 +399,41 @@
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="comboTableBody">
                                         <c:forEach var="combo" items="${suggestions}" varStatus="idx">
-                                            <tr>
+                                            <tr class="combo-row" data-index="${idx.count}">
+
                                                 <td>${idx.count}</td>
                                                 <td>
-                                                    <c:forEach var="sug" items="${combo}">
-                                                        <span class="combination-item">
-                                                            <span class="combination-quantity">${sug.quantity}x</span>
-                                                            <a href="RoomDetail?id=${sug.roomType.roomTypeID}" class="combination-type">
-                                                                ${sug.roomType.name}
-                                                            </a>
-                                                        </span>
-                                                    </c:forEach>
+                                                    <div class="combo-columns">
+                                                        <!-- Cột bên trái: Text -->
+                                                        <div class="combo-info">
+                                                            <c:forEach var="sug" items="${combo}">
+                                                                <div class="combination-item">
+                                                                    <span class="combination-quantity">${sug.quantity}x</span>
+                                                                    <a href="RoomDetail?id=${sug.roomType.roomTypeID}" class="combination-type">
+                                                                        ${sug.roomType.name}
+                                                                    </a>
+                                                                </div>
+                                                            </c:forEach>
+                                                        </div>
+
+                                                        <!-- Cột bên phải: Ảnh -->
+                                                        <div class="combo-images">
+                                                            <c:forEach var="sug" items="${combo}">
+                                                                <a href="${sug.roomType.imageUrl}" class="magnific-image">
+                                                                    <img src="${sug.roomType.imageUrl}" alt="${sug.roomType.name}" class="room-thumb"
+                                                                         onerror="this.src='/placeholder.jpg'">
+                                                                </a>
+                                                            </c:forEach>
+                                                        </div>
+
+
+
+
+                                                    </div>
                                                 </td>
+
                                                 <td>
                                                     <c:set var="total" value="0"/>
                                                     <c:forEach var="sug" items="${combo}">
@@ -435,10 +465,15 @@
                                                         <button type="submit" class="btn btn-primary">Chọn</button>
                                                     </form>
                                                 </td>
+
                                             </tr>
                                         </c:forEach>
                                     </tbody>
                                 </table>
+                                <div id="toggleRows" class="text-center mt-3">
+                                    <button id="showMoreBtn" class="btn btn-primary" onclick="showMoreCombos()">Xem thêm</button>
+                                    <button id="showLessBtn" class="btn btn-secondary" onclick="showLessCombos()" style="display: none;">Thu gọn</button>
+                                </div>
                             </div>
 
                             <c:if test="${noSuggestions}">
@@ -680,6 +715,11 @@
             <!-- Footer END ==== -->
             <button class="back-to-top fa fa-chevron-up" ></button>
         </div>
+        <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+            <span class="image-modal-content">
+                <img id="imageModalImg" src="" alt="">
+            </span>
+        </div>
 
         <!-- External JavaScripts -->
         <script src="assets/js/jquery.min.js"></script>
@@ -697,20 +737,93 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
-        <script src="assets/js/listRoom.js"></script>
+
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="assets/js/hotel-cart.js"></script>
         <script>
-                                                            flatpickr("#checkin", {
-                                                                dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
-                                                                defaultDate: "${param.checkin}"   // Ngày từ request param
-                                                            });
+            flatpickr("#checkin", {
+                dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
+                defaultDate: "${param.checkin}"   // Ngày từ request param
+            });
 
-                                                            flatpickr("#checkout", {
-                                                                dateFormat: "d/m/Y",
-                                                                defaultDate: "${param.checkout}"
-                                                            });
+            flatpickr("#checkout", {
+                dateFormat: "d/m/Y",
+                defaultDate: "${param.checkout}"
+            });
+        </script>
+        <script>
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+
+            checkinInput.addEventListener('change', validateDates);
+            checkoutInput.addEventListener('change', validateDates);
+
+            function parseDate(dateStr) {
+                // format: dd/MM/yyyy
+                const parts = dateStr.split('/');
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
+                const year = parseInt(parts[2], 10);
+                return new Date(year, month, day);
+            }
+
+            function validateDates() {
+                const checkin = parseDate(checkinInput.value);
+                const checkout = parseDate(checkoutInput.value);
+
+                if (checkin && checkout && checkout <= checkin) {
+                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    checkoutInput.value = '';
+                }
+            }
+
+            function validateForm() {
+                const checkin = parseDate(checkinInput.value);
+                const checkout = parseDate(checkoutInput.value);
+
+                if (checkout <= checkin) {
+                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    return false;
+                }
+                return true;
+            }
         </script>
 
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const rows = document.querySelectorAll(".combo-row");
+                const showMoreBtn = document.getElementById("showMoreBtn");
+                const showLessBtn = document.getElementById("showLessBtn");
+                const limit = 5;
+
+                rows.forEach((row, idx) => {
+                    if (idx >= limit)
+                        row.style.display = "none";
+                });
+
+                if (rows.length <= limit) {
+                    showMoreBtn.style.display = "none";
+                }
+
+                window.showMoreCombos = function () {
+                    rows.forEach(row => row.style.display = "");
+                    showMoreBtn.style.display = "none";
+                    showLessBtn.style.display = "";
+                };
+
+                window.showLessCombos = function () {
+                    rows.forEach((row, idx) => {
+                        if (idx >= limit)
+                            row.style.display = "none";
+                    });
+                    showMoreBtn.style.display = "";
+                    showLessBtn.style.display = "none";
+                };
+            });
+        </script>
+
+        <script src="assets/js/listRoom.js"></script>
     </body>
 </html>

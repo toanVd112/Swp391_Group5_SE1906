@@ -181,8 +181,9 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         }
 
         // ✅ BƯỚC 2: tổ hợp nhiều loại phòng
-        backtrackSmart(roomTypes, 0, totalGuests, new ArrayList<>(), result, seen);
-
+        if (totalGuests > 1) {
+            backtrackSmart(roomTypes, 0, totalGuests, new ArrayList<>(), result, seen);
+        }
         // ✅ BƯỚC 3: lọc theo loại phòng bắt buộc nếu có
         if (requiredRoomTypeName != null && !requiredRoomTypeName.isBlank()) {
             result = result.stream()
