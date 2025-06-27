@@ -63,130 +63,14 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
         <link rel="stylesheet" href="assets/css/confirm-add-room.css">
+        <!-- REVOLUTION SLIDER END -->	
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="assets/css/listRoom.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
         <!-- REVOLUTION SLIDER END -->	
         <style>
-            /* Responsive cho form tìm kiếm */
-            @media (max-width: 1200px) {
-                .cours-search {
-                    flex-wrap: wrap !important;
-                    gap: 15px !important;
-                }
-
-                .cours-search > div {
-                    min-width: auto !important;
-                    flex: 1 1 200px;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .cours-search {
-                    flex-direction: column !important;
-                    align-items: stretch !important;
-                }
-
-                .cours-search > div {
-                    width: 100% !important;
-                    min-width: auto !important;
-                }
-
-                .cours-search > div:last-child button {
-                    margin-top: 5px !important;
-                }
-
-                .guest-room-dropdown {
-                    position: fixed !important;
-                    left: 10px !important;
-                    right: 10px !important;
-                    top: auto !important;
-                    width: auto !important;
-                }
-            }
-
-            /* Style cho date inputs */
-            .cours-search input[type="date"] {
-                color: #333;
-                font-size: 14px;
-            }
-
-            .cours-search input[type="date"]::-webkit-calendar-picker-indicator {
-                cursor: pointer;
-                filter: invert(0);
-            }
-
-            /* Style cho select và input */
-            .cours-search select,
-            .cours-search input {
-                font-size: 14px;
-                color: #333;
-                background-color: #fff;
-            }
-
-            .cours-search select:focus,
-            .cours-search input:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.5);
-            }
-
-            /* Label styling */
-            .cours-search label {
-                font-weight: 500;
-                white-space: nowrap;
-            }
-
-            /* Button hover effects */
-            .guest-room-dropdown button:hover {
-                background-color: #f8f9fa !important;
-                border-color: #007bff !important;
-                color: #007bff !important;
-            }
-
-            /* Dropdown animation */
-            .guest-room-dropdown {
-                transition: all 0.3s ease;
-            }
-
-            /* Selector display hover */
-            .selector-display:hover {
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            #booking-bar {
-                position: sticky;
-                top: 80px; /* chỉnh theo chiều cao header của bạn */
-                z-index: 999;
-                background-color: #fff;
-                border-bottom: 1px solid #eaeaea;
-            }
-
-            #booking-bar .form-group {
-                min-width: 150px;
-                flex: 1;
-            }
-
-            #booking-bar label {
-                font-weight: 600;
-                margin-bottom: 6px;
-            }
-
-            #booking-bar input {
-                border-radius: 6px;
-                border: 1px solid #ced4da;
-                padding: 8px 12px;
-                font-size: 15px;
-            }
-
-            #booking-bar input:focus {
-                border-color: #ffc107;
-                box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25);
-            }
-
-            #booking-bar button {
-                border-radius: 6px;
-            }
-            #booking-bar .invisible-label label {
-                visibility: hidden;
-            }
-
+          
         </style>
 
     </head>
@@ -392,11 +276,11 @@
                       class="container d-flex flex-wrap justify-content-between align-items-end py-3 gap-3">
                     <div class="form-group">
                         <label for="checkin">Ngày đến</label>
-                        <input type="date" class="form-control" id="checkin" name="checkin" required="">
+                        <input type="text" id="checkin" name="checkin" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkin}" required>
                     </div>
                     <div class="form-group">
                         <label for="checkout">Ngày đi</label>
-                        <input type="date" class="form-control" id="checkout" name="checkout" required="">
+                        <input type="text" id="checkout" name="checkout" class="form-input" placeholder="dd/mm/yyyy" value="${param.checkout}" required>
                     </div>
                     <div class="form-group">
                         <label for="guests">Người</label>
@@ -789,43 +673,18 @@
         <script src="assets/js/hotel-cart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <!-- CSS (nếu dùng modal/custom style) -->
-
-        <!-- JS -->
-        <script src="${pageContext.request.contextPath}/assets/js/confirm-add-room.js"></script>
-        <!-- Modal Confirm -->
-        <!-- Modal dùng chung cho cả Guest và Customer -->
-        <div id="confirmModal" class="confirm-modal" style="display: none;">
-            <div class="confirm-modal-content">
-                <p>Phòng đã được thêm vào giỏ.</p>
-                <p>Bạn muốn làm gì tiếp theo?</p>
-                <div class="confirm-modal-actions">
-                    <button onclick="submitAndStay()">🛏 Đặt tiếp</button>
-                    <button onclick="submitAndGo()">📋 Xem phòng đã chọn</button>
-                </div>
-            </div>
-        </div>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
-            // Gửi guestCart từ session vào biến JS
-            var guestCart = [];
+            flatpickr("#checkin", {
+                dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
+                defaultDate: "${param.checkin}"   // Ngày từ request param
+            });
 
-            <c:if test="${not empty sessionScope.guestCart}">
-            guestCart = [
-                <c:forEach var="item" items="${sessionScope.guestCart}" varStatus="status">
-            {
-            roomTypeId: "${item.roomTypeId}"
-            }<c:if test="${!status.last}">,</c:if>
-                </c:forEach>
-            ];
-            </c:if>
+            flatpickr("#checkout", {
+                dateFormat: "d/m/Y",
+                defaultDate: "${param.checkout}"
+            });
         </script>
-        <!-- Custom Alert Box -->
-        <div id="customAlert" class="custom-alert">
-            <div class="custom-alert-box">
-                <p id="customAlertMessage"></p>
-                <button onclick="closeCustomAlert()">OK</button>
-            </div>
-        </div>
 
         <!-- Confirm Modal -->
 

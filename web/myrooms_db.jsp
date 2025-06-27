@@ -63,7 +63,7 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
-        <link rel="stylesheet" href="assets/css/booking-interface.css">
+        <link rel="stylesheet" href="assets/css/listRoom.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <!-- REVOLUTION SLIDER END -->	
         <style>

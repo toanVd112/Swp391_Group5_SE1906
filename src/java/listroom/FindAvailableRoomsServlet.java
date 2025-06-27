@@ -254,7 +254,7 @@ public class FindAvailableRoomsServlet extends HttpServlet {
     }
 
     private SearchParams getSearchParams(HttpServletRequest request) throws ServletException {
-        String checkinStr = request.getParameter("checkin");
+        String checkinStr = request.getParameter("checkin"); // "20/07/2025"
         String checkoutStr = request.getParameter("checkout");
         String guestsStr = request.getParameter("guests");
 
@@ -268,10 +268,17 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         int guests;
 
         try {
-            checkin = java.sql.Date.valueOf(checkinStr);
-            checkout = java.sql.Date.valueOf(checkoutStr);
-        } catch (IllegalArgumentException e) {
-            throw new ServletException("❌ Ngày không hợp lệ. Vui lòng chọn đúng định dạng yyyy-MM-dd.");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            sdf.setLenient(false);
+
+            Date parsedCheckin = sdf.parse(checkinStr);
+            Date parsedCheckout = sdf.parse(checkoutStr);
+
+            checkin = new java.sql.Date(parsedCheckin.getTime());
+            checkout = new java.sql.Date(parsedCheckout.getTime());
+
+        } catch (Exception e) {
+            throw new ServletException("❌ Ngày không hợp lệ. Vui lòng nhập đúng định dạng dd/MM/yyyy.");
         }
 
         if (!checkout.after(checkin)) {
