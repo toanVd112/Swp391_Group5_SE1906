@@ -899,6 +899,53 @@ body {
     .booking-btn {
         width: 100%;
     }
-    
-
 }
+.cart-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Trái lớn, phải nhỏ */
+    gap: 2rem;
+    align-items: start;
+   
+}
+.inner-container {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.room-list-left {
+    background: #fff;
+ 
+}
+
+/* Giỏ phòng sticky + tránh bị header che */
+.cart-summary {
+    position: sticky;
+    top: 140px; /* 👉 TĂNG để trừ chiều cao header, ví dụ header 100px + 40px margin */
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 320px; /* ✅ Giới hạn chiều rộng giỏ cho gọn */
+}
+
+/* Title giỏ */
+.cart-summary h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+/* Khoảng cách các dòng */
+.cart-summary p,
+.cart-summary h4 {
+    margin: 0.5rem 0;
+}
+
+/* Nút Thanh toán style thêm */
+.cart-summary button {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+

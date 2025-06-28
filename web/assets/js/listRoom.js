@@ -571,7 +571,7 @@ var magnificPopupImageView = function () {
     }
 };
 
-<script>
+
   document.addEventListener("DOMContentLoaded", function() {
     const rows = document.querySelectorAll(".combo-row");
     const showMoreBtn = document.getElementById("showMoreBtn");
@@ -600,7 +600,6 @@ var magnificPopupImageView = function () {
       showLessBtn.style.display = "none";
     };
   });
-</script>
 
 document.head.appendChild(style)
 

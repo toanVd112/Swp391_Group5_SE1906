@@ -255,7 +255,7 @@
 
                                         <%-- Nếu chưa đăng nhập --%>
                                         <c:otherwise>
-                                            <li><a href="myrooms_db.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="cart.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -277,9 +277,9 @@
                     <div class="booking-box">
                         <i class="fas fa-calendar-alt"></i>
                         <div class="booking-box-content">
-                            <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date" value="${param.checkin}" required>
+                            <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date"   required>
                             —
-                            <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date" value="${param.checkout}" required>
+                            <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date"  required>
                         </div>
                     </div>
 
@@ -679,25 +679,28 @@
 
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
+                    const checkinRaw = "${param.checkin}";
                     flatpickr("#checkin", {
-                        dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
-                        defaultDate: "${param.checkin}"   // Ngày từ request param
+                        dateFormat: "d/m/Y",
+                        defaultDate: checkinRaw ? new Date(checkinRaw) : null
                     });
 
+
+                    const checkoutRaw = "${param.checkout}";
                     flatpickr("#checkout", {
                         dateFormat: "d/m/Y",
-                        defaultDate: "${param.checkout}"
+                        defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
                     });
+
         </script>
+
 
         <!-- Confirm Modal -->
         <script>
             const checkinInput = document.getElementById('checkin');
             const checkoutInput = document.getElementById('checkout');
-
             checkinInput.addEventListener('change', validateDates);
             checkoutInput.addEventListener('change', validateDates);
-
             function parseDate(dateStr) {
                 // format: dd/MM/yyyy
                 const parts = dateStr.split('/');
@@ -710,7 +713,6 @@
             function validateDates() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
-
                 if (checkin && checkout && checkout <= checkin) {
                     alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
                     checkoutInput.value = '';
@@ -720,7 +722,6 @@
             function validateForm() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
-
                 if (checkout <= checkin) {
                     alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
                     return false;

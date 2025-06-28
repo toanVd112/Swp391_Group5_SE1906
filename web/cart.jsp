@@ -63,8 +63,12 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
+        <link rel="stylesheet" href="assets/css/listRoom.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <!-- REVOLUTION SLIDER END -->	
+        <style>
 
+        </style>
     </head>
 
     <body id="bg">
@@ -239,7 +243,7 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -252,33 +256,93 @@
                     </div>
                 </div>
             </header>
-            <!-- Header Top END ==== -->
-            <!-- Content -->
-            <div class="content-block">
-                
-                <h2><i class="fa fa-bed"></i> Danh sách phòng đã chọn (Local)</h2>
 
-                <button class="btn-clear" onclick="clearRoomCart()">
-                    <i class="fa fa-trash"></i> Xoá tất cả
-                </button>
+            <h1>🧳 Giỏ Phòng Của Bạn</h1>
 
-                <div id="selectedRoomsContainer"></div>
+            <!-- Bảng hiển thị các phòng đã chọn -->
+            <table border="1" cellpadding="8" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Loại phòng</th>
+                        <th>Số lượng</th>
+                        <th>Sức chứa/phòng</th>
+                        <th>Giá/đêm</th>
+                        <th>Tạm tính</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="item" items="${cartItems}">
+                        <tr>
+                            <td>${item.roomTypeName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.capacityPerRoom}</td>
+                            <td>$${item.pricePerNight}</td>
+                            <td>$${item.quantity * item.pricePerNight * totalNights}</td>
+                            <td>
+                                <form action="RemoveCartItemServlet" method="post">
+                                    <input type="hidden" name="roomTypeId" value="${item.roomTypeId}"/>
+                                    <button type="submit">Xoá</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
 
-                <div class="summary-box">
-                    <h3>Tóm tắt</h3>
-                    <p>Tổng số phòng: <span id="totalRooms">0</span></p>
-                    <p>Tổng tiền: <span id="totalPrice">$0.00</span></p>
-                    <button class="btn-submit">Tiến hành đặt phòng</button>
-                </div>
+            <hr/>
 
-                <script src="assets/js/hotel-cart.js"></script>
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        renderCart();
-                    });
-                </script>
-                <!-- contact area END -->
-            </div>
+            <!-- Thông tin tổng -->
+            <p><strong>Ngày nhận phòng:</strong> ${checkinDate}</p>
+            <p><strong>Ngày trả phòng:</strong> ${checkoutDate}</p>
+            <p><strong>Số đêm:</strong> ${totalNights}</p>
+            <p><strong>Tổng số khách:</strong> ${totalGuests}</p>
+            <p><strong>Tổng sức chứa:</strong> ${totalCapacity}</p>
+            <p><strong>Tổng tạm tính:</strong> $${totalAmount}</p>
+
+            <!-- Phân biệt Booking nhóm -->
+            <c:if test="${isGroupBooking}">
+                <p style="color: green;"><strong>Đặt phòng nhóm:</strong> Bạn đang đặt từ 3 phòng trở lên, chúng tôi sẽ hỗ trợ chia phòng phù hợp.</p>
+            </c:if>
+
+            <hr/>
+
+            <!-- Thông tin người đặt -->
+            <c:choose>
+                <c:when test="${isLoggedIn}">
+                    <h3>Thông tin người đặt</h3>
+                    <p>Họ tên: ${account.fullName}</p>
+                    <p>Email: ${account.email}</p>
+                    <p>SĐT: ${account.phone}</p>
+                </c:when>
+                <c:otherwise>
+                    <h3>Thông tin liên hệ</h3>
+                    <form action="ConfirmGuestInfoServlet" method="post">
+                        <label>Họ tên:</label><br/>
+                        <input type="text" name="contactName" required/><br/>
+                        <label>Email:</label><br/>
+                        <input type="email" name="contactEmail" required/><br/>
+                        <label>SĐT:</label><br/>
+                        <input type="text" name="contactPhone" required/><br/>
+                    </form>
+                </c:otherwise>
+            </c:choose>
+
+            <hr/>
+
+            <!-- Yêu cầu đặc biệt -->
+            <h3>Yêu cầu đặc biệt</h3>
+            <textarea name="specialRequest" rows="4" cols="50" placeholder="Nhập yêu cầu thêm..."></textarea>
+
+            <br/><br/>
+
+            <!-- Hành động -->
+            <a href="RoomListServlet">⬅ Quay lại chọn phòng</a>
+            &nbsp;&nbsp;
+            <form action="CheckoutServlet" method="post" style="display:inline;">
+                <button type="submit">Xác nhận & Tiến hành Thanh toán</button>
+            </form>
+
             <!-- Content END-->
             <!-- Footer ==== -->
             <footer>
@@ -405,6 +469,12 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
+        <script>
+
+        </script>
+
+        <script src="assets/js/hotel-cart.js"></script>
+
     </body>
 
 </html>
