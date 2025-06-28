@@ -1,29 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Arcueid
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class RoomImage {
     private int imageID;
     private Integer roomTypeID;
     private String imageUrl;
     private boolean isPrimary;
-    private String category;
+    private List<String> categories;
 
     public RoomImage() {
+        this.categories = new ArrayList<>();
     }
 
-    public RoomImage(int imageID, Integer roomTypeID, String imageUrl, boolean isPrimary, String category) {
+    public RoomImage(int imageID, Integer roomTypeID, String imageUrl, boolean isPrimary) {
         this.imageID = imageID;
         this.roomTypeID = roomTypeID;
         this.imageUrl = imageUrl;
         this.isPrimary = isPrimary;
-        this.category = category;
+        this.categories = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -59,12 +55,29 @@ public class RoomImage {
         this.isPrimary = isPrimary;
     }
 
-    public String getCategory() {
-        return category;
+    public List<String> getCategories() {
+        return categories;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    public void addCategory(String category) {
+        if (category != null && !category.trim().isEmpty() && !this.categories.contains(category)) {
+            this.categories.add(category);
+        }
+    }
+
+    public void removeCategory(String category) {
+        if (category != null && !category.trim().isEmpty()) {
+            this.categories.remove(category);
+        }
+    }
+
+    public String getCategoriesAsString() {
+        if (categories == null || categories.isEmpty()) return "";
+        return String.join(",", categories);
     }
 
     @Override
@@ -74,7 +87,6 @@ public class RoomImage {
                 ", roomTypeID=" + roomTypeID +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", isPrimary=" + isPrimary +
-                ", category='" + category + '\'' +
                 '}';
     }
 }

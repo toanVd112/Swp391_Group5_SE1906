@@ -50,8 +50,7 @@ public class RoomDetailDAO {
                             rs.getInt("ImageID"),
                             rs.getInt("RoomTypeID"),
                             rs.getString("ImageUrl"),
-                            rs.getBoolean("IsPrimary"),
-                            rs.getString("Category")
+                            rs.getBoolean("IsPrimary")
                     );
                     list.add(img);
                 }

@@ -1,59 +1,54 @@
 package model;
 
-/**
- *
- * @author Arcueid
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class RoomType {
 
     private int roomTypeID;
     private String name;
     private String description;
     private double basePrice;
-    private String imageUrl; 
+    private String imageUrl;
     private String roomDetail;
+    private int maxGuests;
     private int availableRooms;
-    private java.util.List<model.RoomImage> images; 
-    private int MaxGuests;
 
-    public int getMaxGuests() {
-        return MaxGuests;
-    }
+    private List<RoomImage> images;
+    private List<String> categoryList;
+    private List<Amenity> amenities;
 
-    public void setMaxGuests(int MaxGuests) {
-        this.MaxGuests = MaxGuests;
-    }
-
+    // Constructor mặc định – khởi tạo list để tránh null
     public RoomType() {
+        this.images = new ArrayList<>();
+        this.categoryList = new ArrayList<>();
+        this.amenities = new ArrayList<>();
     }
 
-    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxguest) {
+    // Constructor thường dùng
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxGuests) {
+        this();
         this.roomTypeID = roomTypeID;
         this.name = name;
         this.description = description;
         this.basePrice = basePrice;
         this.imageUrl = imageUrl;
         this.roomDetail = roomDetail;
-        this.MaxGuests = maxguest;
+        this.maxGuests = maxGuests;
     }
 
-    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxguest, int available) {
-        this.roomTypeID = roomTypeID;
-        this.name = name;
-        this.description = description;
-        this.basePrice = basePrice;
-        this.imageUrl = imageUrl;
-        this.roomDetail = roomDetail;
-        this.MaxGuests = maxguest;
-        this.availableRooms = available;
+    public RoomType(int roomTypeID, String name, String description, double basePrice, String imageUrl, String roomDetail, int maxGuests, int availableRooms) {
+        this(roomTypeID, name, description, basePrice, imageUrl, roomDetail, maxGuests);
+        this.availableRooms = availableRooms;
     }
 
     public RoomType(int roomTypeID, String name) {
+        this();
         this.roomTypeID = roomTypeID;
         this.name = name;
     }
 
-    // Getters and Setters
+    // Getters và Setters
     public int getRoomTypeID() {
         return roomTypeID;
     }
@@ -102,6 +97,14 @@ public class RoomType {
         this.roomDetail = roomDetail;
     }
 
+    public int getMaxGuests() {
+        return maxGuests;
+    }
+
+    public void setMaxGuests(int maxGuests) {
+        this.maxGuests = maxGuests;
+    }
+
     public int getAvailableRooms() {
         return availableRooms;
     }
@@ -110,50 +113,57 @@ public class RoomType {
         this.availableRooms = availableRooms;
     }
 
-    public java.util.List<model.RoomImage> getImages() {
+    public List<RoomImage> getImages() {
         if (images == null) {
-            images = new java.util.ArrayList<>(); // Khởi tạo nếu null
+            images = new ArrayList<>();
         }
         return images;
     }
 
-    public void setImages(java.util.List<model.RoomImage> images) {
+    public void setImages(List<RoomImage> images) {
         this.images = images;
     }
 
-    // Phương thức tiện ích để thêm ảnh
     public void addImage(RoomImage image) {
-        if (images == null) {
-            images = new java.util.ArrayList<>();
+        if (this.images == null) {
+            this.images = new ArrayList<>();
         }
-        images.add(image);
+        this.images.add(image);
     }
 
-    public RoomType(int roomTypeID, String name, String description, double basePrice, String roomDetail, int maxGuests) {
-        this.roomTypeID = roomTypeID;
-        this.name = name;
-        this.description = description;
-        this.basePrice = basePrice;
-        this.roomDetail = roomDetail;
-        this.MaxGuests = maxGuests;
+    public List<String> getCategoryList() {
+        if (categoryList == null) {
+            categoryList = new ArrayList<>();
+        }
+        return categoryList;
     }
-    private java.util.List<model.Amenity> amenities;
 
-    public java.util.List<model.Amenity> getAmenities() {
+    public void setCategoryList(List<String> categoryList) {
+        this.categoryList = categoryList;
+    }
+
+    public void addCategory(String category) {
+        if (this.categoryList == null) {
+            this.categoryList = new ArrayList<>();
+        }
+        this.categoryList.add(category);
+    }
+
+    public List<Amenity> getAmenities() {
         if (amenities == null) {
-            amenities = new java.util.ArrayList<>();
+            amenities = new ArrayList<>();
         }
         return amenities;
     }
 
-    public void setAmenities(java.util.List<model.Amenity> amenities) {
+    public void setAmenities(List<Amenity> amenities) {
         this.amenities = amenities;
     }
 
     public void addAmenity(Amenity amenity) {
-        if (amenities == null) {
-            amenities = new java.util.ArrayList<>();
+        if (this.amenities == null) {
+            this.amenities = new ArrayList<>();
         }
-        amenities.add(amenity);
+        this.amenities.add(amenity);
     }
 }

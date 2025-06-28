@@ -33,25 +33,34 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-bottom: 10px;
             }
             .image-url-row input {
                 flex: 1;
-                max-width: 60%;
+                max-width: 50%;
             }
             .image-url-row select {
-                width: 150px;
-                margin-right: 10px;
+                max-width: 25%;
             }
             .image-url-row img {
                 height: 120px;
                 width: auto;
                 max-width: 200px;
             }
-            .error-message {
-                color: red;
-                font-size: 0.9em;
-                display: none;
+            .badge-remove {
+                cursor: pointer;
+                margin-left: 5px;
+                color: white;
+            }
+            .category-item {
+                display: inline-flex !important;
+                align-items: center;
+                margin-bottom: 5px;
+                margin-right: 5px;
+                padding: 5px 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #6c757d;
+                color: white;
             }
         </style>
     </head>
@@ -66,19 +75,16 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="room-type-form" action="ManageRoomType" method="post" novalidate>
-                        <c:if test="${not empty roomType}">
-                            <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
-                        </c:if>
-
-                        <!-- TAB CHI TIẾT -->
-                        <div id="details" class="tab-content active">
+                    <form id="room-type-form" action="ManageRoomType" method="post">
+                        <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
+                        <input type="hidden" name="description" id="descriptionHidden">
+                        <input type="hidden" name="categorySync" id="categorySync">
+                        <!-- Tab Chi tiết -->
+                        <div id="details" class="tab-content">
                             <div class="form-group">
-                                <label for="name">Tên loại phòng <span class="text-danger">*</span></label>
+                                <label for="name">Tên loại phòng</label>
                                 <input type="text" id="name" name="name" class="form-control" value="${roomType.name}" required />
-                                <div class="error-message" id="name-error">Vui lòng nhập tên loại phòng.</div>
                             </div>
-
                             <div class="form-group">
                                 <label for="description">Mô tả</label>
                                 <div class="editor-toolbar mb-2">
@@ -87,405 +93,257 @@
                                     <button type="button" data-cmd="underline" class="btn btn-light btn-sm"><u>U</u></button>
                                 </div>
                                 <div id="description" class="description-editor" contenteditable="true">${roomType.description}</div>
-                                <input type="hidden" name="description" id="descriptionHidden" />
                             </div>
-
                             <div class="form-group">
-                                <label for="basePrice">Giá cơ bản <span class="text-danger">*</span></label>
-                                <input type="number" id="basePrice" name="basePrice" step="0.01" class="form-control" value="${roomType.basePrice}" required />
-                                <div class="error-message" id="basePrice-error">Vui lòng nhập giá cơ bản.</div>
+                                <label for="basePrice">Giá cơ bản</label>
+                                <input type="number" step="0.01" id="basePrice" name="basePrice" class="form-control" value="${roomType.basePrice}" required />
                             </div>
-
                             <div class="form-group">
                                 <label for="roomDetail">Chi tiết loại phòng</label>
-                                <textarea id="roomDetail" name="roomDetail" rows="4" class="form-control">${roomType.roomDetail}</textarea>
+                                <textarea id="roomDetail" name="roomDetail" class="form-control" rows="4">${roomType.roomDetail}</textarea>
                             </div>
-
-                            <!-- Tiện ích -->
-                            <div class="form-group mt-4">
-                                <label>Tiện ích (Amenity)</label>
+                            <div class="form-group">
+                                <label for="maxGuests">Số người tối đa</label>
+                                <input type="number" id="maxGuests" name="maxGuests" class="form-control" value="${roomType.maxGuests}" />
+                            </div>
+                            <div class="form-group">
+                                <label>Tiện ích</label>
                                 <div id="amenity-list">
                                     <c:forEach var="a" items="${roomType.amenities}">
-                                        <div class="d-flex align-items-center mb-2 amenity-item" data-id="${a.amenityId}">
-                                            <c:choose>
-                                                <c:when test="${fn:startsWith(a.icon, 'http')}">
-                                                    <img src="${a.icon}" alt="icon" style="width: 24px; height: 24px; margin-right: 8px;">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i class="${a.icon}" style="font-size: 24px; margin-right: 8px;"></i>
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <span>${a.amenityName}</span>
-                                            <button type="button" class="btn btn-sm btn-danger ml-2 delete-amenity" data-id="${a.amenityId}">×</button>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <input type="text" name="amenityNames[]" class="form-control mr-2" placeholder="Tên tiện ích" value="${a.amenityName}" />
+                                            <input type="text" name="amenityIcons[]" class="form-control mr-2" placeholder="Icon" value="${a.icon}" />
+                                            <button type="button" class="btn btn-danger btn-sm remove-amenity">×</button>
                                         </div>
                                     </c:forEach>
                                 </div>
-
-                                <!-- Nút + khung nhập tiện ích mới -->
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-amenity-btn">+ Thêm tiện ích</button>
-                                <div id="amenity-form" class="mt-2" style="display: none;">
-                                    <input type="text" id="amenityName" class="form-control mb-2" placeholder="Tên tiện ích" required />
-                                    <input type="text" id="amenityIcon" class="form-control mb-2" placeholder="URL icon (VD: https://...png)" required />
-                                    <button type="button" class="btn btn-success btn-sm" id="save-amenity">Lưu tiện ích</button>
-                                    <div class="error-message" id="amenity-error">Vui lòng nhập cả tên và icon.</div>
-                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-amenity">+ Thêm tiện ích</button>
                             </div>
                         </div>
-
-                        <!-- TAB HÌNH ẢNH -->
-                        <div id="images" class="tab-content" style="display: none;">
-                            <!-- Ảnh đại diện -->
+                        <!-- Tab Hình ảnh -->
+                        <div id="images" class="tab-content" style="display:none;">
                             <div class="form-group">
                                 <label for="imageUrl">URL ảnh đại diện</label>
                                 <input type="text" id="imageUrl" name="imageUrl" class="form-control" value="${roomType.imageUrl}" />
                                 <img id="main-image-preview" src="${roomType.imageUrl}" class="image-preview" onerror="this.style.display='none'" />
                             </div>
-
-                            <!-- Ảnh chi tiết -->
-                            <label>Ảnh chi tiết (URL + Category)</label>
+                            <div class="form-group">
+                                <label>Danh mục ảnh chi tiết</label>
+                                <div id="category-list">
+                                    <c:forEach var="cat" items="${roomType.categoryList}">
+                                        <div class="d-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white category-item">
+                                            <input type="hidden" name="categoryList[]" value="${cat}">
+                                            <span>${cat}</span>
+                                            <button type="button" class="btn btn-sm btn-light ml-2 py-0 px-2 remove-category" data-cat="${cat}">×</button>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                <div class="input-group mt-2">
+                                    <input type="text" id="newCategory" class="form-control" placeholder="Tên danh mục mới">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" id="add-category">+ Thêm danh mục</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <label>Ảnh chi tiết</label>
                             <div id="image-url-container">
-                                <c:forEach var="image" items="${roomType.images}" varStatus="loop">
-                                    <div class="d-flex align-items-start mb-3 image-url-row">
-                                        <input type="text" name="imageUrls[]" class="form-control image-url-input" value="${image.imageUrl}" required />
-                                        <select name="categories[]" class="form-control">
-                                            <c:forEach var="cat" items="${categoryList}">
-                                                <option value="${cat}" ${not empty image.category && cat == image.category ? 'selected' : ''}>${cat}</option>
+                                <c:forEach var="image" items="${roomType.images}" varStatus="status">
+                                    <div class="d-flex align-items-start mb-3 image-url-row" data-image-id="${image.imageID}">
+                                        <input type="text" name="imageUrls[]" class="form-control image-url-input" value="${image.imageUrl}" />
+                                        <select name="imageCategories${status.index}" class="form-control" multiple>
+                                            <c:forEach var="cat" items="${roomType.categoryList}">
+                                                <option value="${cat}" <c:if test="${fn:contains(image.categoriesAsString, cat)}">selected</c:if>>${cat}</option>
                                             </c:forEach>
-                                            <c:if test="${empty categoryList}">
-                                                <option value="Default">Default</option>
-                                            </c:if>
                                         </select>
-                                        <img src="${image.imageUrl}" class="ml-2" style="width: 80px; height: auto;" onerror="this.style.display='none'" />
-                                        <button type="button" class="btn btn-danger btn-sm ml-2 remove-url" data-imageid="${image.imageID}">×</button>
+                                        <img src="${image.imageUrl}" class="image-preview" onerror="this.style.display='none'">
+                                        <button type="button" class="btn btn-danger btn-sm ml-2 remove-url" data-image-id="${image.imageID}">×</button>
                                     </div>
                                 </c:forEach>
                             </div>
-                            <div class="error-message" id="image-error">Vui lòng nhập URL ảnh hợp lệ.</div>
-
                             <button type="button" id="add-url-btn" class="btn btn-outline-primary btn-sm mt-2">+ Thêm URL ảnh</button>
-
-                            <!-- Hiển thị danh sách category và thêm mới -->
-                            <div class="form-group mt-3">
-                                <label>Danh sách Category hiện tại:</label>
-                                <ul id="category-list">
-                                    <c:forEach var="cat" items="${categoryList}">
-                                        <li>${cat} <button type="button" class="btn btn-sm btn-danger" onclick="removeCategory(this)">x</button></li>
-                                        </c:forEach>
-                                </ul>
-                            </div>
-
-                            <!-- Thêm category mới -->
-                            <div class="form-group mt-2">
-                                <label>Thêm category mới:</label>
-                                <input type="text" id="new-category" class="form-control d-inline" style="width: 200px; display: inline-block;" required />
-                                <button type="button" class="btn btn-sm btn-success" onclick="addNewCategory()">+ Thêm</button>
-                                <div class="error-message" id="category-error">Vui lòng nhập tên category.</div>
-                            </div>
                         </div>
-
-                        <div class="mt-4 text-right">
-                            <button type="submit" class="btn btn-success">Lưu</button>
-                        </div>
+                        <button type="submit" class="btn btn-success mt-4">Lưu</button>
                     </form>
                 </div>
             </div>
         </div>
-
         <script>
-            const categoryList = [];
-            <c:forEach var="cat" items="${categoryList}">
-            categoryList.push("<c:out value='${cat}'/>");
-            </c:forEach>
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM fully loaded');
 
-            const tabs = document.querySelectorAll('.tab-btn');
-            const details = document.getElementById('details');
-            const images = document.getElementById('images');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    details.style.display = tab.dataset.tab === 'details' ? 'block' : 'none';
-                    images.style.display = tab.dataset.tab === 'images' ? 'block' : 'none';
+                // Tab switching
+                const tabs = document.querySelectorAll('.tab-btn');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+                        document.getElementById(tab.dataset.tab).style.display = 'block';
+                    });
                 });
-            });
 
-            const editor = document.getElementById('description');
-            document.querySelectorAll('.editor-toolbar button').forEach(btn => {
-                btn.addEventListener('click', () => document.execCommand(btn.dataset.cmd, false));
-            });
+                // Form submission handling
+                document.getElementById('room-type-form').addEventListener('submit', () => {
+                    const editor = document.getElementById('description');
+                    document.getElementById('descriptionHidden').value = editor ? editor.innerHTML : '';
+                    const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
+                            .map(input => input.value.trim());
+                    document.getElementById('categorySync').value = categories.join(',');
+                    console.log('Submitting categories:', categories);
+                });
 
-            document.getElementById('room-type-form').addEventListener('submit', (e) => {
-                document.getElementById('descriptionHidden').value = editor.innerHTML;
-
-                // Validation
-                let isValid = true;
-                const name = document.getElementById('name').value.trim();
-                const basePrice = document.getElementById('basePrice').value.trim();
-                const imageInputs = document.querySelectorAll('input[name="imageUrls[]"]');
-                const categorySelects = document.querySelectorAll('select[name="categories[]"]');
-                const amenityName = document.getElementById('amenityName')?.value.trim();
-                const amenityIcon = document.getElementById('amenityIcon')?.value.trim();
-                const newCategory = document.getElementById('new-category')?.value.trim();
-
-                // Reset error messages
-                document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-
-                if (!name) {
-                    document.getElementById('name-error').style.display = 'block';
-                    isValid = false;
+                // Add amenity
+                const addAmenityBtn = document.getElementById('add-amenity');
+                if (addAmenityBtn) {
+                    addAmenityBtn.addEventListener('click', () => {
+                        const div = document.createElement('div');
+                        div.className = 'd-flex align-items-center mb-2';
+                        div.innerHTML = `<input type="text" name="amenityNames[]" class="form-control mr-2" placeholder="Tên tiện ích" />
+                              <input type="text" name="amenityIcons[]" class="form-control mr-2" placeholder="Icon" />
+                              <button type="button" class="btn btn-danger btn-sm remove-amenity">×</button>`;
+                        div.querySelector('.remove-amenity').addEventListener('click', () => div.remove());
+                        document.getElementById('amenity-list').appendChild(div);
+                    });
+                } else {
+                    console.error('Element #add-amenity not found!');
                 }
-                if (!basePrice) {
-                    document.getElementById('basePrice-error').style.display = 'block';
-                    isValid = false;
+
+                // Add category
+            const addCategoryBtn = document.getElementById('add-category');
+if (addCategoryBtn) {
+    addCategoryBtn.addEventListener('click', () => {
+        const input = document.getElementById('newCategory');
+        const newCat = input.value.trim();
+        console.log('Creating category:', newCat);
+
+        if (!newCat) {
+            alert("Vui lòng nhập tên danh mục.");
+            return;
+        }
+
+        const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
+            .map(el => el.value.trim());
+
+        if (categories.includes(newCat)) {
+            alert("Danh mục đã tồn tại.");
+            return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'd-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white category-item';
+
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'categoryList[]';
+        hidden.value = newCat;
+
+        const span = document.createElement('span');
+        span.textContent = newCat;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-sm btn-light ml-2 py-0 px-2 remove-category';
+        button.dataset.cat = newCat;
+        button.textContent = '×';
+
+        div.appendChild(hidden);
+        div.appendChild(span);
+        div.appendChild(button);
+
+        const categoryList = document.getElementById('category-list');
+        if (categoryList) {
+            categoryList.appendChild(div);
+            input.value = '';
+            updateAllCategorySelects();
+            console.log('Added category safely:', newCat);
+        } else {
+            console.error('Element #category-list not found!');
+        }
+    });
+} else {
+    console.error('Element #add-category not found!');
+}
+
+                // Remove category (event delegation)
+                const categoryList = document.getElementById('category-list');
+                if (categoryList) {
+                    categoryList.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('remove-category')) {
+                            const item = e.target.closest('.category-item');
+                            if (item) {
+                                item.remove();
+                                updateAllCategorySelects();
+                                console.log('Removed category:', e.target.getAttribute('data-cat'));
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Element #category-list not found!');
                 }
-                let hasValidImage = false;
-                imageInputs.forEach((input, index) => {
-                    if (!input.value.trim()) {
-                        document.getElementById('image-error').style.display = 'block';
-                        isValid = false;
-                    } else {
-                        hasValidImage = true;
-                        // Kiểm tra category tương ứng
-                        if (categorySelects[index].value === '') {
-                            document.getElementById('image-error').textContent = 'Vui lòng chọn category cho ảnh.';
-                            document.getElementById('image-error').style.display = 'block';
-                            isValid = false;
+
+                // Update all category selects
+                function updateAllCategorySelects() {
+                    const allCategories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
+                            .map(input => input.value.trim());
+                    document.querySelectorAll('#image-url-container select').forEach(select => {
+                        const oldValues = Array.from(select.selectedOptions).map(opt => opt.value);
+                        select.innerHTML = '';
+                        allCategories.forEach(cat => {
+                            const option = document.createElement('option');
+                            option.value = option.textContent = cat;
+                            if (oldValues.includes(cat)) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
+                    });
+                }
+
+                // Add image URL
+                let imageCount = document.querySelectorAll('#image-url-container .image-url-row').length;
+                document.getElementById('add-url-btn').addEventListener('click', () => {
+                    const div = document.createElement('div');
+                    div.className = 'd-flex align-items-start mb-3 image-url-row';
+                    const selectName = 'imageCategories' + (imageCount++);
+                    div.innerHTML = `
+                  <input type="text" name="imageUrls[]" class="form-control image-url-input" />
+                  <select name="${selectName}" class="form-control" multiple></select>
+                  <img src="" class="image-preview" onerror="this.style.display='none'">
+                  <button type="button" class="btn btn-danger btn-sm ml-2 remove-url">×</button>`;
+                    const input = div.querySelector('input');
+                    const img = div.querySelector('img');
+                    input.addEventListener('input', () => {
+                        img.src = input.value;
+                        img.style.display = input.value ? 'block' : 'none';
+                    });
+                    div.querySelector('.remove-url').addEventListener('click', () => {
+                        div.remove();
+                        updateAllCategorySelects();
+                    });
+                    document.getElementById('image-url-container').appendChild(div);
+                    updateAllCategorySelects();
+                });
+
+                // Remove image URL (event delegation)
+                document.getElementById('image-url-container').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('remove-url')) {
+                        const row = e.target.closest('.image-url-row');
+                        if (row) {
+                            row.remove();
+                            updateAllCategorySelects();
                         }
                     }
                 });
-                if (imageInputs.length > 0 && !hasValidImage) {
-                    document.getElementById('image-error').style.display = 'block';
-                    isValid = false;
-                }
-                if (amenityName && amenityIcon && (!amenityName || !amenityIcon)) {
-                    document.getElementById('amenity-error').style.display = 'block';
-                    isValid = false;
-                }
-                if (newCategory && !newCategory) {
-                    document.getElementById('category-error').style.display = 'block';
-                    isValid = false;
-                }
 
-                if (!isValid) {
-                    e.preventDefault();
-                    return;
-                }
-            });
-
-            const mainInput = document.getElementById('imageUrl');
-            const mainPreview = document.getElementById('main-image-preview');
-            if (!mainInput.value.trim()) {
-                mainPreview.style.display = 'none';
-            }
-            mainInput.addEventListener('input', () => {
-                mainPreview.src = mainInput.value;
-                mainPreview.style.display = mainInput.value ? 'block' : 'none';
-            });
-
-            function createImageRow(url = '', category = 'Default') {
-                const div = document.createElement('div');
-                div.className = 'd-flex align-items-start mb-3 image-url-row';
-                div.innerHTML = `
-                    <input type="text" name="imageUrls[]" class="form-control image-url-input" placeholder="https://..." value="${url}" required />
-                    <select name="categories[]" class="form-control">
-            <c:forEach var="cat" items="${categoryList}">
-                            <option value="${cat}" ${cat == category ? 'selected' : ''}>${cat}</option>
-            </c:forEach>
-            <c:if test="${empty categoryList}">
-                            <option value="Default" ${category == 'Default' ? 'selected' : ''}>Default</option>
-            </c:if>
-                    </select>
-                    <img src="${url}" onerror="this.style.display='none'" />
-                    <button type="button" class="btn btn-danger btn-sm ml-2 remove-url">×</button>
-                `;
-                div.querySelector('.remove-url').addEventListener('click', () => div.remove());
-                const input = div.querySelector('.image-url-input');
-                const img = div.querySelector('img');
-                input.addEventListener('input', () => {
-                    img.src = input.value;
-                    img.style.display = input.value ? 'block' : 'none';
-                });
-                return div;
-            }
-
-            document.getElementById('add-url-btn').addEventListener('click', () => {
-                document.getElementById('image-url-container').appendChild(createImageRow());
-            });
-
-            document.querySelectorAll('.image-url-input').forEach(input => {
-                input.addEventListener('input', () => {
-                    const img = input.parentElement.querySelector('img');
-                    img.src = input.value;
-                    img.style.display = input.value ? 'block' : 'none';
+                // Initialize existing image URL inputs for preview
+                document.querySelectorAll('#image-url-container .image-url-input').forEach(input => {
+                    const img = input.closest('.image-url-row').querySelector('img');
+                    input.addEventListener('input', () => {
+                        img.src = input.value;
+                        img.style.display = input.value ? 'block' : 'none';
+                    });
                 });
             });
-
-            document.querySelectorAll('.remove-url').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const imageId = btn.getAttribute('data-imageid');
-                    const row = btn.closest('.image-url-row');
-
-                    if (!imageId || isNaN(imageId) || Number(imageId) <= 0) {
-                        row.remove();
-                        return;
-                    }
-
-                    fetch('ManageRoomType', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                        body: new URLSearchParams({deleteImageId: imageId})
-                    })
-                            .then(res => res.ok ? row.remove() : alert('Xóa ảnh thất bại'))
-                            .catch(() => alert('Không thể kết nối server để xóa ảnh'));
-                });
-            });
-
-            document.getElementById('add-amenity-btn').addEventListener('click', () => {
-                document.getElementById('amenity-form').style.display = 'block';
-            });
-
-            document.getElementById('save-amenity').addEventListener('click', () => {
-                const name = document.getElementById('amenityName').value.trim();
-                const icon = document.getElementById('amenityIcon').value.trim();
-                const roomTypeID = document.querySelector('input[name="roomTypeID"]').value;
-
-                if (!name || !icon) {
-                    document.getElementById('amenity-error').style.display = 'block';
-                    return;
-                }
-                document.getElementById('amenity-error').style.display = 'none';
-
-                const formData = new URLSearchParams();
-                formData.append('amenityAction', 'add');
-                formData.append('amenityName', name);
-                formData.append('icon', icon);
-                formData.append('roomTypeID', roomTypeID);
-
-                fetch('ManageRoomType', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: formData.toString()
-                })
-                        .then(res => res.text())
-                        .then(msg => {
-                            alert(msg);
-                            if (msg.includes('Đã thêm tiện ích')) {
-                                location.reload();
-                            }
-                        });
-            });
-
-            document.querySelectorAll('.delete-amenity').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const amenityId = btn.dataset.id;
-
-                    const formData = new URLSearchParams();
-                    formData.append('amenityAction', 'delete');
-                    formData.append('amenityId', amenityId);
-
-                    fetch('ManageRoomType', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                        body: formData.toString()
-                    })
-                            .then(res => res.text())
-                            .then(msg => {
-                                alert(msg);
-                                if (msg.includes('Đã xóa tiện ích')) {
-                                    btn.closest('.amenity-item').remove();
-                                }
-                            });
-                });
-            });
-
-            function addNewCategory() {
-                const categoryName = document.getElementById('new-category').value.trim();
-                const roomTypeID = document.querySelector('input[name="roomTypeID"]').value;
-
-                if (!categoryName) {
-                    document.getElementById('category-error').style.display = 'block';
-                    return;
-                }
-                document.getElementById('category-error').style.display = 'none';
-
-                const formData = new URLSearchParams();
-                formData.append('categoryAction', 'add');
-                formData.append('categoryName', categoryName);
-                formData.append('roomTypeID', roomTypeID);
-
-                fetch('ManageRoomType', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: formData.toString()
-                })
-                        .then(res => res.text())
-                        .then(msg => {
-                            alert(msg);
-                            if (msg.includes('thành công')) {
-                                categoryList.push(categoryName);
-                                updateCategoryListUI();
-                                document.getElementById('new-category').value = '';
-                                // Cập nhật select của các ảnh mới
-                                document.querySelectorAll('select[name="categories[]"]').forEach(select => {
-                                    if (!select.querySelector(`option[value="${categoryName}"]`)) {
-                                        const option = document.createElement('option');
-                                        option.value = categoryName;
-                                        option.text = categoryName;
-                                        select.appendChild(option);
-                                    }
-                                });
-                            }
-                        });
-            }
-
-            function removeCategory(button) {
-                const categoryName = button.parentElement.textContent.trim().replace('x', '');
-                const roomTypeID = document.querySelector('input[name="roomTypeID"]').value;
-
-                const formData = new URLSearchParams();
-                formData.append('categoryAction', 'delete');
-                formData.append('categoryName', categoryName);
-                formData.append('roomTypeID', roomTypeID);
-
-                fetch('ManageRoomType', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: formData.toString()
-                })
-                        .then(res => res.text())
-                        .then(msg => {
-                            alert(msg);
-                            if (msg.includes('thành công')) {
-                                const index = categoryList.indexOf(categoryName);
-                                if (index > -1) {
-                                    categoryList.splice(index, 1);
-                                }
-                                updateCategoryListUI();
-                                // Xóa option trong select
-                                document.querySelectorAll('select[name="categories[]"]').forEach(select => {
-                                    const option = select.querySelector(`option[value="${categoryName}"]`);
-                                    if (option)
-                                        select.removeChild(option);
-                                });
-                            }
-                        });
-            }
-
-            function updateCategoryListUI() {
-                const categoryListElement = document.getElementById('category-list');
-                categoryListElement.innerHTML = '';
-                categoryList.forEach(cat => {
-                    const li = document.createElement('li');
-                    li.textContent = cat;
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'btn btn-sm btn-danger';
-                    btn.textContent = 'x';
-                    btn.onclick = () => removeCategory(btn);
-                    li.appendChild(btn);
-                    categoryListElement.appendChild(li);
-                });
-            }
         </script>
     </body>
 </html>

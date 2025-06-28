@@ -11,130 +11,102 @@ import model.RoomType;
  * @author Arcueid
  */
 public class ManageRoomDAO {
+private final RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
 
-    public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
-        List<Room> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(
-                "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomDetail, rt.MaxGuests "
-                + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
-        );
+   public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
+    List<Room> list = new ArrayList<>();
+    StringBuilder sql = new StringBuilder(
+            "SELECT r.*, rt.RoomTypeID "
+            + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+    );
 
-        boolean hasSearch = search != null && !search.trim().isEmpty();
+    boolean hasSearch = search != null && !search.trim().isEmpty();
+    if (hasSearch) {
+        sql.append(" AND r.RoomNumber LIKE ?");
+    }
 
+    if ("asc".equalsIgnoreCase(sort)) {
+        sql.append(" ORDER BY rt.BasePrice ASC");
+    } else if ("desc".equalsIgnoreCase(sort)) {
+        sql.append(" ORDER BY rt.BasePrice DESC");
+    } else {
+        sql.append(" ORDER BY r.RoomNumber ASC");
+    }
+
+    sql.append(" LIMIT ? OFFSET ?");
+
+    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        int paramIndex = 1;
         if (hasSearch) {
-            sql.append(" AND r.RoomNumber LIKE ?");
+            ps.setString(paramIndex++, "%" + search.trim() + "%");
         }
+        ps.setInt(paramIndex++, limit);
+        ps.setInt(paramIndex, offset);
 
-        if ("asc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY rt.BasePrice ASC");
-        } else if ("desc".equalsIgnoreCase(sort)) {
-            sql.append(" ORDER BY rt.BasePrice DESC");
-        } else {
-            sql.append(" ORDER BY r.RoomNumber ASC");
-        }
-
-        sql.append(" LIMIT ? OFFSET ?");
-
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
-            int paramIndex = 1;
-            if (hasSearch) {
-                ps.setString(paramIndex++, "%" + search.trim() + "%");
-            }
-            ps.setInt(paramIndex++, limit);
-            ps.setInt(paramIndex, offset);
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                RoomType roomType = null;
-                if (rs.getObject("RoomTypeID") != null) {
-                    roomType = new RoomType(
-                            rs.getInt("RoomTypeID"),
-                            rs.getString("TypeName"),
-                            rs.getString("Description"),
-                            rs.getDouble("BasePrice"),
-                            rs.getString("RoomDetail"),
-                            rs.getInt("MaxGuests")
-                    );
-                }
-
-                Room room = new Room(
-                        rs.getInt("RoomID"),
-                        rs.getString("RoomNumber"),
-                        rs.getInt("Floor"),
-                        rs.getString("Status"),
-                        roomType
-                );
-
-                list.add(room);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            RoomType roomType = null;
+            if (rs.getObject("RoomTypeID") != null) {
+                int roomTypeId = rs.getInt("RoomTypeID");
+                roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            Room room = new Room(
+                    rs.getInt("RoomID"),
+                    rs.getString("RoomNumber"),
+                    rs.getInt("Floor"),
+                    rs.getString("Status"),
+                    roomType
+            );
+            list.add(room);
         }
 
-        return list;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
 
-    public List<RoomType> getAllRoomTypes() throws SQLException {
-        List<RoomType> list = new ArrayList<>();
-        String sql = "SELECT RoomTypeID, Name, Description, BasePrice, RoomDetail, MaxGuests FROM roomtypes ORDER BY Name";
+    return list;
+}
+   public List<RoomType> getAllRoomTypes() throws SQLException {
+    List<RoomType> list = new ArrayList<>();
+    String sql = "SELECT RoomTypeID FROM roomtypes ORDER BY Name";
 
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                RoomType roomType = new RoomType(
-                        rs.getInt("RoomTypeID"),
-                        rs.getString("Name"),
-                        rs.getString("Description"),
-                        rs.getDouble("BasePrice"),
-                        rs.getString("RoomDetail"),
-                        rs.getInt("MaxGuests")
-                );
-                list.add(roomType);
-            }
+    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            int roomTypeId = rs.getInt("RoomTypeID");
+            RoomType roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+            list.add(roomType);
         }
-        return list;
     }
-
+    return list;
+}
     public Room getRoomById(int roomId) {
-        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomDetail, rt.MaxGuests "
-                + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
-                + "WHERE r.RoomID = ?";
+    String sql = "SELECT r.*, rt.RoomTypeID FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
 
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, roomId);
+        ResultSet rs = ps.executeQuery();
 
-            ps.setInt(1, roomId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                RoomType roomType = null;
-                if (rs.getObject("RoomTypeID") != null) {
-                    roomType = new RoomType(
-                            rs.getInt("RoomTypeID"),
-                            rs.getString("TypeName"),
-                            rs.getString("Description"),
-                            rs.getDouble("BasePrice"),
-                            rs.getString("RoomDetail"),
-                            rs.getInt("MaxGuests")
-                    );
-                }
-
-                Room room = new Room(
-                        rs.getInt("RoomID"),
-                        rs.getString("RoomNumber"),
-                        rs.getInt("Floor"),
-                        rs.getString("Status"),
-                        roomType
-                );
-
-                return room;
+        if (rs.next()) {
+            RoomType roomType = null;
+            if (rs.getObject("RoomTypeID") != null) {
+                int roomTypeId = rs.getInt("RoomTypeID");
+                roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            return new Room(
+                    rs.getInt("RoomID"),
+                    rs.getString("RoomNumber"),
+                    rs.getInt("Floor"),
+                    rs.getString("Status"),
+                    roomType
+            );
         }
-        return null;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return null;
+}
 
     public boolean isRoomNumberExists(String roomNumber, Integer excludeRoomId) {
         String sql = "SELECT COUNT(*) FROM rooms WHERE RoomNumber = ?";
