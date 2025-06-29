@@ -12,18 +12,21 @@ public class Account implements Serializable{
     private boolean isActive;
     private Timestamp createdAt;
     private String email;
-//    private String verificationCode;
-//    private boolean isVerified;
+
     
     public Account(){}
 
-    public Account(int accountID, String username, String password, boolean isActive, String email) {
+    public Account(int accountID, String username, String password, String role, boolean isActive, Timestamp createdAt, String email) {
         this.accountID = accountID;
         this.username = username;
         this.password = password;
+        this.role = role;
         this.isActive = isActive;
+        this.createdAt = createdAt;
         this.email = email;
     }
+
+    
 
     
 

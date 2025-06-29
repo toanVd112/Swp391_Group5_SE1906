@@ -11,11 +11,12 @@ public class User {
     private String phone;
     private String dateOfBirth;  // Định dạng lưu: dd/MM/yyyy
     private String address;
+    private String avatarPath;
 
     public User() {
     }
 
-    public User(int userId, int accountId, String fullName, String email, String phone, String dateOfBirth, String address) {
+    public User(int userId, int accountId, String fullName, String email, String phone, String dateOfBirth, String address, String avatarPath) {
         this.userId = userId;
         this.accountId = accountId;
         this.fullName = fullName;
@@ -23,7 +24,10 @@ public class User {
         this.phone = phone;
         this.dateOfBirth = dateOfBirth;
         this.address = address;
+        this.avatarPath = avatarPath;
     }
+
+    
 
     public int getUserId() {
         return userId;
@@ -86,16 +90,13 @@ public class User {
         this.address = address;
     }
 
-    @Override
-    public String toString() {
-        return "User{"
-            + "userId=" + userId
-            + ", accountId=" + accountId
-            + ", fullName='" + fullName + '\''
-            + ", email='" + email + '\''
-            + ", phone='" + phone + '\''
-            + ", dateOfBirth='" + dateOfBirth + '\''
-            + ", address='" + address + '\''
-            + '}';
+    public String getAvatarPath() {
+        return avatarPath;
     }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
+    
+    
 }

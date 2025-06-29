@@ -5,6 +5,7 @@
 
 package controller;
 
+import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.MultipartConfig;
 import DAO.UserDao;
 import model.Account;
 import model.User;
@@ -22,8 +24,15 @@ import model.User;
  * @author AD
  */
 @WebServlet(name="UserProfileServlet", urlPatterns={"/user-profile"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+                 maxFileSize = 1024 * 1024 * 10,      // 10MB
+                 maxRequestSize = 1024 * 1024 * 50)   // 50MB
 public class UserProfileServlet extends HttpServlet {
-   
+    private UserDao userDAO = new UserDao();
+    private AccountDAO accountDAO = new AccountDAO();
+    private static final String UPLOAD_DIR = "Uploads";
+    
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -62,17 +71,29 @@ public class UserProfileServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("user");
-        if (account == null) {
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-        int accountId = account.getAccountID();
+        
 
-        UserDao userDAO = new UserDao();
-        User user = userDAO.getUserByAccountId(accountId);
-        request.setAttribute("user", user);
-        request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
+        try {
+            User user = userDAO.getUserByAccountId(accountId);
+            Account account = accountDAO.getAccountByID(String.valueOf(accountId));
+            if (user == null || account == null) {
+                request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
+                request.getRequestDispatcher("/error.jsp").forward(request, response);
+                return;
+            }
+            request.setAttribute("user", user);
+            request.setAttribute("account", account);
+            request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi khi lấy thông tin hồ sơ!");
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
+        }
     } 
 
     /** 

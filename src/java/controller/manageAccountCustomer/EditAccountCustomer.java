@@ -143,7 +143,8 @@ public class EditAccountCustomer extends HttpServlet {
         boolean hasError = false;
 
         // Gán lại account để giữ giá trị trong form nếu có lỗi
-        Account acc = new Account(Integer.parseInt(aid), user, pass, isActive, email);
+        //Account acc = new Account(Integer.parseInt(aid), user, pass, isActive, email);
+        Account acc = new Account(Integer.parseInt(aid), user, pass, aid, isActive, email);
         request.setAttribute("account", acc);
 
         // Validate từng trường và đặt thông báo lỗi tương ứng
