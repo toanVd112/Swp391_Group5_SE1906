@@ -460,13 +460,38 @@
 
                                                             </td>
                                                             <td>
-                                                                <form action="addComboToCart" method="post" style="display: inline;" onsubmit="return handleComboSelection(index)">
-                                                                    <c:forEach var="sug" items="${combo}">
-                                                                        <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}" />
-                                                                        <input type="hidden" name="quantity" value="${sug.quantity}" />
-                                                                    </c:forEach>
-                                                                    <button type="submit" class="btn btn-primary">Chọn</button>
-                                                                </form>
+                                                                <!-- Cột nút Chọn -->
+                                                                <c:choose>
+                                                                    <c:when test="${isCustomer}">
+                                                                        <form action="/AddToCustomerCartServlet" method="POST" style="display:inline;">
+                                                                            <c:forEach var="sug" items="${combo}">
+                                                                                <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}" />
+                                                                                <input type="hidden" name="quantity" value="${sug.quantity}" />
+                                                                            </c:forEach>
+                                                                            <button type="submit" class="btn btn-primary">Chọn</button>
+                                                                        </form>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <!-- KHÔNG DÙNG FORM cho Guest -->
+                                                                        <div>
+                                                                            <c:forEach var="sug" items="${combo}">
+                                                                                <input type="hidden"
+                                                                                       name="roomTypeId"
+                                                                                       value="${sug.roomType.roomTypeID}"
+                                                                                       data-base-price="${sug.roomType.basePrice != null ? sug.roomType.basePrice : 0}"
+                                                                                       data-room-name="${sug.roomType.name}" />
+
+
+                                                                                <input type="hidden" name="quantity" value="${sug.quantity}" />
+                                                                            </c:forEach>
+                                                                            <button type="button"
+                                                                                    class="btn btn-primary"
+                                                                                    onclick="handleComboSelection(${idx.count})">
+                                                                                Chọn
+                                                                            </button>
+                                                                        </div>
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </td>
 
                                                         </tr>
@@ -745,7 +770,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script src="assets/js/hotel-cart.js"></script>
+
         <script>
             flatpickr("#checkin", {
                 dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
@@ -795,6 +820,14 @@
             }
         </script>
 
+        <script>
+            const isCustomer = ${sessionScope.user != null ? 'true' : 'false'};
+        </script>
+        <script src="assets/js/listRoom.js"></script>
+        <script src="assets/js/hotel-cart.js"></script>
+
+
+
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -829,25 +862,13 @@
             });
         </script>
 
-        <script src="assets/js/listRoom.js"></script>
-        <script>
-            const TOTAL_GUESTS = ${param.guests};
-            const CURRENT_CART_CAPACITY = ${sessionScope.cartCapacity != null ? sessionScope.cartCapacity : 0};
-        </script>
-        <script src="assets/js/room-selection.js"></script>
-        <script>
-            const isCustomer = ${sessionScope.user != null ? 'true' : 'false'};
-        </script>
-        <c:if test="${not empty sessionScope.cartItems}">
-            <script>
-                const selectedRooms = ${cartItemsJson}; // cartItemsJson = JSON.stringify trong Servlet
-            </script>
-        </c:if>
-        <c:if test="${empty sessionScope.cartItems}">
-            <script>
-                const selectedRooms = JSON.parse(localStorage.getItem('selectedRooms')) || [];
-            </script>
-        </c:if>
 
+        <script>
+            localStorage.setItem('selectedRooms',
+                    JSON.stringify(
+                            (JSON.parse(localStorage.getItem('selectedRooms')) || []).filter(item => !item.rooms)
+                            )
+                    );
+        </script>
     </body>
 </html>

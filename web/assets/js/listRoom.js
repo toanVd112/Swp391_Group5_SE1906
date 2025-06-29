@@ -22,46 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
  * Initialize all functionality when page loads
  */
 function initializeBookingInterface() {
-    setupStickyActionBar()
-    setupFormValidation()
-    setupDateInputs()
-    setupSmoothScrolling()
-    setupKeyboardNavigation()
-    setupLoadingStates()
-
+    
     console.log("Hotel booking interface initialized successfully")
 }
 
 /**
  * Sticky action bar functionality
  */
-function setupStickyActionBar() {
-    const actionBar = document.getElementById("actionBar")
-    if (!actionBar)
-        return
-
-    let ticking = false
-
-    function updateStickyBar() {
-        const scrollPosition = window.scrollY
-
-        if (scrollPosition > 200) {
-            actionBar.classList.add("sticky")
-        } else {
-            actionBar.classList.remove("sticky")
-        }
-        ticking = false
-    }
-
-    function requestTick() {
-        if (!ticking) {
-            requestAnimationFrame(updateStickyBar)
-            ticking = true
-        }
-    }
-
-    window.addEventListener("scroll", requestTick, {passive: true})
-}
 
 /**
  * Tab switching functionality
@@ -142,196 +109,33 @@ function toggleFilters() {
 /**
  * Form validation setup
  */
-function setupFormValidation() {
-    const checkinInput = document.getElementById("checkin")
-    const checkoutInput = document.getElementById("checkout")
-    const guestsInput = document.getElementById("guests")
-
-    if (!checkinInput || !checkoutInput)
-        return
-
-    // Set minimum dates
-    const today = new Date().toISOString().split("T")[0]
-    checkinInput.min = today
-    checkoutInput.min = today
-
-    // Check-in date change handler
-    checkinInput.addEventListener("change", function () {
-        const checkinDate = new Date(this.value)
-        const nextDay = new Date(checkinDate)
-        nextDay.setDate(nextDay.getDate() + 1)
-
-        checkoutInput.min = nextDay.toISOString().split("T")[0]
-
-        // Auto-adjust checkout if it's before new checkin
-        if (checkoutInput.value && new Date(checkoutInput.value) <= checkinDate) {
-            checkoutInput.value = nextDay.toISOString().split("T")[0]
-        }
-
-        validateDateRange()
-    })
-
-    // Check-out date change handler
-    checkoutInput.addEventListener("change", validateDateRange)
-
-    // Guests input validation
-    if (guestsInput) {
-        guestsInput.addEventListener("input", function () {
-            const value = Number.parseInt(this.value)
-            if (value < 1) {
-                this.value = 1
-            } else if (value > 20) {
-                this.value = 20
-                showNotification("Maximum 20 guests allowed", "warning")
-            }
-        })
-    }
-}
 
 /**
  * Validate date range
  */
-function validateDateRange() {
-    const checkinInput = document.getElementById("checkin")
-    const checkoutInput = document.getElementById("checkout")
-
-    if (!checkinInput || !checkoutInput || !checkinInput.value || !checkoutInput.value)
-        return
-
-    const checkinDate = new Date(checkinInput.value)
-    const checkoutDate = new Date(checkoutInput.value)
-    const diffTime = checkoutDate - checkinDate
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays <= 0) {
-        showNotification("Check-out date must be after check-in date", "error")
-        return false
-    }
-
-    if (diffDays > 30) {
-        showNotification("Maximum stay is 30 days", "warning")
-        return false
-    }
-
-    return true
-}
 
 /**
  * Setup date inputs with better UX
- */
-function setupDateInputs() {
-    const dateInputs = document.querySelectorAll('input[type="date"]')
 
-    dateInputs.forEach((input) => {
-        // Add placeholder text for better UX
-        input.addEventListener("focus", function () {
-            this.showPicker && this.showPicker()
-        })
-
-        // Format display for better readability
-        input.addEventListener("change", function () {
-            if (this.value) {
-                const date = new Date(this.value)
-                const formattedDate = date.toLocaleDateString("vi-VN", {
-                    weekday: "short",
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                })
-                this.title = formattedDate
-            }
-        })
-    })
-}
 
 /**
  * Setup smooth scrolling for anchor links
  */
-function setupSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault()
-            const target = document.querySelector(this.getAttribute("href"))
-            if (target) {
-                const headerOffset = 100
-                const elementPosition = target.getBoundingClientRect().top
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset
 
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth",
-                })
-            }
-        })
-    })
-}
 
 /**
  * Setup keyboard navigation
  */
-function setupKeyboardNavigation() {
-    document.addEventListener("keydown", (e) => {
-        // Tab switching with keyboard shortcuts
-        if (e.ctrlKey || e.metaKey) {
-            switch (e.key) {
-                case "1":
-                    e.preventDefault()
-                    switchTab("suggestions")
-                    break
-                case "2":
-                    e.preventDefault()
-                    switchTab("manual")
-                    break
-                case "f":
-                    e.preventDefault()
-                    toggleFilters()
-                    break
-            }
-        }
 
-        // Escape key to close modals/filters
-        if (e.key === "Escape") {
-            if (isFilterPanelVisible) {
-                toggleFilters()
-            }
-        }
-    })
-}
 
 /**
  * Setup loading states for forms
  */
-function setupLoadingStates() {
-    const forms = document.querySelectorAll("form")
-
-    forms.forEach((form) => {
-        form.addEventListener("submit", function () {
-            const submitButton = this.querySelector('button[type="submit"]')
-            if (submitButton) {
-                showLoadingState(submitButton)
-            }
-        })
-    })
-}
 
 /**
  * Show loading state on button
  * @param {HTMLElement} button - Button element to show loading state
  */
-function showLoadingState(button) {
-    if (!button)
-        return
-
-    const originalText = button.innerHTML
-    button.innerHTML = '<i class="spinner"></i> Đang xử lý...'
-    button.disabled = true
-
-    // Reset after 10 seconds as fallback
-    setTimeout(() => {
-        button.innerHTML = originalText
-        button.disabled = false
-    }, 10000)
-}
 
 /**
  * Show notification to user
@@ -416,57 +220,12 @@ function trackEvent(eventName, eventData = {}) {
  * @param {number} roomId - ID of the selected room
  * @param {number} quantity - Quantity of rooms
  */
-function handleRoomSelection(roomId, quantity = 1) {
-    try {
-        showLoadingState(event.target)
 
-        // Track room selection
-        trackEvent("room_selected", {
-            room_id: roomId,
-            quantity: quantity,
-            tab: currentActiveTab,
-        })
-
-        // Show confirmation if needed
-        if (quantity > 1) {
-            const confirmed = confirm(`Bạn có chắc chắn muốn đặt ${quantity} phòng?`)
-            if (!confirmed) {
-                return false
-            }
-        }
-
-        showNotification("Đang thêm phòng vào giỏ hàng...", "info")
-
-        return true
-    } catch (error) {
-        console.error("Error handling room selection:", error)
-        showNotification("Có lỗi xảy ra khi chọn phòng", "error")
-        return false
-}
-}
 
 /**
  * Handle combo selection
  * @param {number} comboId - ID of the selected combo
- */
-function handleComboSelection(comboId) {
-    try {
-        showLoadingState(event.target)
 
-        // Track combo selection
-        trackEvent("combo_selected", {
-            combo_id: comboId,
-        })
-
-        showNotification("Đang thêm tổ hợp phòng vào giỏ hàng...", "info")
-
-        return true
-    } catch (error) {
-        console.error("Error handling combo selection:", error)
-        showNotification("Có lỗi xảy ra khi chọn tổ hợp", "error")
-        return false
-    }
-}
 
 /**
  * Format currency for display
@@ -491,17 +250,6 @@ function formatCurrency(amount, currency = "USD") {
  * @param {number} wait - Wait time in milliseconds
  * @returns {Function} Debounced function
  */
-function debounce(func, wait) {
-    let timeout
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout)
-            func(...args)
-        }
-        clearTimeout(timeout)
-        timeout = setTimeout(later, wait)
-    }
-}
 
 /**
  * Throttle function to limit function calls
@@ -509,18 +257,7 @@ function debounce(func, wait) {
  * @param {number} limit - Time limit in milliseconds
  * @returns {Function} Throttled function
  */
-function throttle(func, limit) {
-    let inThrottle
-    return function () {
-        const args = arguments
 
-        if (!inThrottle) {
-            func.apply(this, args)
-            inThrottle = true
-            setTimeout(() => (inThrottle = false), limit)
-        }
-    }
-}
 
 // Add CSS animations for notifications
 const style = document.createElement("style")
@@ -560,16 +297,6 @@ style.textContent = `
     }
 `
 
-var magnificPopupImageView = function () {
-    if (checkSelectorExistence('.magnific-image')) {
-        jQuery('.magnific-image').magnificPopup({
-            type: 'image',
-            gallery: {
-                enabled: true
-            }
-        });
-    }
-};
 
 
   document.addEventListener("DOMContentLoaded", function() {
@@ -604,9 +331,6 @@ var magnificPopupImageView = function () {
 document.head.appendChild(style)
 
 // Export functions for global access
-window.switchTab = switchTab
-window.toggleFilters = toggleFilters
-window.handleRoomSelection = handleRoomSelection
-window.handleComboSelection = handleComboSelection
-window.showNotification = showNotification
-window.formatCurrency = formatCurrency
+window.switchTab = switchTab;
+window.toggleFilters = toggleFilters;
+window.showNotification = showNotificatio
