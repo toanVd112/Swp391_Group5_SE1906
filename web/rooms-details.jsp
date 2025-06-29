@@ -3,18 +3,62 @@
     Created on : Jun 3, 2025, 2:31:47 PM
     Author     : Arcueid
 --%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-    <%@ page contentType="text/html" pageEncoding="UTF-8"%>
-
     <head>
+        <!-- META ============================================= -->
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="description" content="HoangNam Hotel" />
+        <meta property="og:title" content="HoangNam Hotel" />
+        <meta property="og:description" content="HoangNam Hotel" />
+        <meta property="og:image" content="" />
+        <meta name="format-detection" content="telephone=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- FAVICONS ICON ============================================= -->
+        <link rel="icon" href="assets/images/favicon1.ico" type="image/x-icon" />
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
+
+        <!-- PAGE TITLE HERE ============================================= -->
+        <title>HoangNam Hotel</title>
+
+        <!-- CSS ============================================= -->
         <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
         <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link rel="stylesheet" type="text/css" href="assets/css/assets.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/typography.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/shortcodes/shortcodes.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
+
         <style>
             body, h1, h2, h3, h4, h5, h6, p, ul, li, .ttr-post-title h2 {
                 font-family: 'Roboto', sans-serif !important;
+            }
+            .available-rooms {
+                text-align: center;
+                margin: 15px 0;
+            }
+
+            .available-rooms h5 {
+                font-size: 16px;
+                font-weight: 500;
+                margin: 0;
+            }
+
+            .available-rooms .text-success {
+                color: #28a745;
+            }
+
+            .available-rooms .text-danger {
+                color: #dc3545;
             }
 
             /* === MODAL WRAPPER === */
@@ -28,6 +72,7 @@
                 z-index: 99999 !important;
                 overflow-y: auto;
                 animation: fadeIn 0.3s ease;
+                display: none;
             }
 
             @keyframes fadeIn {
@@ -173,6 +218,10 @@
                 transition: all 0.3s ease;
             }
 
+            .gallery-item img[style*="display: none"] + .image-caption {
+                display: none;
+            }
+
             .gallery-item:hover img {
                 transform: translateY(-3px);
                 box-shadow: 0 8px 25px rgba(0,0,0,0.15);
@@ -188,20 +237,11 @@
                 text-transform: capitalize;
             }
 
-            @media (max-width: 768px) {
-                .gallery-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .category-tabs {
-                    padding: 12px 15px 12px 50px;
-                    gap: 8px;
-                }
-
-                .category-tabs button {
-                    padding: 8px 14px;
-                    font-size: 13px;
-                }
+            .no-data {
+                text-align: center;
+                color: #666;
+                margin: 20px 0;
+                font-size: 16px;
             }
 
             /* === IMAGE GALLERY OUTSIDE MODAL === */
@@ -240,120 +280,39 @@
                 border-radius: 8px;
                 cursor: pointer;
             }
+
+            @media (max-width: 768px) {
+                .gallery-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .category-tabs {
+                    padding: 12px 15px 12px 50px;
+                    gap: 8px;
+                }
+
+                .category-tabs button {
+                    padding: 8px 14px;
+                    font-size: 13px;
+                }
+
+                .image-gallery-row {
+                    flex-direction: column;
+                }
+
+                .main-photo-box, .thumb-2x2-box {
+                    flex: 1;
+                }
+
+                .main-photo-box img {
+                    height: 200px;
+                }
+
+                .thumb-2x2-box img {
+                    height: 100px;
+                }
+            }
         </style>
-
-        <script>
-            function filterCategory(cat, button) {
-                const tabs = document.querySelectorAll(".category-tabs button");
-                const items = document.querySelectorAll("#galleryImages .gallery-item");
-
-                // Cập nhật trạng thái nút
-                tabs.forEach(tab => {
-                    tab.classList.remove("active");
-                    tab.setAttribute('aria-pressed', 'false');
-                });
-
-                if (button) {
-                    button.classList.add("active");
-                    button.setAttribute('aria-pressed', 'true');
-                }
-
-                // Lọc ảnh theo category
-                items.forEach(item => {
-                    const itemCategory = item.getAttribute('data-category') || 'uncategorized';
-                    item.style.display = (cat === 'all' || itemCategory === cat) ? 'block' : 'none';
-                });
-            }
-
-            function openGallery(category) {
-                const modal = document.getElementById("galleryModal");
-                modal.style.display = "block";
-                modal.setAttribute('aria-hidden', 'false');
-
-                // ✅ Tìm đúng nút theo data-category
-                let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
-
-                // Nếu không có, fallback về 'all'
-                if (!button) {
-                    button = document.querySelector(`.category-tabs button[data-category="all"]`);
-                    category = "all";
-                }
-
-                filterCategory(category, button);
-
-                // Đăng ký sự kiện ngoài và phím ESC
-                setTimeout(() => {
-                    document.addEventListener('click', handleClickOutside);
-                }, 0);
-                document.addEventListener('keydown', handleKeyboard);
-            }
-
-            function closeGallery() {
-                const modal = document.getElementById("galleryModal");
-                modal.style.display = "none";
-                modal.setAttribute('aria-hidden', 'true');
-                document.removeEventListener('click', handleClickOutside);
-                document.removeEventListener('keydown', handleKeyboard);
-            }
-
-            function handleClickOutside(event) {
-                const modal = document.getElementById("galleryModal");
-                const modalContent = modal.querySelector(".modal-content");
-                if (!modalContent.contains(event.target)) {
-                    closeGallery();
-                }
-            }
-
-            function handleKeyboard(event) {
-                if (event.key === 'Escape') {
-                    closeGallery();
-                }
-            }
-        </script>
-        <!-- META ============================================= -->
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keywords" content="" />
-        <meta name="author" content="" />
-        <meta name="robots" content="" />
-
-        <!-- DESCRIPTION -->
-        <meta name="description" content="HoangNam Hotel" />
-
-        <!-- OG -->
-        <meta property="og:title" content="HoangNam Hotel" />
-        <meta property="og:description" content="HoangNam Hotel" />
-        <meta property="og:image" content="" />
-        <meta name="format-detection" content="telephone=no">
-
-        <!-- FAVICON1S ICON ============================================= -->
-        <link rel="icon" href="assets/images/favicon1.ico" type="image/x-icon" />
-        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon1.png" />
-
-        <!-- PAGE TITLE HERE ============================================= -->
-        <title>HoangNam Hotel </title>
-
-        <!-- MOBILE SPECIFIC ============================================= -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <!--[if lt IE 9]>
-        <script src="assets/js/html5shiv.min.js"></script>
-        <script src="assets/js/respond.min.js"></script>
-        <![endif]-->
-
-        <!-- All PLUGINS CSS ============================================= -->
-        <link rel="stylesheet" type="text/css" href="assets/css/assets.css">
-
-        <!-- TYPOGRAPHY ============================================= -->
-        <link rel="stylesheet" type="text/css" href="assets/css/typography.css">
-
-        <!-- SHORTCODES ============================================= -->
-        <link rel="stylesheet" type="text/css" href="assets/css/shortcodes/shortcodes.css">
-
-        <!-- STYLESHEETS ============================================= -->
-        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-        <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
-
     </head>
     <body id="bg">
         <div class="page-wraper">
@@ -521,9 +480,9 @@
                             <!-- Navigation Menu END ==== -->
                         </div>
                     </div>
-                </div>
             </header>
             <!-- header END ==== -->
+
             <!-- Content -->
             <div class="page-content bg-white">
                 <!-- inner page banner -->
@@ -545,6 +504,7 @@
                     </div>
                 </div>
                 <!-- Breadcrumb row END -->
+
                 <!-- inner page banner END -->
                 <div class="content-block">
                     <!-- About Us -->
@@ -554,20 +514,24 @@
                                 <div class="col-lg-3 col-md-4 col-sm-12 m-b30">
                                     <div class="course-detail-bx">
                                         <div class="course-price">
-
                                             <h4 class="price">$${roomType.basePrice}</h4>
                                         </div>	
                                         <div class="course-buy-now text-center">
                                             <a href="#" class="btn radius-xl text-uppercase">BOOK NOW</a>
                                         </div>
                                         <div class="teacher-bx">
-                                            <div class="teacher-info">
-                                                <div class="teacher-thumb">
-
-                                                </div>
-                                                <h5>
-                                                    <span class="status-${room.status.toLowerCase()}">${room.status}</span>
-                                                </h5>
+                                            <div class="available-rooms">
+                                                <h5 class="availability">
+                                                    <h5 class="availability" style="font-size: 20px; font-weight: bold;">
+                                                        <c:choose>
+                                                            <c:when test="${availableRooms != null and availableRooms > 0}">
+                                                                <span class="text-success">${availableRooms} phòng còn trống</span>
+                                                            </c:when>
+                                                            <c:when test="${availableRooms == 0 or empty availableRooms}">
+                                                                <span class="text-danger">Hết phòng</span>
+                                                            </c:when>
+                                                        </c:choose>
+                                                    </h5>
                                             </div>
                                         </div>
                                         <div class="cours-more-info">
@@ -601,269 +565,285 @@
                                     <div class="rooms-post">
                                         <div class="ttr-post-media media-effect">
                                             <a>
-                                                <img src="${roomType.imageUrl}" alt="${roomType.name}" />
+                                                <img src="${fn:escapeXml(roomType.imageUrl)}" alt="${fn:escapeXml(roomType.name)}" onerror="this.style.display='none'" />
                                             </a>
                                         </div>
-
                                         <div class="ttr-post-info">
                                             <div class="ttr-post-title">
-                                                <h2 class="post-title">${roomType.name}</h2>
+                                                <h2 class="post-title">${fn:escapeXml(roomType.name)}</h2>
                                             </div>
-
                                             <div class="ttr-post-text">
-                                                <p>${roomType.roomDetail}</p>
+                                                <p>${fn:escapeXml(roomType.roomDetail)}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="courese-overview" id="overview">
-                                        <div class="courese-overview" id="overview">
-                                            <h4>Overview</h4>
-                                            <div class="row">
-                                                <!-- Cột trái: Tiện ích -->
-                                                <div class="col-md-12 col-lg-4">
-                                                    <ul class="course-features">
-                                                        <c:forEach var="a" items="${amenities}">
-                                                            <li>
-                                                                <i class="${a.icon}"></i> ${a.amenityName}
-                                                            </li>
-                                                        </c:forEach>
-                                                    </ul>
-                                                </div>
+                                        <h4>Overview</h4>
+                                        <div class="row">
+                                            <!-- Cột trái: Tiện ích -->
+                                            <div class="col-md-12 col-lg-4">
+                                                <ul class="course-features">
+                                                    <c:choose>
+                                                        <c:when test="${not empty amenities}">
+                                                            <c:forEach var="a" items="${amenities}">
+                                                                <li><i class="${fn:escapeXml(a.icon)}"></i> ${fn:escapeXml(a.amenityName)}</li>
+                                                                </c:forEach>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                            <li class="no-data">Không có tiện ích nào để hiển thị.</li>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                </ul>
+                                            </div>
 
-                                                <!-- Cột phải: Policy, Info, FAQ -->
-                                                <div class="col-md-12 col-lg-8">
-                                                    <!-- Chính sách (KHÔNG có ô check) -->
-                                                    <h5 class="m-b5">Chính sách</h5>
-                                                    <ul>
-                                                        <li>Trả phòng: Trước 12:00</li>
-                                                        <li>Có thể nhận/trả phòng sớm hoặc muộn, tùy tình hình thực tế và có thể thu phí.</li>
-                                                        <li>Tuổi tối thiểu để nhận phòng: 18 tuổi.</li>
-                                                        <li>Không cho phép mang vật nuôi (trừ vật nuôi hỗ trợ người khuyết tật).</li>
-                                                        <li>Khách chưa kết hôn có thể không được lưu trú chung phòng theo quy định địa phương.</li>
-                                                        <li>Không được mang đồ ăn/thức uống bên ngoài vào khuôn viên khách sạn.</li>                                                
-                                                    </ul>
+                                            <!-- Cột phải: Policy, Info, FAQ -->
+                                            <div class="col-md-12 col-lg-8">
+                                                <h5 class="m-b5">Chính sách</h5>
+                                                <ul>
+                                                    <li>Trả phòng: Trước 12:00</li>
+                                                    <li>Có thể nhận/trả phòng sớm hoặc muộn, tùy tình hình thực tế và có thể thu phí.</li>
+                                                    <li>Tuổi tối thiểu để nhận phòng: 18 tuổi.</li>
+                                                    <li>Không cho phép mang vật nuôi (trừ vật nuôi hỗ trợ người khuyết tật).</li>
+                                                    <li>Khách chưa kết hôn có thể không được lưu trú chung phòng theo quy định địa phương.</li>
+                                                    <li>Không được mang đồ ăn/thức uống bên ngoài vào khuôn viên khách sạn.</li>                                                
+                                                </ul>
 
-                                                    <!-- Thông tin quan trọng (KHÔNG có ô check) -->
-                                                    <h5 class="m-b5">Thông tin quan trọng</h5>
-                                                    <ul>
-                                                        <li>Có dịch vụ đưa đón sân bay, cần đặt trước ít nhất 48 giờ (phí: 270,000 VND/người/lượt).</li>
-                                                        <li>Phụ phí bữa sáng buffet: 345,000 VND (người lớn), 172,500 VND (trẻ em).</li>
-                                                        <li>Phí giường phụ: 900,000 VND/đêm.</li>
-                                                        <li>Cần mang theo giấy tờ tùy thân và đặt cọc bằng tiền mặt/thẻ khi nhận phòng.</li>
-                                                        <li>Khách sạn có không gian ngoài trời (ban công, sân thượng) – không phù hợp với trẻ nhỏ nếu không giám sát.</li>
-                                                        <li>Khách dưới 18 tuổi được sử dụng spa dưới sự giám sát của người lớn.</li>
-                                                        <li>Chấp nhận thanh toán bằng tiền mặt, thẻ ghi nợ và thẻ tín dụng.</li>
-                                                    </ul>
+                                                <h5 class="m-b5">Thông tin quan trọng</h5>
+                                                <ul>
+                                                    <li>Có dịch vụ đưa đón sân bay, cần đặt trước ít nhất 48 giờ (phí: 270,000 VND/người/lượt).</li>
+                                                    <li>Phụ phí bữa sáng buffet: 345,000 VND (người lớn), 172,500 VND (trẻ em).</li>
+                                                    <li>Phí giường phụ: 900,000 VND/đêm.</li>
+                                                    <li>Cần mang theo giấy tờ tùy thân và đặt cọc bằng tiền mặt/thẻ khi nhận phòng.</li>
+                                                    <li>Khách sạn có không gian ngoài trời (ban công, sân thượng) – không phù hợp với trẻ nhỏ nếu không giám sát.</li>
+                                                    <li>Khách dưới 18 tuổi được sử dụng spa dưới sự giám sát của người lớn.</li>
+                                                    <li>Chấp nhận thanh toán bằng tiền mặt, thẻ ghi nợ và thẻ tín dụng.</li>
+                                                </ul>
 
-                                                    <!-- Câu hỏi thường gặp (GIỮ ô check) -->
-                                                    <h5 class="m-b5">Câu hỏi thường gặp (FAQ)</h5>
-                                                    <ul class="list-checked primary">
-                                                        <li><strong>Khách sạn Hoàng Nam có hồ bơi không?</strong><br/>Có, khách sạn có hồ bơi phục vụ khách lưu trú.</li>
-                                                        <li><strong>Khách sạn có cho phép mang theo vật nuôi không?</strong><br/>Không, khách sạn không cho phép vật nuôi.</li>
-                                                        <li><strong>Phí đậu xe là bao nhiêu?</strong><br/>Vui lòng liên hệ trực tiếp để biết chi tiết.</li>
-                                                        <li><strong>Giờ nhận phòng tại khách sạn Hoàng Nam?</strong><br/>Từ 15:00 mỗi ngày.</li>
-                                                        <li><strong>Giờ trả phòng?</strong><br/>Trước 12:00 trưa.</li>
-                                                        <li><strong>Khách sạn có dịch vụ đưa đón sân bay không?</strong><br/>Có, với phụ phí và cần đặt trước ít nhất 48 giờ.</li>
-                                                        <li><strong>Khách sạn Hoàng Nam tọa lạc ở đâu?</strong><br/>Khách sạn nằm tại trung tâm thành phố, gần biển và các điểm tham quan nổi bật.</li>
-                                                    </ul>
-                                                </div>
+                                                <h5 class="m-b5">Câu hỏi thường gặp (FAQ)</h5>
+                                                <ul class="list-checked primary">
+                                                    <li><strong>Khách sạn Hoàng Nam có hồ bơi không?</strong><br/>Có, khách sạn có hồ bơi phục vụ khách lưu trú.</li>
+                                                    <li><strong>Khách sạn có cho phép mang theo vật nuôi không?</strong><br/>Không, khách sạn không cho phép vật nuôi.</li>
+                                                    <li><strong>Phí đậu xe là bao nhiêu?</strong><br/>Vui lòng liên hệ trực tiếp để biết chi tiết.</li>
+                                                    <li><strong>Giờ nhận phòng tại khách sạn Hoàng Nam?</strong><br/>Từ 15:00 mỗi ngày.</li>
+                                                    <li><strong>Giờ trả phòng?</strong><br/>Trước 12:00 trưa.</li>
+                                                    <li><strong>Khách sạn có dịch vụ đưa đón sân bay không?</strong><br/>Có, với phụ phí và cần đặt trước ít nhất 48 giờ.</li>
+                                                    <li><strong>Khách sạn Hoàng Nam tọa lạc ở đâu?</strong><br/>Khách sạn nằm tại trung tâm thành phố, gần biển và các điểm tham quan nổi bật.</li>
+                                                </ul>
                                             </div>
                                         </div>
-
-                                        <!-- Tiêu đề gallery -->
-                                        <div class="photo-gallery-title" id="pictures">
-                                            <h4>Pictures</h4>
-
-                                            <!-- Phần hiển thị ảnh chính và ảnh phụ -->
-                                            <div class="image-gallery-row">
-
-                                                <!-- Ảnh chính -->
-                                                <div class="main-photo-box">
-                                                    <img src="${images[0].imageUrl}"
-                                                         alt="Ảnh chính"
-                                                         onclick="openGallery('all')"
-                                                         loading="lazy" />
-                                                </div>
-
-                                                <!-- Ảnh phụ -->
-                                                <div class="thumb-2x2-box">
-                                                    <c:forEach var="img" items="${images}" begin="1" end="4">
-                                                        <img src="${img.imageUrl}"
-                                                             alt="Ảnh phụ ${img.category}"
-                                                             onclick="openGallery('${fn:toLowerCase(img.category)}')"
-                                                             loading="lazy" />
-                                                    </c:forEach>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <!-- Modal gallery popup -->
-                                        <div id="galleryModal" class="modal">
-                                            <div class="modal-content">
-                                                <span class="close-btn" onclick="closeGallery()">
-                                                    <i class="ti-control-backward"></i>
-                                                </span>
-
-                                                <!-- Tabs danh mục -->
-                                                <div class="category-tabs">
-                                                    <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
-
-                                                    <c:forEach var="img" items="${images}">
-                                                        <c:if test="${not fn:contains(usedCats, img.category)}">
-                                                            <button class="tab-btn" data-category="${fn:toLowerCase(img.category)}"
-                                                                    onclick="filterCategory('${fn:toLowerCase(img.category)}', this)"
-                                                                    aria-pressed="false">${img.category}</button>
-                                                            <c:set var="usedCats" value="${usedCats}${img.category}," />
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </div>
-
-                                                <!-- Vùng ảnh -->
-                                                <div class="gallery-scroll" id="galleryImages">
-                                                    <div class="gallery-grid">
-                                                        <c:forEach var="img" items="${images}">
-                                                            <div class="gallery-item" data-category="${fn:toLowerCase(img.category)}">
-                                                                <img src="${img.imageUrl}" alt="${img.category}" />
-                                                                <p class="image-caption">${img.category}</p>
-                                                            </div>
-                                                        </c:forEach>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="" id="instructor">
-                                            <h4>Instructor</h4>
-                                            <div class="instructor-bx">
-                                                <div class="instructor-author">
-                                                    <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                                </div>
-                                                <div class="instructor-info">
-                                                    <h6>Keny White </h6>
-                                                    <span>Professor</span>
-                                                    <ul class="list-inline m-tb10">
-                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                    </ul>
-                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                                </div>
-                                            </div>
-                                            <div class="instructor-bx">
-                                                <div class="instructor-author">
-                                                    <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                                </div>
-                                                <div class="instructor-info">
-                                                    <h6>Keny White </h6>
-                                                    <span>Professor</span>
-                                                    <ul class="list-inline m-tb10">
-                                                        <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                        <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                    </ul>
-                                                    <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="" id="reviews">
-                                            <h4>Reviews</h4>
-
-                                            <div class="review-bx">
-                                                <div class="all-review">
-                                                    <h2 class="rating-type">3</h2>
-                                                    <ul class="cours-star">
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li class="active"><i class="fa fa-star"></i></li>
-                                                        <li><i class="fa fa-star"></i></li>
-                                                        <li><i class="fa fa-star"></i></li>
-                                                    </ul>
-                                                    <span>3 Rating</span>
-                                                </div>
-                                                <div class="review-bar">
-                                                    <div class="bar-bx">
-                                                        <div class="side">
-                                                            <div>5 star</div>
-                                                        </div>
-                                                        <div class="middle">
-                                                            <div class="bar-container">
-                                                                <div class="bar-5" style="width:90%;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="side right">
-                                                            <div>150</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="bar-bx">
-                                                        <div class="side">
-                                                            <div>4 star</div>
-                                                        </div>
-                                                        <div class="middle">
-                                                            <div class="bar-container">
-                                                                <div class="bar-5" style="width:70%;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="side right">
-                                                            <div>140</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="bar-bx">
-                                                        <div class="side">
-                                                            <div>3 star</div>
-                                                        </div>
-                                                        <div class="middle">
-                                                            <div class="bar-container">
-                                                                <div class="bar-5" style="width:50%;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="side right">
-                                                            <div>120</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="bar-bx">
-                                                        <div class="side">
-                                                            <div>2 star</div>
-                                                        </div>
-                                                        <div class="middle">
-                                                            <div class="bar-container">
-                                                                <div class="bar-5" style="width:40%;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="side right">
-                                                            <div>110</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="bar-bx">
-                                                        <div class="side">
-                                                            <div>1 star</div>
-                                                        </div>
-                                                        <div class="middle">
-                                                            <div class="bar-container">
-                                                                <div class="bar-5" style="width:20%;"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="side right">
-                                                            <div>80</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
 
+                                    <!-- Tiêu đề gallery -->
+                                    <div class="photo-gallery-title" id="pictures">
+                                        <h4>Pictures</h4>
+                                        <div class="image-gallery-row">
+                                            <div class="main-photo-box">
+                                                <c:choose>
+                                                    <c:when test="${not empty images and not empty images[0].imageUrl}">
+                                                        <img src="${fn:escapeXml(images[0].imageUrl)}"
+                                                             alt="Ảnh chính của ${fn:escapeXml(roomType.name)}"
+                                                             onclick="openGallery('all')"
+                                                             loading="lazy"
+                                                             onerror="this.style.display='none'" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <p class="no-data">Không có ảnh chính để hiển thị.</p>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                            <div class="thumb-2x2-box">
+                                                <c:choose>
+                                                    <c:when test="${not empty images and fn:length(images) > 1}">
+                                                        <c:forEach var="img" items="${images}" begin="1" end="4">
+                                                            <img src="${fn:escapeXml(img.imageUrl)}"
+                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Ảnh phòng'}"
+                                                                 onclick="openGallery('${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'})"
+                                                                 loading="lazy"
+                                                                 onerror="this.style.display='none'" />
+                                                        </c:forEach>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <p class="no-data">Không có ảnh phụ để hiển thị.</p>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal gallery popup -->
+                                    <div id="galleryModal" class="modal" aria-hidden="true">
+                                        <div class="modal-content">
+                                            <span class="close-btn" onclick="closeGallery()">
+                                                <i class="ti-control-backward"></i>
+                                            </span>
+                                            <div class="category-tabs">
+                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+                                                <c:choose>
+                                                    <c:when test="${not empty categories}">
+                                                        <c:forEach var="category" items="${categories}">
+                                                            <button class="tab-btn" 
+                                                                    data-category="${fn:toLowerCase(fn:escapeXml(category))}"
+                                                                    onclick="filterCategory('${fn:toLowerCase(fn:escapeXml(category))}', this)"
+                                                                    aria-pressed="false">${fn:escapeXml(category)}</button>
+                                                        </c:forEach>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <p class="no-data">Không có danh mục nào để hiển thị.</p>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                            <div class="gallery-scroll" id="galleryImages">
+                                                <div class="gallery-grid">
+                                                    <c:choose>
+                                                        <c:when test="${not empty images}">
+                                                            <c:forEach var="img" items="${images}">
+                                                                <div class="gallery-item" 
+                                                                     data-category="${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'}">
+                                                                    <img src="${fn:escapeXml(img.imageUrl)}" 
+                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Ảnh phòng'}"
+                                                                         loading="lazy"
+                                                                         onerror="this.style.display='none'" />
+                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Không xác định'}</p>
+                                                                </div>
+                                                            </c:forEach>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <p class="no-data">Không có ảnh nào để hiển thị.</p>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="" id="instructor">
+                                        <h4>Instructor</h4>
+                                        <div class="instructor-bx">
+                                            <div class="instructor-author">
+                                                <img src="assets/images/testimonials/pic1.jpg" alt="">
+                                            </div>
+                                            <div class="instructor-info">
+                                                <h6>Keny White </h6>
+                                                <span>Professor</span>
+                                                <ul class="list-inline m-tb10">
+                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                </ul>
+                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                                            </div>
+                                        </div>
+                                        <div class="instructor-bx">
+                                            <div class="instructor-author">
+                                                <img src="assets/images/testimonials/pic2.jpg" alt="">
+                                            </div>
+                                            <div class="instructor-info">
+                                                <h6>Keny White </h6>
+                                                <span>Professor</span>
+                                                <ul class="list-inline m-tb10">
+                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                                </ul>
+                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="" id="reviews">
+                                        <h4>Reviews</h4>
+                                        <div class="review-bx">
+                                            <div class="all-review">
+                                                <h2 class="rating-type">3</h2>
+                                                <ul class="cours-star">
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li class="active"><i class="fa fa-star"></i></li>
+                                                    <li><i class="fa fa-star"></i></li>
+                                                    <li><i class="fa fa-star"></i></li>
+                                                </ul>
+                                                <span>3 Rating</span>
+                                            </div>
+                                            <div class="review-bar">
+                                                <div class="bar-bx">
+                                                    <div class="side">
+                                                        <div>5 star</div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container">
+                                                            <div class="bar-5" style="width:90%;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div>150</div>
+                                                    </div>
+                                                </div>
+                                                <div class="bar-bx">
+                                                    <div class="side">
+                                                        <div>4 star</div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container">
+                                                            <div class="bar-5" style="width:70%;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div>140</div>
+                                                    </div>
+                                                </div>
+                                                <div class="bar-bx">
+                                                    <div class="side">
+                                                        <div>3 star</div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container">
+                                                            <div class="bar-5" style="width:50%;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div>120</div>
+                                                    </div>
+                                                </div>
+                                                <div class="bar-bx">
+                                                    <div class="side">
+                                                        <div>2 star</div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container">
+                                                            <div class="bar-5" style="width:40%;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div>110</div>
+                                                    </div>
+                                                </div>
+                                                <div class="bar-bx">
+                                                    <div class="side">
+                                                        <div>1 star</div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container">
+                                                            <div class="bar-5" style="width:20%;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div>80</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- contact area END -->
-
                 </div>
                 <!-- Content END-->
+
                 <!-- Footer ==== -->
                 <footer>
                     <div class="footer-top">
@@ -989,8 +969,95 @@
             <script src="assets/js/functions.js"></script>
             <script src="assets/js/contact.js"></script>
             <script src="assets/vendors/switcher/switcher.js"></script>
+            <script>
+                                                                        // Initialize: Hide modal on page load
+                                                                        document.addEventListener('DOMContentLoaded', () => {
+                                                                            const modal = document.getElementById("galleryModal");
+                                                                            if (modal) {
+                                                                                modal.style.display = "none";
+                                                                                modal.setAttribute('aria-hidden', 'true');
+                                                                            }
+                                                                        });
 
+                                                                        function filterCategory(cat, button) {
+                                                                            console.log("Filtering category:", cat);
+                                                                            const tabs = document.querySelectorAll(".category-tabs button");
+                                                                            const items = document.querySelectorAll("#galleryImages .gallery-item");
 
+                                                                            if (!items.length) {
+                                                                                console.warn("No gallery items found.");
+                                                                                return;
+                                                                            }
+
+                                                                            tabs.forEach(tab => {
+                                                                                tab.classList.remove("active");
+                                                                                tab.setAttribute('aria-pressed', 'false');
+                                                                            });
+
+                                                                            if (button) {
+                                                                                button.classList.add("active");
+                                                                                button.setAttribute('aria-pressed', 'true');
+                                                                            }
+
+                                                                            items.forEach(item => {
+                                                                                const itemCategories = (item.getAttribute('data-category') || 'uncategorized').split(',').map(c => c.trim()).filter(c => c);
+                                                                                console.log("Item categories:", itemCategories);
+                                                                                item.style.display = (cat === 'all' || itemCategories.includes(cat)) ? 'block' : 'none';
+                                                                            });
+                                                                        }
+
+                                                                        function openGallery(category) {
+                                                                            const modal = document.getElementById("galleryModal");
+                                                                            if (!modal) {
+                                                                                console.error("Modal element not found!");
+                                                                                return;
+                                                                            }
+                                                                            modal.style.display = "block";
+                                                                            modal.setAttribute('aria-hidden', 'false');
+                                                                            console.log("Opening modal with category:", category);
+
+                                                                            let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
+                                                                            if (!button) {
+                                                                                console.warn(`Category "${category}" not found, falling back to "all"`);
+                                                                                button = document.querySelector(`.category-tabs button[data-category="all"]`);
+                                                                                category = "all";
+                                                                            }
+
+                                                                            if (!button) {
+                                                                                console.error("No category buttons found in the gallery.");
+                                                                                return;
+                                                                            }
+
+                                                                            filterCategory(category, button);
+
+                                                                            setTimeout(() => {
+                                                                                document.addEventListener('click', handleClickOutside);
+                                                                            }, 0);
+                                                                            document.addEventListener('keydown', handleKeyboard);
+                                                                        }
+
+                                                                        function closeGallery() {
+                                                                            const modal = document.getElementById("galleryModal");
+                                                                            if (modal) {
+                                                                                modal.style.display = "none";
+                                                                                modal.setAttribute('aria-hidden', 'true');
+                                                                            }
+                                                                            document.removeEventListener('click', handleClickOutside);
+                                                                            document.removeEventListener('keydown', handleKeyboard);
+                                                                        }
+
+                                                                        function handleClickOutside(event) {
+                                                                            const modalContent = document.querySelector("#galleryModal .modal-content");
+                                                                            if (modalContent && !modalContent.contains(event.target)) {
+                                                                                closeGallery();
+                                                                            }
+                                                                        }
+
+                                                                        function handleKeyboard(event) {
+                                                                            if (event.key === "Escape") {
+                                                                                closeGallery();
+                                                                            }
+                                                                        }
+            </script>
     </body>
-
 </html>

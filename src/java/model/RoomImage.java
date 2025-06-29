@@ -8,12 +8,24 @@ public class RoomImage {
     private Integer roomTypeID;
     private String imageUrl;
     private boolean isPrimary;
+   
     private List<String> categories;
 
     public RoomImage() {
         this.categories = new ArrayList<>();
     }
-
+public void setCategoriesAsString(String categoriesString) {
+    if (categoriesString != null) {
+        String[] parts = categoriesString.split(",");
+        List<String> catList = new ArrayList<>();
+        for (String cat : parts) {
+            if (!cat.trim().isEmpty()) {
+                catList.add(cat.trim());
+            }
+        }
+        this.categories = catList;
+    }
+}
     public RoomImage(int imageID, Integer roomTypeID, String imageUrl, boolean isPrimary) {
         this.imageID = imageID;
         this.roomTypeID = roomTypeID;

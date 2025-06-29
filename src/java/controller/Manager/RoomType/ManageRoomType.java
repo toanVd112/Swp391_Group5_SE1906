@@ -185,9 +185,9 @@ public class ManageRoomType extends HttpServlet {
                 }
             }
 
-            // ➤ Sau đó update RoomType để thêm ảnh, tiện ích
             roomTypeDAO.updateRoomType(type);
-
+            roomTypeDAO.deleteImagesByRoomTypeId(roomTypeId);
+            roomTypeDAO.insertImages(roomTypeId, type.getImages());
         } catch (SQLException ex) {
             Logger.getLogger(ManageRoomType.class.getName()).log(Level.SEVERE, "Lỗi khi lưu loại phòng: ", ex);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

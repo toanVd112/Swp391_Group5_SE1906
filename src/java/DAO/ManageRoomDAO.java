@@ -11,102 +11,105 @@ import model.RoomType;
  * @author Arcueid
  */
 public class ManageRoomDAO {
-private final RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
 
-   public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
-    List<Room> list = new ArrayList<>();
-    StringBuilder sql = new StringBuilder(
-            "SELECT r.*, rt.RoomTypeID "
-            + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
-    );
+    private final RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
 
-    boolean hasSearch = search != null && !search.trim().isEmpty();
-    if (hasSearch) {
-        sql.append(" AND r.RoomNumber LIKE ?");
-    }
+    public List<Room> getRoomsByPage(String search, String sort, int offset, int limit) {
+        List<Room> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT r.*, rt.RoomTypeID "
+                + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+        );
 
-    if ("asc".equalsIgnoreCase(sort)) {
-        sql.append(" ORDER BY rt.BasePrice ASC");
-    } else if ("desc".equalsIgnoreCase(sort)) {
-        sql.append(" ORDER BY rt.BasePrice DESC");
-    } else {
-        sql.append(" ORDER BY r.RoomNumber ASC");
-    }
-
-    sql.append(" LIMIT ? OFFSET ?");
-
-    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        int paramIndex = 1;
+        boolean hasSearch = search != null && !search.trim().isEmpty();
         if (hasSearch) {
-            ps.setString(paramIndex++, "%" + search.trim() + "%");
+            sql.append(" AND r.RoomNumber LIKE ?");
         }
-        ps.setInt(paramIndex++, limit);
-        ps.setInt(paramIndex, offset);
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            RoomType roomType = null;
-            if (rs.getObject("RoomTypeID") != null) {
-                int roomTypeId = rs.getInt("RoomTypeID");
-                roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql.append(" ORDER BY rt.BasePrice ASC");
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql.append(" ORDER BY rt.BasePrice DESC");
+        } else {
+            sql.append(" ORDER BY r.RoomNumber ASC");
+        }
+
+        sql.append(" LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (hasSearch) {
+                ps.setString(paramIndex++, "%" + search.trim() + "%");
+            }
+            ps.setInt(paramIndex++, limit);
+            ps.setInt(paramIndex, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RoomType roomType = null;
+                if (rs.getObject("RoomTypeID") != null) {
+                    int roomTypeId = rs.getInt("RoomTypeID");
+                    roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+                }
+
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
+                );
+                list.add(room);
             }
 
-            Room room = new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
-            );
-            list.add(room);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
 
-    return list;
-}
-   public List<RoomType> getAllRoomTypes() throws SQLException {
-    List<RoomType> list = new ArrayList<>();
-    String sql = "SELECT RoomTypeID FROM roomtypes ORDER BY Name";
+    public List<RoomType> getAllRoomTypes() throws SQLException {
+        List<RoomType> list = new ArrayList<>();
+        String sql = "SELECT RoomTypeID FROM roomtypes ORDER BY Name";
 
-    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            int roomTypeId = rs.getInt("RoomTypeID");
-            RoomType roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
-            list.add(roomType);
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int roomTypeId = rs.getInt("RoomTypeID");
+                RoomType roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+                list.add(roomType);
+            }
         }
+        return list;
     }
-    return list;
-}
+
     public Room getRoomById(int roomId) {
-    String sql = "SELECT r.*, rt.RoomTypeID FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
+        String sql = "SELECT r.*, rt.RoomTypeID FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE r.RoomID = ?";
 
-    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, roomId);
-        ResultSet rs = ps.executeQuery();
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomId);
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            RoomType roomType = null;
-            if (rs.getObject("RoomTypeID") != null) {
-                int roomTypeId = rs.getInt("RoomTypeID");
-                roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+            if (rs.next()) {
+                RoomType roomType = null;
+                if (rs.getObject("RoomTypeID") != null) {
+                    int roomTypeId = rs.getInt("RoomTypeID");
+                    roomType = roomTypeDAO.getRoomTypeById(roomTypeId);
+                }
+
+                return new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
+                );
             }
-
-            return new Room(
-                    rs.getInt("RoomID"),
-                    rs.getString("RoomNumber"),
-                    rs.getInt("Floor"),
-                    rs.getString("Status"),
-                    roomType
-            );
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return null;
     }
-    return null;
-}
 
     public boolean isRoomNumberExists(String roomNumber, Integer excludeRoomId) {
         String sql = "SELECT COUNT(*) FROM rooms WHERE RoomNumber = ?";
@@ -364,5 +367,155 @@ private final RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Room> getRoomsByPage(Integer roomTypeId, String status, String keyword, Integer minFloor, Integer maxFloor, Double minPrice, Double maxPrice, Integer minGuests, Integer maxGuests, String sort, int offset, int limit) {
+        List<Room> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT r.*, rt.RoomTypeID, rt.Name AS RoomTypeName, rt.BasePrice, rt.Description, rt.MaxGuests "
+                + "FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (roomTypeId != null) {
+            sql.append(" AND r.RoomTypeID = ?");
+            params.add(roomTypeId);
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND r.Status = ?");
+            params.add(status);
+        }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND r.RoomNumber LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (minFloor != null) {
+            sql.append(" AND r.Floor >= ?");
+            params.add(minFloor);
+        }
+        if (maxFloor != null) {
+            sql.append(" AND r.Floor <= ?");
+            params.add(maxFloor);
+        }
+        if (minPrice != null) {
+            sql.append(" AND rt.BasePrice >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice != null) {
+            sql.append(" AND rt.BasePrice <= ?");
+            params.add(maxPrice);
+        }
+        if (minGuests != null) {
+            sql.append(" AND rt.MaxGuests >= ?");
+            params.add(minGuests);
+        }
+        if (maxGuests != null) {
+            sql.append(" AND rt.MaxGuests <= ?");
+            params.add(maxGuests);
+        }
+
+        if ("asc".equalsIgnoreCase(sort)) {
+            sql.append(" ORDER BY rt.BasePrice ASC");
+        } else if ("desc".equalsIgnoreCase(sort)) {
+            sql.append(" ORDER BY rt.BasePrice DESC");
+        } else {
+            sql.append(" ORDER BY r.RoomNumber ASC");
+        }
+
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RoomType roomType = null;
+                if (rs.getObject("RoomTypeID") != null) {
+                    roomType = new RoomType(
+                            rs.getInt("RoomTypeID"),
+                            rs.getString("RoomTypeName"),
+                            rs.getString("Description"),
+                            rs.getDouble("BasePrice"),
+                            null, // imageUrl
+                            null, // roomDetail
+                            rs.getInt("MaxGuests")
+                    );
+                }
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
+                );
+                list.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int countRooms(Integer roomTypeId, String status, String keyword, Integer minFloor, Integer maxFloor, Double minPrice, Double maxPrice, Integer minGuests, Integer maxGuests) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM rooms r LEFT JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (roomTypeId != null) {
+            sql.append(" AND r.RoomTypeID = ?");
+            params.add(roomTypeId);
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND r.Status = ?");
+            params.add(status);
+        }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND r.RoomNumber LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (minFloor != null) {
+            sql.append(" AND r.Floor >= ?");
+            params.add(minFloor);
+        }
+        if (maxFloor != null) {
+            sql.append(" AND r.Floor <= ?");
+            params.add(maxFloor);
+        }
+        if (minPrice != null) {
+            sql.append(" AND rt.BasePrice >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice != null) {
+            sql.append(" AND rt.BasePrice <= ?");
+            params.add(maxPrice);
+        }
+        if (minGuests != null) {
+            sql.append(" AND rt.MaxGuests >= ?");
+            params.add(minGuests);
+        }
+        if (maxGuests != null) {
+            sql.append(" AND rt.MaxGuests <= ?");
+            params.add(maxGuests);
+        }
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

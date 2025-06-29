@@ -28,7 +28,6 @@ public class ListRoomsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -41,6 +40,7 @@ public class ListRoomsServlet extends HttpServlet {
                 handleListRooms(request, response);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
             handleListRooms(request, response);
         }
@@ -49,6 +49,7 @@ public class ListRoomsServlet extends HttpServlet {
     private void handleListRooms(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Lấy tham số từ request
         Integer roomTypeId = parseIntOrNull(request.getParameter("roomTypeId"));
         String status = emptyToNull(request.getParameter("status"));
         String keyword = emptyToNull(request.getParameter("keyword"));
@@ -56,25 +57,76 @@ public class ListRoomsServlet extends HttpServlet {
         Integer maxFloor = parseIntOrNull(request.getParameter("maxFloor"));
         Double minPrice = parseDoubleOrNull(request.getParameter("minPrice"));
         Double maxPrice = parseDoubleOrNull(request.getParameter("maxPrice"));
+        Integer minGuests = parseIntOrNull(request.getParameter("minGuests"));
+        Integer maxGuests = parseIntOrNull(request.getParameter("maxGuests"));
+        String sortOrder = emptyToNull(request.getParameter("sort"));
 
+        // Kiểm tra đầu vào
+        String errorMessage = null;
+        if (minFloor != null && minFloor < 0) {
+            minFloor = null;
+            errorMessage = "Tầng tối thiểu không được âm!";
+        }
+        if (maxFloor != null && maxFloor < 0) {
+            maxFloor = null;
+            errorMessage = "Tầng tối đa không được âm!";
+        }
+        if (minPrice != null && minPrice < 0) {
+            minPrice = null;
+            errorMessage = "Giá tối thiểu không được âm!";
+        }
+        if (maxPrice != null && maxPrice < 0) {
+            maxPrice = null;
+            errorMessage = "Giá tối đa không được âm!";
+        }
+        if (minGuests != null && minGuests < 0) {
+            minGuests = null;
+            errorMessage = "Số khách tối thiểu không được âm!";
+        }
+        if (maxGuests != null && maxGuests < 0) {
+            maxGuests = null;
+            errorMessage = "Số khách tối đa không được âm!";
+        }
+        if (minFloor != null && maxFloor != null && minFloor > maxFloor) {
+            errorMessage = "Tầng tối thiểu không được lớn hơn tầng tối đa!";
+            minFloor = null;
+            maxFloor = null;
+        }
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            errorMessage = "Giá tối thiểu không được lớn hơn giá tối đa!";
+            minPrice = null;
+            maxPrice = null;
+        }
+        if (minGuests != null && maxGuests != null && minGuests > maxGuests) {
+            errorMessage = "Số khách tối thiểu không được lớn hơn số khách tối đa!";
+            minGuests = null;
+            maxGuests = null;
+        }
+
+        // Xử lý phân trang
         int page = parseIntOrDefault(request.getParameter("page"), 1);
         int pageSize = parseIntOrDefault(request.getParameter("pageSize"), 5);
 
-        if (page < 1) page = 1;
-        if (pageSize < 5) pageSize = 5;
-        if (pageSize > 50) pageSize = 50;
+        if (page < 1) {
+            page = 1;
+        }
+        if (pageSize < 5) {
+            pageSize = 5;
+        }
+        if (pageSize > 50) {
+            pageSize = 50;
+        }
 
         int offset = (page - 1) * pageSize;
 
         try {
+            // Lấy dữ liệu từ DAO
             List<RoomType> roomTypes = roomDAO.getAllRoomTypes();
-            String searchTerm = keyword;
-            String sortOrder = request.getParameter("sort");
-
-            List<Room> rooms = roomDAO.getRoomsByPage(searchTerm, sortOrder, offset, pageSize);
-            int totalRooms = roomDAO.countRooms(searchTerm);
+            List<Room> rooms = roomDAO.getRoomsByPage(roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice, minGuests, maxGuests, sortOrder, offset, pageSize);
+            int totalRooms = roomDAO.countRooms(roomTypeId, status, keyword, minFloor, maxFloor, minPrice, maxPrice, minGuests, maxGuests);
             int totalPages = (int) Math.ceil((double) totalRooms / pageSize);
 
+            // Gán thuộc tính cho request
             request.setAttribute("roomTypes", roomTypes);
             request.setAttribute("rooms", rooms);
 
@@ -85,6 +137,9 @@ public class ListRoomsServlet extends HttpServlet {
             request.setAttribute("f_maxFloor", maxFloor);
             request.setAttribute("f_minPrice", minPrice);
             request.setAttribute("f_maxPrice", maxPrice);
+            request.setAttribute("f_minGuests", minGuests);
+            request.setAttribute("f_maxGuests", maxGuests);
+            request.setAttribute("sort", sortOrder);
 
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
@@ -96,17 +151,21 @@ public class ListRoomsServlet extends HttpServlet {
             request.setAttribute("startRecord", startRecord);
             request.setAttribute("endRecord", endRecord);
 
+            // Xử lý thông báo
             String successMessage = getSuccessMessage(request.getParameter("success"), request);
             if (successMessage != null) {
                 request.setAttribute("successMessage", successMessage);
             }
-
-            String errorMessage = getErrorMessage(request.getParameter("error"));
             if (errorMessage != null) {
                 request.setAttribute("errorMessage", errorMessage);
+            } else {
+                String errorParam = getErrorMessage(request.getParameter("error"));
+                if (errorParam != null) {
+                    request.setAttribute("errorMessage", errorParam);
+                }
             }
 
-            // Thay đổi này: sử dụng layout system
+            // Chuyển tiếp đến JSP
             request.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -117,7 +176,6 @@ public class ListRoomsServlet extends HttpServlet {
             request.setAttribute("currentPage", 1);
             request.setAttribute("totalPages", 0);
             request.setAttribute("totalRooms", 0);
-            // Thay đổi này: sử dụng layout system
             request.getRequestDispatcher("Manager/manager.jsp?page=ListRooms.jsp").forward(request, response);
         }
     }
@@ -161,7 +219,6 @@ public class ListRoomsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -176,6 +233,7 @@ public class ListRoomsServlet extends HttpServlet {
                 handleListRooms(request, response);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi xử lý: " + e.getMessage());
             handleListRooms(request, response);
         }
@@ -217,16 +275,25 @@ public class ListRoomsServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=" + result);
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=bulkDeleteFailed");
         }
     }
 
     private Integer parseIntOrNull(String s) {
-        return (s == null || s.isBlank()) ? null : Integer.valueOf(s);
+        try {
+            return (s == null || s.isBlank()) ? null : Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private Double parseDoubleOrNull(String s) {
-        return (s == null || s.isBlank()) ? null : Double.valueOf(s);
+        try {
+            return (s == null || s.isBlank()) ? null : Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private String emptyToNull(String s) {
@@ -242,7 +309,9 @@ public class ListRoomsServlet extends HttpServlet {
     }
 
     private String getSuccessMessage(String success, HttpServletRequest request) {
-        if (success == null) return null;
+        if (success == null) {
+            return null;
+        }
 
         switch (success) {
             case "add":
@@ -264,7 +333,9 @@ public class ListRoomsServlet extends HttpServlet {
     }
 
     private String getErrorMessage(String error) {
-        if (error == null) return null;
+        if (error == null) {
+            return null;
+        }
 
         switch (error) {
             case "invalidId":

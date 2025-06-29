@@ -22,7 +22,7 @@ public class RoomTypeDAO {
                         rs.getDouble("BasePrice"),
                         rs.getString("RoomTypeImage"),
                         rs.getString("RoomDetail"),
-                        0
+                        rs.getInt("MaxGuests")
                 );
                 roomType.setImages(getImagesByRoomTypeId(id));
                 return roomType;
@@ -34,43 +34,33 @@ public class RoomTypeDAO {
     public int insertRoomType(RoomType type) throws SQLException {
         String sql = "INSERT INTO roomtypes (Name, Description, BasePrice, RoomTypeImage, RoomDetail, MaxGuests) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
             ps.setString(1, type.getName());
             ps.setString(2, type.getDescription());
             ps.setDouble(3, type.getBasePrice());
             ps.setString(4, type.getImageUrl());
             ps.setString(5, type.getRoomDetail());
-            ps.setInt(6, type.getMaxGuests());
-
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Insert failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Trả về RoomTypeID mới
-                } else {
-                    throw new SQLException("Insert failed, no ID obtained.");
-                }
+            ps.setInt(6, type.getMaxGuests()); // thêm dòng này
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
         }
+        return -1;
     }
 
     public void updateRoomType(RoomType type) throws SQLException {
-        String sql = "UPDATE roomtypes SET Name = ?, Description = ?, BasePrice = ?, RoomTypeImage = ?, RoomDetail = ?, MaxGuests = ? WHERE RoomTypeID = ?";
+        String sql = "UPDATE roomtypes SET Name=?, Description=?, BasePrice=?, RoomTypeImage=?, RoomDetail=?, MaxGuests=? WHERE RoomTypeID=?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, type.getName());
             ps.setString(2, type.getDescription());
             ps.setDouble(3, type.getBasePrice());
             ps.setString(4, type.getImageUrl());
             ps.setString(5, type.getRoomDetail());
-            ps.setInt(6, type.getMaxGuests()); // 🟢 dòng cần thêm
+            ps.setInt(6, type.getMaxGuests()); // thêm dòng này
             ps.setInt(7, type.getRoomTypeID());
             ps.executeUpdate();
         }
-        deleteImagesByRoomTypeId(type.getRoomTypeID());
-        insertImages(type.getRoomTypeID(), type.getImages());
     }
 
     public boolean deleteRoomType(int roomTypeId) throws SQLException {
@@ -662,3 +652,4 @@ public class RoomTypeDAO {
     }
 
 }
+    

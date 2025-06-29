@@ -10,7 +10,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>${totalRooms != null ? totalRooms : 0}</h3>
-            <p>ROOMS</p>
+            <p>PHÒNG</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -19,7 +19,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>4</h3>
-            <p>FLOORS</p>
+            <p>TẦNG</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -28,7 +28,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>${roomTypes != null ? roomTypes.size() : 0}</h3>
-            <p>ROOM TYPES</p>
+            <p>LOẠI PHÒNG</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -37,15 +37,15 @@
         </div>
         <div class="rs-stat-info">
             <h3>0</h3>
-            <p>BOOKED ROOM TODAY</p>
+            <p>PHÒNG ĐÃ ĐẶT HÔM NAY</p>
         </div>
     </div>
 </div>
 
 <div class="rs-page-header">
-    <h1 class="rs-page-title">Rooms</h1>
+    <h1 class="rs-page-title">Quản lý phòng</h1>
     <a href="${pageContext.request.contextPath}/AddEditRoomServlet" class="rs-add-btn">
-        <i class="fas fa-plus"></i> Add
+        <i class="fas fa-plus"></i> Thêm phòng
     </a>
 </div>
 
@@ -54,6 +54,7 @@
         <i class="fas fa-check-circle"></i> ${successMessage}
     </div>
 </c:if>
+
 <c:if test="${not empty errorMessage}">
     <div class="rs-alert rs-alert-error">
         <i class="fas fa-exclamation-circle"></i> ${errorMessage}
@@ -62,100 +63,195 @@
 
 <div class="rs-main-card">
     <div class="rs-card-header">
-        <div class="rs-controls">
+        <!-- Top Controls Row -->
+        <div class="rs-top-controls">
             <div class="rs-show-entries">
-                <label>Show</label>
+                <label>Hiển thị</label>
                 <select onchange="changePageSize(this.value)">
                     <option value="5" ${pageSize == 5 ? 'selected' : ''}>5</option>
                     <option value="10" ${pageSize == 10 ? 'selected' : ''}>10</option>
                     <option value="25" ${pageSize == 25 ? 'selected' : ''}>25</option>
                     <option value="50" ${pageSize == 50 ? 'selected' : ''}>50</option>
                 </select>
-                <label>entries</label>
+                <label>mục</label>
             </div>
-            <div class="rs-search-box">
-                <label>Search:</label>
-                <input type="text" id="quickSearch" placeholder="Tìm kiếm..." value="${f_keyword}">
+            <div class="rs-quick-search">
+                <input type="text" id="quickSearch" placeholder="Tìm kiếm nhanh..." value="${f_keyword}">
+                <button onclick="quickSearch()" class="rs-search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </div>
 
-        <form class="rs-filters" method="get" action="ListRoomsServlet">
-            <select name="roomTypeId">
-                <option value="">--Loại phòng--</option>
-                <c:forEach var="rt" items="${roomTypes}">
-                    <option value="${rt.roomTypeID}" <c:if test="${rt.roomTypeID == f_type}">selected</c:if>>
-                        ${rt.name}
-                    </option>
-                </c:forEach>
-            </select>
+        <!-- Advanced Filters -->
+        <div class="rs-filter-section">
+            <div class="rs-filter-toggle">
+                <button type="button" onclick="toggleFilters()" class="rs-toggle-btn">
+                    <i class="fas fa-filter"></i> Bộ lọc nâng cao
+                    <i class="fas fa-chevron-down" id="filterChevron"></i>
+                </button>
+            </div>
 
-            <select name="status">
-                <option value="">--Trạng thái--</option>
-                <option value="Available" <c:if test="${'Available' == f_status}">selected</c:if>>Available</option>
-                <option value="Occupied" <c:if test="${'Occupied' == f_status}">selected</c:if>>Occupied</option>
-                <option value="Maintenance" <c:if test="${'Maintenance' == f_status}">selected</c:if>>Maintenance</option>
-                <option value="Dirty" <c:if test="${'Dirty' == f_status}">selected</c:if>>Dirty</option>
-            </select>
+            <form class="rs-filters" id="advancedFilters" method="get" action="ListRoomsServlet" onsubmit="return validateFilters()">
+                <div class="rs-filter-row">
+                    <div class="rs-filter-group">
+                        <label>Loại phòng</label>
+                        <select name="roomTypeId">
+                            <option value="">Tất cả loại phòng</option>
+                            <c:forEach var="rt" items="${roomTypes}">
+                                <option value="${rt.roomTypeID}" <c:if test="${rt.roomTypeID == f_type}">selected</c:if>>
+                                    ${rt.name}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="rs-filter-group">
+                        <label>Trạng thái</label>
+                        <select name="status">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Available" <c:if test="${'Available' == f_status}">selected</c:if>>Available</option>
+                            <option value="Occupied" <c:if test="${'Occupied' == f_status}">selected</c:if>>Occupied</option>
+                            <option value="Maintenance" <c:if test="${'Maintenance' == f_status}">selected</c:if>>Maintenance</option>
+                            <option value="Dirty" <c:if test="${'Dirty' == f_status}">selected</c:if>>Dirty</option>
+                            </select>
+                        </div>
+                        <div class="rs-filter-group">
+                            <label>Số phòng</label>
+                            <input type="text" name="keyword" placeholder="Nhập số phòng..." value="${f_keyword}" />
+                    </div>
+                </div>
 
-            <input type="text" name="keyword" placeholder="Số phòng..." value="${f_keyword}" />
-            <input type="number" name="minFloor" placeholder="Tầng từ" style="width:100px" value="${f_minFloor}" />
-            <input type="number" name="maxFloor" placeholder="đến" style="width:80px" value="${f_maxFloor}" />
-            <input type="number" step="0.01" name="minPrice" placeholder="Giá từ" style="width:120px" value="${f_minPrice}" />
-            <input type="number" step="0.01" name="maxPrice" placeholder="đến" style="width:120px" value="${f_maxPrice}" />
+                <div class="rs-filter-row">
+                    <div class="rs-filter-group rs-range-group">
+                        <label>Tầng</label>
+                        <div class="rs-range-inputs">
+                            <input type="number" name="minFloor" placeholder="Từ" value="${f_minFloor}" min="0" />
+                            <span>-</span>
+                            <input type="number" name="maxFloor" placeholder="Đến" value="${f_maxFloor}" min="0" />
+                        </div>
+                    </div>
+                    <div class="rs-filter-group rs-range-group">
+                        <label>Giá ($)</label>
+                        <div class="rs-range-inputs">
+                            <input type="number" step="0.01" name="minPrice" placeholder="Từ" value="${f_minPrice}" min="0" />
+                            <span>-</span>
+                            <input type="number" step="0.01" name="maxPrice" placeholder="Đến" value="${f_maxPrice}" min="0" />
+                        </div>
+                    </div>
+                    <div class="rs-filter-group rs-range-group">
+                        <label>Số khách</label>
+                        <div class="rs-range-inputs">
+                            <input type="number" name="minGuests" placeholder="Từ" value="${f_minGuests}" min="0" />
+                            <span>-</span>
+                            <input type="number" name="maxGuests" placeholder="Đến" value="${f_maxGuests}" min="0" />
+                        </div>
+                    </div>
+                </div>
 
-            <button type="submit" class="rs-filter-btn">
-                <i class="fas fa-search"></i> Tìm kiếm
-            </button>
-            <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="rs-reset-link">
-                <i class="fas fa-undo"></i> Reset
-            </a>
-        </form>
+                <div class="rs-filter-row">
+                    <div class="rs-filter-group">
+                        <label>Sắp xếp theo giá</label>
+                        <select name="sort">
+                            <option value="">Mặc định</option>
+                            <option value="asc" <c:if test="${'asc' == sort}">selected</c:if>>Giá tăng dần</option>
+                            <option value="desc" <c:if test="${'desc' == sort}">selected</c:if>>Giá giảm dần</option>
+                            </select>
+                        </div>
+                        <div class="rs-filter-actions">
+                            <button type="submit" class="rs-filter-btn">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                            <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="rs-reset-btn">
+                            <i class="fas fa-undo"></i> Đặt lại
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="rs-table-container">
         <table class="rs-table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th><i class="fas fa-sort"></i> Room Number</th>
-                    <th><i class="fas fa-sort"></i> Room Type</th>
-                    <th><i class="fas fa-sort"></i> Floor Number</th>
-                    <th>Status</th>
-                    <th><i class="fas fa-cog"></i> Action</th>
+                    <th class="rs-th-center">#</th>
+                    <th class="rs-th-sortable">
+                        <i class="fas fa-sort"></i> Số phòng
+                    </th>
+                    <th class="rs-th-sortable">
+                        <i class="fas fa-sort"></i> Loại phòng
+                    </th>
+                    <th class="rs-th-center rs-th-sortable">
+                        <i class="fas fa-sort"></i> Tầng
+                    </th>
+                    <th class="rs-th-right">Giá</th>
+                    <th class="rs-th-center">Số khách</th>
+                    <th class="rs-th-center">Trạng thái</th>
+                    <th class="rs-th-center rs-th-actions">
+                        <i class="fas fa-cog"></i> Hành động
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 <c:forEach var="room" items="${rooms}" varStatus="status">
-                    <tr>
-                        <td>${(currentPage - 1) * pageSize + status.index + 1}</td>
-                        <td><strong>${room.roomnumber}</strong></td>
-                        <td>
+                    <tr class="rs-table-row">
+                        <td class="rs-td-center rs-td-index">${(currentPage - 1) * pageSize + status.index + 1}</td>
+                        <td class="rs-td-room-number">
+                            <strong>${room.roomnumber}</strong>
+                        </td>
+                        <td class="rs-td-room-type">
                             <c:choose>
                                 <c:when test="${not empty room.roomType}">
-                                    ${room.roomType.name}
+                                    <span class="rs-room-type-badge">${room.roomType.name}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    N/A
+                                    <span class="rs-na-text">N/A</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td>${room.floor} - Floor</td>
-                        <td>
+                        <td class="rs-td-center">
+                            <span class="rs-floor-badge">T${room.floor}</span>
+                        </td>
+                        <td class="rs-td-right rs-td-price">
+                            <c:choose>
+                                <c:when test="${not empty room.roomType}">
+                                    <span class="rs-price">
+                                        $<fmt:formatNumber value="${room.roomType.basePrice}" pattern="#,##0.##" />
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="rs-na-text">N/A</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td class="rs-td-center">
+                            <c:choose>
+                                <c:when test="${not empty room.roomType}">
+                                    <span class="rs-guests-badge">
+                                        ${room.roomType.maxGuests}
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="rs-na-text">N/A</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td class="rs-td-center">
                             <span class="rs-status-badge ${room.status != null ? room.status.toLowerCase() : 'unknown'}">
                                 ${room.status != null ? room.status : 'Unknown'}
                             </span>
                         </td>
-                        <td>
+                        <td class="rs-td-center">
                             <div class="rs-action-buttons">
                                 <a href="#" class="rs-btn rs-btn-housekeeping" onclick="updateRoomStatus(${room.roomID}, 'Available')" title="Housekeeping">
-                                    <i class="fas fa-broom"></i> Housekeeping
+                                    <i class="fas fa-broom"></i>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/AddEditRoomServlet?action=edit&roomId=${room.roomID}" 
-                                   class="rs-btn rs-btn-edit" title="Edit">
-                                    <i class="fas fa-edit"></i> Edit
+                                   class="rs-btn rs-btn-edit" title="Sửa">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="#" class="rs-btn rs-btn-delete" onclick="confirmDelete(${room.roomID}, '${room.roomnumber}')" title="Delete">
-                                    <i class="fas fa-trash"></i> Delete
+                                <a href="#" class="rs-btn rs-btn-delete" onclick="confirmDelete(${room.roomID}, '${room.roomnumber}')" title="Xóa">
+                                    <i class="fas fa-trash"></i>
                                 </a>
                             </div>
                         </td>
@@ -163,9 +259,12 @@
                 </c:forEach>
                 <c:if test="${empty rooms}">
                     <tr>
-                        <td colspan="6" style="text-align:center; padding: 40px; color: #6b7280;">
-                            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
-                            Không tìm thấy phòng nào
+                        <td colspan="8" class="rs-empty-state">
+                            <div class="rs-empty-content">
+                                <i class="fas fa-inbox"></i>
+                                <h3>Không tìm thấy phòng nào</h3>
+                                <p>Thử điều chỉnh bộ lọc hoặc thêm phòng mới</p>
+                            </div>
                         </td>
                     </tr>
                 </c:if>
@@ -175,28 +274,25 @@
 
     <div class="rs-table-footer">
         <div class="rs-showing-info">
-            Showing ${startRecord} to ${endRecord} of ${totalRooms} entries
+            Hiển thị ${startRecord} đến ${endRecord} của ${totalRooms} mục
         </div>
-
         <c:if test="${totalPages > 1}">
             <ul class="rs-pagination">
                 <li class="${currentPage <= 1 ? 'disabled' : ''}">
-                    <a href="${currentPage > 1 ? 'ListRoomsServlet?page='.concat(currentPage - 1).concat('&').concat(pageContext.request.queryString != null ? pageContext.request.queryString.replaceAll('page=\\d+&?', '') : '') : '#'}">
-                        Previous
+                    <a href="${currentPage > 1 ? 'ListRoomsServlet?page='.concat(currentPage - 1).concat('&roomTypeId=').concat(f_type != null ? f_type : '').concat('&status=').concat(f_status != null ? f_status : '').concat('&keyword=').concat(f_keyword != null ? f_keyword : '').concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '').concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '').concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '').concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '').concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '').concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '').concat('&pageSize=').concat(pageSize).concat('&sort=').concat(sort != null ? sort : '') : '#'}">
+                        Trước
                     </a>
                 </li>
-
                 <c:forEach var="i" begin="1" end="${totalPages}">
                     <li class="${i == currentPage ? 'active' : ''}">
-                        <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}&pageSize=${pageSize}">
+                        <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}&minGuests=${f_minGuests}&maxGuests=${f_maxGuests}&pageSize=${pageSize}&sort=${sort}">
                             ${i}
                         </a>
                     </li>
                 </c:forEach>
-
                 <li class="${currentPage >= totalPages ? 'disabled' : ''}">
-                    <a href="${currentPage < totalPages ? 'ListRoomsServlet?page='.concat(currentPage + 1).concat('&roomTypeId=').concat(f_type != null ? f_type : '').concat('&status=').concat(f_status != null ? f_status : '').concat('&keyword=').concat(f_keyword != null ? f_keyword : '').concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '').concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '').concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '').concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '').concat('&pageSize=').concat(pageSize) : '#'}">
-                        Next
+                    <a href="${currentPage < totalPages ? 'ListRoomsServlet?page='.concat(currentPage + 1).concat('&roomTypeId=').concat(f_type != null ? f_type : '').concat('&status=').concat(f_status != null ? f_status : '').concat('&keyword=').concat(f_keyword != null ? f_keyword : '').concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '').concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '').concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '').concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '').concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '').concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '').concat('&pageSize=').concat(pageSize).concat('&sort=').concat(sort != null ? sort : '') : '#'}">
+                        Tiếp
                     </a>
                 </li>
             </ul>
@@ -204,8 +300,7 @@
     </div>
 </div>
 
-
-<!-- CSS Styles -->
+<!-- Enhanced CSS Styles -->
 <style>
     .rs-container {
         max-width: 1400px;
@@ -229,6 +324,12 @@
         display: flex;
         align-items: center;
         gap: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .rs-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .rs-stat-icon {
@@ -242,15 +343,24 @@
         color: white;
     }
 
-    .rs-stat-icon.rooms { background: #0ea5e9; }
-    .rs-stat-icon.floors { background: #f97316; }
-    .rs-stat-icon.types { background: #10b981; }
-    .rs-stat-icon.booked { background: #f59e0b; }
+    .rs-stat-icon.rooms {
+        background: #0ea5e9;
+    }
+    .rs-stat-icon.floors {
+        background: #f97316;
+    }
+    .rs-stat-icon.types {
+        background: #10b981;
+    }
+    .rs-stat-icon.booked {
+        background: #f59e0b;
+    }
 
     .rs-stat-info h3 {
         font-size: 28px;
         font-weight: 700;
         margin-bottom: 5px;
+        color: #1e293b;
     }
 
     .rs-stat-info p {
@@ -258,6 +368,7 @@
         font-size: 14px;
         text-transform: uppercase;
         font-weight: 500;
+        margin: 0;
     }
 
     /* Page Header */
@@ -272,6 +383,7 @@
         font-size: 24px;
         font-weight: 600;
         color: #1e293b;
+        margin: 0;
     }
 
     .rs-add-btn {
@@ -291,6 +403,7 @@
     .rs-add-btn:hover {
         background: #059669;
         transform: translateY(-1px);
+        color: white;
     }
 
     /* Main Card */
@@ -304,22 +417,25 @@
     .rs-card-header {
         padding: 20px;
         border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
     }
 
-    /* Controls */
-    .rs-controls {
+    /* Top Controls */
+    .rs-top-controls {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 20px;
         flex-wrap: wrap;
         gap: 15px;
-        margin-bottom: 20px;
     }
 
     .rs-show-entries {
         display: flex;
         align-items: center;
         gap: 10px;
+        font-size: 14px;
+        color: #64748b;
     }
 
     .rs-show-entries select {
@@ -327,66 +443,192 @@
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         font-size: 14px;
+        background: white;
     }
 
-    .rs-search-box {
+    .rs-quick-search {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
-    .rs-search-box input {
-        padding: 8px 12px;
+    .rs-quick-search input {
+        padding: 10px 16px;
         border: 1px solid #cbd5e1;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 14px;
-        width: 200px;
+        width: 250px;
+        transition: border-color 0.2s;
     }
 
-    /* Filters */
+    .rs-quick-search input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .rs-search-btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .rs-search-btn:hover {
+        background: #2563eb;
+    }
+
+    /* Filter Section */
+    .rs-filter-section {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+    }
+
+    .rs-filter-toggle {
+        margin-bottom: 15px;
+    }
+
+    .rs-toggle-btn {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: #475569;
+        transition: all 0.2s;
+    }
+
+    .rs-toggle-btn:hover {
+        background: #e2e8f0;
+    }
+
     .rs-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-        align-items: center;
+        display: none;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 10px;
     }
 
-    .rs-filters select,
-    .rs-filters input {
-        padding: 8px 12px;
+    .rs-filters.show {
+        display: block;
+    }
+
+    /* Make filter section more compact */
+    .rs-filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+        align-items: end;
+    }
+
+    .rs-filter-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .rs-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .rs-filter-group label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .rs-filter-group select,
+    .rs-filter-group input {
+        padding: 8px 10px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 13px;
+        transition: border-color 0.2s;
+    }
+
+    .rs-filter-group select:focus,
+    .rs-filter-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .rs-range-group .rs-range-inputs {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .rs-range-group .rs-range-inputs input {
+        flex: 1;
+        min-width: 60px;
+    }
+
+    .rs-range-group .rs-range-inputs span {
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .rs-filter-actions {
+        display: flex;
+        gap: 8px;
+        align-items: end;
+        justify-content: flex-end;
+    }
+
+    .rs-filter-btn,
+    .rs-reset-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+        border-radius: 6px;
+        font-weight: 500;
     }
 
     .rs-filter-btn {
         background: #3b82f6;
         color: white;
         border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
         cursor: pointer;
-        font-weight: 500;
         transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .rs-filter-btn:hover {
         background: #2563eb;
     }
 
-    .rs-reset-link {
-        color: #6b7280;
+    .rs-reset-btn {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
         text-decoration: none;
-        font-weight: 500;
-        margin-left: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .rs-reset-link:hover {
-        color: #374151;
+    .rs-reset-btn:hover {
+        background: #e2e8f0;
+        color: #475569;
     }
 
-    /* Table */
+    /* Table Styles */
     .rs-table-container {
         overflow-x: auto;
     }
@@ -394,35 +636,135 @@
     .rs-table {
         width: 100%;
         border-collapse: collapse;
+        font-size: 14px;
     }
 
+    /* Compact table styles */
     .rs-table th {
+        padding: 12px 8px;
+        font-size: 12px;
         background: #f8fafc;
-        padding: 15px 12px;
         text-align: left;
         font-weight: 600;
         color: #374151;
-        border-bottom: 1px solid #e2e8f0;
-        font-size: 14px;
+        border-bottom: 2px solid #e2e8f0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .rs-th-center {
+        text-align: center;
+    }
+    .rs-th-right {
+        text-align: right;
+    }
+    .rs-th-sortable {
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .rs-th-sortable:hover {
+        background: #f1f5f9;
+    }
+    .rs-th-actions {
+        width: 140px;
+    }
+    .rs-th-desc {
+        max-width: 200px;
     }
 
     .rs-table td {
-        padding: 15px 12px;
+        padding: 10px 8px;
+        font-size: 13px;
         border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .rs-table-row:hover {
+        background: #f8fafc;
+    }
+
+    .rs-td-center {
+        text-align: center;
+    }
+    .rs-td-right {
+        text-align: right;
+    }
+    .rs-td-index {
+        font-weight: 600;
+        color: #6b7280;
+        width: 40px;
+    }
+
+    .rs-td-room-number {
+        width: 80px;
+    }
+
+    .rs-td-room-number strong {
+        color: #1e293b;
         font-size: 14px;
     }
 
-    .rs-table tbody tr:hover {
-        background: #f8fafc;
+    .rs-room-type-badge {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .rs-floor-badge {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .rs-price {
+        font-weight: 600;
+        color: #059669;
+        font-size: 14px;
+    }
+
+    .rs-guests-badge {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .rs-description {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .rs-na-text {
+        color: #9ca3af;
+        font-style: italic;
+        font-size: 13px;
     }
 
     /* Status badges */
     .rs-status-badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
     }
 
     .rs-status-badge.available {
@@ -445,24 +787,32 @@
         color: #92400e;
     }
 
+    .rs-status-badge.unknown {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
     /* Action buttons */
     .rs-action-buttons {
         display: flex;
-        gap: 5px;
+        gap: 3px;
+        justify-content: center;
     }
 
     .rs-btn {
-        padding: 6px 12px;
+        padding: 6px 8px;
         border: none;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        justify-content: center;
         transition: all 0.2s;
+        min-width: 28px;
+        height: 28px;
     }
 
     .rs-btn-housekeeping {
@@ -472,6 +822,7 @@
 
     .rs-btn-housekeeping:hover {
         background: #0284c7;
+        transform: translateY(-1px);
     }
 
     .rs-btn-edit {
@@ -481,6 +832,7 @@
 
     .rs-btn-edit:hover {
         background: #2563eb;
+        transform: translateY(-1px);
     }
 
     .rs-btn-delete {
@@ -490,6 +842,32 @@
 
     .rs-btn-delete:hover {
         background: #dc2626;
+        transform: translateY(-1px);
+    }
+
+    /* Empty State */
+    .rs-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .rs-empty-content i {
+        font-size: 48px;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+    }
+
+    .rs-empty-content h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .rs-empty-content p {
+        color: #6b7280;
+        font-size: 14px;
+        margin: 0;
     }
 
     /* Pagination */
@@ -501,31 +879,39 @@
         border-top: 1px solid #e2e8f0;
         flex-wrap: wrap;
         gap: 15px;
+        background: #f8fafc;
     }
 
     .rs-showing-info {
         color: #6b7280;
         font-size: 14px;
+        font-weight: 500;
     }
 
     .rs-pagination {
         display: flex;
-        gap: 5px;
+        gap: 4px;
         list-style: none;
+        margin: 0;
+        padding: 0;
     }
 
     .rs-pagination a {
-        padding: 8px 12px;
+        padding: 10px 14px;
         border: 1px solid #d1d5db;
         color: #374151;
         text-decoration: none;
-        border-radius: 4px;
+        border-radius: 6px;
         font-size: 14px;
+        font-weight: 500;
         transition: all 0.2s;
+        min-width: 44px;
+        text-align: center;
     }
 
     .rs-pagination a:hover {
         background: #f3f4f6;
+        border-color: #9ca3af;
     }
 
     .rs-pagination .active a {
@@ -537,18 +923,23 @@
     .rs-pagination .disabled a {
         color: #9ca3af;
         cursor: not-allowed;
+        background: #f9fafb;
     }
 
     .rs-pagination .disabled a:hover {
-        background: transparent;
+        background: #f9fafb;
+        border-color: #d1d5db;
     }
 
     /* Messages */
     .rs-alert {
-        padding: 12px 16px;
+        padding: 16px 20px;
         border-radius: 8px;
         margin-bottom: 20px;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .rs-alert-success {
@@ -563,41 +954,93 @@
         border: 1px solid #fca5a5;
     }
 
+    /* Input error styling */
+    .rs-filters input:invalid,
+    .rs-filters input.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
     /* Responsive */
+    @media (max-width: 1024px) {
+        .rs-filter-row {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+    }
+
     @media (max-width: 768px) {
-        .rs-controls {
-            flex-direction: column;
-            align-items: stretch;
+        .rs-filter-row {
+            grid-template-columns: 1fr 1fr;
         }
 
-        .rs-filters {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .rs-filters select,
-        .rs-filters input {
-            width: 100%;
+        .rs-table th,
+        .rs-table td {
+            padding: 8px 6px;
+            font-size: 12px;
         }
 
         .rs-action-buttons {
             flex-direction: column;
+            gap: 2px;
         }
 
-        .rs-table-footer {
-            flex-direction: column;
-            text-align: center;
+        .rs-btn {
+            min-width: 24px;
+            height: 24px;
+            padding: 4px 6px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .rs-filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .rs-table {
+            font-size: 11px;
+        }
+
+        .rs-room-type-badge,
+        .rs-floor-badge,
+        .rs-guests-badge,
+        .rs-status-badge {
+            font-size: 10px;
+            padding: 2px 4px;
         }
     }
 </style>
 
-
-<!-- JavaScript -->
+<!-- Enhanced JavaScript -->
 <script>
+    // Filter toggle functionality
+    function toggleFilters() {
+        const filters = document.getElementById('advancedFilters');
+        const chevron = document.getElementById('filterChevron');
+
+        if (filters.classList.contains('show')) {
+            filters.classList.remove('show');
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            filters.classList.add('show');
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // Auto-show filters if any filter is active
+    document.addEventListener('DOMContentLoaded', function () {
+        const hasActiveFilters = ${not empty f_type || not empty f_status || not empty f_keyword || not empty f_minFloor || not empty f_maxFloor || not empty f_minPrice || not empty f_maxPrice || not empty f_minGuests || not empty f_maxGuests || not empty sort};
+
+        if (hasActiveFilters) {
+            document.getElementById('advancedFilters').classList.add('show');
+            document.getElementById('filterChevron').style.transform = 'rotate(180deg)';
+        }
+    });
+
     function changePageSize(size) {
         const url = new URL(window.location);
         url.searchParams.set('pageSize', size);
-        url.searchParams.set('page', '1'); // Reset to first page
+        url.searchParams.set('page', '1');
         window.location.href = url.toString();
     }
 
@@ -613,19 +1056,52 @@
         }
     }
 
-    // Quick search functionality
-    document.getElementById('quickSearch').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            const url = new URL(window.location);
-            url.searchParams.set('keyword', this.value);
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
+    function quickSearch() {
+        const keyword = document.getElementById('quickSearch').value;
+        const url = new URL(window.location);
+        url.searchParams.set('keyword', keyword);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+
+    function validateFilters() {
+        let isValid = true;
+        const inputs = [
+            {name: 'minFloor', maxName: 'maxFloor', label: 'Tầng'},
+            {name: 'minPrice', maxName: 'maxPrice', label: 'Giá'},
+            {name: 'minGuests', maxName: 'maxGuests', label: 'Số khách'}
+        ];
+
+        inputs.forEach(({ name, maxName, label }) => {
+            const minInput = document.querySelector(`input[name="${name}"]`);
+            const maxInput = document.querySelector(`input[name="${maxName}"]`);
+            const minValue = minInput.value ? parseFloat(minInput.value) : null;
+            const maxValue = maxInput.value ? parseFloat(maxInput.value) : null;
+
+            minInput.classList.remove('error');
+            maxInput.classList.remove('error');
+
+            if (minValue !== null && maxValue !== null && minValue > maxValue) {
+                minInput.classList.add('error');
+                maxInput.classList.add('error');
+                alert(`${label} tối thiểu không được lớn hơn ${label} tối đa!`);
+                isValid = false;
         }
+        });
+
+        return isValid;
+    }
+
+    // Enhanced quick search with debounce
+    let searchTimeout;
+    document.getElementById('quickSearch').addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(quickSearch, 500);
     });
 
-    // Auto-hide messages after 5 seconds
+    // Auto-hide messages with fade effect
     setTimeout(function () {
-        const alerts = document.querySelectorAll('.alert');
+        const alerts = document.querySelectorAll('.rs-alert');
         alerts.forEach(function (alert) {
             alert.style.opacity = '0';
             alert.style.transition = 'opacity 0.5s';
@@ -634,4 +1110,18 @@
             }, 500);
         });
     }, 5000);
+
+    // Add loading states for buttons
+    document.querySelectorAll('.rs-filter-btn, .rs-search-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tìm...';
+            this.disabled = true;
+
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 2000);
+        });
+    });
 </script>
