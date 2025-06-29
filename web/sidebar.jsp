@@ -49,6 +49,10 @@
             </c:if>
 
             <c:if test="${role eq 'Receptionist'}">
+                <a href="${pageContext.request.contextPath}/managerAccountC" class="menu-item" data-page="managerAccountC">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>View Account Customer</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/sendMaintenanceRequest" class="menu-item" data-page="sendMaintenanceRequest">
                     <i class="fas fa-wrench"></i>
                     <span>View Maintenance Requests</span>

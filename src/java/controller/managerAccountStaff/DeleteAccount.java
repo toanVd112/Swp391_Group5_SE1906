@@ -2,27 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package controller.managerAccountStaff;
 
 import DAO.AccountDAO;
+import DAO.ActivityStaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import model.Account;
-import model.User;
 
 /**
  *
- * @author Admin
+ * @author MyPC
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginCustomerServlet extends HttpServlet {
+@WebServlet(name = "DeleteAccount", urlPatterns = {"/deleteAccount"})
+public class DeleteAccount extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +39,10 @@ public class LoginCustomerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet DeleteAccount</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteAccount at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,7 +60,28 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        String aid = request.getParameter("aid");
+
+        AccountDAO ad = new AccountDAO();
+        Account currentUser = (Account) request.getSession().getAttribute("account");
+
+        try {
+            // Ghi log trước khi xoá
+            ActivityStaffDAO logDAO = new ActivityStaffDAO();
+            logDAO.logAction(
+                    currentUser.getAccountID(), // ID người xoá
+                    "Delete", // Hành động
+                    "accounts", // Bảng bị tác động
+                    Integer.parseInt(aid) // ID tài khoản bị xoá
+            );
+
+            // Tiến hành xoá
+            ad.deleteAccount(aid);
+        } catch (Exception ex) {
+            ex.printStackTrace(); // Ghi log lỗi nếu cần
+        }
+
+        response.sendRedirect("managerAccount");
     }
 
     /**
@@ -76,30 +95,7 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        AccountDAO dao = new AccountDAO();
-        Account account = dao.login(username, password);
-
-        if (account != null) {
-            HttpSession session = request.getSession();
-
-            // 60 phút (3600 giây)
-            session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
-
-            session.setAttribute("user", account);
-            session.setAttribute("accountId", account.getAccountID());
-
-            
-            response.sendRedirect("Home");
-        } else {
-            request.setAttribute("username", username);
-            request.setAttribute("pass", password);
-            request.setAttribute("result", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
+        response.setContentType("text/html;charset=UTF-8");
     }
 
     /**

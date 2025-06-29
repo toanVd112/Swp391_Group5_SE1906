@@ -3,9 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.managerAccount;
+package controller.managerAccountStaff;
 
-import DAO.AccountDAO;
+import DAO.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,14 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Account;
+import model.User;
 
 /**
  *
  * @author MyPC
  */
-@WebServlet(name="LoadAccount", urlPatterns={"/loadAccount"})
-public class LoadAccount extends HttpServlet {
+@WebServlet(name="StaffProfile", urlPatterns={"/staffProfile"})
+public class StaffProfile extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -37,10 +37,10 @@ public class LoadAccount extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoadAccount</title>");  
+            out.println("<title>Servlet StaffProfile</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoadAccount at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet StaffProfile at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,7 +57,7 @@ public class LoadAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        doPost(request, response);
+        processRequest(request, response);
     } 
 
     /** 
@@ -70,12 +70,19 @@ public class LoadAccount extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String id = request.getParameter("aid");
-        AccountDAO ad = new AccountDAO();
-        Account a = ad.getAccountByID(id);
-        
-        request.setAttribute("account", a);
-        request.getRequestDispatcher("Manager/editAccount.jsp").forward(request, response);
+        String accountID = request.getParameter("aid");
+        int aid = Integer.parseInt(accountID);
+
+        // Gọi DAO để lấy thông tin user
+        UserDao userDAO = new UserDao();
+        User user = userDAO.getUserByAccountId(aid);
+
+        // Đặt user vào request để hiển thị ra JSP
+        request.setAttribute("user", user);
+
+        // Forward sang trang JSP profile
+        request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
+    
     }
 
     /** 

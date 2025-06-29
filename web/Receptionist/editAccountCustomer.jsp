@@ -273,7 +273,7 @@
                 <p>Update account information and settings</p>
             </div>
 
-            <form action="editAccount" method="post">
+            <form action="editAccountC" method="post">
                 <input type="hidden" name="aid" value="${account.accountID}" />
 
                 <div class="form-group">
@@ -298,9 +298,8 @@
 
                 <div class="form-group">
                     <label for="role">Role</label>
-                    <select id="role" name="role" required>
-                        <option value="Receptionist" ${account.role == 'Receptionist' ? 'selected' : ''}>Receptionist</option>
-                        <option value="Staff" ${account.role == 'Staff' ? 'selected' : ''}>Staff</option>
+                    <select id="role" name="role" disabled>
+                        <option value="Customer" selected>Customer</option>
                     </select>
                 </div>
 
@@ -323,7 +322,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <a href="managerAccount" class="btn btn-cancel">
+                    <a href="managerAccountC" class="btn btn-cancel">
                         <i class="fas fa-times"></i>
                         Cancel
                     </a>

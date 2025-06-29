@@ -17,6 +17,14 @@ public class Account implements Serializable{
     
     public Account(){}
 
+    public Account(int accountID, String username, String password, boolean isActive, String email) {
+        this.accountID = accountID;
+        this.username = username;
+        this.password = password;
+        this.isActive = isActive;
+        this.email = email;
+    }
+
     
 
     // hot fix

@@ -80,6 +80,9 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search me-1"></i> Tìm kiếm
                                     </button>
+                                    <a href="managerAccountC" class="btn btn-outline-secondary">
+                                        <i class="fas fa-undo me-1"></i> Reset
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -138,6 +141,10 @@
                                                        title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
+                                                    <a href="staffProfile?aid=${account.accountID}" class="btn btn-sm btn-outline-danger" 
+                                                       title="Thông tin">
+                                                        <i class="fas fa-user"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -194,7 +201,7 @@
                             <div class="mb-3">
                                 <label for="username" class="form-label">Tên đăng nhập</label>
                                 <input type="text" class="form-control ${not empty usernameError ? 'is-invalid' : ''}" 
-                                       id="username" name="username" value="${username}" 
+                                       id="username" name="username"
                                        pattern="^\S{4,20}$" required
                                        oninput="validateUsername(this)">
                                 <div class="invalid-feedback">
