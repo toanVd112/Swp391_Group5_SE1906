@@ -5,6 +5,7 @@
 package listroom;
 
 import DAO.RoomTypeDAO;
+import DAO.ServiceDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -22,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import model.Service;
 
 /**
  *
@@ -70,6 +72,7 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
+
             // 1. Lấy input từ request
             SearchParams params = getSearchParams(request);
 
@@ -122,7 +125,10 @@ public class FindAvailableRoomsServlet extends HttpServlet {
                         .limit(10)
                         .collect(Collectors.toList());
             }
-
+            ServiceDAO s = new ServiceDAO();
+            List<Service> services = new ArrayList<>();
+            services = s.getAvailableServices();
+            request.setAttribute("services", services);
             // 5. Gán dữ liệu cho JSP
             request.setAttribute("checkin", params.checkinStr);
             request.setAttribute("checkout", params.checkoutStr);

@@ -757,8 +757,11 @@ body {
     }
 
     .container {
-        padding: 0 0.5rem;
-    }
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 }
 
 @media (max-width: 480px) {
@@ -901,12 +904,13 @@ body {
     }
 }
 .cart-layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* Trái lớn, phải nhỏ */
-    gap: 2rem;
-    align-items: start;
-   
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr; /* Trái: lớn 75% | Phải: giỏ 25% */
+  gap: 2rem;
+  align-items: start;
+  width: 100%;
 }
+
 .inner-container {
   padding-left: 2rem;
   padding-right: 2rem;
@@ -926,7 +930,7 @@ body {
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    max-width: 320px; /* ✅ Giới hạn chiều rộng giỏ cho gọn */
+    max-width: 420px; /* ✅ Giới hạn chiều rộng giỏ cho gọn */
 }
 
 /* Title giỏ */
@@ -949,3 +953,83 @@ body {
 }
 
 
+.cart-summary {
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid #ddd;
+  padding: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-items-wrapper {
+  max-height: 200px; /* Chiều cao cố định */
+  overflow-y: auto;  /* Thanh cuộn dọc */
+  margin-bottom: 16px; /* Khoảng cách xuống phần tổng */
+  border: 1px solid #eee;
+  padding: 8px;
+}
+.service-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.service-thumb {
+  flex-shrink: 0;
+  width: 156px;
+  height: 118px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.service-text {
+  flex: 1;
+}
+
+.service-text label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+
+.service-text label input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+.service-price {
+  color: #f60;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.service-desc {
+  margin-left: 26px; /* canh với text bên dưới label */
+  margin-top: 2px;
+  color: #555;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}

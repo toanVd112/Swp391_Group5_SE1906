@@ -3,6 +3,7 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -210,9 +211,7 @@ public class ServiceDAO {
 
     public boolean isDuplicatedServiceName(String serviceName) {
         try (
-                Connection conn = DBConnect.getConnection(); 
-                PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM services WHERE ServiceName = ? LIMIT 1");
-                ) {
+                Connection conn = DBConnect.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM services WHERE ServiceName = ? LIMIT 1");) {
             stmt.setString(1, serviceName);
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
@@ -221,4 +220,25 @@ public class ServiceDAO {
             throw new RuntimeException("Database error while checking for duplicated service name", e);
         }
     }
+
+    public List<Service> getAvailableServices() throws SQLException  {
+        List<Service> services = new ArrayList<>();
+        String sql = "SELECT * FROM services WHERE AvailabilityStatus = '1'";
+        Connection conn = DBConnect.getConnection(); 
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Service s = new Service();
+            s.setId(rs.getInt("ServiceID"));
+            s.setName(rs.getString("ServiceName"));
+            s.setPrice(rs.getInt("Price"));
+            s.setDescription(rs.getString("Description"));
+            s.setServiceImage(rs.getString("ServiceImage"));
+            services.add(s);
+        }
+
+        return services;
+    }
+
 }

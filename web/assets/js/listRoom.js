@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * Initialize all functionality when page loads
  */
 function initializeBookingInterface() {
-    
+
     console.log("Hotel booking interface initialized successfully")
 }
 
@@ -116,9 +116,9 @@ function toggleFilters() {
 
 /**
  * Setup date inputs with better UX
-
-
-/**
+ 
+ 
+ /**
  * Setup smooth scrolling for anchor links
  */
 
@@ -225,9 +225,9 @@ function trackEvent(eventName, eventData = {}) {
 /**
  * Handle combo selection
  * @param {number} comboId - ID of the selected combo
-
-
-/**
+ 
+ 
+ /**
  * Format currency for display
  * @param {number} amount - Amount to format
  * @param {string} currency - Currency code
@@ -299,34 +299,43 @@ style.textContent = `
 
 
 
-  document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const rows = document.querySelectorAll(".combo-row");
     const showMoreBtn = document.getElementById("showMoreBtn");
     const showLessBtn = document.getElementById("showLessBtn");
     const limit = 5;
 
     rows.forEach((row, idx) => {
-      if (idx >= limit) row.style.display = "none";
+        if (idx >= limit)
+            row.style.display = "none";
     });
 
     if (rows.length <= limit) {
-      showMoreBtn.style.display = "none";
+        showMoreBtn.style.display = "none";
     }
 
-    window.showMoreCombos = function() {
-      rows.forEach(row => row.style.display = "");
-      showMoreBtn.style.display = "none";
-      showLessBtn.style.display = "";
+    window.showMoreCombos = function () {
+        rows.forEach(row => row.style.display = "");
+        showMoreBtn.style.display = "none";
+        showLessBtn.style.display = "";
     };
 
-    window.showLessCombos = function() {
-      rows.forEach((row, idx) => {
-        if (idx >= limit) row.style.display = "none";
-      });
-      showMoreBtn.style.display = "";
-      showLessBtn.style.display = "none";
+    window.showLessCombos = function () {
+        rows.forEach((row, idx) => {
+            if (idx >= limit)
+                row.style.display = "none";
+        });
+        showMoreBtn.style.display = "";
+        showLessBtn.style.display = "none";
     };
-  });
+});
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+
+    document.getElementById(`${tab}Content`).classList.add('active');
+    document.getElementById(`${tab}Tab`).classList.add('active');
+}
 
 document.head.appendChild(style)
 

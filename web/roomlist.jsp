@@ -3,6 +3,11 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="0"/>
+
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 
 <!DOCTYPE html>
@@ -264,377 +269,473 @@
                     </div>
                 </div>
             </header>
-            <div class="cart-layout "  style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-                <div class="room-list-left">
-                    <div class="inner-container">
-                        <!-- Search Results Header -->
-                        <div class="main-content">
-                            <div class="search-header">
+            <div class="container">
+                <div class="cart-layout "  >
+                    <div class="room-list-left">
+                        <div class="inner-container">
+                            <!-- Search Results Header -->
+                            <div class="main-content">
+                                <div class="search-header">
 
-                                <div id="booking-bar" class="shadow-sm">
-                                    <form method="get" action="FindAvailableRoomsServlet" class="booking-bar" onsubmit="return validateForm()">
-                                        <!-- Box: Check-in & Check-out -->
-                                        <div class="booking-box">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            <div class="booking-box-content">
-                                                <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date" value="${param.checkin}" required>
-                                                —
-                                                <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date" value="${param.checkout}" required>
+                                    <div id="booking-bar" class="shadow-sm">
+                                        <form method="get" action="FindAvailableRoomsServlet" class="booking-bar" onsubmit="return validateForm()">
+                                            <!-- Box: Check-in & Check-out -->
+                                            <div class="booking-box">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <div class="booking-box-content">
+                                                    <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date" value="${param.checkin}" required>
+                                                    —
+                                                    <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date" value="${param.checkout}" required>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <!-- Box: Guests -->
-                                        <div class="booking-box">
-                                            <i class="fas fa-user"></i>
-                                            <div class="booking-box-content">
-                                                <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required> guests
+                                            <!-- Box: Guests -->
+                                            <div class="booking-box">
+                                                <i class="fas fa-user"></i>
+                                                <div class="booking-box-content">
+                                                    <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required> guests
+                                                </div>
                                             </div>
+
+                                            <!-- Box: Button -->
+                                            <button type="submit" class="booking-btn">
+                                                🔍 Tìm phòng
+                                            </button>
+
+                                        </form>
+                                    </div>
+                                    <div class="search-header text-center">
+                                        <h1 class="search-title">Kết quả tìm phòng cho ${guests} người</h1>
+                                        <p class="search-subtitle">Tìm thấy các tổ hợp phòng phù hợp và phòng trống cho kỳ nghỉ của bạn</p>
+                                    </div>
+
+
+                                </div>
+
+                                <!-- Sticky Action Bar -->
+                                <div class="action-bar" id="actionBar">
+
+                                    <div class="action-bar-content">
+                                        <div class="tab-buttons">
+                                            <button class="tab-btn active" onclick="switchTab('suggestions')" id="suggestionsTab">
+                                                <i class="fas fa-magic"></i>
+                                                Gợi ý tổ hợp
+                                            </button>
+                                            <button class="tab-btn" onclick="switchTab('manual')" id="manualTab">
+                                                <i class="fas fa-list"></i>
+                                                Tự chọn phòng
+                                            </button>
+                                            <button class="tab-btn" onclick="switchTab('services')" id="servicesTab">
+                                                <i class="fas fa-concierge-bell"></i>
+                                                Chọn dịch vụ
+                                            </button>
+
                                         </div>
-
-                                        <!-- Box: Button -->
-                                        <button type="submit" class="booking-btn">
-                                            🔍 Tìm phòng
-                                        </button>
-
-                                    </form>
-                                </div>
-                                <div class="search-header text-center">
-                                    <h1 class="search-title">Kết quả tìm phòng cho ${guests} người</h1>
-                                    <p class="search-subtitle">Tìm thấy các tổ hợp phòng phù hợp và phòng trống cho kỳ nghỉ của bạn</p>
-                                </div>
-
-
-                            </div>
-
-                            <!-- Sticky Action Bar -->
-                            <div class="action-bar" id="actionBar">
-
-                                <div class="action-bar-content">
-                                    <div class="tab-buttons">
-                                        <button class="tab-btn active" onclick="switchTab('suggestions')" id="suggestionsTab">
-                                            <i class="fas fa-magic"></i>
-                                            Gợi ý tổ hợp
-                                        </button>
-                                        <button class="tab-btn" onclick="switchTab('manual')" id="manualTab">
-                                            <i class="fas fa-list"></i>
-                                            Tự chọn phòng
+                                        <button class="btn" onclick="toggleFilters()">
+                                            <i class="fas fa-filter"></i>
+                                            Bộ lọc
                                         </button>
                                     </div>
-                                    <button class="btn" onclick="toggleFilters()">
-                                        <i class="fas fa-filter"></i>
-                                        Bộ lọc
-                                    </button>
+
                                 </div>
 
-                            </div>
+                                <!-- Main Content -->
 
-                            <!-- Main Content -->
-
-                            <!-- Advanced Filter Panel -->
-                            <div class="card" id="filterPanel">
-                                <div class="card-header">
-                                    <h2 class="card-title">
-                                        <i class="fas fa-filter"></i>
-                                        Bộ lọc nâng cao
-                                    </h2>
-                                </div>
-                                <div class="card-content">
-                                    <form method="get" action="FindAvailableRoomsServlet">
-                                        <div class="filter-grid">
-                                            <input type="hidden" name="checkin" value="${param.checkin}">
-                                            <input type="hidden" name="checkout" value="${param.checkout}">
-                                            <input type="hidden" name="guests" value="${param.guests}">
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="roomType">Loại phòng</label>
-                                                <select id="roomType" name="roomType" class="form-select">
-                                                    <option value="">Tất cả</option>
-                                                    <c:forEach var="type" items="${roomTypes}">
-                                                        <option value="${type.name}" <c:if test="${param.roomType == type.name}">selected</c:if>>${type.name}</option>
-                                                    </c:forEach>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label" for="maxPrice">Giá tối đa</label>
-                                                <input type="number" id="maxPrice" name="maxPrice" class="form-input" placeholder="VND" value="${param.maxPrice}">
-                                            </div>
-                                            <div class="form-group">
-                                                <button type="submit" class="btn btn-primary" style="margin-top: 1.75rem;">
-                                                    <i class="fas fa-search"></i>
-                                                    Tìm kiếm
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <c:if test="${not empty error}">
-                                            <div class="alert alert-error">
-                                                ${error}
-                                            </div>
-                                        </c:if>
-                                        <c:if test="${not empty errorMessage}">
-                                            <div class="alert alert-error">
-                                                ${errorMessage}
-                                            </div>
-                                        </c:if>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <!-- Suggestions Tab Content -->
-                            <div id="suggestionsContent" class="tab-content active">
-                                <div class="card">
+                                <!-- Advanced Filter Panel -->
+                                <div class="card" id="filterPanel">
                                     <div class="card-header">
                                         <h2 class="card-title">
-                                            <i class="fas fa-magic"></i>
-                                            Gợi ý tổ hợp phòng phù hợp cho ${guests} người
+                                            <i class="fas fa-filter"></i>
+                                            Bộ lọc nâng cao
                                         </h2>
                                     </div>
                                     <div class="card-content">
-                                        <div class="table-container">
-                                            <table class="modern-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Tổ hợp</th>
-                                                        <th>Sức chứa</th>
-                                                        <th>Số phòng</th>
-                                                        <th>Tổng giá</th>
-                                                        <th>Hành động</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="comboTableBody">
-                                                    <c:forEach var="combo" items="${suggestions}" varStatus="idx">
-                                                        <tr class="combo-row" data-index="${idx.count}">
+                                        <form method="get" action="FindAvailableRoomsServlet">
+                                            <div class="filter-grid">
+                                                <input type="hidden" name="checkin" value="${param.checkin}">
+                                                <input type="hidden" name="checkout" value="${param.checkout}">
+                                                <input type="hidden" name="guests" value="${param.guests}">
 
-                                                            <td>${idx.count}</td>
-                                                            <td>
-                                                                <div class="combo-columns">
-                                                                    <!-- Cột bên trái: Text -->
-                                                                    <div class="combo-info">
-                                                                        <c:forEach var="sug" items="${combo}">
-                                                                            <div class="combination-item">
-                                                                                <span class="combination-quantity">${sug.quantity}x</span>
-                                                                                <a href="RoomDetail?id=${sug.roomType.roomTypeID}" class="combination-type">
-                                                                                    ${sug.roomType.name}
-                                                                                </a>
-                                                                            </div>
-                                                                        </c:forEach>
-                                                                    </div>
-
-                                                                    <!-- Cột bên phải: Ảnh -->
-                                                                    <div class="combo-images">
-                                                                        <c:forEach var="sug" items="${combo}">
-                                                                            <a href="${sug.roomType.imageUrl}" class="magnific-image">
-                                                                                <img src="${sug.roomType.imageUrl}" alt="${sug.roomType.name}" class="room-thumb"
-                                                                                     onerror="this.src='/placeholder.jpg'">
-                                                                            </a>
-                                                                        </c:forEach>
-                                                                    </div>
-
-
-
-
-                                                                </div>
-                                                            </td>
-
-                                                            <td>
-                                                                <c:set var="total" value="0"/>
-                                                                <c:forEach var="sug" items="${combo}">
-                                                                    <c:set var="total" value="${total + sug.quantity * sug.roomType.maxGuests}" />
-                                                                </c:forEach>
-                                                                <span class="badge-secondary">${total} người</span>
-                                                            </td>
-                                                            <td>
-                                                                <c:set var="totalRooms" value="0"/>
-                                                                <c:forEach var="sug" items="${combo}">
-                                                                    <c:set var="totalRooms" value="${totalRooms + sug.quantity}" />
-                                                                </c:forEach>
-                                                                <span class="badge-outline">${totalRooms} phòng</span>
-                                                            </td>
-                                                            <td>
-                                                                <c:set var="totalPrice" value="0"/>
-                                                                <c:forEach var="sug" items="${combo}">
-                                                                    <c:set var="totalPrice" value="${totalPrice + sug.quantity * sug.roomType.basePrice}" />
-                                                                </c:forEach>
-                                                                <div class="price-display">$${totalPrice}</div>
-
-                                                            </td>
-                                                            <td>
-                                                                <!-- Cột nút Chọn -->
-                                                                <c:choose>
-                                                                    <c:when test="${isCustomer}">
-                                                                        <form action="/AddToCustomerCartServlet" method="POST" style="display:inline;">
-                                                                            <c:forEach var="sug" items="${combo}">
-                                                                                <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}" />
-                                                                                <input type="hidden" name="quantity" value="${sug.quantity}" />
-                                                                            </c:forEach>
-                                                                            <button type="submit" class="btn btn-primary">Chọn</button>
-                                                                        </form>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <!-- KHÔNG DÙNG FORM cho Guest -->
-                                                                        <div>
-                                                                            <c:forEach var="sug" items="${combo}">
-                                                                                <input type="hidden"
-                                                                                       name="roomTypeId"
-                                                                                       value="${sug.roomType.roomTypeID}"
-                                                                                       data-base-price="${sug.roomType.basePrice != null ? sug.roomType.basePrice : 0}"
-                                                                                       data-room-name="${sug.roomType.name}" />
-
-
-                                                                                <input type="hidden" name="quantity" value="${sug.quantity}" />
-                                                                            </c:forEach>
-                                                                            <button type="button"
-                                                                                    class="btn btn-primary"
-                                                                                    onclick="handleComboSelection(${idx.count})">
-                                                                                Chọn
-                                                                            </button>
-                                                                        </div>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </td>
-
-                                                        </tr>
-                                                    </c:forEach>
-                                                </tbody>
-                                            </table>
-                                            <div id="toggleRows" class="text-center mt-3">
-                                                <button id="showMoreBtn" class="btn btn-primary" onclick="showMoreCombos()">Xem thêm</button>
-                                                <button id="showLessBtn" class="btn btn-secondary" onclick="showLessCombos()" style="display: none;">Thu gọn</button>
-                                            </div>
-                                        </div>
-
-                                        <c:if test="${noSuggestions}">
-                                            <div class="alert alert-warning">
-                                                <div class="empty-state">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                    <h3>Không tìm thấy tổ hợp phù hợp</h3>
-                                                    <p>Vui lòng thử điều chỉnh lại số người, loại phòng, hoặc ngày nhận/trả phòng.</p>
+                                                <div class="form-group">
+                                                    <label class="form-label" for="roomType">Loại phòng</label>
+                                                    <select id="roomType" name="roomType" class="form-select">
+                                                        <option value="">Tất cả</option>
+                                                        <c:forEach var="type" items="${roomTypes}">
+                                                            <option value="${type.name}" <c:if test="${param.roomType == type.name}">selected</c:if>>${type.name}</option>
+                                                        </c:forEach>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label" for="maxPrice">Giá tối đa</label>
+                                                    <input type="number" id="maxPrice" name="maxPrice" class="form-input" placeholder="VND" value="${param.maxPrice}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-primary" style="margin-top: 1.75rem;">
+                                                        <i class="fas fa-search"></i>
+                                                        Tìm kiếm
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </c:if>
+
+                                            <c:if test="${not empty error}">
+                                                <div class="alert alert-error">
+                                                    ${error}
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${not empty errorMessage}">
+                                                <div class="alert alert-error">
+                                                    ${errorMessage}
+                                                </div>
+                                            </c:if>
+                                        </form>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Manual Selection Tab Content -->
-                            <div id="manualContent" class="tab-content">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h2 class="card-title">
-                                            <i class="fas fa-list"></i>
-                                            Tự chọn phòng từ danh sách còn trống
-                                        </h2>
-                                    </div>
-                                </div>
+                                <!-- Suggestions Tab Content -->
+                                <div id="suggestionsContent" class="tab-content active">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title">
+                                                <i class="fas fa-magic"></i>
+                                                Gợi ý tổ hợp phòng phù hợp cho ${guests} người
+                                            </h2>
+                                        </div>
+                                        <div class="card-content">
+                                            <div class="table-container">
+                                                <table class="modern-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Tổ hợp</th>
+                                                            <th>Sức chứa</th>
+                                                            <th>Số phòng</th>
+                                                            <th>Tổng giá</th>
+                                                            <th>Hành động</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="comboTableBody">
+                                                        <c:forEach var="combo" items="${suggestions}" varStatus="idx">
+                                                            <tr class="combo-row" data-index="${idx.count}">
 
-                                <c:choose>
-                                    <c:when test="${not empty availableRooms}">
-                                        <c:forEach var="room" items="${availableRooms}">
-                                            <div class="card">
-                                                <div class="room-card">
-                                                    <div class="room-card-content">
-                                                        <img src="${room.imageUrl}" alt="${room.name}" class="room-image" 
-                                                             onerror="this.src='/placeholder.svg?height=200&width=400'">
-                                                        <div class="room-details">
-                                                            <div class="room-header">
-                                                                <div class="room-info">
-                                                                    <h3 class="room-title">
-                                                                        <a href="RoomDetail?id=${room.roomTypeID}">
-                                                                            ${room.name}
-                                                                        </a>
-                                                                    </h3>
-                                                                    <p class="room-description">${room.description}</p>
-
-                                                                    <div class="room-meta">
-                                                                        <span>
-                                                                            <i class="fas fa-users"></i>
-                                                                            Tối đa ${room.maxGuests} người
-                                                                        </span>
-                                                                        <span class="text-green">
-                                                                            ${room.availableRooms} phòng còn trống
-                                                                        </span>
-                                                                    </div>
-
-                                                                    <div class="room-amenities">
-                                                                        <span class="amenity-badge">
-                                                                            <i class="fas fa-wifi"></i>
-                                                                            Wifi miễn phí
-                                                                        </span>
-                                                                        <span class="amenity-badge">
-                                                                            <i class="fas fa-car"></i>
-                                                                            Bãi đỗ xe
-                                                                        </span>
-                                                                        <span class="amenity-badge">
-                                                                            <i class="fas fa-swimming-pool"></i>
-                                                                            Hồ bơi
-                                                                        </span>
-                                                                        <span class="amenity-badge">
-                                                                            <i class="fas fa-dumbbell"></i>
-                                                                            Phòng gym
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="room-pricing">
-                                                                    <div class="room-price">$<c:out value="${room.basePrice}" default="0"/></div>
-                                                                    <div class="room-price-note">mỗi đêm</div>
-
-                                                                    <form method="post" action="addToCart"  data-room-capacity="${room.maxGuests}"
-                                                                          onsubmit="return handleManualSelection(this)">
-                                                                        <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
-                                                                        <input type="hidden" name="checkin" value="${checkin}">
-                                                                        <input type="hidden" name="checkout" value="${checkout}">
-
-                                                                        <div class="quantity-selector">
-                                                                            <label class="form-label">Số lượng:</label>
-                                                                            <input type="number" name="quantity" class="quantity-input" 
-                                                                                   min="1" max="${room.availableRooms}" value="1">
+                                                                <td>${idx.count}</td>
+                                                                <td>
+                                                                    <div class="combo-columns">
+                                                                        <!-- Cột bên trái: Text -->
+                                                                        <div class="combo-info">
+                                                                            <c:forEach var="sug" items="${combo}">
+                                                                                <div class="combination-item">
+                                                                                    <span class="combination-quantity">${sug.quantity}x</span>
+                                                                                    <a href="RoomDetail?id=${sug.roomType.roomTypeID}" class="combination-type">
+                                                                                        ${sug.roomType.name}
+                                                                                    </a>
+                                                                                </div>
+                                                                            </c:forEach>
                                                                         </div>
 
-                                                                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                                                                            Chọn
-                                                                        </button>
-                                                                    </form>
+                                                                        <!-- Cột bên phải: Ảnh -->
+                                                                        <div class="combo-images">
+                                                                            <c:forEach var="sug" items="${combo}">
+                                                                                <a href="${sug.roomType.imageUrl}" class="magnific-image">
+                                                                                    <img src="${sug.roomType.imageUrl}" alt="${sug.roomType.name}" class="room-thumb"
+                                                                                         onerror="this.src='/placeholder.jpg'">
+                                                                                </a>
+                                                                            </c:forEach>
+                                                                        </div>
+
+
+
+
+                                                                    </div>
+                                                                </td>
+
+                                                                <td>
+                                                                    <c:set var="total" value="0"/>
+                                                                    <c:forEach var="sug" items="${combo}">
+                                                                        <c:set var="total" value="${total + sug.quantity * sug.roomType.maxGuests}" />
+                                                                    </c:forEach>
+                                                                    <span class="badge-secondary">${total} </span>
+                                                                </td>
+                                                                <td>
+                                                                    <c:set var="totalRooms" value="0"/>
+                                                                    <c:forEach var="sug" items="${combo}">
+                                                                        <c:set var="totalRooms" value="${totalRooms + sug.quantity}" />
+                                                                    </c:forEach>
+                                                                    <span class="badge-outline">${totalRooms} </span>
+                                                                </td>
+                                                                <td>
+                                                                    <c:set var="totalPrice" value="0"/>
+                                                                    <c:forEach var="sug" items="${combo}">
+                                                                        <c:set var="totalPrice" value="${totalPrice + sug.quantity * sug.roomType.basePrice}" />
+                                                                    </c:forEach>
+
+                                                                    <div class="price-display">
+                                                                        <fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="0"/> VND
+                                                                    </div>
+                                                                </td>
+
+                                                                <td>
+                                                                    <!-- Cột nút Chọn -->
+                                                                    <c:choose>
+                                                                        <c:when test="${isCustomer}">
+                                                                            <form action="/AddToCustomerCartServlet" method="POST" style="display:inline;">
+                                                                                <c:forEach var="sug" items="${combo}">
+                                                                                    <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}" />
+                                                                                    <input type="hidden" name="quantity" value="${sug.quantity}" />
+                                                                                </c:forEach>
+                                                                                <button type="submit" class="btn btn-primary">Chọn</button>
+                                                                            </form>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <!-- KHÔNG DÙNG FORM cho Guest -->
+                                                                            <div data-index="${idx.count}">
+                                                                                <c:forEach var="sug" items="${combo}">
+                                                                                    <input type="hidden"
+                                                                                           name="roomTypeId"
+                                                                                           value="${sug.roomType.roomTypeID}"
+                                                                                           data-base-price="${sug.roomType.basePrice != null ? sug.roomType.basePrice : 0}"
+                                                                                           data-room-name="${sug.roomType.name}"
+                                                                                           data-room-capacity="${sug.roomType.maxGuests}" />
+
+                                                                                    <input type="hidden" name="quantity" value="${sug.quantity}" />
+                                                                                </c:forEach>
+
+                                                                                <button type="button"
+                                                                                        class="btn btn-primary"
+                                                                                        onclick="handleComboSelection(${idx.count})">
+                                                                                    Chọn
+                                                                                </button>
+                                                                            </div>
+
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                </td>
+
+                                                            </tr>
+                                                        </c:forEach>
+                                                    </tbody>
+                                                </table>
+                                                <div id="toggleRows" class="text-center mt-3">
+                                                    <button id="showMoreBtn" class="btn btn-primary" onclick="showMoreCombos()">Xem thêm</button>
+                                                    <button id="showLessBtn" class="btn btn-secondary" onclick="showLessCombos()" style="display: none;">Thu gọn</button>
+                                                </div>
+                                            </div>
+
+                                            <c:if test="${noSuggestions}">
+                                                <div class="alert alert-warning">
+                                                    <div class="empty-state">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        <h3>Không tìm thấy tổ hợp phù hợp</h3>
+                                                        <p>Vui lòng thử điều chỉnh lại số người, loại phòng, hoặc ngày nhận/trả phòng.</p>
+                                                    </div>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Selection Tab Content -->
+                                <div id="manualContent" class="tab-content">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title">
+                                                <i class="fas fa-list"></i>
+                                                Tự chọn phòng từ danh sách còn trống
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <c:choose>
+                                        <c:when test="${not empty availableRooms}">
+                                            <c:forEach var="room" items="${availableRooms}">
+                                                <div class="card">
+                                                    <div class="room-card">
+                                                        <div class="room-card-content">
+                                                            <img src="${room.imageUrl}" alt="${room.name}" class="room-image" 
+                                                                 onerror="this.src='/placeholder.svg?height=200&width=400'">
+                                                            <div class="room-details">
+                                                                <div class="room-header">
+                                                                    <div class="room-info">
+                                                                        <h3 class="room-title">
+                                                                            <a href="RoomDetail?id=${room.roomTypeID}">
+                                                                                ${room.name}
+                                                                            </a>
+                                                                        </h3>
+                                                                        <p class="room-description">${room.description}</p>
+
+                                                                        <div class="room-meta">
+                                                                            <span>
+                                                                                <i class="fas fa-users"></i>
+                                                                                Tối đa ${room.maxGuests} người
+                                                                            </span>
+                                                                            <span class="text-green">
+                                                                                ${room.availableRooms} phòng còn trống
+                                                                            </span>
+                                                                        </div>
+
+                                                                        <div class="room-amenities">
+                                                                            <span class="amenity-badge">
+                                                                                <i class="fas fa-wifi"></i>
+                                                                                Wifi miễn phí
+                                                                            </span>
+                                                                            <span class="amenity-badge">
+                                                                                <i class="fas fa-car"></i>
+                                                                                Bãi đỗ xe
+                                                                            </span>
+                                                                            <span class="amenity-badge">
+                                                                                <i class="fas fa-swimming-pool"></i>
+                                                                                Hồ bơi
+                                                                            </span>
+                                                                            <span class="amenity-badge">
+                                                                                <i class="fas fa-dumbbell"></i>
+                                                                                Phòng gym
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="room-pricing">
+                                                                        <div class="room-price">$<c:out value="${room.basePrice}" default="0"/></div>
+                                                                        <div class="room-price-note">mỗi đêm</div>
+
+                                                                        <form   
+                                                                            data-room-capacity="${room.maxGuests}"
+                                                                            onsubmit="return handleManualSelection(this)"
+                                                                            >
+                                                                            <!-- ID loại phòng -->
+                                                                            <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">
+                                                                            <input type="hidden" name="roomName" value="${room.name}">
+
+                                                                            <!-- Dữ liệu ngày -->
+                                                                            <input type="hidden" name="checkin" value="${checkin}">
+                                                                            <input type="hidden" name="checkout" value="${checkout}">
+
+                                                                            <!-- Slot chứa tối đa khách -->
+                                                                            <input type="hidden" name="roomCapacity" value="${room.maxGuests}">
+
+                                                                            <!-- Số lượng -->
+                                                                            <div class="quantity-selector">
+                                                                                <label class="form-label">Số lượng:</label>
+                                                                                <input 
+                                                                                    type="number" 
+                                                                                    name="quantity" 
+                                                                                    class="quantity-input" 
+                                                                                    min="1" 
+                                                                                    max="${room.availableRooms}" 
+                                                                                    value="1"
+                                                                                    >
+                                                                            </div>
+
+                                                                            <!-- Button -->
+                                                                            <button 
+                                                                                type="submit" 
+                                                                                class="btn btn-primary" 
+                                                                                style="width: 100%;"
+                                                                                >
+                                                                                Chọn
+                                                                            </button>
+                                                                        </form>
+
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="card">
-                                            <div class="card-content">
-                                                <div class="empty-state">
-                                                    <i class="fas fa-bed text-red"></i>
-                                                    <h3 class="text-red">Không còn phòng trống</h3>
-                                                    <p class="text-gray">Hiện tại không còn phòng nào trống trong khoảng thời gian bạn chọn.</p>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="card">
+                                                <div class="card-content">
+                                                    <div class="empty-state">
+                                                        <i class="fas fa-bed text-red"></i>
+                                                        <h3 class="text-red">Không còn phòng trống</h3>
+                                                        <p class="text-gray">Hiện tại không còn phòng nào trống trong khoảng thời gian bạn chọn.</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-                <aside class="cart-summary">
-                    <h3>🛒 Giỏ Phòng</h3>
-                    <div id="selectedRoomsList">
-                        <!-- hotel-cart.js sẽ render các phòng chọn ở đây -->
-                    </div>
-                    <hr>
-                    <p>Số đêm: <span id="nightsCount">0 đêm</span></p>
-                    <p>Tạm tính: <span id="roomsTotal">0 VND</span></p>
-                    <p>Thuế (10%): <span id="taxAmount">0 VND</span></p>
-                    <h4>Tổng cộng: <span id="grandTotal">0 VND</span></h4>
-                    <button id="bookingBtn" class="btn btn-primary" onclick="proceedToBooking()" disabled>Tiến hành thanh toán</button>
-                </aside>
-            </div>
+                    <aside class="cart-summary">
+                        <h3>🛒 Giỏ Phòng</h3>
 
+                        <div class="cart-items-wrapper">
+                            <div id="selectedRoomsList">
+                                <!-- JS render ở đây -->
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="cart-footer">
+                            <hr>
+                            <p>Số đêm: <span id="nightsCount">0 đêm</span></p>
+                            <p>Tạm tính: <span id="roomsTotal">0 VND</span></p>
+                            <p>Thuế (10%): <span id="taxAmount">0 VND</span></p>
+                            <h4>Tổng cộng: <span id="grandTotal">0 VND</span></h4>
+
+                            <button 
+                                id="bookingBtn"
+                                type="button"
+                                class="btn btn-primary w-100"
+                                onclick="proceedToBooking()"
+                                disabled>
+                                Tiến hành thanh toán
+                            </button>
+                        </div>
+                    </aside>
+                    <!-- Services Tab Content -->
+                    <!-- Services Tab Content -->
+                    <div id="servicesContent" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    Dịch vụ bổ sung
+                                </h2>
+                            </div>
+                            <div class="card-content">
+                                <c:forEach var="service" items="${services}">
+                                    <div class="service-card">
+                                        <div class="service-info">
+                                            <!-- Ảnh nếu có -->
+                                            <c:if test="${not empty service.serviceImage}">
+                                                <img src="${service.serviceImage}" alt="${service.name}" class="service-thumb"
+                                                     onerror="this.src='/placeholder.jpg'" />
+                                            </c:if>
+
+                                            <!-- Tên + Mô tả -->
+                                            <div class="service-text">
+                                                <label>
+                                                    <input 
+                                                        type="checkbox"
+                                                        value="${service.id}"
+                                                        data-name="${fn:escapeXml(service.name)}"
+                                                        data-price="${service.price}"
+                                                        onchange="toggleService(this)"
+                                                        />
+
+                                                    <strong>${service.name}</strong>
+                                                    <span class="service-price">(${service.price} VND)</span>
+                                                </label>
+                                                <c:if test="${not empty service.description}">
+                                                    <p class="service-desc">${service.description}</p>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
 
             <!-- 5. PHÂN TRANG -->
 

@@ -74,35 +74,62 @@ function renderCartUI() {
     const list = document.getElementById('selectedRoomsList');
     list.innerHTML = '';
     let total = 0;
-
-    if (selectedRooms.length === 0) {
-        list.innerHTML = '<p>Chưa có phòng nào được chọn</p>';
-        return;
-    }
-
+    let totalSlots = 0;
     const nights = calcNights();
 
-   selectedRooms.forEach(c => {
-  let roomsHtml = '';
+    // Phòng & Combo
+    selectedRooms.forEach(c => {
+        let html = '';
+        if (c.rooms && c.rooms.length > 0) {
+            const roomsHtml = c.rooms.map(r => {
+                const slotsPerRoom = r.roomCapacity || 1;
+                const totalSlotRoom = r.quantity * slotsPerRoom;
+                return `<li>${r.roomName} | ${slotsPerRoom} slot/phòng ➜ ${totalSlotRoom} slots</li>`;
+            }).join('');
 
-  if (c.rooms && c.rooms.length > 0) {
-    roomsHtml = c.rooms.map(r => `<div>${r.roomName} ×${r.quantity}</div>`).join('');
-  } else if (c.roomName) {
-    roomsHtml = `<div>${c.roomName} ×${c.quantity}</div>`;
-  }
+            const slots = c.rooms.reduce((sum, r) => sum + r.quantity * (r.roomCapacity || 1), 0);
+            totalSlots += slots;
 
-  const html = `
-    <div class="selected-room-item">
-      <h4>${c.rooms ? `Combo #${c.comboId}` : `Room #${c.roomTypeId}`} ×${c.quantity}</h4>
-      ${roomsHtml}
-      <button onclick="removeRoom(${c.comboId || c.roomTypeId})">X</button>
-    </div>`;
-  list.innerHTML += html;
+            html = `
+        <div class="selected-room-item">
+          <h5>Combo #${c.comboId}</h5>
+          <ul>${roomsHtml}</ul>
+          <p><strong>Tổng Slots Combo:</strong> ${slots}</p>
+          <button onclick="removeRoom(${c.comboId})" class="btn btn-sm btn-danger">Xóa Combo</button>
+        </div>
+      `;
+            total += (c.basePrice || 0) * c.quantity * nights;
+        } else {
+            const slots = c.quantity * (c.roomCapacity || 1);
+            totalSlots += slots;
 
-  total += c.basePrice * c.quantity * nights;
-});
+            html = `
+        <div class="selected-room-item">
+          <h5>${c.roomName} ×${c.quantity}</h5>
+          <p>Slots: ${slots}</p>
+          <p>Giá/phòng: ${formatCurrency(c.basePrice)}</p>
+          <button onclick="removeRoom(${c.roomTypeId})" class="btn btn-sm btn-danger">Xóa</button>
+        </div>
+      `;
+            total += (c.basePrice || 0) * c.quantity * nights;
+        }
 
+        list.innerHTML += html;
+    });
 
+    // DỊCH VỤ
+    if (selectedServices.length > 0) {
+        selectedServices.forEach(s => {
+            const html = `
+        <div class="selected-room-item">
+          <p><strong>Dịch vụ:</strong> ${s.name}</p>
+          <p>Giá: ${formatCurrency(s.price)}</p>
+              <button onclick="removeService(${s.serviceId})" class="btn btn-sm btn-danger">Xóa</button>
+        </div>`;
+            list.innerHTML += html;
+            total += s.price;
+        });
+    }
 
     const tax = total * 0.1;
     const grand = total + tax;
@@ -112,9 +139,25 @@ function renderCartUI() {
     document.getElementById('taxAmount').textContent = formatCurrency(tax);
     document.getElementById('grandTotal').textContent = formatCurrency(grand);
 
-    document.getElementById('bookingBtn').disabled = selectedRooms.length === 0;
+    const guestInput = parseInt(document.getElementById('guests').value) || 0;
+    const slotSummary = `
+    <hr>
+    <p>Slots tổng: ${totalSlots} | Khách: ${guestInput}</p>
+  `;
+    list.innerHTML += slotSummary;
+
+    // Nếu KHÔNG có phòng & KHÔNG có dịch vụ ➜ Disable nút
+    document.getElementById('bookingBtn').disabled = selectedRooms.length === 0 && selectedServices.length === 0;
 }
 
+function removeService(id) {
+  selectedServices = selectedServices.filter(s => s.serviceId !== id);
+  localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+  // Tự tắt checkbox trong Tab dịch vụ (nếu muốn)
+  const checkbox = document.querySelector(`input[type="checkbox"][value="${id}"]`);
+  if (checkbox) checkbox.checked = false;
+  renderCartUI();
+}
 
 
 // ---- Save local ----
@@ -154,15 +197,20 @@ function handleComboSelection(idx) {
 
     let totalBasePrice = 0;
     const rooms = [];
+
     for (let i = 0; i < roomTypeIds.length; i++) {
         const price = parseInt(roomTypeIds[i].dataset.basePrice || '0');
         const qty = parseInt(quantities[i].value);
+        const slotsPerRoom = parseInt(roomTypeIds[i].dataset.roomCapacity || '1'); // ✅ FIX: Đúng chỗ
+
         rooms.push({
             roomTypeId: parseInt(roomTypeIds[i].value),
             roomName: roomTypeIds[i].dataset.roomName,
             quantity: qty,
-            basePrice: price
+            basePrice: price,
+            roomCapacity: slotsPerRoom // ✅ Slot từng room
         });
+
         totalBasePrice += price * qty;
     }
 
@@ -173,8 +221,10 @@ function handleComboSelection(idx) {
         basePrice: totalBasePrice
     };
 
+    // Ghi đè combo cũ
     selectedRooms = selectedRooms.filter(item => !item.rooms);
     selectedRooms.push(combo);
+
     saveToLocalStorage();
     renderCartUI();
     return false;
@@ -187,15 +237,15 @@ function handleComboSelection(idx) {
 
 
 
+
 // ---- Handle Manual ----
 function handleManualSelection(form) {
-    if (isCustomer)
-        return true;
     const room = {
         roomTypeId: parseInt(form.roomTypeId.value),
         roomName: form.roomName ? form.roomName.value : 'Room Manual',
         quantity: parseInt(form.quantity.value),
-        basePrice: 500000
+        basePrice: 500000,
+        roomCapacity: parseInt(form.roomCapacity.value)
     };
 
     addToBooking(room);
@@ -203,6 +253,110 @@ function handleManualSelection(form) {
 }
 
 
+
+// ---- Helpers ----
+function normalizeDate(dmy) {
+    if (!dmy)
+        return '';
+    const parts = dmy.split('/');
+    const dd = parts[0].padStart(2, '0');
+    const mm = parts[1].padStart(2, '0');
+    const yyyy = parts[2];
+    return `${dd}/${mm}/${yyyy}`;
+}
+
+// ---- Detect Checkin/Checkout Change ----
+function checkIfDatesChanged() {
+    const params = new URLSearchParams(window.location.search);
+    const checkin = params.get('checkin');
+    const checkout = params.get('checkout');
+
+    const oldCheckin = localStorage.getItem('lastCheckin');
+    const oldCheckout = localStorage.getItem('lastCheckout');
+
+    const checkinNorm = normalizeDate(checkin);
+    const checkoutNorm = normalizeDate(checkout);
+    const oldCheckinNorm = normalizeDate(oldCheckin);
+    const oldCheckoutNorm = normalizeDate(oldCheckout);
+
+    if (oldCheckinNorm && oldCheckoutNorm) {
+        if (checkinNorm !== oldCheckinNorm || checkoutNorm !== oldCheckoutNorm) {
+            // 🔥 KHÁC ➜ XÓA GIỎ luôn, không hỏi
+            localStorage.removeItem('selectedRooms');
+            selectedRooms = []; // ✅ Xóa RAM luôn!
+        }
+    }
+
+    if (checkinNorm && checkoutNorm) {
+        localStorage.setItem('lastCheckin', checkinNorm);
+        localStorage.setItem('lastCheckout', checkoutNorm);
+    }
+}
+function proceedToBooking() {
+    const guests = parseInt(document.getElementById('guests').value);
+
+    let totalSlots = 0;
+
+    selectedRooms.forEach(c => {
+        if (c.rooms && c.rooms.length > 0) {
+            // Combo
+            c.rooms.forEach(r => {
+                totalSlots += r.quantity * (r.roomCapacity || 1);
+            });
+        } else {
+            totalSlots += c.quantity * (c.roomCapacity || 1);
+        }
+    });
+
+    if (totalSlots - guests > 2) {
+        alert(
+                `⚠️ Giỏ đang chứa ${totalSlots} chỗ ngủ nhưng bạn nhập ${guests} khách.\n` +
+                `Chỉ được phép lệch tối đa 2 slot!\n` +
+                `Hãy điều chỉnh số lượng phòng hoặc combo.`
+                );
+        return;
+    }
+
+    // OK ➜ Tiến hành
+    if (isCustomer) {
+        window.location.href = '/CheckoutServlet';
+    } else {
+        saveToLocalStorage();
+        window.location.href = '/GuestCheckout.jsp';
+    }
+}
+
+
+let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+function formatCurrency(v) {
+    return v.toLocaleString('vi-VN') + ' VND';
+}
+function toggleService(el) {
+    const id = parseInt(el.value);
+    const name = el.dataset.name;
+    const price = parseInt(el.dataset.price);
+
+    const index = selectedServices.findIndex(s => s.serviceId === id);
+    if (index >= 0) {
+        selectedServices.splice(index, 1);
+    } else {
+        selectedServices.push({serviceId: id, name, price});
+    }
+
+    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+    renderCartUI();
+}
+
+localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+
+// === Init Service Branch ===
+document.addEventListener('DOMContentLoaded', function () {
+    renderCartServices();
+});
+document.addEventListener('DOMContentLoaded', function () {
+    checkIfDatesChanged();
+    renderCartUI();
+});
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', renderCartUI);
 window.handleComboSelection = handleComboSelection;
