@@ -670,6 +670,19 @@
                                 <input type="hidden" name="checkout" id="hiddenCheckout">
                                 <input type="hidden" name="guests" id="hiddenGuests">
                             </form>
+                            <!-- Modal nhập thông tin Guest -->
+                            <div id="guestInfoModal" class="modal">
+                                <div class="modal-content">
+                                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                                    <h3>Nhập thông tin liên hệ</h3>
+                                    <label>Họ tên: <input type="text" id="guestFullName"></label><br>
+                                    <label>Email: <input type="email" id="guestEmail"></label><br>
+                                    <label>Điện thoại: <input type="tel" id="guestPhone"></label><br>
+                                    <button onclick="confirmGuestInfo()">Xác nhận</button>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -810,6 +823,16 @@
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            const isCustomer = ${sessionScope.user != null ? true : false};
+            document.getElementById('guestInfoModal').style.display = 'block';
+            document.getElementById('guestInfoModal').style.display = 'none';
+            function closeModal() {
+                document.getElementById('guestInfoModal').style.display = 'none';
+            }
+
+
+        </script>
 
         <script>
             flatpickr("#checkin", {
