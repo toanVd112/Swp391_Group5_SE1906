@@ -271,34 +271,30 @@
                     </div>
                 </div>
             </header>
-            <div id="booking-bar" class="shadow-sm">
-                <form method="get" action="FindAvailableRoomsServlet" class="booking-bar" onsubmit="return validateForm()">
-                    <!-- Box: Check-in & Check-out -->
-                    <div class="booking-box">
-                        <i class="fas fa-calendar-alt"></i>
-                        <div class="booking-box-content">
-                            <input min="1" max="20" type="text" id="checkin" name="checkin" placeholder="Check-in date"   required>
-                            —
-                            <input min="100000" max="10000000"  type="text" id="checkout" name="checkout" placeholder="Check-out date"  required>
+            <div class="search-form-container">
+                <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
+                    <div class="search-row">
+                        <div class="search-field">
+                            <label><i class="fas fa-calendar-check"></i> Ngày nhận phòng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
+                        </div>
+                        <div class="search-field">
+                            <label><i class="fas fa-calendar-times"></i> Ngày trả phòng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Chọn ngày" value="${param.checkout}" required>
+                        </div>
+                        <div class="search-field">
+                            <label><i class="fas fa-users"></i> Số khách</label>
+                            <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
+                        </div>
+                        <div class="search-field">
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                                Tìm phòng
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Box: Guests -->
-                    <div class="booking-box">
-                        <i class="fas fa-user"></i>
-                        <div class="booking-box-content">
-                            <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required> guests
-                        </div>
-                    </div>
-
-                    <!-- Box: Button -->
-                    <button type="submit" class="booking-btn">
-                        🔍 Tìm phòng
-                    </button>
-
                 </form>
             </div>
-
 
 
             <!-- Header Top END ==== -->

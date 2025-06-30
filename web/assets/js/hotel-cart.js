@@ -151,12 +151,13 @@ function renderCartUI() {
 }
 
 function removeService(id) {
-  selectedServices = selectedServices.filter(s => s.serviceId !== id);
-  localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
-  // Tự tắt checkbox trong Tab dịch vụ (nếu muốn)
-  const checkbox = document.querySelector(`input[type="checkbox"][value="${id}"]`);
-  if (checkbox) checkbox.checked = false;
-  renderCartUI();
+    selectedServices = selectedServices.filter(s => s.serviceId !== id);
+    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+    // Tự tắt checkbox trong Tab dịch vụ (nếu muốn)
+    const checkbox = document.querySelector(`input[type="checkbox"][value="${id}"]`);
+    if (checkbox)
+        checkbox.checked = false;
+    renderCartUI();
 }
 
 
