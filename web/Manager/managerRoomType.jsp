@@ -62,6 +62,12 @@
                 background-color: #6c757d;
                 color: white;
             }
+            .table td {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                max-width: 200px; /* hoặc phù hợp với giao diện */
+            }
         </style>
     </head>
     <body class="bg-light" style="padding: 0;">

@@ -279,7 +279,7 @@
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-wrapper">
-                        <input type="text" id="username" name="username" value="${account.username}" required>
+                        <input type="text" id="username" name="username" minlength="4" maxlength="20" pattern="^\S{4,20}$" value="${account.username}" required>
                     </div>
                     <c:if test="${not empty usernameError}">
                         <div class="alert">${usernameError}</div>
@@ -289,7 +289,7 @@
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" name="password" value="${account.password}" required>
+                        <input type="password" id="password" name="password" minlength="4" maxlength="20" pattern="^\S{4,20}$" value="${account.password}" required>
                     </div>
                     <c:if test="${not empty passwordError}">
                         <div class="alert">${passwordError}</div>
@@ -315,7 +315,7 @@
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <div class="input-wrapper">
-                        <input type="email" id="email" name="email" value="${account.email}" required>
+                        <input type="email" id="email" name="email" maxlength="100" value="${account.email}" required>
                     </div>
                     <c:if test="${not empty emailError}">
                         <div class="alert">${emailError}</div>

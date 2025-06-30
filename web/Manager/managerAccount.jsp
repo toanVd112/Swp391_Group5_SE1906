@@ -43,6 +43,12 @@
             .form-control:valid, .form-select:valid {
                 border-color: #198754;
             }
+            .table td {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                max-width: 200px; /* hoặc phù hợp với giao diện */
+            }   
         </style>
     </head>
     <body class="bg-light">
@@ -217,7 +223,7 @@
                                 <label for="password" class="form-label">Mật khẩu</label>
                                 <input type="password" class="form-control ${not empty passwordError ? 'is-invalid' : ''}" 
                                        id="password" name="password" 
-                                       pattern="^\S{6,}$" required
+                                       pattern="^\S{6,20}$" required
                                        oninput="validatePassword(this)">
                                 <div class="invalid-feedback">
                                     <c:choose>
@@ -231,7 +237,7 @@
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control ${not empty emailError ? 'is-invalid' : ''}" 
-                                       id="email" name="email" value="${email}" required>
+                                       id="email" name="email" maxlength="100" value="${email}" required>
                                 <div class="invalid-feedback">${emailError}</div>
                             </div>
 
