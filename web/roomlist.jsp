@@ -660,6 +660,16 @@
                                     </button>
                                 </div>
                             </div>
+
+                            <!-- ✅ Form ẩn: đặt ngay sau Sidebar -->
+                            <form id="bookingForm" action="${pageContext.request.contextPath}/ProceedBookingServlet" method="POST">
+                                <input type="hidden" name="selectedRoomsJSON" id="selectedRoomsJSON">
+                                <input type="hidden" name="selectedServicesJSON" id="selectedServicesJSON">
+                                <!-- Có thể thêm hidden checkin, checkout, guests -->
+                                <input type="hidden" name="checkin" id="hiddenCheckin">
+                                <input type="hidden" name="checkout" id="hiddenCheckout">
+                                <input type="hidden" name="guests" id="hiddenGuests">
+                            </form>
                         </div>
                     </div>
                 </div>

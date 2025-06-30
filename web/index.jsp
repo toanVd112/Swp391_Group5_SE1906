@@ -7,7 +7,53 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
+<%
+    // Kiểm tra đã login hay chưa
+    Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
+    if (isLoggedIn == null) isLoggedIn = false;
 
+    // Lấy thông tin user từ session
+    String userFirstName = (String) session.getAttribute("userFirstName");
+    String userLastName  = (String) session.getAttribute("userLastName");
+    String userEmail     = (String) session.getAttribute("userEmail");
+    String userPhone     = (String) session.getAttribute("userPhone");
+    String userCountry   = (String) session.getAttribute("userCountry");
+    String username      = (String) session.getAttribute("username");
+
+    // Lấy thông tin booking từ request
+    String roomID         = request.getParameter("roomID");
+    String roomTypeID     = request.getParameter("roomTypeID");  // ✅ ĐÃ BỔ SUNG
+    String roomTypeName   = request.getParameter("roomTypeName");
+    String pricePerNight  = request.getParameter("pricePerNight");
+    String checkInDate    = request.getParameter("checkInDate");
+    
+    String checkOutDate   = request.getParameter("checkOutDate");
+    String roomDetail     =request.getParameter("roomDetail");
+    // Set default values nếu null
+    userFirstName   = (userFirstName != null) ? userFirstName : "";
+    userLastName    = (userLastName  != null) ? userLastName  : "";
+    userEmail       = (userEmail     != null) ? userEmail     : "";
+    userPhone       = (userPhone     != null) ? userPhone     : "";
+    userCountry     = (userCountry   != null) ? userCountry   : "VNM";
+    username        = (username      != null) ? username      : "";
+
+    roomID          = (roomID        != null) ? roomID        : "101";
+    roomTypeID      = (roomTypeID    != null) ? roomTypeID    : "DELUXE";
+    roomTypeName    = (roomTypeName  != null) ? roomTypeName  : "Deluxe Room";
+    pricePerNight   = (pricePerNight != null) ? pricePerNight : "1000000";
+   if (checkInDate == null || checkInDate.trim().isEmpty()) {
+    checkInDate = "2025-06-21";
+}
+    checkOutDate    = (checkOutDate  != null) ? checkOutDate  : "2025-06-22";
+
+    // Gợi ý: nếu bạn cần dùng lại, có thể lưu vào session ở đây
+    session.setAttribute("checkInDate", checkInDate);
+    session.setAttribute("checkOutDate", checkOutDate);
+    session.setAttribute("roomID", roomID);
+    session.setAttribute("roomTypeID", roomTypeID);
+    session.setAttribute("roomTypeName", roomTypeName);
+    session.setAttribute("pricePerNight", pricePerNight);
+%>
 <!DOCTYPE html>
 <html lang="en">
 
