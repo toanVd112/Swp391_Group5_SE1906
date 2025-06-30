@@ -85,8 +85,6 @@ public class LoginCustomerServlet extends HttpServlet {
 
         if (account != null) {
             HttpSession session = request.getSession();
-
-            // 60 phút (3600 giây)
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
 
             session.setAttribute("user", account);
