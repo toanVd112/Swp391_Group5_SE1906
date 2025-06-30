@@ -209,7 +209,7 @@ public class editService extends HttpServlet {
             // Bước 11: Xử lý kết quả cập nhật
             if (success) {
                 // Nếu cập nhật thành công, chuyển hướng về danh sách dịch vụ với thông báo
-                response.sendRedirect(request.getContextPath() + "/services/list?msg=Update+success");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?msg=Update+success");
             } else {
                 // Nếu cập nhật thất bại, đặt thông báo lỗi
                 request.setAttribute("errorMessage", "Cập nhật dịch vụ thất bại. Vui lòng thử lại.");
