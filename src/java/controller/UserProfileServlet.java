@@ -14,10 +14,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.*;
+import java.io.*;
 import jakarta.servlet.annotation.MultipartConfig;
 import DAO.UserDao;
 import model.Account;
 import model.User;
+import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  *
@@ -110,89 +114,128 @@ public class UserProfileServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8"); // Đảm bảo nhận Tiếng Việt
         
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-        
-        int accountId = account.getAccountID();
-        
-        String fullName = request.getParameter("fullName");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
-        
-        StringBuilder errors = new StringBuilder();
-    // Validate họ tên
-        if (fullName == null || fullName.trim().isEmpty()) {
-            errors.append("Vui lòng nhập Họ tên.<br>");
-        } else if (!isValidName(fullName.trim())) {
-            errors.append("Họ tên chỉ được nhập chữ, không chứa số hoặc ký tự đặc biệt.<br>");
-        }
-
-    // Validate email
-        if (email == null || email.trim().isEmpty()) {
-            errors.append("Vui lòng nhập Email.<br>");
-        } else if (!isValidEmail(email.trim())) {
-            errors.append("Email không hợp lệ.<br>");
-        }
-
-    // Validate số điện thoại
-        if (phone == null || phone.trim().isEmpty()) {
-            errors.append("Vui lòng nhập Số điện thoại.<br>");
-        } else if (!isValidPhone(phone.trim())) {
-            errors.append("Số điện thoại phải gồm đúng 10 số.<br>");
-        }
-    // Validate địa chỉ
-        if (address == null || address.trim().isEmpty()) {
-            errors.append("Vui lòng nhập Địa chỉ.<br>");
-        } else if (address.trim().length() > 30) {
-            errors.append("Địa chỉ chỉ được nhập tối đa 30 ký tự.<br>");
-        }
-
-        UserDao userDAO = new UserDao();
-        User user = userDAO.getUserByAccountId(accountId);
-        
-        if (errors.length() > 0) {
-            if (user == null) {
-                user = new User();
-                user.setAccountId(accountId);
+        try {
+            User user = userDAO.getUserByAccountId(accountId);
+            Account account = accountDAO.getAccountByID(String.valueOf(accountId));
+            if (user == null || account == null) {
+                request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
+                request.getRequestDispatcher("/error.jsp").forward(request, response);
+                return;
             }
-            user.setFullName(fullName);
-            user.setEmail(email);
-            user.setPhone(phone);
-            user.setAddress(address);
+
+            String fullName = request.getParameter("fullName");
+            String email = request.getParameter("email");
+            String phone = request.getParameter("phone");
+            String dateOfBirth = request.getParameter("dateOfBirth");
+            String address = request.getParameter("address");
+
+            // Validation
+            List<String> errors = new ArrayList<>();
+            if (fullName == null || fullName.trim().isEmpty()) {
+                errors.add("Họ và tên không được để trống!");
+            } else if (fullName.length() > 100) {
+                errors.add("Họ và tên không được vượt quá 100 ký tự!");
+            } else if (!isValidName(fullName)) {
+                errors.add("Họ và tên chỉ được chứa chữ cái và khoảng trắng!");
+            }
+            if (!isValidEmail(email)) {
+                errors.add("Định dạng email không hợp lệ!");
+            } else if (!account.getEmail().equals(email) && accountDAO.isDuplicateAccount(null, email)) {
+                errors.add("Email đã được sử dụng bởi tài khoản khác!");
+            }
+            if (!isValidPhone(phone)) {
+                errors.add("Số điện thoại phải là 10 chữ số!");
+            }
+            if (dateOfBirth != null && !dateOfBirth.isEmpty() && !isValidDate(dateOfBirth)) {
+                errors.add("Định dạng ngày sinh không hợp lệ! Sử dụng YYYY-MM-DD.");
+            }
+
+            if (!errors.isEmpty()) {
+                request.setAttribute("errors", errors);
+                request.setAttribute("tempFullName", fullName);
+                request.setAttribute("tempEmail", email);
+                request.setAttribute("tempPhone", phone);
+                request.setAttribute("tempDob", dateOfBirth);
+                request.setAttribute("tempAddress", address);
+                request.setAttribute("user", user);
+                request.setAttribute("account", account);
+                request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+                return;
+            }
+
+            // Cập nhật thông tin user
+            user.setFullName(fullName.trim());
+            user.setEmail(email.trim());
+            user.setPhone(phone.trim());
+            user.setDateOfBirth(dateOfBirth != null ? dateOfBirth.trim() : null);
+            user.setAddress(address != null ? address.trim() : null);
+
+            // Xử lý upload ảnh
+            Part filePart = request.getPart("photo");
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = extractFileName(filePart);
+                if (!fileName.matches(".*\\.(jpg|jpeg|png|gif)$")) {
+                    request.setAttribute("error", "Định dạng ảnh không hợp lệ! Chỉ chấp nhận JPG, PNG, GIF.");
+                    request.setAttribute("user", user);
+                    request.setAttribute("account", account);
+                    request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+                    return;
+                }
+                String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+                // Xóa ảnh cũ nếu tồn tại
+                if (user.getAvatarPath() != null) {
+                    File oldFile = new File(getServletContext().getRealPath("") + File.separator + user.getAvatarPath());
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
+                }
+                String filePath = uploadPath + File.separator + fileName;
+                filePart.write(filePath);
+                user.setAvatarPath(UPLOAD_DIR + "/" + fileName);
+            }
+
+            // Cập nhật hồ sơ
+            if (userDAO.updateUser(user)) {
+                // Cập nhật email trong bảng Accounts nếu thay đổi
+                if (!account.getEmail().equals(email)) {
+                    accountDAO.editAccount(account.getUsername(), account.getPassword(), account.getRole(), 
+                            account.isActive(), email, String.valueOf(accountId));
+                }
+                request.setAttribute("message", "Cập nhật hồ sơ thành công!");
+            } else {
+                request.setAttribute("error", "Cập nhật hồ sơ thất bại!");
+            }
 
             request.setAttribute("user", user);
-            request.setAttribute("msg", "<span style='color:red'>" + errors.toString() + "</span>");
-            request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
-            return;
+            request.setAttribute("account", account);
+            request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi khi cập nhật hồ sơ!");
+            request.setAttribute("user", userDAO.getUserByAccountId(accountId));
+            request.setAttribute("account", accountDAO.getAccountByID(String.valueOf(accountId)));
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
-
-        boolean ok;
-        if (user == null) {
-            user = new User();
-            user.setAccountId(accountId);
-            user.setFullName(fullName);
-            user.setEmail(email);
-            user.setPhone(phone);
-            user.setAddress(address);
-            ok = userDAO.insertUser(user);
-        } else {
-            user.setFullName(fullName);
-            user.setEmail(email);
-            user.setPhone(phone);
-            user.setAddress(address);
-            ok = userDAO.updateUser(user);
+    }
+    
+    private String extractFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        String[] items = contentDisposition.split(";");
+        for (String s : items) {
+            if (s.trim().startsWith("filename")) {
+                return System.currentTimeMillis() + "_" + s.substring(s.indexOf("=") + 2, s.length() - 1);
+            }
         }
-        if (ok) {
-            request.setAttribute("msg", "<span style='color:green'>Cập nhật thành công!</span>");
-        } else {
-            request.setAttribute("msg", "<span style='color:red'>Có lỗi xảy ra khi lưu thông tin!</span>");
-        }
-        request.setAttribute("user", userDAO.getUserByAccountId(accountId)); // load lại info mới nhất
-        request.getRequestDispatcher("/admin/user-profile.jsp").forward(request, response);
+        return "";
     }
     
     // Validate email theo regex đơn giản
@@ -208,6 +251,20 @@ public class UserProfileServlet extends HttpServlet {
     // Cho phép chữ cái tiếng Việt, chữ hoa, thường, và khoảng trắng, không số hoặc ký tự đặc biệt
     private boolean isValidName(String name) {
         return name != null && name.matches("^[a-zA-ZÀ-ỹ\\s]+$");
+    }
+    
+    private boolean isValidDate(String date) {
+        if (date == null || !date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            return false;
+        }
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            sdf.parse(date);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /** 

@@ -84,8 +84,7 @@ public class Account implements Serializable{
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
-
-    
+ 
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
@@ -105,6 +104,5 @@ public class Account implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    
+
 }
