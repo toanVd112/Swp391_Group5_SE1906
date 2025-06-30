@@ -188,106 +188,88 @@
 
         <%-- JavaScript để validate phía client --%>
         <script>
-            async function isDupeServiceName(input) {
-                const dataToSend = input;
+            async function isDupeServiceName(input, serviceId) {
+    const dataToSend = { name: input, id: serviceId };
+    try {
+        const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataToSend)
+        });
+        if (!response.ok) throw new Error('API error');
+        const result = await response.json();
+        return result === true || result === "true";
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
+    }
+}
 
-                try {
-                    const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({data: dataToSend})
-                    });
+async function validateForm(form) {
+    let isValid = true;
+    let errorMessages = [];
+    const nameInput = document.getElementById("name");
+    const priceInput = document.getElementById("price");
+    const serviceTypeInput = document.getElementById("serviceType");
+    const serviceImageInput = document.getElementById("serviceImage");
+    const serviceIdInput = document.querySelector("input[name='id']");
 
-                    if (!response.ok) {
-                        throw new Error('Phản hồi từ API không thành công');
-                    }
+    if (!nameInput || !priceInput || !serviceTypeInput || !serviceImageInput || !serviceIdInput) {
+        alert("Lỗi: Không tìm thấy các trường dữ liệu.");
+        return false;
+    }
 
-                    const result = await response.json();
-                    console.log('Kết quả:', result);
-                    return result === true || result === "true"; // Hỗ trợ cả boolean và chuỗi
-                } catch (error) {
-                    console.error('Lỗi:', error);
-                    return false; // Trả về false khi lỗi, giả sử không trùng lặp nếu API thất bại
-                }
-            }
+    const name = nameInput.value.trim();
+    const price = priceInput.value.trim();
+    const serviceType = serviceTypeInput.value.trim();
+    const serviceImage = serviceImageInput.value.trim();
+    const serviceId = serviceIdInput.value.trim();
 
-            async function validateForm(form) {
-                let isValid = true;
-                let errorMessages = [];
+    document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
 
-                // Lấy các phần tử HTML và kiểm tra tồn tại
-                const nameInput = document.getElementById("name");
-                const priceInput = document.getElementById("price");
-                const serviceTypeInput = document.getElementById("serviceType");
-                const serviceImageInput = document.getElementById("serviceImage");
+    const isDupServiceName = await isDupeServiceName(name, serviceId);
+    if (!name) {
+        nameInput.classList.add("input-error");
+        errorMessages.push("Tên dịch vụ không được để trống.");
+        isValid = false;
+    } else if (name.length < 3 || name.length > 100) {
+        nameInput.classList.add("input-error");
+        errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự.");
+        isValid = false;
+    } else if (isDupServiceName) {
+        nameInput.classList.add("input-error");
+        errorMessages.push("Tên dịch vụ đã tồn tại.");
+        isValid = false;
+    }
 
-                if (!nameInput || !priceInput || !serviceTypeInput || !serviceImageInput) {
-                    console.error("Một hoặc nhiều phần tử HTML không tồn tại.");
-                    alert("Lỗi: Không tìm thấy các trường dữ liệu cần thiết.");
-                    return false;
-                }
+    const priceValue = parseFloat(price);
+    if (!price || isNaN(priceValue) || priceValue < 0 || priceValue > 1000000000) {
+        priceInput.classList.add("input-error");
+        errorMessages.push("Giá phải từ 0 đến 1,000,000,000.");
+        isValid = false;
+    }
 
-                // Lấy giá trị từ các trường
-                const name = nameInput.value.trim();
-                const price = priceInput.value.trim();
-                const serviceType = serviceTypeInput.value.trim();
-                const serviceImage = serviceImageInput.value.trim();
+    if (!serviceType) {
+        serviceTypeInput.classList.add("input-error");
+        errorMessages.push("Loại dịch vụ không được để trống.");
+        isValid = false;
+    }
 
-                // Xóa lớp input-error trước khi validate
-                document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+    if (serviceImage) {
+        const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
+        if (!imageRegex.test(serviceImage)) {
+            serviceImageInput.classList.add("input-error");
+            errorMessages.push("URL hình ảnh không hợp lệ.");
+            isValid = false;
+        }
+    }
 
-                // Kiểm tra tên dịch vụ trùng lặp
-                const isDupServiceName = await isDupeServiceName(name);
-
-                // Validate tên dịch vụ
-                if (!name) {
-                    nameInput.classList.add("input-error");
-                    errorMessages.push("Tên dịch vụ không được để trống.");
-                    isValid = false;
-                } else if (name.length < 3 || name.length > 100) {
-                    nameInput.classList.add("input-error");
-                    errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự.");
-                    isValid = false;
-                } else if (isDupServiceName) {
-                    console.log("Tên dịch vụ trùng lặp");
-                    nameInput.classList.add("input-error");
-                    errorMessages.push("Tên dịch vụ đã tồn tại.");
-                    isValid = false;
-                }
-
-                // Validate giá
-                const priceValue = parseFloat(price);
-                if (!price || isNaN(priceValue) || priceValue < 0 || priceValue > 1000000000) {
-                    priceInput.classList.add("input-error");
-                    errorMessages.push("Giá phải là số hợp lệ từ 0 đến 1,000,000,000.");
-                    isValid = false;
-                }
-
-                // Validate loại dịch vụ
-                if (!serviceType) {
-                    serviceTypeInput.classList.add("input-error");
-                    errorMessages.push("Loại dịch vụ không được để trống.");
-                    isValid = false;
-                }
-
-                // Validate URL hình ảnh
-                if (serviceImage) {
-                    const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
-                    if (!imageRegex.test(serviceImage)) {
-                        serviceImageInput.classList.add("input-error");
-                        errorMessages.push("URL hình ảnh không hợp lệ.");
-                        isValid = false;
-                    }
-                }
-
-                if (!isValid) {
-                    alert(errorMessages.join("\n"));
-                } else {
-                    form.submit();
-                }
-            }
+    if (!isValid) {
+        alert(errorMessages.join("\n"));
+    } else {
+        form.submit();
+    }
+}
         </script>
     </head>
     <body>

@@ -1,42 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.tuan;
 
 import DAO.ServiceDAO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-/**
- *
- * @author admin
- */
 @WebServlet(name = "IsDuplicatedServiceName", urlPatterns = {"/services/dupe"})
 public class IsDuplicatedServiceName extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Đọc dữ liệu JSON từ yêu cầu
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -46,25 +28,26 @@ public class IsDuplicatedServiceName extends HttpServlet {
         }
         String inputString = stringBuilder.toString();
 
-        // Chuyển đổi JSON thành đối tượng Java
         Gson gson = new Gson();
-        Type mapType = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> jsonMap = gson.fromJson(inputString, mapType);
-        
-        String serviceName = (String) jsonMap.get("data");
-        boolean isDupeServiceName = new ServiceDAO().isDuplicatedServiceName(serviceName);
 
-        // Tạo đối tượng phản hồi
-        String responseMessage;
-        if (isDupeServiceName) {
-            responseMessage = "true";
-        } else {
-            responseMessage = "false";
+        String serviceName = (String) jsonMap.get("name");
+        String idStr = (String) jsonMap.get("id");
+        int serviceId = -1;
+        if (idStr != null && !idStr.trim().isEmpty()) {
+            try {
+                serviceId = Integer.parseInt(idStr);
+            } catch (NumberFormatException e) {
+                // Ignore invalid ID
+            }
         }
+
+        boolean isDupeServiceName = new ServiceDAO().isDuplicatedServiceName(serviceName, serviceId);
+
+        String responseMessage = isDupeServiceName ? "true" : "false";
         String responseJson = gson.toJson(responseMessage);
 
-        // Thiết lập header và gửi phản hồi
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
@@ -73,43 +56,20 @@ public class IsDuplicatedServiceName extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Checks if a service name is duplicated, excluding the current service ID.";
+    }
 }

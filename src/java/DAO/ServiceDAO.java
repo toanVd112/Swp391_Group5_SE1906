@@ -209,17 +209,21 @@ public class ServiceDAO {
         return success;
     }
 
-    public boolean isDuplicatedServiceName(String serviceName) {
-        try (
-                Connection conn = DBConnect.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM services WHERE ServiceName = ? LIMIT 1");) {
-            stmt.setString(1, serviceName);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Database error while checking for duplicated service name", e);
+    public boolean isDuplicatedServiceName(String name, int excludeId) {
+    String sql = "SELECT COUNT(*) FROM services WHERE name = ? AND id != ?";
+    try (Connection conn = DBConnect.getConnection(); // Assume getConnection() exists
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, name);
+        stmt.setInt(2, excludeId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return false;
+}
 
     public List<Service> getAvailableServices() throws SQLException  {
         List<Service> services = new ArrayList<>();
