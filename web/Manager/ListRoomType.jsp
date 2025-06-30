@@ -224,7 +224,7 @@
             </c:if>
 
             <h2>Danh sách Loại Phòng
-                <a class="add-btn" href="ManageRoomType"><i class="fas fa-plus"></i> Thêm mới</a>
+                <a class="add-btn" href="AddRoomType"><i class="fas fa-plus"></i> Thêm mới</a>
             </h2>
 
             <!-- Bộ lọc -->
@@ -271,7 +271,9 @@
                             </td>
                             <td class="action-buttons">
                                 <a class="action-btn btn-view" href="ViewRoomTypeServlet?id=${rt.roomTypeID}"><i class="fas fa-eye"></i> Xem</a>
-                                <a class="action-btn btn-edit" href="ManageRoomType?id=${rt.roomTypeID}"><i class="fas fa-edit"></i> Sửa</a>
+                                <a class="action-btn btn-edit" href="UpdateRoomType?id=${rt.roomTypeID}">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
                                 <a class="action-btn btn-delete"
                                    href="DeleteRoomType?id=${rt.roomTypeID}"
                                    onclick="return confirm('Xóa ${rt.name}?');">

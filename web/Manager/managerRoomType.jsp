@@ -81,8 +81,10 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="room-type-form" action="ManageRoomType" method="post">
-                        <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
+<form id="room-type-form" action="${roomType != null ? 'UpdateRoomType' : 'AddRoomType'}" method="post">
+                        <c:if test="${roomType != null && roomType.roomTypeID != 0}">
+                            <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
+                        </c:if>
                         <input type="hidden" name="description" id="descriptionHidden">
                         <input type="hidden" name="categorySync" id="categorySync">
                         <!-- Tab Chi tiết -->
@@ -189,13 +191,24 @@
                 });
 
                 // Form submission handling
+                // Form submission handling (fix sync imageUrls[] <-> imageCategoriesX)
                 document.getElementById('room-type-form').addEventListener('submit', () => {
+                    // Cập nhật mô tả ẩn
                     const editor = document.getElementById('description');
                     document.getElementById('descriptionHidden').value = editor ? editor.innerHTML : '';
+
+                    // Đồng bộ danh mục (dạng ẩn)
                     const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
                             .map(input => input.value.trim());
                     document.getElementById('categorySync').value = categories.join(',');
-                    console.log('Submitting categories:', categories);
+
+                    // Gán lại name="imageCategoriesX" theo đúng thứ tự imageUrls[]
+                    document.querySelectorAll('#image-url-container .image-url-row').forEach((row, index) => {
+                        const select = row.querySelector('select');
+                        if (select) {
+                            select.name = 'imageCategories' + index;
+                        }
+                    });
                 });
 
                 // Add amenity
@@ -215,60 +228,60 @@
                 }
 
                 // Add category
-            const addCategoryBtn = document.getElementById('add-category');
-if (addCategoryBtn) {
-    addCategoryBtn.addEventListener('click', () => {
-        const input = document.getElementById('newCategory');
-        const newCat = input.value.trim();
-        console.log('Creating category:', newCat);
+                const addCategoryBtn = document.getElementById('add-category');
+                if (addCategoryBtn) {
+                    addCategoryBtn.addEventListener('click', () => {
+                        const input = document.getElementById('newCategory');
+                        const newCat = input.value.trim();
+                        console.log('Creating category:', newCat);
 
-        if (!newCat) {
-            alert("Vui lòng nhập tên danh mục.");
-            return;
-        }
+                        if (!newCat) {
+                            alert("Vui lòng nhập tên danh mục.");
+                            return;
+                        }
 
-        const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
-            .map(el => el.value.trim());
+                        const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
+                                .map(el => el.value.trim());
 
-        if (categories.includes(newCat)) {
-            alert("Danh mục đã tồn tại.");
-            return;
-        }
+                        if (categories.includes(newCat)) {
+                            alert("Danh mục đã tồn tại.");
+                            return;
+                        }
 
-        const div = document.createElement('div');
-        div.className = 'd-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white category-item';
+                        const div = document.createElement('div');
+                        div.className = 'd-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white category-item';
 
-        const hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = 'categoryList[]';
-        hidden.value = newCat;
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'categoryList[]';
+                        hidden.value = newCat;
 
-        const span = document.createElement('span');
-        span.textContent = newCat;
+                        const span = document.createElement('span');
+                        span.textContent = newCat;
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-sm btn-light ml-2 py-0 px-2 remove-category';
-        button.dataset.cat = newCat;
-        button.textContent = '×';
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'btn btn-sm btn-light ml-2 py-0 px-2 remove-category';
+                        button.dataset.cat = newCat;
+                        button.textContent = '×';
 
-        div.appendChild(hidden);
-        div.appendChild(span);
-        div.appendChild(button);
+                        div.appendChild(hidden);
+                        div.appendChild(span);
+                        div.appendChild(button);
 
-        const categoryList = document.getElementById('category-list');
-        if (categoryList) {
-            categoryList.appendChild(div);
-            input.value = '';
-            updateAllCategorySelects();
-            console.log('Added category safely:', newCat);
-        } else {
-            console.error('Element #category-list not found!');
-        }
-    });
-} else {
-    console.error('Element #add-category not found!');
-}
+                        const categoryList = document.getElementById('category-list');
+                        if (categoryList) {
+                            categoryList.appendChild(div);
+                            input.value = '';
+                            updateAllCategorySelects();
+                            console.log('Added category safely:', newCat);
+                        } else {
+                            console.error('Element #category-list not found!');
+                        }
+                    });
+                } else {
+                    console.error('Element #add-category not found!');
+                }
 
                 // Remove category (event delegation)
                 const categoryList = document.getElementById('category-list');
@@ -304,7 +317,25 @@ if (addCategoryBtn) {
                         });
                     });
                 }
+                const mainImageInput = document.getElementById('imageUrl');
+                const mainImagePreview = document.getElementById('main-image-preview');
 
+                if (mainImageInput && mainImagePreview) {
+                    // Preview nếu người dùng thay đổi URL
+                    mainImageInput.addEventListener('input', () => {
+                        const url = mainImageInput.value.trim();
+                        mainImagePreview.src = url;
+                        mainImagePreview.style.display = url ? 'block' : 'none';
+                    });
+
+                    // Nếu đã có sẵn ảnh thì hiển thị luôn
+                    if (mainImageInput.value.trim()) {
+                        mainImagePreview.src = mainImageInput.value.trim();
+                        mainImagePreview.style.display = 'block';
+                    } else {
+                        mainImagePreview.style.display = 'none';
+                    }
+                }
                 // Add image URL
                 let imageCount = document.querySelectorAll('#image-url-container .image-url-row').length;
                 document.getElementById('add-url-btn').addEventListener('click', () => {

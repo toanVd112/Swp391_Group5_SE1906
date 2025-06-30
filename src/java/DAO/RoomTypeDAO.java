@@ -1,8 +1,8 @@
 package DAO;
 
+import java.sql.Date;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import model.Amenity;
 import model.RoomImage;
 import model.RoomType;
@@ -25,71 +25,42 @@ public class RoomTypeDAO {
                         rs.getInt("MaxGuests")
                 );
                 roomType.setImages(getImagesByRoomTypeId(id));
+                roomType.setAmenities(getAmenitiesByRoomTypeId(id));
+                roomType.setCategoryList(getCategoriesByRoomTypeId(id));
                 return roomType;
             }
         }
         return null;
     }
 
-    public int insertRoomType(RoomType type) throws SQLException {
-        String sql = "INSERT INTO roomtypes (Name, Description, BasePrice, RoomTypeImage, RoomDetail, MaxGuests) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, type.getName());
-            ps.setString(2, type.getDescription());
-            ps.setDouble(3, type.getBasePrice());
-            ps.setString(4, type.getImageUrl());
-            ps.setString(5, type.getRoomDetail());
-            ps.setInt(6, type.getMaxGuests()); // thêm dòng này
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
-    public void updateRoomType(RoomType type) throws SQLException {
-        String sql = "UPDATE roomtypes SET Name=?, Description=?, BasePrice=?, RoomTypeImage=?, RoomDetail=?, MaxGuests=? WHERE RoomTypeID=?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, type.getName());
-            ps.setString(2, type.getDescription());
-            ps.setDouble(3, type.getBasePrice());
-            ps.setString(4, type.getImageUrl());
-            ps.setString(5, type.getRoomDetail());
-            ps.setInt(6, type.getMaxGuests()); // thêm dòng này
-            ps.setInt(7, type.getRoomTypeID());
-            ps.executeUpdate();
-        }
-    }
-
-    public boolean deleteRoomType(int roomTypeId) throws SQLException {
-        if (hasOccupiedRooms(roomTypeId)) {
-            return false;
-        }
-
+    public boolean insertFullRoomType(RoomType type) throws SQLException {
         Connection conn = null;
         try {
             conn = DBConnect.getConnection();
             conn.setAutoCommit(false);
 
-            deleteAmenitiesByRoomTypeId(conn, roomTypeId);
-            deleteImagesByRoomTypeId(conn, roomTypeId);
-            deleteRoomsByRoomTypeId(conn, roomTypeId);
-
-            String sql = "DELETE FROM roomtypes WHERE RoomTypeID = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, roomTypeId);
-                int rowsAffected = ps.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    conn.commit();
-                    return true;
-                } else {
-                    conn.rollback();
-                    return false;
+            String insertRoomTypeSql = "INSERT INTO roomtypes (Name, Description, BasePrice, RoomTypeImage, RoomDetail, MaxGuests) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(insertRoomTypeSql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, type.getName());
+                ps.setString(2, type.getDescription());
+                ps.setDouble(3, type.getBasePrice());
+                ps.setString(4, type.getImageUrl());
+                ps.setString(5, type.getRoomDetail());
+                ps.setInt(6, type.getMaxGuests());
+                ps.executeUpdate();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    type.setRoomTypeID(rs.getInt(1));
                 }
             }
+
+            insertCategories(conn, type);
+            insertAmenities(conn, type);
+            insertImages(conn, type);
+
+            conn.commit();
+            return true;
+
         } catch (SQLException e) {
             if (conn != null) {
                 conn.rollback();
@@ -103,65 +74,125 @@ public class RoomTypeDAO {
         }
     }
 
-    private boolean hasOccupiedRooms(int roomTypeId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM rooms WHERE RoomTypeID = ? AND Status = 'occupied'";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        }
-        return false;
-    }
-
-    public void deleteAmenitiesByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
-        String sql = "DELETE FROM roomamenities WHERE RoomTypeID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ps.executeUpdate();
-        }
-    }
-
-    private void deleteImagesByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
-        Connection localConn = (conn != null) ? conn : DBConnect.getConnection();
+    public boolean updateFullRoomType(RoomType type) throws SQLException {
+        Connection conn = null;
         try {
-            String categorySql = "DELETE FROM roomimage_categories WHERE RoomTypeID = ?";
-            try (PreparedStatement psCat = localConn.prepareStatement(categorySql)) {
-                psCat.setInt(1, roomTypeId);
-                psCat.executeUpdate();
+            conn = DBConnect.getConnection();
+            conn.setAutoCommit(false);
+
+            String sql = "UPDATE roomtypes SET Name=?, Description=?, BasePrice=?, RoomTypeImage=?, RoomDetail=?, MaxGuests=? WHERE RoomTypeID=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, type.getName());
+                ps.setString(2, type.getDescription());
+                ps.setDouble(3, type.getBasePrice());
+                ps.setString(4, type.getImageUrl());
+                ps.setString(5, type.getRoomDetail());
+                ps.setInt(6, type.getMaxGuests());
+                ps.setInt(7, type.getRoomTypeID());
+                ps.executeUpdate();
             }
 
-            String imageSql = "DELETE FROM roomimages WHERE RoomTypeID = ?";
-            try (PreparedStatement psImg = localConn.prepareStatement(imageSql)) {
-                psImg.setInt(1, roomTypeId);
-                psImg.executeUpdate();
+            deleteCategoriesByRoomTypeId(type.getRoomTypeID());
+            insertCategories(conn, type);
+
+            deleteAmenitiesByRoomTypeId(conn, type.getRoomTypeID());
+            insertAmenities(conn, type);
+
+            deleteImagesByRoomTypeId(conn, type.getRoomTypeID());
+            insertImages(conn, type);
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback();
             }
+            throw e;
         } finally {
-            if (conn == null && localConn != null) {
-                localConn.close();
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
             }
         }
     }
 
-    private void deleteRoomsByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
-        String sql = "DELETE FROM rooms WHERE RoomTypeID = ? AND Status != 'occupied'";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ps.executeUpdate();
+    private void insertCategories(Connection conn, RoomType type) throws SQLException {
+        if (type.getCategoryList() != null && !type.getCategoryList().isEmpty()) {
+            String sql = "INSERT INTO roomtype_categories (RoomTypeID, CategoryName) VALUES (?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (String cat : type.getCategoryList()) {
+                    ps.setInt(1, type.getRoomTypeID());
+                    ps.setString(2, cat.trim());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
         }
     }
 
-    public int getOccupiedRoomsCount(int roomTypeId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM rooms WHERE RoomTypeID = ? AND Status = 'occupied'";
+    private void insertAmenities(Connection conn, RoomType type) throws SQLException {
+        if (type.getAmenities() != null && !type.getAmenities().isEmpty()) {
+            String sql = "INSERT INTO roomamenities (RoomTypeID, AmenityName, Icon) VALUES (?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                for (Amenity a : type.getAmenities()) {
+                    ps.setInt(1, type.getRoomTypeID());
+                    ps.setString(2, a.getAmenityName());
+                    ps.setString(3, a.getIcon());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+        }
+    }
+
+    private void insertImages(Connection conn, RoomType type) throws SQLException {
+        if (type.getImages() != null && !type.getImages().isEmpty()) {
+            String sqlImg = "INSERT INTO roomimages (ImageUrl, IsPrimary, RoomTypeID) VALUES (?, ?, ?)";
+            String sqlCat = "INSERT INTO roomimage_categories (ImageID, RoomTypeID, CategoryName) VALUES (?, ?, ?)";
+
+            try (PreparedStatement psImg = conn.prepareStatement(sqlImg, Statement.RETURN_GENERATED_KEYS); PreparedStatement psCat = conn.prepareStatement(sqlCat)) {
+
+                for (RoomImage img : type.getImages()) {
+                    psImg.setString(1, img.getImageUrl());
+                    psImg.setBoolean(2, img.isPrimary());
+                    psImg.setInt(3, type.getRoomTypeID());
+                    psImg.executeUpdate();
+
+                    try (ResultSet rs = psImg.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            int imageId = rs.getInt(1);
+                            if (img.getCategories() != null) {
+                                for (String cat : img.getCategories()) {
+                                    psCat.setInt(1, imageId);
+                                    psCat.setInt(2, type.getRoomTypeID());
+                                    psCat.setString(3, cat.trim());
+                                    psCat.addBatch();
+                                }
+                            }
+                        }
+                    }
+                }
+                psCat.executeBatch();
+            }
+        }
+    }
+
+    public List<Amenity> getAmenitiesByRoomTypeId(int roomTypeId) throws SQLException {
+        List<Amenity> list = new ArrayList<>();
+        String sql = "SELECT RoomAmenityID, AmenityName, Icon FROM roomamenities WHERE RoomTypeID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, roomTypeId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            while (rs.next()) {
+                Amenity a = new Amenity();
+                a.setAmenityId(rs.getInt("RoomAmenityID"));
+                a.setAmenityName(rs.getString("AmenityName"));
+                a.setIcon(rs.getString("Icon"));
+                list.add(a);
             }
         }
-        return 0;
+        return list;
     }
 
     public List<RoomImage> getImagesByRoomTypeId(int roomTypeId) throws SQLException {
@@ -184,118 +215,60 @@ public class RoomTypeDAO {
         return images;
     }
 
-    public void insertImages(int roomTypeId, List<RoomImage> images) throws SQLException {
-        if (images == null || images.isEmpty()) {
-            return;
+    public List<String> getImageCategories(int imageId, int roomTypeId) throws SQLException {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT CategoryName FROM roomimage_categories WHERE ImageID = ? AND RoomTypeID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, imageId);
+            ps.setInt(2, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                categories.add(rs.getString("CategoryName"));
+            }
         }
+        return categories;
+    }
 
-        String imageSql = "INSERT INTO roomimages (ImageUrl, IsPrimary, RoomTypeID) VALUES (?, ?, ?)";
-        String categorySql = "INSERT INTO roomimage_categories (ImageID, RoomTypeID, CategoryName) VALUES (?, ?, ?)";
-
-        Connection conn = null;
-        PreparedStatement imagePs = null;
-        PreparedStatement categoryPs = null;
-
-        try {
-            conn = DBConnect.getConnection();
-            conn.setAutoCommit(false);
-
-            imagePs = conn.prepareStatement(imageSql, Statement.RETURN_GENERATED_KEYS);
-            categoryPs = conn.prepareStatement(categorySql);
-
-            for (RoomImage img : images) {
-                imagePs.setString(1, img.getImageUrl());
-                imagePs.setBoolean(2, img.isPrimary());
-                imagePs.setInt(3, roomTypeId);
-                imagePs.executeUpdate();
-
-                try (ResultSet rs = imagePs.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        int imageId = rs.getInt(1);
-                        if (img.getCategories() != null) {
-                            for (String category : img.getCategories()) {
-                                categoryPs.setInt(1, imageId);
-                                categoryPs.setInt(2, roomTypeId);
-                                categoryPs.setString(3, category);
-                                categoryPs.addBatch();
-                            }
-                        }
-                    }
-                }
+    public List<String> getCategoriesByRoomTypeId(int roomTypeId) throws SQLException {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT CategoryName FROM roomtype_categories WHERE RoomTypeID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                categories.add(rs.getString("CategoryName"));
             }
+        }
+        return categories;
+    }
 
-            categoryPs.executeBatch();
-            conn.commit();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            throw e;
-        } finally {
-            if (imagePs != null) {
-                imagePs.close();
-            }
-            if (categoryPs != null) {
-                categoryPs.close();
-            }
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
+    public void deleteCategoriesByRoomTypeId(int roomTypeId) throws SQLException {
+        String sql = "DELETE FROM roomtype_categories WHERE RoomTypeID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeId);
+            ps.executeUpdate();
         }
     }
 
-    public void deleteImagesByRoomTypeId(int roomTypeId) throws SQLException {
-        Connection conn = null; // ✅ Khai báo conn ở đây
-        try {
-            conn = DBConnect.getConnection();
-            conn.setAutoCommit(false);
-
-            deleteImagesByRoomTypeId(conn, roomTypeId);
-
-            conn.commit();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            throw e;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
+    public void deleteAmenitiesByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
+        String sql = "DELETE FROM roomamenities WHERE RoomTypeID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeId);
+            ps.executeUpdate();
         }
     }
 
-    public void deleteImageById(int imageId) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = DBConnect.getConnection();
-            conn.setAutoCommit(false);
+    private void deleteImagesByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
+        String sqlCat = "DELETE FROM roomimage_categories WHERE RoomTypeID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sqlCat)) {
+            ps.setInt(1, roomTypeId);
+            ps.executeUpdate();
+        }
 
-            String categorySql = "DELETE FROM roomimage_categories WHERE ImageID = ?";
-            try (PreparedStatement psCat = conn.prepareStatement(categorySql)) {
-                psCat.setInt(1, imageId);
-                psCat.executeUpdate();
-            }
-
-            String imageSql = "DELETE FROM roomimages WHERE ImageID = ?";
-            try (PreparedStatement psImg = conn.prepareStatement(imageSql)) {
-                psImg.setInt(1, imageId);
-                psImg.executeUpdate();
-            }
-
-            conn.commit();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            throw e;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
+        String sqlImg = "DELETE FROM roomimages WHERE RoomTypeID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sqlImg)) {
+            ps.setInt(1, roomTypeId);
+            ps.executeUpdate();
         }
     }
 
@@ -396,41 +369,90 @@ public class RoomTypeDAO {
         return count;
     }
 
-    public List<Amenity> getAmenitiesByRoomTypeId(int roomTypeId) throws SQLException {
-        List<Amenity> list = new ArrayList<>();
-        String sql = "SELECT RoomAmenityID, AmenityName, Icon FROM roomamenities WHERE RoomTypeID = ?";
+    private boolean hasOccupiedRooms(int roomTypeId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM rooms WHERE RoomTypeID = ? AND Status = 'occupied'";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, roomTypeId);
             ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    private void deleteRoomsByRoomTypeId(Connection conn, int roomTypeId) throws SQLException {
+        String sql = "DELETE FROM rooms WHERE RoomTypeID = ? AND Status != 'occupied'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomTypeId);
+            ps.executeUpdate();
+        }
+    }
+
+    public boolean deleteRoomType(int roomTypeId) throws SQLException {
+        if (hasOccupiedRooms(roomTypeId)) {
+            return false;
+        }
+
+        Connection conn = null;
+        try {
+            conn = DBConnect.getConnection();
+            conn.setAutoCommit(false);
+
+            deleteAmenitiesByRoomTypeId(conn, roomTypeId);
+            deleteImagesByRoomTypeId(conn, roomTypeId);
+            deleteRoomsByRoomTypeId(conn, roomTypeId);
+
+            String sql = "DELETE FROM roomtypes WHERE RoomTypeID = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, roomTypeId);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+
+    public List<RoomType> getAllRoomTypes() throws SQLException {
+        List<RoomType> list = new ArrayList<>();
+        String sql = "SELECT * FROM roomtypes";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Amenity a = new Amenity();
-                a.setAmenityId(rs.getInt("RoomAmenityID"));
-                a.setAmenityName(rs.getString("AmenityName"));
-                a.setIcon(rs.getString("Icon"));
-                list.add(a);
+                RoomType rt = new RoomType();
+                rt.setRoomTypeID(rs.getInt("RoomTypeID"));
+                rt.setName(rs.getString("Name"));
+                list.add(rt);
             }
         }
         return list;
     }
 
-    public void insertAmenity(Amenity amenity) throws SQLException {
-        String sql = "INSERT INTO roomamenities (RoomTypeID, AmenityName, Icon) VALUES (?, ?, ?)";
+    public int getOccupiedRoomsCount(int roomTypeId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM rooms WHERE RoomTypeID = ? AND Status = 'occupied'";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, amenity.getRoomType().getRoomTypeID());
-            ps.setString(2, amenity.getAmenityName());
-            ps.setString(3, amenity.getIcon());
-            ps.executeUpdate();
+            ps.setInt(1, roomTypeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
         }
-    }
-
-    public void deleteAmenityById(int amenityId) {
-        String sql = "DELETE FROM roomamenities WHERE RoomAmenityID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, amenityId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return 0;
     }
 
     public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout,
@@ -497,159 +519,4 @@ public class RoomTypeDAO {
 
         return list;
     }
-
-    public void deleteCategoriesByRoomTypeId(int roomTypeId) throws SQLException {
-        String sql = "DELETE FROM roomtype_categories WHERE RoomTypeID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ps.executeUpdate();
-        }
-    }
-
-    public List<RoomType> getAllRoomTypes() throws SQLException {
-        List<RoomType> list = new ArrayList<>();
-        String sql = "SELECT * FROM roomtypes";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                RoomType rt = new RoomType();
-                rt.setRoomTypeID(rs.getInt("RoomTypeID"));
-                rt.setName(rs.getString("Name"));
-                list.add(rt);
-            }
-        }
-        return list;
-    }
-
-    // Quản lý category
-    public void addCategoryToRoomType(int roomTypeId, String categoryName) throws SQLException {
-        String sql = "INSERT IGNORE INTO roomtype_categories (RoomTypeID, CategoryName) VALUES (?, ?)"; // IGNORE duplicates
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            ps.setString(2, categoryName.trim());
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected == 0) {
-                System.out.println("Category already exists or insert failed: RoomTypeID=" + roomTypeId + ", CategoryName=" + categoryName);
-            } else {
-                System.out.println("Added category: RoomTypeID=" + roomTypeId + ", CategoryName=" + categoryName);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error adding category: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public void deleteCategoryFromRoomType(int roomTypeId, String categoryName) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = DBConnect.getConnection();
-            conn.setAutoCommit(false);
-
-            String sqlImg = "DELETE FROM roomimage_categories WHERE RoomTypeID = ? AND CategoryName = ?";
-            try (PreparedStatement psImg = conn.prepareStatement(sqlImg)) {
-                psImg.setInt(1, roomTypeId);
-                psImg.setString(2, categoryName.trim());
-                psImg.executeUpdate();
-            }
-
-            String sqlCat = "DELETE FROM roomtype_categories WHERE RoomTypeID = ? AND CategoryName = ?";
-            try (PreparedStatement psCat = conn.prepareStatement(sqlCat)) {
-                psCat.setInt(1, roomTypeId);
-                psCat.setString(2, categoryName.trim());
-                int rowsAffected = psCat.executeUpdate();
-                if (rowsAffected == 0) {
-                    System.out.println("No category found to delete: RoomTypeID=" + roomTypeId + ", CategoryName=" + categoryName);
-                } else {
-                    System.out.println("Deleted category: RoomTypeID=" + roomTypeId + ", CategoryName=" + categoryName);
-                }
-            }
-
-            conn.commit();
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            System.err.println("Error deleting category: " + e.getMessage());
-            throw e;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
-        }
-    }
-
-    public List<String> getCategoriesByRoomTypeId(int roomTypeId) throws SQLException {
-        List<String> categories = new ArrayList<>();
-        String sql = "SELECT CategoryName FROM roomtype_categories WHERE RoomTypeID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, roomTypeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    categories.add(rs.getString("CategoryName").trim());
-                }
-            }
-        }
-        return categories;
-    }
-
-    public void addCategoryToImage(int imageId, int roomTypeId, String categoryName) throws SQLException {
-        String sql = "INSERT INTO roomimage_categories (ImageID, RoomTypeID, CategoryName) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, imageId);
-            ps.setInt(2, roomTypeId);
-            ps.setString(3, categoryName);
-            ps.executeUpdate();
-        }
-    }
-
-    public void removeCategoryFromImage(int imageId, int roomTypeId, String categoryName) throws SQLException {
-        String sql = "DELETE FROM roomimage_categories WHERE ImageID = ? AND RoomTypeID = ? AND CategoryName = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, imageId);
-            ps.setInt(2, roomTypeId);
-            ps.setString(3, categoryName);
-            ps.executeUpdate();
-        }
-    }
-
-    public List<String> getImageCategories(int imageId, int roomTypeId) throws SQLException {
-        List<String> categories = new ArrayList<>();
-        String sql = "SELECT CategoryName FROM roomimage_categories WHERE ImageID = ? AND RoomTypeID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, imageId);
-            ps.setInt(2, roomTypeId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                categories.add(rs.getString("CategoryName"));
-            }
-        }
-        return categories;
-    }
-
-    public static void main(String[] args) {
-        try {
-            RoomTypeDAO dao = new RoomTypeDAO();
-
-            Date checkin = Date.valueOf("2025-06-25");
-            Date checkout = Date.valueOf("2025-06-28");
-            String roomTypeFilter = "";
-            Integer minGuests = 5;
-            Double maxPrice = 600.0;
-
-            List<RoomType> roomTypes = dao.getAvailableRoomTypes(checkin, checkout, roomTypeFilter, minGuests, maxPrice);
-
-            for (RoomType rt : roomTypes) {
-                System.out.println("RoomType: " + rt.getName());
-                System.out.println(" - Max Guests: " + rt.getMaxGuests());
-                System.out.println(" - Price: " + rt.getBasePrice());
-                System.out.println(" - Available Rooms: " + rt.getAvailableRooms());
-                System.out.println("-----------");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
-    
