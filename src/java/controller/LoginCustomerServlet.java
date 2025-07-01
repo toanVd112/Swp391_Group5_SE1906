@@ -5,6 +5,7 @@
 package controller;
 
 import DAO.AccountDAO;
+import DAO.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,6 +15,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Account;
 import model.User;
 
@@ -79,18 +83,26 @@ public class LoginCustomerServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
         AccountDAO dao = new AccountDAO();
+
         Account account = dao.login(username, password);
 
         if (account != null) {
             HttpSession session = request.getSession();
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
+            UserDao u = new UserDao();
+            int accountId = account.getAccountID();
+            User userInfo = null;
+            try {
+                userInfo = u.getUserInfoByAccountID(accountId);
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
+            session.setAttribute("userInfo", userInfo);
             session.setAttribute("user", account);
             session.setAttribute("accountId", account.getAccountID());
 
-            
             response.sendRedirect("Home");
         } else {
             request.setAttribute("username", username);

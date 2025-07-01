@@ -346,8 +346,7 @@
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
-                <p style="color:red;">DEBUG: isCustomer = ${isCustomer}</p>
-                <p style="color:blue;">Session user = ${sessionScope.user}</p>
+               
 
                 <!-- Main Slider -->
                 <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">

@@ -4,6 +4,7 @@
  */
 package booking;
 
+import DAO.AccountDAO;
 import DAO.BookingDAO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,9 +19,11 @@ import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Account;
 import model.RoomItem;
 import model.ServiceItem;
 import model.User;
@@ -105,11 +108,17 @@ public class ProceedBookingServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
-
+        AccountDAO a = new AccountDAO();
         Integer userID = null;
         if (request.getSession().getAttribute("user") != null) {
-            User u = (User) request.getSession().getAttribute("user");
-            userID = u.getUserId();
+            Account acc = (Account) request.getSession().getAttribute("user");
+            int accountId = acc.getAccountID(); // Hoặc getId()
+
+            try {
+                userID = a.getUserIDByAccountID(accountId);
+            } catch (SQLException ex) {
+                Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
 // Parse JSON
@@ -153,22 +162,91 @@ public class ProceedBookingServlet extends HttpServlet {
         }
 
 // Insert detail
+        // ✅ Bước 1: Gán RoomID cụ thể cho từng RoomItem
+        for (RoomItem item : selectedRooms) {
+            if (item.rooms != null && !item.rooms.isEmpty()) {
+                // 👉 Đây là combo: lặp từng roomType con
+                List<RoomItem> allBookedRooms = new ArrayList<>();
+
+                for (RoomItem r : item.rooms) {
+                    int roomTypeId = r.roomTypeId;
+                    int quantity = r.quantity;
+
+                    List<Integer> roomIDs = null;
+                    try {
+                        roomIDs = bookingDAO.getAvailableRoomIDs(roomTypeId, checkin, checkout, quantity);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    if (roomIDs == null || roomIDs.size() < quantity) {
+                        throw new RuntimeException("❌ Không đủ phòng trống cho RoomTypeID: " + roomTypeId);
+                    }
+
+                    for (Integer roomId : roomIDs) {
+                        RoomItem bookedRoom = new RoomItem();
+                        bookedRoom.roomId = roomId;
+                        bookedRoom.roomTypeId = roomTypeId;
+                        bookedRoom.basePrice = r.basePrice;
+                        bookedRoom.roomCapacity = r.roomCapacity;
+                        allBookedRooms.add(bookedRoom);
+                    }
+                }
+
+                // ✅ Gán lại: combo giờ chỉ còn list phòng thực tế (RoomID cụ thể)
+                item.rooms = allBookedRooms;
+
+            } else {
+                // 👉 Single room: làm y hệt nhưng gán về item.rooms luôn
+                int roomTypeId = item.roomTypeId;
+                int quantity = item.quantity;
+
+                List<Integer> roomIDs = null;
+                try {
+                    roomIDs = bookingDAO.getAvailableRoomIDs(roomTypeId, checkin, checkout, quantity);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                if (roomIDs == null || roomIDs.size() < quantity) {
+                    throw new RuntimeException("❌ Không đủ phòng trống cho RoomTypeID: " + roomTypeId);
+                }
+
+                List<RoomItem> bookedRooms = new ArrayList<>();
+                for (Integer roomId : roomIDs) {
+                    RoomItem bookedRoom = new RoomItem();
+                    bookedRoom.roomId = roomId;
+                    bookedRoom.roomTypeId = roomTypeId;
+                    bookedRoom.basePrice = item.basePrice;
+                    bookedRoom.roomCapacity = item.roomCapacity;
+                    bookedRooms.add(bookedRoom);
+                }
+
+                // ✅ Single room giờ cũng có item.rooms như combo
+                item.rooms = bookedRooms;
+            }
+        }
+
+//
+// ✅ Bước 2: Insert bookingdetails — DUY NHẤT 1 vòng for
+//
         for (RoomItem item : selectedRooms) {
             if (item.rooms != null && !item.rooms.isEmpty()) {
                 for (RoomItem r : item.rooms) {
                     try {
-                        bookingDAO.insertBookingDetail(bookingID, r.roomTypeId, r.quantity, r.basePrice, r.roomCapacity);
+                        bookingDAO.insertBookingDetail(
+                                bookingID,
+                                r.roomId,
+                                r.roomTypeId,
+                                r.basePrice,
+                                r.roomCapacity
+                        );
                     } catch (SQLException ex) {
                         Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            } else {
-                try {
-                    bookingDAO.insertBookingDetail(bookingID, item.roomTypeId, item.quantity, item.basePrice, item.roomCapacity);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
+            // 👉 Không cần else: vì single cũng đã gán vào item.rooms rồi!
         }
 
 // Insert service
@@ -182,11 +260,8 @@ public class ProceedBookingServlet extends HttpServlet {
 
         System.out.println("✅ Insert OK ➜ bookingID = " + bookingID);
 
-        if ("online".equals(paymentMethod)) {
-            response.sendRedirect("PaymentGatewayServlet?bookingID=" + bookingID);
-        } else {
-            response.sendRedirect("thanhtoan.jsp?bookingID=" + bookingID);
-        }
+        response.sendRedirect("thanhtoan.jsp?bookingID=" + bookingID);
+
     }
 
     /**

@@ -21,6 +21,7 @@
 
     // 2️⃣ Get user info từ session
     String userFirstName = (String) session.getAttribute("userFirstName");
+    String fullName = (String) session.getAttribute("userFirstName");
     String userLastName  = (String) session.getAttribute("userLastName");
     String userEmail     = (String) session.getAttribute("userEmail");
     String userPhone     = (String) session.getAttribute("userPhone");
@@ -49,6 +50,13 @@
     String checkInDate = booking.getCheckInDate();
     String checkOutDate = booking.getCheckOutDate();
 %>
+<%
+    int bookingID = Integer.parseInt(request.getParameter("bookingID"));
+    BookingDAO dao = new BookingDAO();
+    Booking booking = dao.getBookingByID(bookingID);
+    request.setAttribute("booking", booking);
+%>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -194,27 +202,17 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label" for="firstName">Họ: *</label>
+                                <label class="form-label" for="fullName">Họ và tên: *</label>
                                 <input type="text"
                                        class="form-input <%= isLoggedIn && !userFirstName.isEmpty() ? "prefilled" : "" %>"
-                                       id="firstName"
-                                       name="firstName"
-                                       placeholder="(VD: Nguyen)"
-                                       value="<%= userFirstName %>"
+                                       id="fullName"
+                                       name="fullName"
+                                       placeholder="(VD: Nguyen Van A)"
+                                       value="${sessionScope.userInfo.fullName}"
                                        required>
                                 <div class="error-message" id="firstNameError"></div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label" for="lastName">Tên: *</label>
-                                <input type="text"
-                                       class="form-input <%= isLoggedIn && !userLastName.isEmpty() ? "prefilled" : "" %>"
-                                       id="lastName"
-                                       name="lastName"
-                                       placeholder="(VD: Anh)"
-                                       value="<%= userLastName %>"
-                                       required>
-                                <div class="error-message" id="lastNameError"></div>
-                            </div>
+                            
                         </div>
 
                         <div class="form-group">

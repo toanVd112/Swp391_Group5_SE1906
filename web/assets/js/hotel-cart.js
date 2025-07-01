@@ -330,6 +330,8 @@ function proceedToBooking() {
     document.getElementById('hiddenCheckout').value = document.getElementById('checkout').value;
     document.getElementById('hiddenGuests').value = guests;
     document.getElementById('totalAmount').value = total;
+    localStorage.removeItem('selectedRooms');
+    localStorage.removeItem('selectedServices');
 
     document.getElementById('bookingForm').submit();
 }
@@ -373,6 +375,9 @@ function confirmGuestInfo() {
     document.getElementById('guestInfoModal').style.display = 'none';
 
     // Submit form
+    localStorage.removeItem('selectedRooms');
+    localStorage.removeItem('selectedServices');
+
     document.getElementById('bookingForm').submit();
 }
 

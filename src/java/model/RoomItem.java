@@ -11,20 +11,33 @@ import java.util.List;
  * @author Admin
  */
 public class RoomItem {
-     public int roomTypeId;
+
+    public int roomTypeId;
     public String roomName;
-    public int quantity;
     public double basePrice;
     public int roomCapacity;
-    public List<RoomItem> rooms; // comboư
+    public int roomId,quantity;            // ✅ Thêm field này để giữ RoomID cụ thể
+    public List<RoomItem> rooms;
 
-    public RoomItem(int roomTypeId, String roomName, int quantity, double basePrice, int roomCapacity, List<RoomItem> rooms) {
+    public RoomItem(int roomTypeId, String roomName,  double basePrice, int roomCapacity, List<RoomItem> rooms) {
         this.roomTypeId = roomTypeId;
         this.roomName = roomName;
-        this.quantity = quantity;
+       
         this.basePrice = basePrice;
         this.roomCapacity = roomCapacity;
         this.rooms = rooms;
+    }
+
+    public RoomItem() {
+      
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getRoomTypeId() {
@@ -43,13 +56,15 @@ public class RoomItem {
         this.roomName = roomName;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getRoomId() {
+        return roomId;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
     }
+
+   
 
     public double getBasePrice() {
         return basePrice;
@@ -74,5 +89,5 @@ public class RoomItem {
     public void setRooms(List<RoomItem> rooms) {
         this.rooms = rooms;
     }
-    
+
 }

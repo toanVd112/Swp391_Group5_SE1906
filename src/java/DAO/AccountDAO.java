@@ -15,6 +15,7 @@ import model.Account;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.User;
 
 public class AccountDAO extends DBConnect {
 
@@ -450,4 +451,20 @@ public class AccountDAO extends DBConnect {
             e.printStackTrace();
         }
     }
+
+    public Integer getUserIDByAccountID(int accountId) throws SQLException {
+        String sql = "SELECT UserID FROM Users WHERE AccountID = ?";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("UserID");
+                }
+            }
+        }
+        return null;
+    }
+
+    
+
 }

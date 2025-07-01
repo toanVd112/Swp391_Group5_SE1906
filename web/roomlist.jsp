@@ -72,7 +72,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     </head>
-
+    
     <body id="bg">
         <div class="page-wraper">
             <div id="loading-icon-bx"></div>
@@ -670,9 +670,16 @@
                                 <input type="hidden" name="guests" id="hiddenGuests">
 
                                 <!-- 👇 BẮT BUỘC PHẢI CÓ 3 trường này -->
-                                <input type="hidden" name="fullName" id="fullName">
-                                <input type="hidden" name="email" id="email">
-                                <input type="hidden" name="phone" id="phone">
+                                <input type="hidden" name="fullName" id="fullName"
+                                       value="${userInfo != null ? userInfo.fullName : ''}">
+
+                                <input type="hidden" name="email" id="email"
+                                       value="${userInfo != null ? userInfo.email : ''}">
+
+                                <input type="hidden" name="phone" id="phone"
+                                       value="${userInfo != null ? userInfo.phone : ''}">
+
+
                                 <input type="hidden" name="totalAmount" id="totalAmount">
 
 

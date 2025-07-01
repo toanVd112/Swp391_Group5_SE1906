@@ -37,7 +37,9 @@
         <link rel="stylesheet" type="text/css" href="assets/css/shortcodes/shortcodes.css">
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="assets/css/listRoom.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style>
             body, h1, h2, h3, h4, h5, h6, p, ul, li, .ttr-post-title h2 {
                 font-family: 'Roboto', sans-serif !important;
@@ -482,7 +484,30 @@
                     </div>
             </header>
             <!-- header END ==== -->
-
+            <div class="search-form-container">
+                <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
+                    <div class="search-row">
+                        <div class="search-field">
+                            <label><i class="fas fa-calendar-check"></i> Ngày nhận phòng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
+                        </div>
+                        <div class="search-field">
+                            <label><i class="fas fa-calendar-times"></i> Ngày trả phòng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Chọn ngày" value="${param.checkout}" required>
+                        </div>
+                        <div class="search-field">
+                            <label><i class="fas fa-users"></i> Số khách</label>
+                            <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
+                        </div>
+                        <div class="search-field">
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                                Tìm phòng
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <!-- Content -->
             <div class="page-content bg-white">
                 <!-- inner page banner -->
@@ -969,95 +994,147 @@
             <script src="assets/js/functions.js"></script>
             <script src="assets/js/contact.js"></script>
             <script src="assets/vendors/switcher/switcher.js"></script>
+            <script src="assets/js/hotel-cart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             <script>
-                                                                        // Initialize: Hide modal on page load
-                                                                        document.addEventListener('DOMContentLoaded', () => {
-                                                                            const modal = document.getElementById("galleryModal");
-                                                                            if (modal) {
-                                                                                modal.style.display = "none";
-                                                                                modal.setAttribute('aria-hidden', 'true');
-                                                                            }
+                                                                        const checkinRaw = "${param.checkin}";
+                                                                        flatpickr("#checkin", {
+                                                                            dateFormat: "d/m/Y",
+                                                                            defaultDate: checkinRaw ? new Date(checkinRaw) : null
                                                                         });
 
-                                                                        function filterCategory(cat, button) {
-                                                                            console.log("Filtering category:", cat);
-                                                                            const tabs = document.querySelectorAll(".category-tabs button");
-                                                                            const items = document.querySelectorAll("#galleryImages .gallery-item");
 
-                                                                            if (!items.length) {
-                                                                                console.warn("No gallery items found.");
-                                                                                return;
-                                                                            }
+                                                                        const checkoutRaw = "${param.checkout}";
+                                                                        flatpickr("#checkout", {
+                                                                            dateFormat: "d/m/Y",
+                                                                            defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
+                                                                        });
 
-                                                                            tabs.forEach(tab => {
-                                                                                tab.classList.remove("active");
-                                                                                tab.setAttribute('aria-pressed', 'false');
-                                                                            });
+            </script>
+            <script>
+                const checkinInput = document.getElementById('checkin');
+                const checkoutInput = document.getElementById('checkout');
+                checkinInput.addEventListener('change', validateDates);
+                checkoutInput.addEventListener('change', validateDates);
+                function parseDate(dateStr) {
+                    // format: dd/MM/yyyy
+                    const parts = dateStr.split('/');
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
+                    const year = parseInt(parts[2], 10);
+                    return new Date(year, month, day);
+                }
 
-                                                                            if (button) {
-                                                                                button.classList.add("active");
-                                                                                button.setAttribute('aria-pressed', 'true');
-                                                                            }
+                function validateDates() {
+                    const checkin = parseDate(checkinInput.value);
+                    const checkout = parseDate(checkoutInput.value);
+                    if (checkin && checkout && checkout <= checkin) {
+                        alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                        checkoutInput.value = '';
+                    }
+                }
 
-                                                                            items.forEach(item => {
-                                                                                const itemCategories = (item.getAttribute('data-category') || 'uncategorized').split(',').map(c => c.trim()).filter(c => c);
-                                                                                console.log("Item categories:", itemCategories);
-                                                                                item.style.display = (cat === 'all' || itemCategories.includes(cat)) ? 'block' : 'none';
-                                                                            });
-                                                                        }
+                function validateForm() {
+                    const checkin = parseDate(checkinInput.value);
+                    const checkout = parseDate(checkoutInput.value);
+                    if (checkout <= checkin) {
+                        alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+            <script>
+                // Initialize: Hide modal on page load
+                document.addEventListener('DOMContentLoaded', () => {
+                    const modal = document.getElementById("galleryModal");
+                    if (modal) {
+                        modal.style.display = "none";
+                        modal.setAttribute('aria-hidden', 'true');
+                    }
+                });
 
-                                                                        function openGallery(category) {
-                                                                            const modal = document.getElementById("galleryModal");
-                                                                            if (!modal) {
-                                                                                console.error("Modal element not found!");
-                                                                                return;
-                                                                            }
-                                                                            modal.style.display = "block";
-                                                                            modal.setAttribute('aria-hidden', 'false');
-                                                                            console.log("Opening modal with category:", category);
+                function filterCategory(cat, button) {
+                    console.log("Filtering category:", cat);
+                    const tabs = document.querySelectorAll(".category-tabs button");
+                    const items = document.querySelectorAll("#galleryImages .gallery-item");
 
-                                                                            let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
-                                                                            if (!button) {
-                                                                                console.warn(`Category "${category}" not found, falling back to "all"`);
-                                                                                button = document.querySelector(`.category-tabs button[data-category="all"]`);
-                                                                                category = "all";
-                                                                            }
+                    if (!items.length) {
+                        console.warn("No gallery items found.");
+                        return;
+                    }
 
-                                                                            if (!button) {
-                                                                                console.error("No category buttons found in the gallery.");
-                                                                                return;
-                                                                            }
+                    tabs.forEach(tab => {
+                        tab.classList.remove("active");
+                        tab.setAttribute('aria-pressed', 'false');
+                    });
 
-                                                                            filterCategory(category, button);
+                    if (button) {
+                        button.classList.add("active");
+                        button.setAttribute('aria-pressed', 'true');
+                    }
 
-                                                                            setTimeout(() => {
-                                                                                document.addEventListener('click', handleClickOutside);
-                                                                            }, 0);
-                                                                            document.addEventListener('keydown', handleKeyboard);
-                                                                        }
+                    items.forEach(item => {
+                        const itemCategories = (item.getAttribute('data-category') || 'uncategorized').split(',').map(c => c.trim()).filter(c => c);
+                        console.log("Item categories:", itemCategories);
+                        item.style.display = (cat === 'all' || itemCategories.includes(cat)) ? 'block' : 'none';
+                    });
+                }
 
-                                                                        function closeGallery() {
-                                                                            const modal = document.getElementById("galleryModal");
-                                                                            if (modal) {
-                                                                                modal.style.display = "none";
-                                                                                modal.setAttribute('aria-hidden', 'true');
-                                                                            }
-                                                                            document.removeEventListener('click', handleClickOutside);
-                                                                            document.removeEventListener('keydown', handleKeyboard);
-                                                                        }
+                function openGallery(category) {
+                    const modal = document.getElementById("galleryModal");
+                    if (!modal) {
+                        console.error("Modal element not found!");
+                        return;
+                    }
+                    modal.style.display = "block";
+                    modal.setAttribute('aria-hidden', 'false');
+                    console.log("Opening modal with category:", category);
 
-                                                                        function handleClickOutside(event) {
-                                                                            const modalContent = document.querySelector("#galleryModal .modal-content");
-                                                                            if (modalContent && !modalContent.contains(event.target)) {
-                                                                                closeGallery();
-                                                                            }
-                                                                        }
+                    let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
+                    if (!button) {
+                        console.warn(`Category "${category}" not found, falling back to "all"`);
+                        button = document.querySelector(`.category-tabs button[data-category="all"]`);
+                        category = "all";
+                    }
 
-                                                                        function handleKeyboard(event) {
-                                                                            if (event.key === "Escape") {
-                                                                                closeGallery();
-                                                                            }
-                                                                        }
+                    if (!button) {
+                        console.error("No category buttons found in the gallery.");
+                        return;
+                    }
+
+                    filterCategory(category, button);
+
+                    setTimeout(() => {
+                        document.addEventListener('click', handleClickOutside);
+                    }, 0);
+                    document.addEventListener('keydown', handleKeyboard);
+                }
+
+                function closeGallery() {
+                    const modal = document.getElementById("galleryModal");
+                    if (modal) {
+                        modal.style.display = "none";
+                        modal.setAttribute('aria-hidden', 'true');
+                    }
+                    document.removeEventListener('click', handleClickOutside);
+                    document.removeEventListener('keydown', handleKeyboard);
+                }
+
+                function handleClickOutside(event) {
+                    const modalContent = document.querySelector("#galleryModal .modal-content");
+                    if (modalContent && !modalContent.contains(event.target)) {
+                        closeGallery();
+                    }
+                }
+
+                function handleKeyboard(event) {
+                    if (event.key === "Escape") {
+                        closeGallery();
+                    }
+                }
             </script>
     </body>
 </html>
