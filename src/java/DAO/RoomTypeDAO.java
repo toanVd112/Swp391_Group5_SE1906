@@ -74,6 +74,18 @@ public class RoomTypeDAO {
         }
     }
 
+    public boolean isRoomTypeNameExists(String name, Integer excludeId) throws SQLException {
+    String sql = "SELECT COUNT(*) FROM roomtypes WHERE Name = ?"
+               + (excludeId != null ? " AND RoomTypeID != ?" : "");
+    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, name.trim());
+        if (excludeId != null) ps.setInt(2, excludeId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) return rs.getInt(1) > 0;
+    }
+    return false;
+}
+    
     public boolean updateFullRoomType(RoomType type) throws SQLException {
         Connection conn = null;
         try {

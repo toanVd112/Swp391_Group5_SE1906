@@ -99,15 +99,66 @@ public class UpdateRoomTypeServlet extends HttpServlet {
 
         try {
             RoomType type = new RoomType();
-            type.setRoomTypeID(Integer.parseInt(request.getParameter("roomTypeID")));
-            type.setName(request.getParameter("name"));
-            type.setDescription(request.getParameter("description"));
-            type.setBasePrice(Double.parseDouble(request.getParameter("basePrice")));
-            type.setImageUrl(request.getParameter("imageUrl"));
-            type.setRoomDetail(request.getParameter("roomDetail"));
-            type.setMaxGuests(Integer.parseInt(request.getParameter("maxGuests")));
+            int roomTypeID = Integer.parseInt(request.getParameter("roomTypeID"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            String imageUrl = request.getParameter("imageUrl");
+            String roomDetail = request.getParameter("roomDetail");
 
-            // Category List
+            // Kiểm tra tên không để trống
+            if (name == null || name.trim().isEmpty()) {
+                request.setAttribute("error", "Tên loại phòng không được để trống.");
+                request.setAttribute("roomType", type);
+                request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra trùng tên (loại trừ chính nó)
+            if (dao.isRoomTypeNameExists(name, roomTypeID)) {
+                request.setAttribute("error", "Tên loại phòng đã tồn tại.");
+                request.setAttribute("roomType", type);
+                request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra base price
+            double basePrice;
+            try {
+                basePrice = Double.parseDouble(request.getParameter("basePrice"));
+                if (basePrice <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "Giá cơ bản phải là số dương.");
+                request.setAttribute("roomType", type);
+                request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra maxGuests
+            int maxGuests;
+            try {
+                maxGuests = Integer.parseInt(request.getParameter("maxGuests"));
+                if (maxGuests <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "Số người tối đa phải là số nguyên dương.");
+                request.setAttribute("roomType", type);
+                request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+                return;
+            }
+
+            // Gán lại vào object
+            type.setRoomTypeID(roomTypeID);
+            type.setName(name);
+            type.setDescription(description);
+            type.setBasePrice(basePrice);
+            type.setImageUrl(imageUrl);
+            type.setRoomDetail(roomDetail);
+            type.setMaxGuests(maxGuests);
+
+            // Danh mục
             String[] categoryList = request.getParameterValues("categoryList[]");
             if (categoryList != null) {
                 type.setCategoryList(Arrays.asList(categoryList));
@@ -148,9 +199,11 @@ public class UpdateRoomTypeServlet extends HttpServlet {
             if (updated) {
                 response.sendRedirect("RoomTypeListServlet");
             } else {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể cập nhật loại phòng.");
+                request.setAttribute("error", "Không thể cập nhật loại phòng.");
+                request.setAttribute("roomType", type);
+                request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
             }
-        } catch (Exception e) {
+        } catch (ServletException | IOException | NumberFormatException | SQLException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý: " + e.getMessage());
         }
     }

@@ -1,6 +1,9 @@
 <%@page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -16,6 +19,19 @@
                 padding: 10px;
                 min-height: 200px;
                 border-radius: .25rem;
+            }
+            .amenity-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: nowrap;
+            }
+            .amenity-row input[name="amenityNames[]"],
+            .amenity-row input[name="amenityIcons[]"] {
+                width: 150px;
+                font-size: 13px;
+                padding: 4px 8px;
             }
             .tab-btn.active {
                 background-color: #007bff;
@@ -66,7 +82,16 @@
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
-                max-width: 200px; /* hoặc phù hợp với giao diện */
+                max-width: 200px;
+            }
+            .error-message {
+                color: red;
+                font-size: 12px;
+                margin-left: 5px;
+                display: none;
+            }
+            .is-invalid {
+                border-color: red !important;
             }
         </style>
     </head>
@@ -81,7 +106,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-<form id="room-type-form" action="${roomType != null ? 'UpdateRoomType' : 'AddRoomType'}" method="post">
+                    <form id="room-type-form" action="${roomType != null ? 'UpdateRoomType' : 'AddRoomType'}" method="post">
                         <c:if test="${roomType != null && roomType.roomTypeID != 0}">
                             <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
                         </c:if>
@@ -90,8 +115,12 @@
                         <!-- Tab Chi tiết -->
                         <div id="details" class="tab-content">
                             <div class="form-group">
+                                <c:if test="${not empty error}">
+                                    <div class="alert alert-danger">${error}</div>
+                                </c:if>
                                 <label for="name">Tên loại phòng</label>
                                 <input type="text" id="name" name="name" class="form-control" value="${roomType.name}" required />
+                                <span class="error-message" id="name-error"></span>
                             </div>
                             <div class="form-group">
                                 <label for="description">Mô tả</label>
@@ -101,10 +130,12 @@
                                     <button type="button" data-cmd="underline" class="btn btn-light btn-sm"><u>U</u></button>
                                 </div>
                                 <div id="description" class="description-editor" contenteditable="true">${roomType.description}</div>
+                                <span class="error-message" id="description-error"></span>
                             </div>
                             <div class="form-group">
                                 <label for="basePrice">Giá cơ bản</label>
                                 <input type="number" step="0.01" id="basePrice" name="basePrice" class="form-control" value="${roomType.basePrice}" required />
+                                <span class="error-message" id="basePrice-error"></span>
                             </div>
                             <div class="form-group">
                                 <label for="roomDetail">Chi tiết loại phòng</label>
@@ -112,15 +143,17 @@
                             </div>
                             <div class="form-group">
                                 <label for="maxGuests">Số người tối đa</label>
-                                <input type="number" id="maxGuests" name="maxGuests" class="form-control" value="${roomType.maxGuests}" />
+                                <input type="number" id="maxGuests" name="maxGuests" class="form-control" value="${roomType.maxGuests}" required />
+                                <span class="error-message" id="maxGuests-error"></span>
                             </div>
                             <div class="form-group">
                                 <label>Tiện ích</label>
                                 <div id="amenity-list">
                                     <c:forEach var="a" items="${roomType.amenities}">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <input type="text" name="amenityNames[]" class="form-control mr-2" placeholder="Tên tiện ích" value="${a.amenityName}" />
-                                            <input type="text" name="amenityIcons[]" class="form-control mr-2" placeholder="Icon" value="${a.icon}" />
+                                        <div class="amenity-row">
+                                            <input type="text" name="amenityNames[]" class="form-control" placeholder="Tên tiện ích" value="${a.amenityName}" />
+                                            <input type="text" name="amenityIcons[]" class="form-control icon-input" placeholder="Icon (vd: ri-wifi-line)" value="${a.icon}" />
+                                            <span class="amenity-preview"><i class="${a.icon}"></i></span>
                                             <button type="button" class="btn btn-danger btn-sm remove-amenity">×</button>
                                         </div>
                                     </c:forEach>
@@ -133,6 +166,7 @@
                             <div class="form-group">
                                 <label for="imageUrl">URL ảnh đại diện</label>
                                 <input type="text" id="imageUrl" name="imageUrl" class="form-control" value="${roomType.imageUrl}" />
+                                <span class="error-message" id="imageUrl-error"></span>
                                 <img id="main-image-preview" src="${roomType.imageUrl}" class="image-preview" onerror="this.style.display='none'" />
                             </div>
                             <div class="form-group">
@@ -177,203 +211,188 @@
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                console.log('DOM fully loaded');
-
                 // Tab switching
-                const tabs = document.querySelectorAll('.tab-btn');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        tabs.forEach(t => t.classList.remove('active'));
-                        tab.classList.add('active');
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
                         document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
-                        document.getElementById(tab.dataset.tab).style.display = 'block';
+                        document.getElementById(btn.dataset.tab).style.display = 'block';
                     });
                 });
 
-                // Form submission handling
-                // Form submission handling (fix sync imageUrls[] <-> imageCategoriesX)
-                document.getElementById('room-type-form').addEventListener('submit', () => {
-                    // Cập nhật mô tả ẩn
-                    const editor = document.getElementById('description');
-                    document.getElementById('descriptionHidden').value = editor ? editor.innerHTML : '';
+                // Form validate đơn giản (giữ UX tốt, không lặp xử lý server)
+                function validateForm() {
+                    let isValid = true;
+                    let firstError = null;
 
-                    // Đồng bộ danh mục (dạng ẩn)
-                    const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
-                            .map(input => input.value.trim());
+                    const name = document.getElementById('name');
+                    const basePrice = document.getElementById('basePrice');
+                    const maxGuests = document.getElementById('maxGuests');
+                    const description = document.getElementById('description');
+
+                    document.querySelectorAll('.is-invalid').forEach(e => e.classList.remove('is-invalid'));
+                    document.querySelectorAll('.error-message').forEach(e => {
+                        e.style.display = 'none';
+                        e.textContent = '';
+                    });
+
+                    if (!name.value.trim()) {
+                        isValid = false;
+                        name.classList.add('is-invalid');
+                        document.getElementById('name-error').textContent = 'Không được để trống';
+                        document.getElementById('name-error').style.display = 'block';
+                        firstError = name;
+                    }
+
+                    if (!description.innerText.trim()) {
+                        isValid = false;
+                        description.classList.add('is-invalid');
+                        document.getElementById('description-error').textContent = 'Không được để trống';
+                        document.getElementById('description-error').style.display = 'block';
+                        firstError = firstError || description;
+                    }
+
+                    if (!basePrice.value.trim() || parseFloat(basePrice.value) <= 0) {
+                        isValid = false;
+                        basePrice.classList.add('is-invalid');
+                        document.getElementById('basePrice-error').textContent = 'Giá phải > 0';
+                        document.getElementById('basePrice-error').style.display = 'block';
+                        firstError = firstError || basePrice;
+                    }
+
+                    if (!maxGuests.value.trim() || parseInt(maxGuests.value) <= 0) {
+                        isValid = false;
+                        maxGuests.classList.add('is-invalid');
+                        document.getElementById('maxGuests-error').textContent = 'Số người > 0';
+                        document.getElementById('maxGuests-error').style.display = 'block';
+                        firstError = firstError || maxGuests;
+                    }
+
+                    if (firstError) {
+                        firstError.scrollIntoView({behavior: 'smooth'});
+                        firstError.focus();
+                    }
+                    return isValid;
+                }
+
+                // Submit
+                document.getElementById('room-type-form').addEventListener('submit', e => {
+                    if (!validateForm()) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    // Đồng bộ contenteditable và danh mục
+                    document.getElementById('descriptionHidden').value = document.getElementById('description').innerHTML;
+                    const categories = [...document.querySelectorAll('input[name="categoryList[]"]')].map(el => el.value.trim());
                     document.getElementById('categorySync').value = categories.join(',');
 
-                    // Gán lại name="imageCategoriesX" theo đúng thứ tự imageUrls[]
-                    document.querySelectorAll('#image-url-container .image-url-row').forEach((row, index) => {
+                    // Đồng bộ name cho select danh mục ảnh
+                    document.querySelectorAll('.image-url-row').forEach((row, i) => {
                         const select = row.querySelector('select');
-                        if (select) {
-                            select.name = 'imageCategories' + index;
-                        }
+                        if (select)
+                            select.name = 'imageCategories' + i;
                     });
                 });
 
-                // Add amenity
-                const addAmenityBtn = document.getElementById('add-amenity');
-                if (addAmenityBtn) {
-                    addAmenityBtn.addEventListener('click', () => {
-                        const div = document.createElement('div');
-                        div.className = 'd-flex align-items-center mb-2';
-                        div.innerHTML = `<input type="text" name="amenityNames[]" class="form-control mr-2" placeholder="Tên tiện ích" />
-                              <input type="text" name="amenityIcons[]" class="form-control mr-2" placeholder="Icon" />
-                              <button type="button" class="btn btn-danger btn-sm remove-amenity">×</button>`;
-                        div.querySelector('.remove-amenity').addEventListener('click', () => div.remove());
-                        document.getElementById('amenity-list').appendChild(div);
+                // Thêm tiện ích
+                document.getElementById('add-amenity').addEventListener('click', () => {
+                    const div = document.createElement('div');
+                    div.className = 'amenity-row';
+                    div.innerHTML = `
+                    <input type="text" name="amenityNames[]" class="form-control" placeholder="Tên tiện ích" />
+                    <input type="text" name="amenityIcons[]" class="form-control icon-input" placeholder="Icon" />
+                    <span class="amenity-preview"><i></i></span>
+                    <button type="button" class="btn btn-danger btn-sm remove-amenity">×</button>`;
+                    div.querySelector('.remove-amenity').addEventListener('click', () => div.remove());
+                    div.querySelector('.icon-input').addEventListener('input', e => {
+                        div.querySelector('.amenity-preview i').className = e.target.value.trim();
                     });
-                } else {
-                    console.error('Element #add-amenity not found!');
-                }
+                    document.getElementById('amenity-list').appendChild(div);
+                });
 
-                // Add category
-                const addCategoryBtn = document.getElementById('add-category');
-                if (addCategoryBtn) {
-                    addCategoryBtn.addEventListener('click', () => {
-                        const input = document.getElementById('newCategory');
-                        const newCat = input.value.trim();
-                        console.log('Creating category:', newCat);
+                // Gỡ tiện ích
+                document.querySelectorAll('.remove-amenity').forEach(btn => {
+                    btn.addEventListener('click', () => btn.closest('.amenity-row')?.remove());
+                });
 
-                        if (!newCat) {
-                            alert("Vui lòng nhập tên danh mục.");
-                            return;
-                        }
+                // Thêm danh mục
+                document.getElementById('add-category').addEventListener('click', () => {
+                    const input = document.getElementById('newCategory');
+                    const newCat = input.value.trim();
+                    if (!newCat)
+                        return alert("Vui lòng nhập tên danh mục.");
+                    const existing = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]')).map(i => i.value.trim());
+                    if (existing.includes(newCat))
+                        return alert("Danh mục đã tồn tại.");
 
-                        const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
-                                .map(el => el.value.trim());
-
-                        if (categories.includes(newCat)) {
-                            alert("Danh mục đã tồn tại.");
-                            return;
-                        }
-
-                        const div = document.createElement('div');
-                        div.className = 'd-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white category-item';
-
-                        const hidden = document.createElement('input');
-                        hidden.type = 'hidden';
-                        hidden.name = 'categoryList[]';
-                        hidden.value = newCat;
-
-                        const span = document.createElement('span');
-                        span.textContent = newCat;
-
-                        const button = document.createElement('button');
-                        button.type = 'button';
-                        button.className = 'btn btn-sm btn-light ml-2 py-0 px-2 remove-category';
-                        button.dataset.cat = newCat;
-                        button.textContent = '×';
-
-                        div.appendChild(hidden);
-                        div.appendChild(span);
-                        div.appendChild(button);
-
-                        const categoryList = document.getElementById('category-list');
-                        if (categoryList) {
-                            categoryList.appendChild(div);
-                            input.value = '';
-                            updateAllCategorySelects();
-                            console.log('Added category safely:', newCat);
-                        } else {
-                            console.error('Element #category-list not found!');
-                        }
+                    const div = document.createElement('div');
+                    div.className = 'category-item d-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white';
+                    div.innerHTML = `
+                    <input type="hidden" name="categoryList[]" value="${newCat}">
+                    <span>${newCat}</span>
+                    <button type="button" class="btn btn-sm btn-light ml-2 py-0 px-2 remove-category">×</button>`;
+                    div.querySelector('.remove-category').addEventListener('click', () => {
+                        div.remove();
+                        updateAllCategorySelects();
                     });
-                } else {
-                    console.error('Element #add-category not found!');
-                }
+                    document.getElementById('category-list').appendChild(div);
+                    input.value = '';
+                    updateAllCategorySelects();
+                });
 
-                // Remove category (event delegation)
-                const categoryList = document.getElementById('category-list');
-                if (categoryList) {
-                    categoryList.addEventListener('click', (e) => {
-                        if (e.target.classList.contains('remove-category')) {
-                            const item = e.target.closest('.category-item');
-                            if (item) {
-                                item.remove();
-                                updateAllCategorySelects();
-                                console.log('Removed category:', e.target.getAttribute('data-cat'));
-                            }
-                        }
-                    });
-                } else {
-                    console.error('Element #category-list not found!');
-                }
-
-                // Update all category selects
                 function updateAllCategorySelects() {
-                    const allCategories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
-                            .map(input => input.value.trim());
+                    const categories = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]')).map(i => i.value.trim());
                     document.querySelectorAll('#image-url-container select').forEach(select => {
-                        const oldValues = Array.from(select.selectedOptions).map(opt => opt.value);
+                        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
                         select.innerHTML = '';
-                        allCategories.forEach(cat => {
+                        categories.forEach(cat => {
                             const option = document.createElement('option');
                             option.value = option.textContent = cat;
-                            if (oldValues.includes(cat)) {
+                            if (selected.includes(cat))
                                 option.selected = true;
-                            }
                             select.appendChild(option);
                         });
                     });
                 }
-                const mainImageInput = document.getElementById('imageUrl');
-                const mainImagePreview = document.getElementById('main-image-preview');
 
-                if (mainImageInput && mainImagePreview) {
-                    // Preview nếu người dùng thay đổi URL
-                    mainImageInput.addEventListener('input', () => {
-                        const url = mainImageInput.value.trim();
-                        mainImagePreview.src = url;
-                        mainImagePreview.style.display = url ? 'block' : 'none';
-                    });
-
-                    // Nếu đã có sẵn ảnh thì hiển thị luôn
-                    if (mainImageInput.value.trim()) {
-                        mainImagePreview.src = mainImageInput.value.trim();
-                        mainImagePreview.style.display = 'block';
-                    } else {
-                        mainImagePreview.style.display = 'none';
-                    }
+                // Gắn preview ảnh đại diện
+                const imageUrlInput = document.getElementById('imageUrl');
+                const preview = document.getElementById('main-image-preview');
+                if (imageUrlInput && preview) {
+                    const updatePreview = () => {
+                        const url = imageUrlInput.value.trim();
+                        preview.src = url;
+                        preview.style.display = url ? 'block' : 'none';
+                    };
+                    imageUrlInput.addEventListener('input', updatePreview);
+                    updatePreview();
                 }
-                // Add image URL
+
+                // Thêm ảnh chi tiết
                 let imageCount = document.querySelectorAll('#image-url-container .image-url-row').length;
                 document.getElementById('add-url-btn').addEventListener('click', () => {
                     const div = document.createElement('div');
                     div.className = 'd-flex align-items-start mb-3 image-url-row';
                     const selectName = 'imageCategories' + (imageCount++);
                     div.innerHTML = `
-                  <input type="text" name="imageUrls[]" class="form-control image-url-input" />
-                  <select name="${selectName}" class="form-control" multiple></select>
-                  <img src="" class="image-preview" onerror="this.style.display='none'">
-                  <button type="button" class="btn btn-danger btn-sm ml-2 remove-url">×</button>`;
-                    const input = div.querySelector('input');
-                    const img = div.querySelector('img');
-                    input.addEventListener('input', () => {
-                        img.src = input.value;
-                        img.style.display = input.value ? 'block' : 'none';
+                    <input type="text" name="imageUrls[]" class="form-control image-url-input" />
+                    <select name="${selectName}" class="form-control" multiple></select>
+                    <img src="" class="image-preview" onerror="this.style.display='none'">
+                    <button type="button" class="btn btn-danger btn-sm ml-2 remove-url">×</button>`;
+                    div.querySelector('.image-url-input').addEventListener('input', e => {
+                        const img = div.querySelector('img');
+                        img.src = e.target.value;
+                        img.style.display = e.target.value ? 'block' : 'none';
                     });
-                    div.querySelector('.remove-url').addEventListener('click', () => {
-                        div.remove();
-                        updateAllCategorySelects();
-                    });
+                    div.querySelector('.remove-url').addEventListener('click', () => div.remove());
                     document.getElementById('image-url-container').appendChild(div);
                     updateAllCategorySelects();
                 });
 
-                // Remove image URL (event delegation)
-                document.getElementById('image-url-container').addEventListener('click', (e) => {
-                    if (e.target.classList.contains('remove-url')) {
-                        const row = e.target.closest('.image-url-row');
-                        if (row) {
-                            row.remove();
-                            updateAllCategorySelects();
-                        }
-                    }
-                });
-
-                // Initialize existing image URL inputs for preview
-                document.querySelectorAll('#image-url-container .image-url-input').forEach(input => {
+                // Khởi tạo lại preview ảnh nếu có sẵn
+                document.querySelectorAll('.image-url-input').forEach(input => {
                     const img = input.closest('.image-url-row').querySelector('img');
                     input.addEventListener('input', () => {
                         img.src = input.value;

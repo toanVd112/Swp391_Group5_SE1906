@@ -163,7 +163,13 @@ public class AddRoomTypeServlet extends HttpServlet {
         }
         type.setImages(images);
 
-        try {
+       try {
+    if (dao.isRoomTypeNameExists(type.getName(), null)) {
+        request.setAttribute("roomType", type); // giữ lại dữ liệu đã nhập
+        request.setAttribute("error", "Tên loại phòng đã tồn tại.");
+        request.getRequestDispatcher("Manager/manager.jsp?page=managerRoomType.jsp").forward(request, response);
+        return;
+    }
             boolean success = dao.insertFullRoomType(type);
             if (success) {
                 response.sendRedirect("RoomTypeListServlet");
