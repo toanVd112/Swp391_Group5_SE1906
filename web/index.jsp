@@ -8,11 +8,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 <%
-    // Kiểm tra đã login hay chưa
+    // Ki?m tra ?� login hay ch?a
     Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
     if (isLoggedIn == null) isLoggedIn = false;
 
-    // Lấy thông tin user từ session
+    // L?y th�ng tin user t? session
     String userFirstName = (String) session.getAttribute("userFirstName");
     String userLastName  = (String) session.getAttribute("userLastName");
     String userEmail     = (String) session.getAttribute("userEmail");
@@ -20,16 +20,16 @@
     String userCountry   = (String) session.getAttribute("userCountry");
     String username      = (String) session.getAttribute("username");
 
-    // Lấy thông tin booking từ request
+    // L?y th�ng tin booking t? request
     String roomID         = request.getParameter("roomID");
-    String roomTypeID     = request.getParameter("roomTypeID");  // ✅ ĐÃ BỔ SUNG
+    String roomTypeID     = request.getParameter("roomTypeID");  // ? ?� B? SUNG
     String roomTypeName   = request.getParameter("roomTypeName");
     String pricePerNight  = request.getParameter("pricePerNight");
     String checkInDate    = request.getParameter("checkInDate");
     
     String checkOutDate   = request.getParameter("checkOutDate");
     String roomDetail     =request.getParameter("roomDetail");
-    // Set default values nếu null
+    // Set default values n?u null
     userFirstName   = (userFirstName != null) ? userFirstName : "";
     userLastName    = (userLastName  != null) ? userLastName  : "";
     userEmail       = (userEmail     != null) ? userEmail     : "";
@@ -46,7 +46,7 @@
 }
     checkOutDate    = (checkOutDate  != null) ? checkOutDate  : "2025-06-22";
 
-    // Gợi ý: nếu bạn cần dùng lại, có thể lưu vào session ở đây
+    // G?i �: n?u b?n c?n d�ng l?i, c� th? l?u v�o session ? ?�y
     session.setAttribute("checkInDate", checkInDate);
     session.setAttribute("checkOutDate", checkOutDate);
     session.setAttribute("roomID", roomID);
@@ -71,7 +71,7 @@
         <meta name="description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Kh?ch s?n HoĐ?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Kh?ch s?n Ho??ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
@@ -146,7 +146,7 @@
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="user_profile2.html">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.user.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
@@ -294,12 +294,12 @@
                                         </ul>
                                     </li>
                                     <c:choose>
-                                        <%-- Nếu người dùng đã đăng nhập --%>
+                                        <%-- N?u ng??i d�ng ?� ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
                                             <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
-                                        <%-- Nếu chưa đăng nhập --%>
+                                        <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
                                             <li><a href="cart.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:otherwise>
@@ -321,21 +321,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ngày nhận phòng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> Ng�y nh?n ph�ng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng�y" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ngày trả phòng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Chọn ngày" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> Ng�y tr? ph�ng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng�y" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> Số khách</label>
+                            <label><i class="fas fa-users"></i> S? kh�ch</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                Tìm phòng
+                                T�m ph�ng
                             </button>
                         </div>
                     </div>
@@ -391,7 +391,7 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
                                                     <img src="${room.imageUrl}" alt="">
-                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem phòng</a>
+                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem ph�ng</a>
                                                 </div>
 
                                                 <div class="info-bx text-center">
@@ -755,7 +755,7 @@
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
                 if (checkin && checkout && checkout <= checkin) {
-                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
                     checkoutInput.value = '';
                 }
             }
@@ -764,7 +764,7 @@
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
                 if (checkout <= checkin) {
-                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
                     return false;
                 }
                 return true;

@@ -101,6 +101,12 @@ public class LoginCustomerServlet extends HttpServlet {
 
             session.setAttribute("userInfo", userInfo);
             session.setAttribute("user", account);
+            
+//            session.setAttribute("account", account);
+//            UserDao userDAO = new UserDao();
+//            User user = userDAO.getUserByAccountId(account.getAccountID());
+//            session.setAttribute("user", user);
+            
             session.setAttribute("accountId", account.getAccountID());
 
             response.sendRedirect("Home");

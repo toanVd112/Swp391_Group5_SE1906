@@ -87,16 +87,16 @@ public class UserProfileServlet extends HttpServlet {
             Account account = accountDAO.getAccountByID(String.valueOf(accountId));
             if (user == null || account == null) {
                 request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
+                request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
             request.setAttribute("user", user);
             request.setAttribute("account", account);
-            request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+            request.getRequestDispatcher("user_profile2.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi lấy thông tin hồ sơ!");
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     } 
 
@@ -124,7 +124,7 @@ public class UserProfileServlet extends HttpServlet {
             Account account = accountDAO.getAccountByID(String.valueOf(accountId));
             if (user == null || account == null) {
                 request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
+                request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
 
@@ -164,7 +164,7 @@ public class UserProfileServlet extends HttpServlet {
                 request.setAttribute("tempAddress", address);
                 request.setAttribute("user", user);
                 request.setAttribute("account", account);
-                request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+                request.getRequestDispatcher("user_profile2.jsp").forward(request, response);
                 return;
             }
 
@@ -183,7 +183,7 @@ public class UserProfileServlet extends HttpServlet {
                     request.setAttribute("error", "Định dạng ảnh không hợp lệ! Chỉ chấp nhận JPG, PNG, GIF.");
                     request.setAttribute("user", user);
                     request.setAttribute("account", account);
-                    request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+                    request.getRequestDispatcher("user_profile2.jsp").forward(request, response);
                     return;
                 }
                 String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
@@ -217,13 +217,13 @@ public class UserProfileServlet extends HttpServlet {
 
             request.setAttribute("user", user);
             request.setAttribute("account", account);
-            request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+            request.getRequestDispatcher("user_profile2.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi cập nhật hồ sơ!");
             request.setAttribute("user", userDAO.getUserByAccountId(accountId));
             request.setAttribute("account", accountDAO.getAccountByID(String.valueOf(accountId)));
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
     

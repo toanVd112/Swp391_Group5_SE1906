@@ -20,7 +20,7 @@
 %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <!-- META ============================================= -->
     <meta charset="utf-8">
@@ -144,13 +144,13 @@
             <div class="avatar-container">
                 <div class="avatar">
                     <c:choose>
-                        <c:when test="${not empty user.avatarPath}">
+                        <c:when test="${not empty user and not empty user.avatarPath}">
                             <img src="${pageContext.request.contextPath}/${user.avatarPath}" alt="Avatar">
                         </c:when>
                         <c:otherwise>
                             <span class="avatar-initials">
                                 <c:choose>
-                                    <c:when test="${not empty user.fullName}">
+                                    <c:when test="${not empty user and not empty user.fullName}">
                                         ${fn:substring(user.fullName, 0, 1)}
                                     </c:when>
                                     <c:otherwise>?</c:otherwise>
@@ -165,9 +165,9 @@
                     </svg>
                 </button>
             </div>
-            <div class="profile-name"><c:out value="${user.fullName}"/></div>
-            <div class="profile-email"><c:out value="${user.email}"/></div>
-            <div class="profile-phone"><c:out value="${user.phone}"/></div>
+            <div class="profile-name"><c:out value="${not empty user ? user.fullName : ''}"/></div>
+            <div class="profile-email"><c:out value="${not empty user ? user.email : ''}"/></div>
+            <div class="profile-phone"><c:out value="${not empty user ? user.phone : ''}"/></div>
         </div>
 
         <c:if test="${not empty message}">
@@ -188,25 +188,25 @@
             <form class="profile-form" method="post" action="user-profile" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label class="form-label" for="username">Tên ??ng nh?p</label>
-                    <div class="readonly-field"><c:out value="${account.username}"/></div>
+                    <div class="readonly-field"><c:out value="${not empty account ? account.username : ''}"/></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="role">Vai trò</label>
-                    <div class="readonly-field"><c:out value="${account.role}"/></div>
+                    <div class="readonly-field"><c:out value="${not empty account ? account.role : ''}"/></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="fullName">H? và tên</label>
-                    <input type="text" id="fullName" name="fullName" class="form-input" value="${not empty tempFullName ? tempFullName : user.fullName}" required>
+                    <input type="text" id="fullName" name="fullName" class="form-input" value="${not empty tempFullName ? tempFullName : (not empty user ? user.fullName : '')}" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="email">??a ch? email</label>
-                    <input type="email" id="email" name="email" class="form-input" value="${not empty tempEmail ? tempEmail : user.email}" required>
+                    <input type="email" id="email" name="email" class="form-input" value="${not empty tempEmail ? tempEmail : (not empty user ? user.email : '')}" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="phone">S? ?i?n tho?i</label>
                     <div class="phone-input">
                         <span class="phone-prefix">+84</span>
-                        <input type="tel" id="phone" name="phone" class="form-input with-prefix" value="${not empty tempPhone ? tempPhone : user.phone}" required>
+                        <input type="tel" id="phone" name="phone" class="form-input with-prefix" value="${not empty tempPhone ? tempPhone : (not empty user ? user.phone : '')}" required>
                     </div>
                 </div>
                 <div class="form-group">
@@ -215,7 +215,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="address">??a ch?</label>
-                    <textarea id="address" name="address" class="form-input form-textarea" placeholder="Nh?p ??a ch? c?a b?n"><c:out value="${not empty tempAddress ? tempAddress : user.address}"/></textarea>
+                    <textarea id="address" name="address" class="form-input form-textarea" placeholder="Nh?p ??a ch? c?a b?n"><c:out value="${not empty tempAddress ? tempAddress : (not empty user ? user.address : '')}"/></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="photo">?nh ??i di?n</label>

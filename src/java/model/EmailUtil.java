@@ -22,7 +22,7 @@ public class EmailUtil {
     public static boolean sendMail(String to, String subject, String content) {
         
         final String from = "toan74428@gmail.com";
-        final String pass = "qbvk ucpo aolr ajwe";
+        final String pass = "bshb nlai ivfk katk";
 //        final String from = "fcpctk@gmail.com";
 //        final String pass = "daeg attb munj hkxz";
         final String host = "smtp.gmail.com";
