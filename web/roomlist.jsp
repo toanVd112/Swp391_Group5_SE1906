@@ -533,7 +533,7 @@
                                                                     <input type="hidden" name="checkin" value="${checkin}">
                                                                     <input type="hidden" name="checkout" value="${checkout}">
                                                                     <input type="hidden" name="roomCapacity" value="${room.maxGuests}">
-
+                                                                    <input type="hidden" name="roomPrice" value="${room.basePrice}">
                                                                     <div class="quantity-selection">
                                                                         <label>Số lượng phòng:</label>
                                                                         <div class="quantity-controls">

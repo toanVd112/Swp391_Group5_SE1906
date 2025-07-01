@@ -71,7 +71,7 @@ public class BookingDAO {
 
     // Insert dịch vụ dùng kèm
     public void insertServiceUsage(int bookingID, int serviceID, int quantity) throws SQLException {
-        String sql = "INSERT INTO servicesusage (BookingID, ServiceID, Quantity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO ServiceUsage (BookingID, ServiceID, Quantity) VALUES (?, ?, ?)";
 
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -161,5 +161,12 @@ public class BookingDAO {
         }
         return list;
     }
-   
+    public static void main(String[] args) {
+        BookingDAO b=new BookingDAO();
+        
+    }
+
+    public List<Booking> getAllBookings() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

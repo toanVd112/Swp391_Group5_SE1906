@@ -238,7 +238,7 @@ function handleManualSelection(form) {
         roomTypeId: parseInt(form.roomTypeId.value),
         roomName: form.roomName ? form.roomName.value : 'Room Manual',
         quantity: parseInt(form.quantity.value),
-        basePrice: 500000,
+        basePrice: parseFloat(form.roomPrice.value),
         roomCapacity: parseInt(form.roomCapacity.value)
     };
 
@@ -290,7 +290,10 @@ function proceedToBooking() {
     // Lấy room/service từ localStorage
     const selectedRooms = JSON.parse(localStorage.getItem('selectedRooms')) || [];
     const selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
-
+    if (selectedRooms.length === 0 && selectedServices.length > 0) {
+        alert("⚠️ Bạn phải chọn ít nhất 1 phòng trước khi thanh toán! Dịch vụ không thể thanh toán riêng.");
+        return;
+    }
     // Tính tổng slots
     const guests = parseInt(document.getElementById('guests').value) || 0;
     let totalSlots = 0;
