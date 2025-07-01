@@ -21,6 +21,7 @@ import model.User;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Date;
 
 /**
  *
@@ -148,8 +149,8 @@ public class UserProfileServlet extends HttpServlet {
             List<String> errors = new ArrayList<>();
             if (fullName == null || fullName.trim().isEmpty()) {
                 errors.add("Họ và tên không được để trống!");
-            } else if (fullName.length() > 100) {
-                errors.add("Họ và tên không được vượt quá 100 ký tự!");
+            } else if (fullName.length() > 50) {
+                errors.add("Họ và tên không được vượt quá 50 ký tự!");
             } else if (!isValidName(fullName)) {
                 errors.add("Họ và tên chỉ được chứa chữ cái và khoảng trắng!");
             }
@@ -162,7 +163,7 @@ public class UserProfileServlet extends HttpServlet {
                 errors.add("Số điện thoại phải là 10 chữ số!");
             }
             if (dateOfBirth != null && !dateOfBirth.isEmpty() && !isValidDate(dateOfBirth)) {
-                errors.add("Định dạng ngày sinh không hợp lệ! Sử dụng YYYY-MM-DD.");
+                errors.add("Định dạng ngày sinh không hợp lệ hoặc ngày sinh phải nhỏ hơn hôm nay! Sử dụng YYYY-MM-DD.");
             }
 
             if (!errors.isEmpty()) {
@@ -253,7 +254,7 @@ public class UserProfileServlet extends HttpServlet {
 
     // Validate email theo regex đơn giản
     private boolean isValidEmail(String email) {
-        return email != null && email.matches("^[\\w-.]+@[\\w-]+(\\.[\\w-]+)+$");
+        return email != null && email.matches("^[\\w-.]+@gmail\\.com$");
     }  
 
     // Validate số điện thoại (chỉ số và 10 ký tự)
@@ -273,8 +274,9 @@ public class UserProfileServlet extends HttpServlet {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             sdf.setLenient(false);
-            sdf.parse(date);
-            return true;
+            Date dateOfBirth = sdf.parse(date);
+            Date currentDate = new Date(); // Lấy ngày hiện tại
+            return dateOfBirth.before(currentDate); // Kiểm tra ngày sinh nhỏ hơn ngày hiện tại
         } catch (Exception e) {
             return false;
         }

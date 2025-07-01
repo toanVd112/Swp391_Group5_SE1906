@@ -8,11 +8,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 <%
-    // Ki?m tra ?ã login hay ch?a
+    // Ki?m tra ?? login hay ch?a
     Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
     if (isLoggedIn == null) isLoggedIn = false;
 
-    // L?y thông tin user t? session
+    // L?y th?ng tin user t? session
     String userFirstName = (String) session.getAttribute("userFirstName");
     String userLastName  = (String) session.getAttribute("userLastName");
     String userEmail     = (String) session.getAttribute("userEmail");
@@ -20,9 +20,9 @@
     String userCountry   = (String) session.getAttribute("userCountry");
     String username      = (String) session.getAttribute("username");
 
-    // L?y thông tin booking t? request
+    // L?y th?ng tin booking t? request
     String roomID         = request.getParameter("roomID");
-    String roomTypeID     = request.getParameter("roomTypeID");  // ? ?Ã B? SUNG
+    String roomTypeID     = request.getParameter("roomTypeID");  // ? ?? B? SUNG
     String roomTypeName   = request.getParameter("roomTypeName");
     String pricePerNight  = request.getParameter("pricePerNight");
     String checkInDate    = request.getParameter("checkInDate");
@@ -46,7 +46,7 @@
 }
     checkOutDate    = (checkOutDate  != null) ? checkOutDate  : "2025-06-22";
 
-    // G?i ý: n?u b?n c?n dùng l?i, có th? l?u vào session ? ?ây
+    // G?i ?: n?u b?n c?n d?ng l?i, c? th? l?u v?o session ? ??y
     session.setAttribute("checkInDate", checkInDate);
     session.setAttribute("checkOutDate", checkOutDate);
     session.setAttribute("roomID", roomID);
@@ -277,7 +277,7 @@
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
                                             <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
-                                            <li><a href="admin/user-profile.jsp">User Profile</a></li>
+                                            <li><a href="${pageContext.request.contextPath}/user-profile">User Profile</a></li>
                                             <li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
                                                     <li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
@@ -294,7 +294,7 @@
                                         </ul>
                                     </li>
                                     <c:choose>
-                                        <%-- N?u ng??i dùng ?ã ??ng nh?p --%>
+                                        <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
                                             <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
@@ -321,21 +321,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ngày nh?n phòng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ngày" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> Ng?y nh?n ph?ng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng?y" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ngày tr? phòng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ngày" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> Ng?y tr? ph?ng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng?y" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> S? khách</label>
+                            <label><i class="fas fa-users"></i> S? kh?ch</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                Tìm phòng
+                                T?m ph?ng
                             </button>
                         </div>
                     </div>
@@ -391,7 +391,7 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
                                                     <img src="${room.imageUrl}" alt="">
-                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem phòng</a>
+                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem ph?ng</a>
                                                 </div>
 
                                                 <div class="info-bx text-center">
@@ -755,7 +755,7 @@
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
                 if (checkin && checkout && checkout <= checkin) {
-                    alert('? Ngày tr? phòng ph?i sau ngày nh?n phòng.');
+                    alert('? Ng?y tr? ph?ng ph?i sau ng?y nh?n ph?ng.');
                     checkoutInput.value = '';
                 }
             }
@@ -764,7 +764,7 @@
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
                 if (checkout <= checkin) {
-                    alert('? Ngày tr? phòng ph?i sau ngày nh?n phòng.');
+                    alert('? Ng?y tr? ph?ng ph?i sau ng?y nh?n ph?ng.');
                     return false;
                 }
                 return true;
