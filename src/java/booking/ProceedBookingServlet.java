@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,19 +89,28 @@ public class ProceedBookingServlet extends HttpServlet {
         String servicesJSON = request.getParameter("selectedServicesJSON");
         String checkin = request.getParameter("checkin");
         String checkout = request.getParameter("checkout");
+        DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate checkinDate = LocalDate.parse(checkin, inFmt);
+        LocalDate checkoutDate = LocalDate.parse(checkout, inFmt);
+
+        checkin = checkinDate.format(outFmt);
+        checkout = checkoutDate.format(outFmt);
+
         int guests = Integer.parseInt(request.getParameter("guests"));
         String paymentMethod = request.getParameter("paymentMethod");
 
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
+        double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
 
         Integer userID = null;
         if (request.getSession().getAttribute("user") != null) {
             User u = (User) request.getSession().getAttribute("user");
             userID = u.getUserId();
         }
-       
 
 // Parse JSON
         Gson gson = new Gson();
@@ -119,12 +130,26 @@ public class ProceedBookingServlet extends HttpServlet {
         BookingDAO bookingDAO = new BookingDAO();
         int bookingID = 0;
         try {
-            bookingID = bookingDAO.insertBooking(userID, checkin, checkout, guests, "Pending", fullName, email, phone);
+            bookingID = bookingDAO.insertBooking(userID, checkin, checkout, guests, "Pending", fullName, email, phone, totalAmount);
         } catch (SQLException ex) {
             Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (bookingID <= 0) {
-            throw new RuntimeException("❌ Insert booking failed — bookingID = " + fullName+" "+ checkin +" "+ checkout);
+            throw new RuntimeException(
+                    "❌ Insert booking failed:\n"
+                    + "  userID = " + userID + "\n"
+                    + "  fullName = " + fullName + "\n"
+                    + "  email = " + email + "\n"
+                    + "  phone = " + phone + "\n"
+                    + "  checkin = " + checkin + "\n"
+                    + "  checkout = " + checkout + "\n"
+                    + "  guests = " + guests + "\n"
+                    + "  roomsJSON = " + roomsJSON + "\n"
+                    + "  servicesJSON = " + servicesJSON + "\n"
+                    + "  selectedRooms = " + selectedRooms + "\n"
+                    + "  selectedServices = " + selectedServices + "\n"
+                    + "  paymentMethod = " + paymentMethod
+            );
         }
 
 // Insert detail

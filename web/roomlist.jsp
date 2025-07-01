@@ -665,22 +665,32 @@
                             <form id="bookingForm" action="${pageContext.request.contextPath}/ProceedBookingServlet" method="POST">
                                 <input type="hidden" name="selectedRoomsJSON" id="selectedRoomsJSON">
                                 <input type="hidden" name="selectedServicesJSON" id="selectedServicesJSON">
-                                <!-- Có thể thêm hidden checkin, checkout, guests -->
                                 <input type="hidden" name="checkin" id="hiddenCheckin">
                                 <input type="hidden" name="checkout" id="hiddenCheckout">
                                 <input type="hidden" name="guests" id="hiddenGuests">
-                            </form>
-                            <!-- Modal nhập thông tin Guest -->
-                            <div id="guestInfoModal" class="modal">
-                                <div class="modal-content">
-                                    <span class="close-btn" onclick="closeModal()">&times;</span>
-                                    <h3>Nhập thông tin liên hệ</h3>
-                                    <label>Họ tên: <input type="text" id="guestFullName"></label><br>
-                                    <label>Email: <input type="email" id="guestEmail"></label><br>
-                                    <label>Điện thoại: <input type="tel" id="guestPhone"></label><br>
-                                    <button onclick="confirmGuestInfo()">Xác nhận</button>
+
+                                <!-- 👇 BẮT BUỘC PHẢI CÓ 3 trường này -->
+                                <input type="hidden" name="fullName" id="fullName">
+                                <input type="hidden" name="email" id="email">
+                                <input type="hidden" name="phone" id="phone">
+                                <input type="hidden" name="totalAmount" id="totalAmount">
+
+
+                                <!-- Modal vẫn để đây -->
+                                <div id="guestInfoModal" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close-btn" onclick="closeModal()">&times;</span>
+                                        <h3>Nhập thông tin liên hệ</h3>
+                                        <label>Họ tên: <input type="text" id="guestFullName"></label><br>
+                                        <label>Email: <input type="email" id="guestEmail"></label><br>
+                                        <label>Điện thoại: <input type="tel" id="guestPhone"></label><br>
+                                        <button onclick="confirmGuestInfo()">Xác nhận</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
+
+                            <!-- Modal nhập thông tin Guest -->
+
 
 
                         </div>

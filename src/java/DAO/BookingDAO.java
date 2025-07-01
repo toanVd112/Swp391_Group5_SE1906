@@ -20,8 +20,8 @@ import model.ServiceUsage;
  */
 public class BookingDAO {
        public int insertBooking(Integer userID, String checkin, String checkout, int guests,
-                             String status, String name, String email, String phone) throws SQLException  {
-        String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                             String status, String name, String email, String phone, Double totalAmount) throws SQLException  {
+        String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone,TotalAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,7 +38,7 @@ public class BookingDAO {
             ps.setString(6, name);
             ps.setString(7, email);
             ps.setString(8, phone);
-
+            ps.setDouble(9, totalAmount);
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -161,28 +161,5 @@ public class BookingDAO {
         }
         return list;
     }
-    public static void main(String[] args) {
-        BookingDAO dao = new BookingDAO();
-
-        // Dummy data để test
-        Integer userID = null; // Giả sử chưa đăng nhập
-        String checkin = "2025-07-01";
-        String checkout = "2025-07-03";
-        int guests = 2;
-        String status = "Pending";
-        String name = "Nguyen Van A";
-        String email = "a@example.com";
-        String phone = "0123456789";
-
-        try {
-            int bookingID = dao.insertBooking(userID, checkin, checkout, guests, status, name, email, phone);
-            if (bookingID > 0) {
-                System.out.println("✅ Insert OK! BookingID: " + bookingID);
-            } else {
-                System.out.println("❌ Insert fail! BookingID: " + bookingID);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+   
 }

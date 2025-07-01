@@ -287,11 +287,11 @@ function checkIfDatesChanged() {
     }
 }
 function proceedToBooking() {
-    // Ví dụ: dữ liệu room/service bạn đã load từ LocalStorage hoặc biến JS
+    // Lấy room/service từ localStorage
     const selectedRooms = JSON.parse(localStorage.getItem('selectedRooms')) || [];
     const selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
 
-    // Slot & guest check
+    // Tính tổng slots
     const guests = parseInt(document.getElementById('guests').value) || 0;
     let totalSlots = 0;
     selectedRooms.forEach(item => {
@@ -308,21 +308,29 @@ function proceedToBooking() {
         alert("⚠️ Slot lệch quá lớn!");
         return;
     }
-    // Nếu là Guest ➜ show form nhập thông tin
+
+    // Tính tổng tiền từ UI hiển thị
+    const total = parseFloat(
+            document.getElementById('grandTotal').textContent.replace(/[^\d]/g, '')
+            ) || 0;
+
+    // Nếu là Guest ➜ mở modal nhập info
     if (!isCustomer) {
         document.getElementById('guestInfoModal').style.display = 'block';
         return;
     }
-    // Gán JSON
+
+    // Nếu là Customer ➜ gán hidden & submit luôn
     document.getElementById('selectedRoomsJSON').value = JSON.stringify(selectedRooms);
     document.getElementById('selectedServicesJSON').value = JSON.stringify(selectedServices);
     document.getElementById('hiddenCheckin').value = document.getElementById('checkin').value;
     document.getElementById('hiddenCheckout').value = document.getElementById('checkout').value;
     document.getElementById('hiddenGuests').value = guests;
+    document.getElementById('totalAmount').value = total;
 
-    // Submit form
     document.getElementById('bookingForm').submit();
 }
+
 
 function confirmGuestInfo() {
     const name = document.getElementById('guestFullName').value.trim();
@@ -334,19 +342,34 @@ function confirmGuestInfo() {
         return;
     }
 
-    // Gán hidden & submit
+    // Load lại room/service từ localStorage
+    const selectedRooms = JSON.parse(localStorage.getItem('selectedRooms')) || [];
+    const selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+
+    // Slot & guest check
+    const guests = parseInt(document.getElementById('guests').value) || 0;
+
+    // 👉 Lấy tổng từ UI hiển thị
+    const total = parseFloat(
+            document.getElementById('grandTotal').textContent.replace(/[^\d]/g, '')
+            ) || 0;
+
+    // Gán hidden fields
     document.getElementById('selectedRoomsJSON').value = JSON.stringify(selectedRooms);
     document.getElementById('selectedServicesJSON').value = JSON.stringify(selectedServices);
+    document.getElementById('hiddenGuests').value = guests;
     document.getElementById('hiddenCheckin').value = document.getElementById('checkin').value;
     document.getElementById('hiddenCheckout').value = document.getElementById('checkout').value;
-    document.getElementById('hiddenGuests').value = guests;
+    document.getElementById('totalAmount').value = total;
 
     document.getElementById('fullName').value = name;
     document.getElementById('email').value = email;
     document.getElementById('phone').value = phone;
 
+    // Ẩn modal
     document.getElementById('guestInfoModal').style.display = 'none';
 
+    // Submit form
     document.getElementById('bookingForm').submit();
 }
 

@@ -457,6 +457,7 @@ public class RoomTypeDAO {
 
     public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout,
             String roomTypeFilter, Integer minGuests, Double maxPrice) throws SQLException {
+
         List<RoomType> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
@@ -465,11 +466,13 @@ public class RoomTypeDAO {
         FROM roomtypes rt
         JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID
         WHERE r.Status = 'Available'
-          AND r.RoomID NOT IN (
-              SELECT bd.RoomID
+          AND NOT EXISTS (
+              SELECT 1
               FROM bookingdetails bd
               JOIN bookings b ON bd.BookingID = b.BookingID
               WHERE b.CheckOutDate > ? AND b.CheckInDate < ?
+                AND b.Status != 'Cancelled'
+                AND bd.RoomTypeID = rt.RoomTypeID
           )
     """);
 
@@ -488,6 +491,7 @@ public class RoomTypeDAO {
     """);
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
             int index = 1;
             ps.setDate(index++, checkin);
             ps.setDate(index++, checkout);
@@ -518,5 +522,37 @@ public class RoomTypeDAO {
         }
 
         return list;
+    }
+
+    public static void main(String[] args) {
+        RoomTypeDAO dao = new RoomTypeDAO();
+
+        // Giả sử test: Checkin 2025-07-01, Checkout 2025-07-03
+        Date checkin = Date.valueOf("2025-07-01");
+        Date checkout = Date.valueOf("2025-07-03");
+
+        String roomTypeFilter = null; // hoặc "Deluxe"
+        Integer minGuests = null;
+        Double maxPrice = null;
+
+        try {
+            List<RoomType> list = dao.getAvailableRoomTypes(
+                    checkin, checkout,
+                    roomTypeFilter, minGuests, maxPrice
+            );
+
+            System.out.println("✅ Found: " + list.size() + " room types");
+            for (RoomType rt : list) {
+                System.out.println(
+                        "ID: " + rt.getRoomTypeID()
+                        + " | Name: " + rt.getName()
+                        + " | Price: " + rt.getBasePrice()
+                        + " | MaxGuests: " + rt.getMaxGuests()
+                        + " | Available: " + rt.getAvailableRooms()
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
