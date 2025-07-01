@@ -20,17 +20,46 @@ public class AccountDAO extends DBConnect {
 
     public boolean insertAccount(Account account) {
         String sql = "INSERT INTO accounts (Username, Password, Role, IsActive, CreatedAt, Email) VALUES (?, ?, ?, ?, NOW(), ?)";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setString(1, account.getUsername());
             ps.setString(2, account.getPassword());
             ps.setString(3, account.getRole());
             ps.setBoolean(4, true);
             ps.setString(5, account.getEmail());
 
-            return ps.executeUpdate() > 0;
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating account failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int accountId = generatedKeys.getInt(1);
+
+                    // 👉 Sau khi có accountId ➜ Insert Users
+                    insertUser(accountId, account.getUsername(), account.getEmail());
+
+                    return true;
+                } else {
+                    throw new SQLException("Creating account failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void insertUser(int accountId, String fullName, String email) throws SQLException {
+        String sql = "INSERT INTO Users (AccountID, FullName, Email) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, accountId);
+            ps.setString(2, fullName); // Có thể là tên mặc định, username...
+            ps.setString(3, email);
+
+            ps.executeUpdate();
         }
     }
 
@@ -327,6 +356,7 @@ public class AccountDAO extends DBConnect {
         }
         return list;
     }
+
     public List<Account> getFilteredAccountsWithPageC(String search, String sort, int offset, int limit) {
         List<Account> list = new ArrayList<>();
         String sql = "SELECT * FROM accounts WHERE Role IN ('Customer')";
@@ -385,6 +415,7 @@ public class AccountDAO extends DBConnect {
 
         return 0;
     }
+
     public void editAccountC(String username, String password, boolean isActive, String email, String aid) {
         String sql = "Update accounts\n"
                 + "Set Username = ?,"
@@ -404,7 +435,8 @@ public class AccountDAO extends DBConnect {
         } catch (SQLException e) {
         }
     }
-    public void addAccountC(String username, String password,boolean isActive, String email) {
+
+    public void addAccountC(String username, String password, boolean isActive, String email) {
         String sql = "INSERT INTO Accounts (Username, Password, Role, IsActive, Email)\n"
                 + "VALUES (?,?,'Customer',?,?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
