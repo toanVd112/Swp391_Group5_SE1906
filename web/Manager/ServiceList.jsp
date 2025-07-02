@@ -226,7 +226,7 @@
 
                                                         // Tự động làm mới trang sau 1 giây
                                                         setTimeout(() => {
-                                                            window.location.href = '${pageContext.request.contextPath}/services/list';
+                                                            window.location.href = '${pageContext.request.contextPath}/serviceslist';
                                                         }, 1000);
                                                     }
 
