@@ -83,14 +83,14 @@ public class RegisterCustomerServlet extends HttpServlet {
 
         // 1. Kiểm tra username
         if (!val.validateUsername(username)) {
-            request.setAttribute("result", "Username phải >= 4 ký tự");
+            request.setAttribute("result", "Username phải lớn hơn hoặc bằng 4 ký tự và nhỏ hơn 20 ký tự");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         // 2. Kiểm tra password
         if (!val.validatePassword(password)) {
-            request.setAttribute("result", "Password phải >= 6 ký tự, có ký tự hoa, thường, số, đặc biệt");
+            request.setAttribute("result", "Password phải lớn hơn hoặc bằng 6 ký tự và nhỏ hơn 20 ký tự, có ký tự hoa, thường, số, đặc biệt");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
