@@ -13,6 +13,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import model.Room;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -56,37 +61,121 @@ public class DeleteRoom extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private static final String STATUS_OCCUPIED = "Occupied";
+    private final ManageRoomDAO roomDAO = new ManageRoomDAO();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String format = request.getParameter("format");
+        boolean isJson = "json".equals(format);
 
-        String idStr = request.getParameter("rid");
-        if (idStr != null) {
-            try {
-                int roomId = Integer.parseInt(idStr);
-                ManageRoomDAO dao = new ManageRoomDAO();
-                dao.deleteRoom(roomId);
-            } catch (NumberFormatException e) {
-
-            }
+        if (isJson) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            handleJsonResponse(request, response);
+        } else {
+            handleRedirectResponse(request, response);
         }
-
-        // Chuyển hướng về trang danh sách phòng
-        response.sendRedirect("ListRoomsServlet");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response); // Chuyển hướng POST sang GET để đơn giản hóa
+    }
+
+    private void handleJsonResponse(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        Map<String, Object> responseData = new HashMap<>();
+        try {
+            String roomIdStr = request.getParameter("roomId");
+
+            if (roomIdStr == null || roomIdStr.trim().isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                responseData.put("success", false);
+                responseData.put("message", "ID phòng không hợp lệ!");
+
+                return;
+            }
+
+            int roomId = Integer.parseInt(roomIdStr);
+            Room room = roomDAO.getRoomById(roomId);
+
+            if (room == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                responseData.put("success", false);
+                responseData.put("message", "Không tìm thấy phòng!");
+
+                return;
+            }
+
+            if (STATUS_OCCUPIED.equalsIgnoreCase(room.getStatus())) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                responseData.put("success", false);
+                responseData.put("message", "Không thể xóa phòng đang được thuê!");
+
+                return;
+            }
+
+            boolean success = roomDAO.deleteRoom(roomId);
+            if (success) {
+                responseData.put("success", true);
+                responseData.put("message", "Xóa phòng " + room.getRoomnumber() + " thành công!");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                responseData.put("success", false);
+                responseData.put("message", "Xóa phòng thất bại!");
+            }
+
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseData.put("success", false);
+            responseData.put("message", "ID phòng không hợp lệ!");
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            responseData.put("success", false);
+            responseData.put("message", "Lỗi hệ thống, vui lòng thử lại!");
+
+        }
+    }
+
+    private void handleRedirectResponse(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            String roomIdStr = request.getParameter("roomId");
+
+            if (roomIdStr == null || roomIdStr.trim().isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=invalidId");
+                return;
+            }
+
+            int roomId = Integer.parseInt(roomIdStr);
+            Room room = roomDAO.getRoomById(roomId);
+
+            if (room == null) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=notFound");
+                return;
+            }
+
+            if (STATUS_OCCUPIED.equalsIgnoreCase(room.getStatus())) {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=occupied");
+                return;
+            }
+
+            boolean success = roomDAO.deleteRoom(roomId);
+            if (success) {
+                String encodedRoomNumber = URLEncoder.encode(room.getRoomnumber(), StandardCharsets.UTF_8.name());
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?success=delete&roomNumber=" + encodedRoomNumber);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=deleteFailed");
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=invalidId");
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/ListRoomsServlet?error=system");
+        }
     }
 
     /**

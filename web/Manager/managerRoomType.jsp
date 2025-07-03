@@ -321,23 +321,50 @@
                 document.getElementById('add-category').addEventListener('click', () => {
                     const input = document.getElementById('newCategory');
                     const newCat = input.value.trim();
-                    if (!newCat)
-                        return alert("Vui lòng nhập tên danh mục.");
-                    const existing = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]')).map(i => i.value.trim());
-                    if (existing.includes(newCat))
-                        return alert("Danh mục đã tồn tại.");
 
-                    const div = document.createElement('div');
-                    div.className = 'category-item d-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white';
-                    div.innerHTML = `
-                    <input type="hidden" name="categoryList[]" value="${newCat}">
-                    <span>${newCat}</span>
-                    <button type="button" class="btn btn-sm btn-light ml-2 py-0 px-2 remove-category">×</button>`;
-                    div.querySelector('.remove-category').addEventListener('click', () => {
-                        div.remove();
+                    if (!newCat) {
+                        alert("Vui lòng nhập tên danh mục.");
+                        return;
+                    }
+
+                    // Kiểm tra trùng
+                    const existing = Array.from(document.querySelectorAll('#category-list input[name="categoryList[]"]'))
+                            .map(i => i.value.trim().toLowerCase());
+                    if (existing.includes(newCat.toLowerCase())) {
+                        alert("Danh mục đã tồn tại.");
+                        return;
+                    }
+
+                    // Tạo phần tử container
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'category-item d-inline-flex align-items-center mb-2 mr-2 px-2 py-1 border rounded bg-secondary text-white';
+
+                    // input ẩn
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'categoryList[]';
+                    hiddenInput.value = newCat;
+
+                    // span hiển thị tên danh mục
+                    const label = document.createElement('span');
+                    label.textContent = newCat;
+
+                    // nút xóa
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn btn-sm btn-light ml-2 py-0 px-2 remove-category';
+                    removeBtn.textContent = '×';
+
+                    removeBtn.addEventListener('click', () => {
+                        wrapper.remove();
                         updateAllCategorySelects();
                     });
-                    document.getElementById('category-list').appendChild(div);
+
+                    wrapper.appendChild(hiddenInput);
+                    wrapper.appendChild(label);
+                    wrapper.appendChild(removeBtn);
+
+                    document.getElementById('category-list').appendChild(wrapper);
                     input.value = '';
                     updateAllCategorySelects();
                 });
@@ -357,6 +384,26 @@
                     });
                 }
 
+
+                document.querySelectorAll('.remove-category').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = btn.closest('.category-item');
+                        if (item) {
+                            item.remove();
+                            updateAllCategorySelects();
+                        }
+                    });
+                });
+
+// Sự kiện xóa ảnh chi tiết (render từ server)
+                document.querySelectorAll('.remove-url').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const row = btn.closest('.image-url-row');
+                        if (row) {
+                            row.remove();
+                        }
+                    });
+                });
                 // Gắn preview ảnh đại diện
                 const imageUrlInput = document.getElementById('imageUrl');
                 const preview = document.getElementById('main-image-preview');
@@ -402,4 +449,4 @@
             });
         </script>
     </body>
-</html>
+</html> 
