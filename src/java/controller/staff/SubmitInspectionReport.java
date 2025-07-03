@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author MyPC
  */
 @WebServlet(name = "SubmitInspectionReport", urlPatterns = {"/submitInspectionReport"})
-public class SubmitInspectionReport extends HttpServlet {
+public class SubmitInspectionReport extends HttpServlet {  
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

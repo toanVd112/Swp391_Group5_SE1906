@@ -27,7 +27,7 @@ public class Validation {
             return false; // Không được null hoặc rỗng
         }
         // Độ dài tối thiểu 6 ký tự
-        if (password.length() < 6 || password.length() > 20) {
+        if (password.length() < 6) {
             return false;
         }
         // Có ít nhất một chữ hoa, một chữ thường, một số, ký tự đặc biệt

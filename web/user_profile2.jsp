@@ -173,12 +173,7 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    <li>
-                                        <select class="header-lang-bx">
-                                            <option data-icon="flag flag-uk">English UK</option>
-                                            <option data-icon="flag flag-us">English US</option>
-                                        </select>
-                                    </li>
+                                    
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
@@ -421,10 +416,10 @@
                         <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input"
                                value="${not empty tempDob ? tempDob : formattedDob}">
                     </div>
-
+  
                     <div class="form-group">
                         <label class="form-label" for="address">Address</label>
-                        <textarea id="address" name="address" class="form-input form-textarea" placeholder="Nh?p ??a ch? c?a b?n"><c:out value="${not empty tempAddress ? tempAddress : (not empty user ? user.address : '')}"/></textarea>
+                        <textarea id="address" name="address" class="form-input form-textarea" ><c:out value="${not empty tempAddress ? tempAddress : (not empty user ? user.address : '')}"/></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="photo">Photo</label>

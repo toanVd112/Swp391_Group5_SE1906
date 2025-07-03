@@ -90,7 +90,7 @@ public class RegisterCustomerServlet extends HttpServlet {
 
         // 2. Kiểm tra password
         if (!val.validatePassword(password)) {
-            request.setAttribute("result", "Password phải lớn hơn hoặc bằng 6 ký tự và nhỏ hơn 20 ký tự, có ký tự hoa, thường, số, đặc biệt");
+            request.setAttribute("result", "Password phải lớn hơn hoặc bằng 6 ký tự và nhỏ hơn 20 ký tự");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }

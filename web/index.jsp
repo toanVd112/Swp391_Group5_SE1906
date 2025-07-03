@@ -121,7 +121,7 @@
 
     </head>
 
-    <body id="bg">
+    <body id="bg"> 
         <div class="page-wraper">
             <div id="loading-icon-bx"></div>
             <!-- Header Top ==== -->
@@ -137,12 +137,7 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    <li>
-                                        <select class="header-lang-bx">
-                                            <option data-icon="flag flag-uk">English UK</option>
-                                            <option data-icon="flag flag-us">English US</option>
-                                        </select>
-                                    </li>
+                                    
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
@@ -179,7 +174,7 @@
                                 <span></span>
                                 <span></span>
                                 <span></span>
-                            </button>
+                            </button> 
                             <!-- Author Nav ==== -->
                             <div class="secondary-menu">
                                 <div class="secondary-inner">
@@ -321,21 +316,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ng?y nh?n ph?ng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng?y" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> Check-in date</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ng?y tr? ph?ng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng?y" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> Check-out date</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Choose a date" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> S? kh?ch</label>
+                            <label><i class="fas fa-users"></i> Number of guests</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                T?m ph?ng
+                                Find a rooms
                             </button>
                         </div>
                     </div>
@@ -391,7 +386,7 @@
                                             <div class="cours-bx">
                                                 <div class="action-box">
                                                     <img src="${room.imageUrl}" alt="">
-                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">Xem ph?ng</a>
+                                                    <a href="RoomDetail?id=${room.roomTypeID}" class="btn">View room details</a>
                                                 </div>
 
                                                 <div class="info-bx text-center">
