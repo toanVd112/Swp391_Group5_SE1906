@@ -72,7 +72,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     </head>
-    
+
     <body id="bg">
         <div class="page-wraper">
             <div id="loading-icon-bx"></div>
@@ -274,7 +274,7 @@
                     <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                         <div class="search-row">
                             <div class="search-field">
-                                <label><i class="fas fa-calendar-check"></i> Ngày nhận phòng</label>
+                                <label><i class="fas fa-calendar-check"></i>Ngày nhận phòng</label>
                                 <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
                             </div>
                             <div class="search-field">
@@ -283,7 +283,7 @@
                             </div>
                             <div class="search-field">
                                 <label><i class="fas fa-users"></i> Số khách</label>
-                                <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
+                                <input type="number" id="guests" name="guests" min="1"  max="${sessionScope.maxGuests}" value="${param.guests}" required>
                             </div>
                             <div class="search-field">
                                 <button type="submit" class="search-btn">
@@ -525,7 +525,24 @@
                                                                         Tối đa ${room.maxGuests} người
                                                                     </span>
                                                                 </div>
-
+                                                                <div class="room-amenities">
+                                                                    <span class="amenity-badge">
+                                                                        <i class="fas fa-wifi"></i>
+                                                                        Wifi miễn phí
+                                                                    </span>
+                                                                    <span class="amenity-badge">
+                                                                        <i class="fas fa-car"></i>
+                                                                        Bãi đỗ xe
+                                                                    </span>
+                                                                    <span class="amenity-badge">
+                                                                        <i class="fas fa-swimming-pool"></i>
+                                                                        Hồ bơi
+                                                                    </span>
+                                                                    <span class="amenity-badge">
+                                                                        <i class="fas fa-dumbbell"></i>
+                                                                        Phòng gym
+                                                                    </span>
+                                                                </div>
 
                                                                 <form class="room-selection-form" data-room-capacity="${room.maxGuests}" onsubmit="return handleManualSelection(this)">
                                                                     <input type="hidden" name="roomTypeId" value="${room.roomTypeID}">

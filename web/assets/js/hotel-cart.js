@@ -84,7 +84,7 @@ function renderCartUI() {
             const roomsHtml = c.rooms.map(r => {
                 const slotsPerRoom = r.roomCapacity || 1;
                 const totalSlotRoom = r.quantity * slotsPerRoom;
-                return `<li>${r.roomName} | ${slotsPerRoom} slot/phòng | Giá/phòng: ${formatCurrency(r.basePrice)}</li>`;
+                return `<li>${r.quantity} ${r.roomName} | ${slotsPerRoom} slot/phòng | Giá/phòng: ${formatCurrency(r.basePrice)}</li>`;
             }).join('');
 
             const slots = c.rooms.reduce((sum, r) => sum + r.quantity * (r.roomCapacity || 1), 0);

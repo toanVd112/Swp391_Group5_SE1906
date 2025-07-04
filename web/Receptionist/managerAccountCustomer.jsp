@@ -50,9 +50,9 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h2 class="h4 mb-0">Quản lý <strong>Tài khoản</strong></h2>
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                    <!-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addAccountModal">
                         <i class="fas fa-plus me-2"></i>Thêm tài khoản
-                    </button>
+                    </button> -->                  
                 </div>
 
                 <div class="card-body">
@@ -140,10 +140,10 @@
                                                    title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
-                                                <a href="staffProfileC?aid=${account.accountID}" class="btn btn-sm btn-outline-danger" 
-                                                   title="Thông tin">
+                                                <!--  <a href="staffProfileC?aid=${account.accountID}" class="btn btn-sm btn-outline-danger" 
+                                                                          title="Thông tin">
                                                     <i class="fas fa-user"></i>
-                                                </a>
+                                                </a> -->                                  
                                             </div>
                                         </td>
                                     </tr>

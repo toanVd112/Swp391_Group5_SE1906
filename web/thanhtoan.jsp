@@ -15,46 +15,41 @@
 <%
     request.setCharacterEncoding("UTF-8");
 
-    // 1️⃣ Check login
-    Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
-    if (isLoggedIn == null) isLoggedIn = false;
+    // 1️⃣ Lấy userInfo từ session
+    model.User userInfo = (model.User) session.getAttribute("userInfo");
 
-    // 2️⃣ Get user info từ session
-    String userFirstName = (String) session.getAttribute("userFirstName");
-    String fullName = (String) session.getAttribute("userFirstName");
-    String userLastName  = (String) session.getAttribute("userLastName");
-    String userEmail     = (String) session.getAttribute("userEmail");
-    String userPhone     = (String) session.getAttribute("userPhone");
-    String userCountry   = (String) session.getAttribute("userCountry");
-
-    userFirstName = (userFirstName != null) ? userFirstName : "";
-    userLastName  = (userLastName  != null) ? userLastName  : "";
-    userEmail     = (userEmail     != null) ? userEmail     : "";
-    userPhone     = (userPhone     != null) ? userPhone     : "";
-    userCountry   = (userCountry   != null) ? userCountry   : "VNM";
-
-    // 3️⃣ Get bookingID từ URL
-     String bookingID = request.getParameter("bookingID");
-  if (bookingID == null) {
-    bookingID = String.valueOf(request.getAttribute("bookingID"));
-  }
-  System.out.println("DEBUG bookingID: " + bookingID);
-
-    // 4️⃣ Truy vấn Booking từ DB
-    BookingDAO bookingDAO = new BookingDAO();
-    Booking booking = bookingDAO.getBookingByID(Integer.parseInt(bookingID));
-    List<BookingDetail> bookingDetails = bookingDAO.getBookingDetails(Integer.parseInt(bookingID));
-    List<ServiceUsage> serviceUsages = bookingDAO.getBookingServices(Integer.parseInt(bookingID));
-
-    // 5️⃣ Bạn có thể để checkIn/checkOut như này (nếu cần):
-    String checkInDate = booking.getCheckInDate();
-    String checkOutDate = booking.getCheckOutDate();
+    String fullName = "";
+    String userEmail = "";
+    String userPhone = "";
+String userCountry = "VNM"; // mặc định luôn VNM
+    if (userInfo != null) {
+        fullName = userInfo.getFullName();
+        userEmail = userInfo.getEmail();
+        userPhone = userInfo.getPhone();
+    }
 %>
 <%
-    int bookingID = Integer.parseInt(request.getParameter("bookingID"));
-    BookingDAO dao = new BookingDAO();
-    Booking booking = dao.getBookingByID(bookingID);
-    request.setAttribute("booking", booking);
+       String bookingIDParam = request.getParameter("bookingID");
+    int bookingID = -1;
+
+    if (bookingIDParam != null && !bookingIDParam.isEmpty()) {
+        bookingID = Integer.parseInt(bookingIDParam);
+    }
+
+    if (bookingID <= 0) {
+        throw new RuntimeException("bookingID missing or invalid");
+    }
+
+    BookingDAO bookingDAO = new BookingDAO();
+   
+
+
+    Booking booking = bookingDAO.getBookingByID(bookingID);
+    List<BookingDetail> bookingDetails = bookingDAO.getBookingDetails(bookingID);
+    List<ServiceUsage> serviceUsages = bookingDAO.getBookingServices(bookingID);
+
+    String checkInDate = booking.getCheckInDate();
+    String checkOutDate = booking.getCheckOutDate();
 %>
 
 <!DOCTYPE html>
@@ -97,14 +92,14 @@
 
         <div class="container">
             <!-- Welcome Card hoặc Login Prompt -->
-            <% if (isLoggedIn) { %>
+            <% if (session.getAttribute("userInfo") != null) { %>
             <div class="welcome-card">
                 <div class="user-info">
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>
                     </div>
                     <div>
-                        <h2>Chào mừng trở lại, <%= userFirstName %> <%= userLastName %>!</h2>
+                        <h2>Chào mừng trở lạiiiiiiiiiiiiiiiii, <%= fullName %>!</h2>
                         <p>Chúng tôi đã tự động điền thông tin của bạn để tiết kiệm thời gian.</p>
                     </div>
                 </div>
@@ -190,7 +185,7 @@
                         <input type="hidden" name="checkOutDate" value="<%= booking.getCheckOutDate() %>">
 
                         <!-- ✅ Hidden: loggedIn flag -->
-                        <input type="hidden" name="isLoggedIn" value="<%= isLoggedIn %>">
+
 
                         <!-- ✅ THÔNG TIN KHÁCH -->
                         <div class="hidden-info">
@@ -204,26 +199,29 @@
                             <div class="form-group">
                                 <label class="form-label" for="fullName">Họ và tên: *</label>
                                 <input type="text"
-                                       class="form-input <%= isLoggedIn && !userFirstName.isEmpty() ? "prefilled" : "" %>"
+                                       class="form-input <%= !fullName.isEmpty() ? "prefilled" : "" %>"
                                        id="fullName"
                                        name="fullName"
                                        placeholder="(VD: Nguyen Van A)"
-                                       value="${sessionScope.userInfo.fullName}"
+                                       value="<%= fullName %>"
                                        required>
+
                                 <div class="error-message" id="firstNameError"></div>
                             </div>
-                            
+
                         </div>
 
                         <div class="form-group">
                             <label class="form-label" for="email">Địa chỉ email *</label>
                             <input type="email"
-                                   class="form-input <%= isLoggedIn && !userEmail.isEmpty() ? "prefilled" : "" %>"
+                                   class="form-input <%= !userEmail.isEmpty() ? "prefilled" : "" %>"
                                    id="email"
                                    name="email"
                                    placeholder="Email để xác nhận"
                                    value="<%= userEmail %>"
                                    required>
+
+
                             <div class="error-message" id="emailError"></div>
                         </div>
 
@@ -239,19 +237,18 @@
                                 <label class="form-label" for="country">Quốc gia/khu vực *</label>
                                 <select class="form-select" id="country" name="country" required>
                                     <option value="VNM" <%= "VNM".equals(userCountry) ? "selected" : "" %>>VNM +84</option>
-                                    <option value="USA" <%= "USA".equals(userCountry) ? "selected" : "" %>>USA +1</option>
-                                    <option value="UK" <%= "UK".equals(userCountry) ? "selected" : "" %>>UK +44</option>
-                                    <option value="JP" <%= "JP".equals(userCountry) ? "selected" : "" %>>JP +81</option>
+
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="phone">Số điện thoại *</label>
                                 <input type="tel"
-                                       class="form-input <%= isLoggedIn && !userPhone.isEmpty() ? "prefilled" : "" %>"
+                                       class="form-input <%= !userPhone.isEmpty() ? "prefilled" : "" %>"
                                        id="phone"
                                        name="phone"
                                        value="<%= userPhone %>"
                                        required>
+
                                 <div class="error-message" id="phoneError"></div>
                             </div>
                         </div>

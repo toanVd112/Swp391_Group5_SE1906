@@ -14,6 +14,10 @@ import model.Room;
 import model.RoomInspectionReport;
 import model.RoomType;
 import model.ServiceUsage;
+import java.sql.Timestamp;
+import java.util.UUID;
+import java.time.LocalDateTime;
+import model.BookingResult;
 
 /**
  *
@@ -21,9 +25,10 @@ import model.ServiceUsage;
  */
 public class BookingDAO {
 
-    public int insertBooking(Integer userID, String checkin, String checkout, int guests,
+    public BookingResult  insertBooking(Integer userID, String checkin, String checkout, int guests,
             String status, String name, String email, String phone, Double totalAmount) throws SQLException {
-        String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone,TotalAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
+      String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone, TotalAmount, ExpiryTime, BookingToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -32,6 +37,9 @@ public class BookingDAO {
             } else {
                 ps.setNull(1, Types.INTEGER);
             }
+
+            LocalDateTime expiry = LocalDateTime.now().plusMinutes(10);
+            String token = UUID.randomUUID().toString();
             ps.setString(2, checkin);
             ps.setString(3, checkout);
             ps.setInt(4, guests);
@@ -40,16 +48,20 @@ public class BookingDAO {
             ps.setString(7, email);
             ps.setString(8, phone);
             ps.setDouble(9, totalAmount);
+            ps.setTimestamp(10, Timestamp.valueOf(expiry));
+            ps.setString(11, token);
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    int bookingID = rs.getInt(1);
+                    return new BookingResult(bookingID, token);
                 }
             }
+
         }
 
-        return -1;
+        return null;
     }
 
     public List<Integer> getAvailableRoomIDs(int roomTypeId, String checkin, String checkout, int limit) throws SQLException {
@@ -88,22 +100,21 @@ public class BookingDAO {
     }
 
     // Insert chi tiết phòng ➜ 1 dòng 1 loại phòng
-   public void insertBookingDetail(int bookingID, int roomID, int roomTypeId,
-                                double pricePerNight, int guests) throws SQLException {
-    String sql = "INSERT INTO bookingdetails (BookingID, RoomID, RoomTypeID, PricePerNight, GuestsCount) VALUES (?, ?, ?, ?, ?)";
+    public void insertBookingDetail(int bookingID, int roomID, int roomTypeId,
+            double pricePerNight, int guests) throws SQLException {
+        String sql = "INSERT INTO bookingdetails (BookingID, RoomID, RoomTypeID, PricePerNight, GuestsCount) VALUES (?, ?, ?, ?, ?)";
 
-    try (Connection con = DBConnect.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
-        ps.setInt(1, bookingID);
-        ps.setInt(2, roomID);
-        ps.setInt(3, roomTypeId);
-        ps.setDouble(4, pricePerNight);
-        ps.setInt(5, guests);
+            ps.setInt(1, bookingID);
+            ps.setInt(2, roomID);
+            ps.setInt(3, roomTypeId);
+            ps.setDouble(4, pricePerNight);
+            ps.setInt(5, guests);
 
-        ps.executeUpdate();
+            ps.executeUpdate();
+        }
     }
-}
 
     // Insert dịch vụ dùng kèm
     public void insertServiceUsage(int bookingID, int serviceID, int quantity) throws SQLException {

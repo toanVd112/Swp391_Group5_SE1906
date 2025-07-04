@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
+import model.BookingResult;
 import model.RoomItem;
 import model.ServiceItem;
 import model.User;
@@ -137,13 +138,13 @@ public class ProceedBookingServlet extends HttpServlet {
         System.out.println("✅ Servlet: paymentMethod = " + paymentMethod);
 
         BookingDAO bookingDAO = new BookingDAO();
-        int bookingID = 0;
+        BookingResult b = null;
         try {
-            bookingID = bookingDAO.insertBooking(userID, checkin, checkout, guests, "Pending", fullName, email, phone, totalAmount);
+            b = bookingDAO.insertBooking(userID, checkin, checkout, guests, "Pending", fullName, email, phone, totalAmount);
         } catch (SQLException ex) {
             Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (bookingID <= 0) {
+        if (b.getBookingID() <= 0) {
             throw new RuntimeException(
                     "❌ Insert booking failed:\n"
                     + "  userID = " + userID + "\n"
@@ -235,7 +236,7 @@ public class ProceedBookingServlet extends HttpServlet {
                 for (RoomItem r : item.rooms) {
                     try {
                         bookingDAO.insertBookingDetail(
-                                bookingID,
+                                b.getBookingID(),
                                 r.roomId,
                                 r.roomTypeId,
                                 r.basePrice,
@@ -252,15 +253,18 @@ public class ProceedBookingServlet extends HttpServlet {
 // Insert service
         for (ServiceItem s : selectedServices) {
             try {
-                bookingDAO.insertServiceUsage(bookingID, s.serviceId, 1);
+                bookingDAO.insertServiceUsage(b.getBookingID(), s.serviceId, 1);
             } catch (SQLException ex) {
                 Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
-        System.out.println("✅ Insert OK ➜ bookingID = " + bookingID);
+        System.out.println("✅ Insert OK ➜ bookingID = " + b.getBookingID());
+        String confirmLink = "http://localhost:8080/HotelManagement/booking/view?bookingID=" + b.getBookingID() + "&token=" + b.getBookingToken();
 
-        response.sendRedirect("thanhtoan.jsp?bookingID=" + bookingID);
+        MailUtils.sendBookingPendingMail(email, fullName, b.getBookingID(), confirmLink);
+
+        response.sendRedirect("thanhtoan.jsp?bookingID=" + b.getBookingID());
 
     }
 

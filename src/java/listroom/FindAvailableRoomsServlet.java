@@ -125,6 +125,8 @@ public class FindAvailableRoomsServlet extends HttpServlet {
                         .limit(10)
                         .collect(Collectors.toList());
             }
+           int max=dao.getTotalAvailableGuests();
+           request.setAttribute("maxGuests", params.max);
             ServiceDAO s = new ServiceDAO();
             List<Service> services = new ArrayList<>();
             services = s.getAvailableServices();
@@ -328,6 +330,7 @@ public class FindAvailableRoomsServlet extends HttpServlet {
         Integer minGuestsPerRoom;     // lọc trong DAO
         Integer minTotalGuests;       // lọc sau khi generate tổ hợp
         Double maxPrice;
+        private Object max;
 
         public SearchParams(String checkinStr, String checkoutStr, Date checkin, Date checkout,
                 int guests, String roomTypeFilter,

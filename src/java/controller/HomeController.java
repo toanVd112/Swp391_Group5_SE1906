@@ -5,6 +5,7 @@
 package controller;
 
 import DAO.RoomDAO;
+import DAO.RoomTypeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -53,6 +55,18 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+          RoomTypeDAO roomDao = new RoomTypeDAO();
+            int maxGuests = 0;
+        try {
+            maxGuests = roomDao.getTotalAvailableGuests();
+        } catch (SQLException ex) {
+            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+// đẩy lên JSP
+          HttpSession session = request.getSession();
+            session.setMaxInactiveInterval(60 * 60);
+            session.setAttribute("maxGuests", maxGuests);
        RoomDAO dao =new RoomDAO();
                List<RoomType> roomTypes = null;
         try {

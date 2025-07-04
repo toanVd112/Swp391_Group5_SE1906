@@ -75,17 +75,21 @@ public class RoomTypeDAO {
     }
 
     public boolean isRoomTypeNameExists(String name, Integer excludeId) throws SQLException {
-    String sql = "SELECT COUNT(*) FROM roomtypes WHERE Name = ?"
-               + (excludeId != null ? " AND RoomTypeID != ?" : "");
-    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, name.trim());
-        if (excludeId != null) ps.setInt(2, excludeId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) return rs.getInt(1) > 0;
+        String sql = "SELECT COUNT(*) FROM roomtypes WHERE Name = ?"
+                + (excludeId != null ? " AND RoomTypeID != ?" : "");
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name.trim());
+            if (excludeId != null) {
+                ps.setInt(2, excludeId);
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
-    return false;
-}
-    
+
     public boolean updateFullRoomType(RoomType type) throws SQLException {
         Connection conn = null;
         try {
@@ -467,25 +471,38 @@ public class RoomTypeDAO {
         return 0;
     }
 
-    public List<RoomType> getAvailableRoomTypes(Date checkin, Date checkout,
-            String roomTypeFilter, Integer minGuests, Double maxPrice) throws SQLException {
+    public List<RoomType> getAvailableRoomTypes(
+            Date checkin, Date checkout,
+            String roomTypeFilter,
+            Integer minGuests,
+            Double maxPrice) throws SQLException {
 
         List<RoomType> list = new ArrayList<>();
 
+        // 1️⃣ Viết SQL: mọi điều kiện đều TRONG WHERE, GROUP BY sau cùng
         StringBuilder sql = new StringBuilder("""
-        SELECT rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail,
-               COUNT(r.RoomID) AS AvailableRooms
+        SELECT
+            rt.RoomTypeID,
+            rt.Name,
+            rt.Description,
+            rt.BasePrice,
+            rt.MaxGuests,
+            rt.RoomTypeImage,
+            rt.RoomDetail,
+            COUNT(r.RoomID) AS AvailableRooms
         FROM roomtypes rt
-        JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID
-        WHERE r.Status = 'Available'
-          AND NOT EXISTS (
-              SELECT 1
-              FROM bookingdetails bd
-              JOIN bookings b ON bd.BookingID = b.BookingID
-              WHERE b.CheckOutDate > ? AND b.CheckInDate < ?
-                AND b.Status != 'Cancelled'
-                AND bd.RoomTypeID = rt.RoomTypeID
-          )
+        JOIN rooms r
+          ON rt.RoomTypeID = r.RoomTypeID
+         AND r.Status = 'Available'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM bookingdetails bd
+            JOIN bookings b ON bd.BookingID = b.BookingID
+            WHERE bd.RoomID = r.RoomID
+              AND b.Status <> 'Cancelled'
+              AND b.CheckInDate < ?
+              AND b.CheckOutDate > ?
+        )
     """);
 
         if (roomTypeFilter != null && !roomTypeFilter.isBlank()) {
@@ -499,14 +516,17 @@ public class RoomTypeDAO {
         }
 
         sql.append("""
-        GROUP BY rt.RoomTypeID, rt.Name, rt.Description, rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail
+        GROUP BY rt.RoomTypeID, rt.Name, rt.Description,
+                 rt.BasePrice, rt.MaxGuests, rt.RoomTypeImage, rt.RoomDetail
     """);
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             int index = 1;
-            ps.setDate(index++, checkin);
-            ps.setDate(index++, checkout);
+
+            // 2️⃣ Bind đúng thứ tự: b.CheckInDate < ? => checkout | b.CheckOutDate > ? => checkin
+            ps.setDate(index++, new java.sql.Date(checkout.getTime()));
+            ps.setDate(index++, new java.sql.Date(checkin.getTime()));
 
             if (roomTypeFilter != null && !roomTypeFilter.isBlank()) {
                 ps.setString(index++, roomTypeFilter);
@@ -518,22 +538,41 @@ public class RoomTypeDAO {
                 ps.setDouble(index++, maxPrice);
             }
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                RoomType rt = new RoomType();
-                rt.setRoomTypeID(rs.getInt("RoomTypeID"));
-                rt.setName(rs.getString("Name"));
-                rt.setDescription(rs.getString("Description"));
-                rt.setBasePrice(rs.getDouble("BasePrice"));
-                rt.setMaxGuests(rs.getInt("MaxGuests"));
-                rt.setImageUrl(rs.getString("RoomTypeImage"));
-                rt.setAvailableRooms(rs.getInt("AvailableRooms"));
-                rt.setImages(getImagesByRoomTypeId(rs.getInt("RoomTypeID")));
-                list.add(rt);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    RoomType rt = new RoomType();
+                    rt.setRoomTypeID(rs.getInt("RoomTypeID"));
+                    rt.setName(rs.getString("Name"));
+                    rt.setDescription(rs.getString("Description"));
+                    rt.setBasePrice(rs.getDouble("BasePrice"));
+                    rt.setMaxGuests(rs.getInt("MaxGuests"));
+                    rt.setImageUrl(rs.getString("RoomTypeImage"));
+                    rt.setRoomDetail(rs.getString("RoomDetail"));
+                    rt.setAvailableRooms(rs.getInt("AvailableRooms"));
+                    rt.setImages(getImagesByRoomTypeId(rs.getInt("RoomTypeID")));
+                    list.add(rt);
+                }
             }
         }
 
         return list;
+    }
+
+    public int getTotalAvailableGuests() throws SQLException {
+        String sql = """
+        SELECT SUM(rt.MaxGuests)
+        FROM rooms r
+        JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID
+        WHERE r.Status = 'Available'
+    """;
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1); // trả về SUM()
+            }
+        }
+        return 0; // fallback nếu không có phòng nào
     }
 
     public static void main(String[] args) {
