@@ -25,10 +25,9 @@ import model.BookingResult;
  */
 public class BookingDAO {
 
-    public BookingResult  insertBooking(Integer userID, String checkin, String checkout, int guests,
+    public BookingResult insertBooking(Integer userID, String checkin, String checkout, int guests,
             String status, String name, String email, String phone, Double totalAmount) throws SQLException {
-      String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone, TotalAmount, ExpiryTime, BookingToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO bookings (UserID, CheckInDate, CheckOutDate, GuestsCount, Status, ContactName, ContactEmail, ContactPhone, TotalAmount, ExpiryTime, BookingToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -38,7 +37,7 @@ public class BookingDAO {
                 ps.setNull(1, Types.INTEGER);
             }
 
-            LocalDateTime expiry = LocalDateTime.now().plusMinutes(10);
+            LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
             String token = UUID.randomUUID().toString();
             ps.setString(2, checkin);
             ps.setString(3, checkout);
@@ -205,6 +204,30 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public void archiveExpiredBookings() throws SQLException {
+        String insertSQL = "INSERT INTO deleted_bookings "
+                + "(OriginalBookingID, UserID, BookingDate, ExpiryTime, "
+                + "CheckInDate, CheckOutDate, GuestsCount, TotalAmount, Status, "
+                + "BookingToken, ContactName, ContactEmail, ContactPhone) "
+                + "SELECT BookingID, UserID, BookingDate, ExpiryTime, "
+                + "CheckInDate, CheckOutDate, GuestsCount, TotalAmount, Status, "
+                + "BookingToken, ContactName, ContactEmail, ContactPhone "
+                + "FROM bookings "
+                + "WHERE Status = 'Pending' AND ExpiryTime < NOW()";
+
+        String deleteSQL = "DELETE FROM bookings WHERE Status = 'Pending' AND ExpiryTime < NOW()";
+
+        try (Connection con = DBConnect.getConnection()) {
+            try (PreparedStatement psInsert = con.prepareStatement(insertSQL)) {
+                psInsert.executeUpdate();
+            }
+
+            try (PreparedStatement psDelete = con.prepareStatement(deleteSQL)) {
+                psDelete.executeUpdate();
+            }
+        }
     }
 
     public static void main(String[] args) {

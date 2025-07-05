@@ -8,17 +8,17 @@ package booking;
  *
  * @author Admin
  */
-
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
+import javax.mail.internet.MimeUtility;
 public class MailUtils {
 
-    // 👉 Hàm dùng để gửi mail Pending Booking kèm link xác nhận
-    public static void sendBookingPendingMail(String toEmail, String fullName, int bookingID, String confirmLink) {
-        String subject = "Xác nhận giữ chỗ Booking #" + bookingID;
+    // Hàm gửi mail Pending Booking kèm link
+    public static void sendBookingPendingMail(String toEmail, String fullName, int bookingID, String confirmLink) throws UnsupportedEncodingException {
+        String subject = "[Hotel] Xác nhận giữ chỗ Booking #" + bookingID;
 
         String content = "Xin chào " + fullName + ",\n\n"
                 + "Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi.\n"
@@ -31,35 +31,18 @@ public class MailUtils {
         sendMail(toEmail, subject, content);
     }
 
-    // 👉 Hàm core: Gửi mail
-    public static void sendMail(String to, String subject, String content) {
-        final String fromEmail = "booking@yourhotel.com"; // ✅ Sửa email gửi
-        final String password = "zokr qsib sgws xics";    // ✅ Sửa pass (App Password Gmail hoặc pass mail hosting)
+    // Hàm core: Gửi mail qua Gmail
+    public static void sendMail(String to, String subject, String content) throws UnsupportedEncodingException {
+        final String fromEmail = "fcpctk@gmail.com"; // ✔️ Gmail bạn dùng để gửi
+        final String password = "daeg attb munj hkxz";      // ✔️ App Password Gmail (16 ký tự)
 
-        // ---- CẤU HÌNH SMTP ----
         Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true"); // Log debug chi tiết
 
-        boolean useGmail = false; // ✅ Bật true nếu test Gmail
-
-        if (useGmail) {
-            // ---- GMAIL ----
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true"); // TLS
-        } else {
-            // ---- SMTP HOSTING ----
-            props.put("mail.smtp.host", "mail.yourhotel.com"); // ✅ Sửa host
-            props.put("mail.smtp.port", "587");                // Thường 587 TLS hoặc 465 SSL
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");    // Nếu dùng TLS
-
-            // Nếu xài SSL (port 465) thì dùng:
-            // props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            // props.put("mail.smtp.port", "465");
-        }
-
-        // ---- TẠO PHIÊN SMTP ----
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(fromEmail, password);
@@ -70,8 +53,10 @@ public class MailUtils {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            message.setSubject(subject);
-            message.setText(content);
+          message.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));
+           message.setContent(content, "text/html; charset=UTF-8");
+           
+
 
             Transport.send(message);
 
@@ -82,4 +67,5 @@ public class MailUtils {
             throw new RuntimeException("❌ Lỗi gửi mail: " + e.getMessage());
         }
     }
+
 }
