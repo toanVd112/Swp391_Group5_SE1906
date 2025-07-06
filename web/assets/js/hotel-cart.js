@@ -104,13 +104,18 @@ function renderCartUI() {
             totalSlots += slots;
 
             html = `
-        <div class="selected-room-item">
-          <h5>${c.roomName} ×${c.quantity}</h5>
-          <p> ${slots} slot/phòng</p>
-          <p>Giá/phòng: ${formatCurrency(c.basePrice)}</p>
-          <button onclick="removeRoom(${c.roomTypeId})" class="btn btn-sm btn-danger">Xóa</button>
-        </div>
-      `;
+    <div class="selected-room-item">
+      <h5>${c.roomName}</h5>
+      <div>
+        <button onclick="decreaseQuantity(${c.roomTypeId})" class="btn btn-sm btn-outline-secondary">-</button>
+        <span style="margin: 0 10px;">${c.quantity}</span>
+        <button onclick="increaseQuantity(${c.roomTypeId})" class="btn btn-sm btn-outline-secondary">+</button>
+      </div>
+      <p>${slots} slot/phòng</p>
+      <p>Giá/phòng: ${formatCurrency(c.basePrice)}</p>
+      <button onclick="removeRoom(${c.roomTypeId})" class="btn btn-sm btn-danger">Xóa</button>
+    </div>
+  `;
             total += (c.basePrice || 0) * c.quantity * nights;
         }
 
@@ -148,6 +153,21 @@ function renderCartUI() {
 
     // Nếu KHÔNG có phòng & KHÔNG có dịch vụ ➜ Disable nút
     document.getElementById('bookingBtn').disabled = selectedRooms.length === 0 && selectedServices.length === 0;
+}
+function increaseQuantity(roomTypeId) {
+    const index = selectedRooms.findIndex(r => r.roomTypeId === roomTypeId);
+    if (index !== -1) {
+        selectedRooms[index].quantity += 1;
+        renderCartUI();
+    }
+}
+
+function decreaseQuantity(roomTypeId) {
+    const index = selectedRooms.findIndex(r => r.roomTypeId === roomTypeId);
+    if (index !== -1 && selectedRooms[index].quantity > 1) {
+        selectedRooms[index].quantity -= 1;
+        renderCartUI();
+    }
 }
 
 function removeService(id) {
@@ -306,6 +326,10 @@ function proceedToBooking() {
             totalSlots += item.quantity * (item.roomCapacity || 1);
         }
     });
+    if (guests > totalSlots) {
+        alert(`⚠️ Số khách (${guests}) vượt quá slot (${totalSlots}). Vui lòng chọn thêm phòng!`);
+        return;
+    }
 
     if (totalSlots - guests > 2) {
         alert("⚠️ Slot lệch quá lớn!");

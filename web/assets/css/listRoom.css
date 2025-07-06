@@ -13,6 +13,7 @@ body {
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+     position: relative;
 }
 
 /* Vietnamese text optimization */
@@ -162,15 +163,17 @@ h6 {
 
 /* ===== TAB NAVIGATION ===== */
 .tab-navigation {
-    position: sticky;
-    top: 80px;
-    z-index: 100;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 2rem;
+  position: static; /* Hoặc bỏ hẳn dòng position */
+  z-index: 100;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
 }
 
+body.modal-open .tab-navigation {
+  position: static !important;
+}
 .tab-nav-container {
     display: flex;
     justify-content: space-between;
@@ -1173,17 +1176,27 @@ h6 {
   padding: 0.5rem;
 }/* Lớp nền đen mờ */
 .modal {
-  display: none; /* Mặc định ẩn */
+  display: none; /* khi hiển thị nhớ đổi display thành block */
   position: fixed;
-  z-index: 999; /* Luôn nổi trên cùng */
+  z-index: 9999; /* Tăng cao hơn hẳn */
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Scroll nếu nội dung dài */
-  background-color: rgba(0, 0, 0, 0.4); /* Nền đen mờ */
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.5); /* nền tối */
+}
+body.modal-open,
+html.modal-open {
+  overflow: hidden !important;
+    
 }
 
+body.modal-open .cart-sidebar {
+  position: static !important;
+  overflow: hidden !important;
+  max-height: none !important;
+}
 /* Hộp nội dung */
 .modal-content {
   background-color: #fff;

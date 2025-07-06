@@ -230,6 +230,30 @@ public class BookingDAO {
         }
     }
 
+    public static boolean checkEmailExist(String email) {
+        boolean exists = false;
+        String sql = "SELECT 1 FROM users WHERE Email = ?";
+
+        try {
+            Connection con = DBConnect.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                exists = true; // Đã tồn tại
+            }
+
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
+
     public static void main(String[] args) {
         BookingDAO b = new BookingDAO();
 
