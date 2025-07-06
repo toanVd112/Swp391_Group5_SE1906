@@ -9,18 +9,40 @@ package model;
  * @author Admin
  */
 public class Booking {
-      private int bookingID;
+
+    private int bookingID;
     private Integer userID; // nullable
     private String checkInDate;
     private String checkOutDate;
+    private String BookingDate;
+     private String ExpiryTime;
+
+    public String getExpiryTime() {
+        return ExpiryTime;
+    }
+
+    public void setExpiryTime(String ExpiryTime) {
+        this.ExpiryTime = ExpiryTime;
+    }
+    
     private int guestsCount;
     private String status;
     private String contactName;
     private String contactEmail;
     private String contactPhone;
+    double TotalAmount;
 
     // Constructors
-    public Booking() {}
+    public Booking() {
+    }
+
+    public String getBookingDate() {
+        return BookingDate;
+    }
+
+    public void setBookingDate(String BookingDate) {
+        this.BookingDate = BookingDate;
+    }
 
     public Booking(int bookingID, Integer userID, String checkInDate, String checkOutDate, int guestsCount, String status, String contactName, String contactEmail, String contactPhone) {
         this.bookingID = bookingID;
@@ -35,30 +57,83 @@ public class Booking {
     }
 
     // Getters & Setters
-    public int getBookingID() { return bookingID; }
-    public void setBookingID(int bookingID) { this.bookingID = bookingID; }
+    public int getBookingID() {
+        return bookingID;
+    }
 
-    public Integer getUserID() { return userID; }
-    public void setUserID(Integer userID) { this.userID = userID; }
+    public void setBookingID(int bookingID) {
+        this.bookingID = bookingID;
+    }
 
-    public String getCheckInDate() { return checkInDate; }
-    public void setCheckInDate(String checkInDate) { this.checkInDate = checkInDate; }
+    public Integer getUserID() {
+        return userID;
+    }
 
-    public String getCheckOutDate() { return checkOutDate; }
-    public void setCheckOutDate(String checkOutDate) { this.checkOutDate = checkOutDate; }
+    public void setUserID(Integer userID) {
+        this.userID = userID;
+    }
 
-    public int getGuestsCount() { return guestsCount; }
-    public void setGuestsCount(int guestsCount) { this.guestsCount = guestsCount; }
+    public String getCheckInDate() {
+        return checkInDate;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
 
-    public String getContactName() { return contactName; }
-    public void setContactName(String contactName) { this.contactName = contactName; }
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
 
-    public String getContactEmail() { return contactEmail; }
-    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
 
-    public String getContactPhone() { return contactPhone; }
-    public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
+    public int getGuestsCount() {
+        return guestsCount;
+    }
+
+    public void setGuestsCount(int guestsCount) {
+        this.guestsCount = guestsCount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public void setTotalAmount(double aDouble) {
+        TotalAmount = aDouble;
+    }
+
+    public double getTotalAmount() {
+        return TotalAmount;
+    }
 }

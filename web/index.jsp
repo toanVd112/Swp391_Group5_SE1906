@@ -291,12 +291,12 @@
                                     <c:choose>
                                         <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
                                         <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
-                                            <li><a href="cart.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:otherwise>
                                         </c:choose>
 

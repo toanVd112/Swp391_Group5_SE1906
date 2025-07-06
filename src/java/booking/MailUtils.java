@@ -17,12 +17,13 @@ import javax.mail.internet.MimeUtility;
 public class MailUtils {
 
     // Hàm gửi mail Pending Booking kèm link
-    public static void sendBookingPendingMail(String toEmail, String fullName, int bookingID, String confirmLink) throws UnsupportedEncodingException {
+    public static void sendBookingPendingMail(String toEmail, String fullName, int bookingID,String token, String confirmLink) throws UnsupportedEncodingException {
         String subject = "[Hotel] Xác nhận giữ chỗ Booking #" + bookingID;
 
         String content = "Xin chào " + fullName + ",\n\n"
                 + "Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi.\n"
                 + "✔️ Mã booking: #" + bookingID + "\n"
+                   + "token booking: #" + token + "\n"
                 + "⏳ Booking sẽ hết hạn trong 10 phút nếu bạn không thanh toán.\n\n"
                 + "👉 Vui lòng kiểm tra hoặc thanh toán tại đây:\n"
                 + confirmLink + "\n\n"

@@ -263,7 +263,7 @@ public class ProceedBookingServlet extends HttpServlet {
         String confirmLink = "http://localhost:8080/HotelManagement/ProceedPaymentServlet?bookingID="
                 + b.getBookingID() + "&token=" + b.getBookingToken();
 
-        MailUtils.sendBookingPendingMail(email, fullName, b.getBookingID(), confirmLink);
+        MailUtils.sendBookingPendingMail(email, fullName, b.getBookingID(),b.getBookingToken(), confirmLink);
 
         response.sendRedirect("thanhtoan.jsp?bookingID=" + b.getBookingID());
 
