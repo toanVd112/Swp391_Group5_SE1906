@@ -1,352 +1,286 @@
-<%-- Khai báo loại nội dung của trang là HTML, mã hóa UTF-8 để hỗ trợ tiếng Việt --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<%-- Nhúng thư viện JSTL core để sử dụng các thẻ như <c:forEach>, <c:if> --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%-- Nhúng thư viện JSTL fmt để định dạng số, ngày tháng (ví dụ: giá dịch vụ) --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
-<%-- Import các lớp cần thiết từ package model và DAO --%>
 <%@ page import="model.Account" %>
 <%@ page import="model.Service" %>
 <%@ page import="DAO.ServiceDAO" %>
 <%@ page import="java.util.List" %>
 
-<%-- Kiểm tra quyền truy cập và lấy dữ liệu dịch vụ --%>
 <%
-    // Lấy đối tượng Account từ session (phiên đăng nhập của người dùng)
     Account account = (Account) session.getAttribute("account");
-    
-    // Kiểm tra nếu người dùng chưa đăng nhập (account == null) hoặc không phải Manager
     if (account == null || !"Manager".equals(account.getRole())) {
-        // Chuyển hướng về trang đăng nhập (login.jsp) nếu không đủ quyền
-        response.sendRedirect("../login.jsp");
-        return; // Dừng xử lý JSP
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
     }
-    
-    // Lấy ID dịch vụ từ tham số URL (ví dụ: editService.jsp?id=1)
     int id = Integer.parseInt(request.getParameter("id"));
-    
-    // Gọi ServiceDAO để lấy thông tin dịch vụ theo ID
     Service s = new ServiceDAO().getServiceByID(id);
-    
-    // Lưu thông tin dịch vụ vào request để sử dụng trong JSP
     request.setAttribute("service", s);
-    
-    // Lấy danh sách các loại dịch vụ duy nhất từ ServiceDAO
     List<String> types = new ServiceDAO().getAllDistinctServiceType();
-    
-    // Lưu danh sách loại dịch vụ vào request để hiển thị trong dropdown
     request.setAttribute("serviceTypes", types);
 %>
 
-<%-- Khai báo HTML5 và ngôn ngữ trang là tiếng Anh --%>
 <html>
-    <head>
-        <%-- Tiêu đề của trang --%>
-        <title>Service Details & Edit</title>
-
-        <%-- CSS tùy chỉnh để tạo giao diện đẹp và responsive --%>
-        <style>
-            body {
-                font-family: 'Segoe UI', Arial, sans-serif;
-                background-color: #f5f6fa;
-                margin: 0;
-                /*padding: 20px;*/
-                display: flex;
-                /*justify-content: center;*/
-                min-height: 100vh;
-            }
-
-            .container {
-                background: white;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                width: 100%;
-                max-width: 800px;
-            }
-
-            h2 {
-                color: #333;
-                text-align: center;
-                margin-bottom: 30px;
-                font-size: 24px;
-            }
-
-            .form-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-            }
-
-            .form-column {
-                flex: 1;
-                min-width: 280px;
-            }
-
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 8px;
-                color: #555;
-                font-weight: 500;
-            }
-
-            input[type="text"],
-            input[type="number"],
-            textarea,
-            select {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                font-size: 16px;
-                box-sizing: border-box;
-                transition: border-color 0.3s;
-            }
-
-            input[type="text"]:focus,
-            input[type="number"]:focus,
-            textarea:focus,
-            select:focus {
-                outline: none;
-                border-color: #007bff;
-                box-shadow: 0 0 5px rgba(0,123,255,0.3);
-            }
-
-            textarea {
-                resize: vertical;
-                min-height: 100px;
-            }
-
-            input[type="submit"] {
-                background-color: #007bff;
-                color: white;
-                padding: 12px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-                width: 100%;
-                transition: background-color 0.3s;
-            }
-
-            input[type="submit"]:hover {
-                background-color: #0056b3;
-            }
-
-            .back-link {
-                display: block;
-                text-align: center;
-                margin-top: 20px;
-                color: #007bff;
-                text-decoration: none;
-                font-size: 16px;
-            }
-
-            .back-link:hover {
-                text-decoration: underline;
-            }
-
-            /* Định dạng thông báo lỗi */
-            .error-message {
-                color: #dc3545; /* Màu đỏ */
-                background-color: #f8d7da; /* Nền hồng nhạt */
-                padding: 10px;
-                border-radius: 5px;
-                margin-bottom: 20px;
-                font-size: 14px;
-            }
-
-            /* Định dạng input lỗi */
-            .input-error {
-                border-color: #dc3545;
-            }
-
-            @media (max-width: 600px) {
-                .container {
-                    padding: 20px;
-                }
-                h2 {
-                    font-size: 20px;
-                }
-                .form-column {
-                    min-width: 100%;
-                }
-            }
-
-            .search-box input {
-                padding-left: 2.5rem;
-                width: 250px;
-            }
-        </style>
-
-        <%-- JavaScript để validate phía client --%>
-        <script>
-            async function isDupeServiceName(input, serviceId) {
-    const dataToSend = { name: input, id: serviceId };
-    try {
-        const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dataToSend)
-        });
-        if (!response.ok) throw new Error('API error');
-        const result = await response.json();
-        return result === true || result === "true";
-    } catch (error) {
-        console.error('Error:', error);
-        return false;
-    }
-}
-
-async function validateForm(form) {
-    let isValid = true;
-    let errorMessages = [];
-    const nameInput = document.getElementById("name");
-    const priceInput = document.getElementById("price");
-    const serviceTypeInput = document.getElementById("serviceType");
-    const serviceImageInput = document.getElementById("serviceImage");
-    const serviceIdInput = document.querySelector("input[name='id']");
-
-    if (!nameInput || !priceInput || !serviceTypeInput || !serviceImageInput || !serviceIdInput) {
-        alert("Lỗi: Không tìm thấy các trường dữ liệu.");
-        return false;
-    }
-
-    const name = nameInput.value.trim();
-    const price = priceInput.value.trim();
-    const serviceType = serviceTypeInput.value.trim();
-    const serviceImage = serviceImageInput.value.trim();
-    const serviceId = serviceIdInput.value.trim();
-
-    document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
-
-    const isDupServiceName = await isDupeServiceName(name, serviceId);
-    if (!name) {
-        nameInput.classList.add("input-error");
-        errorMessages.push("Tên dịch vụ không được để trống.");
-        isValid = false;
-    } else if (name.length < 3 || name.length > 100) {
-        nameInput.classList.add("input-error");
-        errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự.");
-        isValid = false;
-    } else if (isDupServiceName) {
-        nameInput.classList.add("input-error");
-        errorMessages.push("Tên dịch vụ đã tồn tại.");
-        isValid = false;
-    }
-
-    const priceValue = parseFloat(price);
-    if (!price || isNaN(priceValue) || priceValue < 0 || priceValue > 1000000000) {
-        priceInput.classList.add("input-error");
-        errorMessages.push("Giá phải từ 0 đến 1,000,000,000.");
-        isValid = false;
-    }
-
-    if (!serviceType) {
-        serviceTypeInput.classList.add("input-error");
-        errorMessages.push("Loại dịch vụ không được để trống.");
-        isValid = false;
-    }
-
-    if (serviceImage) {
-        const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
-        if (!imageRegex.test(serviceImage)) {
-            serviceImageInput.classList.add("input-error");
-            errorMessages.push("URL hình ảnh không hợp lệ.");
-            isValid = false;
+<head>
+    <title>Service Details & Edit</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
         }
-    }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .form-column {
+            flex: 1;
+            min-width: 280px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            max-height: 300px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .input-error {
+            border-color: #dc3545;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .form-column {
+                min-width: 100%;
+            }
+        }
+    </style>
+    <script>
+        async function isDupeServiceName(input, serviceId) {
+            const dataToSend = { name: input, id: serviceId };
+            try {
+                const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSend)
+                });
+                if (!response.ok) throw new Error('API error');
+                const result = await response.json();
+                return result === true || result === "true";
+            } catch (error) {
+                console.error('Error:', error);
+                return false;
+            }
+        }
 
-    if (!isValid) {
-        alert(errorMessages.join("\n"));
-    } else {
-        form.submit();
-    }
-}
-        </script>
-    </head>
-    <body>
-        <%-- Container chứa form chỉnh sửa dịch vụ --%>
-        <div class="container">
-            <%-- Tiêu đề của form --%>
-            <h2>Service Details & Edit</h2>
+        async function validateForm(form) {
+            let isValid = true;
+            let errorMessages = [];
+            const nameInput = document.getElementById("name");
+            const descriptionInput = document.getElementById("description");
+            const priceInput = document.getElementById("price");
+            const serviceTypeInput = document.getElementById("serviceType");
+            const serviceImageInput = document.getElementById("serviceImage");
+            const serviceIdInput = document.querySelector("input[name='id']");
 
-            <%-- Hiển thị thông báo lỗi nếu có --%>
-            <c:if test="${not empty errorMessage}">
-                <div class="error-message">${errorMessage}</div>
-            </c:if>
+            if (!nameInput || !descriptionInput || !priceInput || !serviceTypeInput || !serviceImageInput || !serviceIdInput) {
+                alert("Lỗi: Không tìm thấy các trường dữ liệu.");
+                return false;
+            }
 
-            <%-- Form gửi dữ liệu đến Servlet /editService qua phương thức POST --%>
-            <form action="${pageContext.request.contextPath}/editService" method="post" onsubmit="event.preventDefault(); validateForm(this);">
-                <%-- Trường ẩn để gửi ID dịch vụ --%>
-                <input type="hidden" name="id" value="${service.id}" />
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const price = priceInput.value.trim();
+            const serviceType = serviceTypeInput.value.trim();
+            const serviceImage = serviceImageInput.value.trim();
+            const serviceId = serviceIdInput.value.trim();
 
-                <div class="form-container">
-                    <div class="form-column">
-                        <%-- Nhóm input: Tên dịch vụ --%>
-                        <div class="form-group">
-                            <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
-                            <input type="text" id="name" name="name" value="${service.name}" required>
-                        </div>
+            document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
 
-                        <%-- Nhóm input: Giá --%>
-                        <div class="form-group">
-                            <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
-                            <input type="number" id="price" name="price" step="1" min="0" max="1000000000" 
-                                   value="<fmt:formatNumber value='${service.price}' pattern='#0'/>" required>
-                        </div>
+            const nameRegex = /^[a-zA-Z0-9\s-_]{3,100}$/;
+            const isDupServiceName = await isDupeServiceName(name, serviceId);
+            if (!name) {
+                nameInput.classList.add("input-error");
+                errorMessages.push("Tên dịch vụ không được để trống.");
+                isValid = false;
+            } else if (!nameRegex.test(name)) {
+                nameInput.classList.add("input-error");
+                errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
+                isValid = false;
+            } else if (isDupServiceName) {
+                nameInput.classList.add("input-error");
+                errorMessages.push("Tên dịch vụ đã tồn tại.");
+                isValid = false;
+            }
 
-                        <%-- Nhóm input: Loại dịch vụ --%>
-                        <div class="form-group">
-                            <label for="serviceType">Loại dịch vụ: <span title="Chọn một loại từ danh sách">*</span></label>
-                            <select id="serviceType" name="serviceType" required>
-                                <option value="">Chọn loại</option>
-                                <c:forEach var="type" items="${serviceTypes}">
-                                    <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
+            if (description.length > 1000) {
+                descriptionInput.classList.add("input-error");
+                errorMessages.push("Mô tả không được vượt quá 1000 ký tự.");
+                isValid = false;
+            }
+
+            const priceValue = parseFloat(price);
+            if (!price || isNaN(priceValue) || priceValue < 0 || priceValue > 1000000000) {
+                priceInput.classList.add("input-error");
+                errorMessages.push("Giá phải từ 0 đến 1,000,000,000.");
+                isValid = false;
+            }
+
+            if (!serviceType) {
+                serviceTypeInput.classList.add("input-error");
+                errorMessages.push("Loại dịch vụ không được để trống.");
+                isValid = false;
+            }
+
+            if (serviceImage) {
+                const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
+                if (!imageRegex.test(serviceImage)) {
+                    serviceImageInput.classList.add("input-error");
+                    errorMessages.push("URL hình ảnh không hợp lệ.");
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                alert(errorMessages.join("\n"));
+            } else {
+                form.submit();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Service Details & Edit</h2>
+        <c:if test="${not empty errorMessage}">
+            <div class="error-message">${errorMessage}</div>
+        </c:if>
+        <form action="${pageContext.request.contextPath}/editService" method="post" onsubmit="event.preventDefault(); validateForm(this);">
+            <input type="hidden" name="id" value="${service.id}" />
+            <div class="form-container">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
+                        <input type="text" id="name" name="name" value="${service.name}" required maxlength="100">
                     </div>
-
-                    <div class="form-column">
-                        <%-- Nhóm input: Mô tả --%>
-                        <div class="form-group">
-                            <label for="description">Mô tả: <span title="Tối đa 1000 ký tự"></span></label>
-                            <textarea id="description" name="description" rows="4" maxlength="1000">${service.description}</textarea>
-                        </div>
-
-                        <%-- Nhóm input: Trạng thái --%>
-                        <div class="form-group">
-                            <label for="status">Trạng thái:</label>
-                            <select id="status" name="status">
-                                <option value="1" ${service.status == 1 ? 'selected' : ''}>Hoạt động</option>
-                                <option value="0" ${service.status == 0 ? 'selected' : ''}>Ngừng Hoạt Động</option>
-                            </select>
-                        </div>
-
-                        <%-- Nhóm input: Hình ảnh (URL) --%>
-                        <div class="form-group">
-                            <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif) hoặc đường dẫn bắt đầu bằng 'assets/', tối đa 255 ký tự"></span></label>
-                            <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}"
-                                   maxlength="255" pattern="^(https?://|\/|assets\/).+\.(jpg|jpeg|png|gif)$"
-                                   title="URL hợp lệ với định dạng jpg, jpeg, png, gif hoặc đường dẫn bắt đầu bằng 'assets/'">
-                        </div>
+                    <div class="form-group">
+                        <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
+                        <input type="number" id="price" name="price" step="1" min="0" max="1000000000" value="<fmt:formatNumber value='${service.price}' pattern='#0'/>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceType">Loại dịch vụ: <span title="Chọn một loại từ danh sách">*</span></label>
+                        <select id="serviceType" name="serviceType" required>
+                            <option value="">Chọn loại</option>
+                            <c:forEach var="type" items="${serviceTypes}">
+                                <option value="${type}" ${service.type eq type ? 'selected' : ''}>${type}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                 </div>
-
-                <%-- Nút gửi form --%>
-                <input type="submit" value="Update">
-            </form>
-
-            <%-- Liên kết quay lại danh sách dịch vụ --%>
-            <a class="back-link" href="${pageContext.request.contextPath}/services/list">← Back to Service List</a>
-        </div>
-    </body>
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="description">Mô tả: <span title="Tối đa 1000 ký tự"></span></label>
+                        <textarea id="description" name="description" rows="4" maxlength="1000">${service.description}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Trạng thái:</label>
+                        <select id="status" name="status">
+                            <option value="1" ${service.status == '1' ? 'selected' : ''}>Hoạt động</option>
+                            <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt Động</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif) hoặc đường dẫn bắt đầu bằng 'assets/', tối đa 255 ký tự"></span></label>
+                        <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}" maxlength="255" pattern="^(https?://|\/|assets\/).+\.(jpg|jpeg|png|gif)$" title="URL hợp lệ với định dạng jpg, jpeg, png, gif hoặc đường dẫn bắt đầu bằng 'assets/'">
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Update">
+        </form>
+        <a class="back-link" href="${pageContext.request.contextPath}/services?action=list">← Back to Service List</a>
+    </div>
+</body>
 </html>
