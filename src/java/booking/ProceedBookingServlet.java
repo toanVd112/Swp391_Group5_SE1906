@@ -251,19 +251,31 @@ public class ProceedBookingServlet extends HttpServlet {
         }
 
 // Insert service
-        for (ServiceItem s : selectedServices) {
-            try {
-                bookingDAO.insertServiceUsage(b.getBookingID(), s.serviceId, 1);
-            } catch (SQLException ex) {
-                Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+       for (ServiceItem s : selectedServices) {
+    try {
+        // 1️⃣ Lấy giá gốc từ DB
+        int unitPrice = bookingDAO.getServicePriceByID(s.serviceId);
+
+        // 2️⃣ Lấy quantity từ JSON, fallback 1
+        int quantity = s.quantity > 0 ? s.quantity : 1;
+
+        // 3️⃣ Tính tổng
+        int subTotal = unitPrice * quantity;
+
+        // 4️⃣ Insert đủ 5 field!
+        bookingDAO.insertServiceUsage(b.getBookingID(), s.serviceId, quantity, unitPrice, subTotal);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
 
         System.out.println("✅ Insert OK ➜ bookingID = " + b.getBookingID());
         String confirmLink = "http://localhost:8080/HotelManagement/ProceedPaymentServlet?bookingID="
                 + b.getBookingID() + "&token=" + b.getBookingToken();
 
-        MailUtils.sendBookingPendingMail(email, fullName, b.getBookingID(),b.getBookingToken(), confirmLink);
+        MailUtils.sendBookingPendingMail(email, fullName, b.getBookingID(), b.getBookingToken(), confirmLink);
 
         response.sendRedirect("thanhtoan.jsp?bookingID=" + b.getBookingID());
 

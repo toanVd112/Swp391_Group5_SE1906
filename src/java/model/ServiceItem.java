@@ -12,6 +12,7 @@ public class ServiceItem {
      public int serviceId;
     public String name;
     public double price;
+    public int quantity;
 
     public ServiceItem(int serviceId, String name, double price) {
         this.serviceId = serviceId;

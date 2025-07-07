@@ -13,12 +13,12 @@ public class ServiceUsage {
    private int bookingID;
     private int serviceID;
     private String serviceName; // JOIN dịch vụ
-    private double price;
+    private int price;
     private int quantity;
 
     public ServiceUsage() {}
 
-    public ServiceUsage(int bookingID, int serviceID, String serviceName, double price, int quantity) {
+    public ServiceUsage(int bookingID, int serviceID, String serviceName, int price, int quantity) {
         this.bookingID = bookingID;
         this.serviceID = serviceID;
         this.serviceName = serviceName;
@@ -37,7 +37,7 @@ public class ServiceUsage {
     public void setServiceName(String serviceName) { this.serviceName = serviceName; }
 
     public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public void setPrice(int price) { this.price = price; }
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }

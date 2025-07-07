@@ -116,15 +116,16 @@ public class BookingDAO {
     }
 
     // Insert dịch vụ dùng kèm
-    public void insertServiceUsage(int bookingID, int serviceID, int quantity) throws SQLException {
-        String sql = "INSERT INTO ServiceUsage (BookingID, ServiceID, Quantity) VALUES (?, ?, ?)";
+    public void insertServiceUsage(int bookingID, int serviceID, int quantity, int unitPrice, int subTotal) throws SQLException {
+        String sql = "INSERT INTO serviceUsage (BookingID, ServiceID, Quantity,UnitPrice,SubTotal) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, bookingID);
             ps.setInt(2, serviceID);
             ps.setInt(3, quantity);
-
+            ps.setInt(4, unitPrice);
+            ps.setInt(5, subTotal);
             ps.executeUpdate();
         }
     }
@@ -196,7 +197,7 @@ public class BookingDAO {
                 su.setBookingID(rs.getInt("BookingID"));
                 su.setServiceID(rs.getInt("ServiceID"));
                 su.setServiceName(rs.getString("ServiceName"));
-                su.setPrice(rs.getDouble("Price"));
+                su.setPrice(rs.getInt("Price"));
                 su.setQuantity(rs.getInt("Quantity"));
                 list.add(su);
             }
@@ -397,9 +398,19 @@ public class BookingDAO {
         sql.append("""
         UNION ALL
         SELECT 
-            OriginalBookingID AS BookingID, UserID, BookingDate AS CheckInDate, ExpiryTime,BookingDate, CheckOutDate, GuestsCount, TotalAmount,
-            'Expired' AS Status,
-            BookingToken, ContactName, ContactEmail, ContactPhone
+          OriginalBookingID AS BookingID,
+          UserID,
+          CheckInDate,
+          BookingDate,
+          CheckOutDate,
+          ExpiryTime,
+          GuestsCount,
+          TotalAmount,
+          'Expired' AS Status,
+          BookingToken,
+          ContactName,
+          ContactEmail,
+          ContactPhone
         FROM deleted_bookings
         WHERE UserID = ?
         AND (
@@ -581,7 +592,16 @@ public class BookingDAO {
 
     }
 
-    public List<Booking> getAllBookings() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int getServicePriceByID(int serviceID) throws SQLException {
+        int price = 0;
+        String sql = "SELECT Price FROM services WHERE ServiceID = ?";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, serviceID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                price = rs.getInt("Price");
+            }
+        }
+        return price;
     }
 }

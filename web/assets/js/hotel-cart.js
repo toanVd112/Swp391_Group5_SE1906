@@ -125,16 +125,18 @@ function renderCartUI() {
     // DỊCH VỤ
     if (selectedServices.length > 0) {
         selectedServices.forEach(s => {
+            const subTotal = s.price * (s.quantity || 1);
             const html = `
-        <div class="selected-room-item">
-          <p><strong>Dịch vụ:</strong> ${s.name}</p>
-          <p>Giá: ${formatCurrency(s.price)}</p>
-              <button onclick="removeService(${s.serviceId})" class="btn btn-sm btn-danger">Xóa</button>
-        </div>`;
+      <div class="selected-room-item">
+        <p><strong>Dịch vụ:</strong> ${s.name}</p>
+        <p>Đơn giá: ${formatCurrency(s.price)} × ${s.quantity || 1} = ${formatCurrency(subTotal)}</p>
+        <button onclick="removeService(${s.serviceId})" class="btn btn-sm btn-danger">Xóa</button>
+      </div>`;
             list.innerHTML += html;
-            total += s.price;
+            total += subTotal;
         });
     }
+
 
     const tax = total * 0.1;
     const grand = total + tax;
@@ -414,16 +416,49 @@ function toggleService(el) {
     const name = el.dataset.name;
     const price = parseInt(el.dataset.price);
 
+    const card = el.closest('.service-card');
+    const qtyInput = card.querySelector('.service-qty');
+
+    if (qtyInput) {
+        qtyInput.disabled = !el.checked;
+    }
+
     const index = selectedServices.findIndex(s => s.serviceId === id);
     if (index >= 0) {
         selectedServices.splice(index, 1);
     } else {
-        selectedServices.push({serviceId: id, name, price});
+        let quantity = 1;
+        if (qtyInput && !qtyInput.disabled) {
+            quantity = parseInt(qtyInput.value) || 1;
+        }
+        selectedServices.push({serviceId: id, name, price, quantity});
     }
 
     localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
     renderCartUI();
 }
+function updateServiceQty(input) {
+  const min = parseInt(input.min) || 1;
+  const max = parseInt(input.max) || 100;
+  let qty = parseInt(input.value) || 1;
+
+  if (qty < min) qty = min;
+  if (qty > max) qty = max;
+
+  input.value = qty; // gán lại input để user thấy số đúng
+
+  const card = input.closest('.service-card');
+  const checkbox = card.querySelector('input[type="checkbox"]');
+  const id = parseInt(checkbox.value);
+
+  const index = selectedServices.findIndex(s => s.serviceId === id);
+  if (index >= 0) {
+    selectedServices[index].quantity = qty;
+    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+    renderCartUI();
+  }
+}
+
 
 localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
 

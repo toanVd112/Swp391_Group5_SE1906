@@ -32,6 +32,7 @@ public class ServiceDAO {
                     s.setCreatedBy(rs.getString("CreatedBy"));
                     s.setLastUpdateBy(rs.getString("LastUpdatedBy"));
                     s.setServiceImage(rs.getString("ServiceImage"));
+                    s.setUnit(rs.getString("Unit"));
                 }
             }
         } catch (Exception e) {
@@ -39,7 +40,7 @@ public class ServiceDAO {
         }
         return s;
     }
-
+    
     public List<String> getAllDistinctServiceType() {
         List<String> serviceTypes = new ArrayList<>();
         String sql = "SELECT DISTINCT ServiceType FROM services WHERE ServiceType IS NOT NULL AND ServiceType <> '' ORDER BY ServiceType ASC";
@@ -71,7 +72,7 @@ public class ServiceDAO {
         List<Service> services = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM services WHERE 1=1"); // Mệnh đề WHERE 1=1 để dễ dàng nối thêm AND
         List<Object> params = new ArrayList<>();
-
+        
         if (keyword != null && !keyword.trim().isEmpty()) {
             sql.append(" AND ServiceName LIKE ?");
             params.add("%" + keyword.trim() + "%");
@@ -107,11 +108,11 @@ public class ServiceDAO {
         // params.add(recordsPerPage);
         // params.add((page - 1) * recordsPerPage);
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
+            
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-
+            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
@@ -166,7 +167,7 @@ public class ServiceDAO {
             return false;
         }
     }
-
+    
     public boolean update(Service s) {
         String sql = "UPDATE services SET ServiceName = ?, Price = ?, Description = ?, AvailabilityStatus = ?, "
                 + "ServiceType = ?, LastUpdatedDate = ?, LastUpdatedBy = ?, ServiceImage = ? WHERE ServiceID = ?";
@@ -208,30 +209,30 @@ public class ServiceDAO {
         }
         return success;
     }
-
+    
     public boolean isDuplicatedServiceName(String name, int excludeId) {
-    String sql = "SELECT COUNT(*) FROM services WHERE name = ? AND id != ?";
-    try (Connection conn = DBConnect.getConnection(); // Assume getConnection() exists
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, name);
-        stmt.setInt(2, excludeId);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
+        String sql = "SELECT COUNT(*) FROM services WHERE name = ? AND id != ?";
+        try (Connection conn = DBConnect.getConnection(); // Assume getConnection() exists
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, excludeId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return false;
     }
-    return false;
-}
-
-    public List<Service> getAvailableServices() throws SQLException  {
+    
+    public List<Service> getAvailableServices() throws SQLException {
         List<Service> services = new ArrayList<>();
         String sql = "SELECT * FROM services WHERE AvailabilityStatus = '1'";
-        Connection conn = DBConnect.getConnection(); 
+        Connection conn = DBConnect.getConnection();        
         PreparedStatement ps = conn.prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
-
+        
         while (rs.next()) {
             Service s = new Service();
             s.setId(rs.getInt("ServiceID"));
@@ -239,10 +240,11 @@ public class ServiceDAO {
             s.setPrice(rs.getInt("Price"));
             s.setDescription(rs.getString("Description"));
             s.setServiceImage(rs.getString("ServiceImage"));
+            s.setUnit(rs.getString("Unit"));
             services.add(s);
         }
-
+        
         return services;
     }
-
+    
 }

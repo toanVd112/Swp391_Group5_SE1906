@@ -599,39 +599,139 @@
                                             <p>Nâng cao trải nghiệm của bạn với các dịch vụ cao cấp</p>
                                         </div>
 
+                                        <!-- ===================================== -->
+                                        <!-- TÍNH Guests, Nights, MaxBreakfast AN TOÀN -->
+                                        <c:set var="guests" value="${param.guests != null ? param.guests : 1}" />
+                                        <c:set var="checkinStr" value="${param.checkin}" />
+                                        <c:set var="checkoutStr" value="${param.checkout}" />
+                                        <c:set var="nights" value="1" />
+
+                                        <c:if test="${not empty checkinStr and not empty checkoutStr}">
+                                            <fmt:parseDate value="${checkinStr}" var="checkinDate" pattern="dd/MM/yyyy" />
+                                            <fmt:parseDate value="${checkoutStr}" var="checkoutDate" pattern="dd/MM/yyyy" />
+                                            <c:set var="millisDiff" value="${checkoutDate.time - checkinDate.time}" />
+                                            <c:set var="nights" value="${millisDiff / (1000*60*60*24)}" />
+                                            <c:if test="${nights <= 0}">
+                                                <c:set var="nights" value="1" />
+                                            </c:if>
+                                        </c:if>
+
+                                        <c:set var="maxBreakfast" value="${guests * nights}" />
+
+                                        <!-- ===================================== -->
+                                        <!-- LOOP SERVICES -->
                                         <div class="services-grid">
                                             <c:forEach var="service" items="${services}">
                                                 <div class="service-card">
                                                     <c:if test="${not empty service.serviceImage}">
                                                         <div class="service-image">
-                                                            <img src="${service.serviceImage}" alt="${service.name}" 
+                                                            <img src="${service.serviceImage}" alt="${service.name}"
                                                                  onerror="this.src='/placeholder.svg?height=120&width=180'" />
                                                         </div>
                                                     </c:if>
 
                                                     <div class="service-content">
+                                                        <!-- ✅ Header + Checkbox -->
                                                         <div class="service-header">
                                                             <label class="service-checkbox">
-                                                                <input type="checkbox" value="${service.id}"
+                                                                <input type="checkbox"
+                                                                       value="${service.id}"
                                                                        data-name="${fn:escapeXml(service.name)}"
                                                                        data-price="${service.price}"
+                                                                       data-unit="${service.unit}"
                                                                        onchange="toggleService(this)" />
                                                                 <span class="checkmark"></span>
                                                                 <div class="service-info">
                                                                     <h4 class="service-name">${service.name}</h4>
                                                                     <span class="service-price">
-                                                                        <fmt:formatNumber value="${service.price}" type="number" maxFractionDigits="0"/> VND
+                                                                        <fmt:formatNumber value="${service.price}" type="number" maxFractionDigits="0"/> VND /
+                                                                        ${service.unit}
                                                                     </span>
                                                                 </div>
                                                             </label>
                                                         </div>
+
+                                                        <!-- ✅ Mô tả -->
                                                         <c:if test="${not empty service.description}">
                                                             <p class="service-description">${service.description}</p>
                                                         </c:if>
+
+                                                        <!-- ✅ Block QUANTITY -->
+                                                        <c:choose>
+                                                            <c:when test="${service.name eq 'laundry' || service.name eq 'room-service'}">
+                                                                <small>Staff will enter quantity later</small>
+                                                            </c:when>
+
+                                                            <c:when test="${service.name eq 'airport'}">
+                                                                <div class="quantity-input">
+                                                                    <label>Quantity (${service.unit}):</label>
+                                                                    <input type="number" class="service-qty"
+                                                                           min="1" max="1" value="1" disabled
+                                                                           onchange="updateServiceQty(this)" />
+                                                                    <small>Maximum: 1 trip per booking</small>
+                                                                </div>
+                                                            </c:when>
+
+                                                            <c:when test="${service.name eq 'breakfast'}">
+                                                                <div class="quantity-input">
+                                                                    <label>Quantity (${service.unit}):</label>
+                                                                    <input type="number" class="service-qty"
+                                                                           min="1" max="${maxBreakfast}" value="${maxBreakfast}" disabled
+                                                                           onchange="updateServiceQty(this)" />
+                                                                    <small>Maximum: ${guests} guests × ${nights} nights = ${maxBreakfast} portions</small>
+                                                                </div>
+                                                            </c:when>
+
+                                                            <c:when test="${service.name eq 'tour'}">
+                                                                <div class="quantity-input">
+                                                                    <label>Quantity (${service.unit}):</label>
+                                                                    <input type="number" class="service-qty"
+                                                                           min="1" max="${guests}" value="${guests}" disabled
+                                                                           onchange="updateServiceQty(this)" />
+                                                                    <small>Maximum: equals total guests (${guests})</small>
+                                                                </div>
+                                                            </c:when>
+
+                                                            <c:when test="${service.name eq 'spa'}">
+                                                                <div class="quantity-input">
+                                                                    <label>Quantity (${service.unit}):</label>
+                                                                    <input type="number" class="service-qty"
+                                                                           min="1" max="5" value="1" disabled
+                                                                           onchange="updateServiceQty(this)" />
+                                                                    <small>Maximum: 5 hours per booking</small>
+                                                                </div>
+                                                            </c:when>
+
+                                                            <c:otherwise>
+                                                                <c:choose>
+                                                                    <c:when test="${service.name eq 'bike' || service.name eq 'car-rental'}">
+                                                                        <div class="quantity-input">
+                                                                            <label>Quantity (${service.unit}):</label>
+                                                                            <input type="number" class="service-qty"
+                                                                                   min="1" max="7" value="1" disabled
+                                                                                   onchange="updateServiceQty(this)" />
+                                                                            <small>Maximum: 7 days rental per booking</small>
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:when test="${service.name eq 'cleaning'}">
+                                                                        <div class="quantity-input">
+                                                                            <label>Quantity (${service.unit}):</label>
+                                                                            <input type="number" class="service-qty"
+                                                                                   min="1" max="5" value="1" disabled
+                                                                                   onchange="updateServiceQty(this)" />
+                                                                            <small>Maximum: 5 cleanings per stay</small>
+                                                                        </div>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                            </c:otherwise>
+
+                                                        </c:choose>
+
                                                     </div>
                                                 </div>
                                             </c:forEach>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

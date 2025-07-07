@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 
 public class Service {
+
     private int id;
     private String name;
     private int price;
@@ -14,6 +15,7 @@ public class Service {
     private String createdBy;
     private String lastUpdateBy;
     private String serviceImage;
+    private String unit;
 
     public Service() {
     }
@@ -32,8 +34,16 @@ public class Service {
         this.serviceImage = serviceImage;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public void setId(int id) {
@@ -120,5 +130,4 @@ public class Service {
         this.serviceImage = serviceImage;
     }
 
-    
 }
