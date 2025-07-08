@@ -4,51 +4,103 @@
  */
 package model;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author Admin
  */
 public class BookingDetail {
-     private int bookingDetailID;
+
+    private int bookingDetailID;
     private int bookingID;
+    private int roomID;
     private int roomTypeID;
-    private String roomTypeName; // JOIN lấy tên room type
-    private int quantity;
-    private double pricePerNight;
+    private String roomTypeName; // Từ JOIN roomtypes
+    private BigDecimal pricePerNight;
     private int guestsCount;
+    private String notes;
+    private long nights;               // 👈 NEW
+    private BigDecimal subTotal;       // 👈 NEW
+    // Getter & Setter
 
-    // Constructors
-    public BookingDetail() {}
+    public int getBookingDetailID() {
+        return bookingDetailID;
+    }
 
-    public BookingDetail(int bookingDetailID, int bookingID, int roomTypeID, String roomTypeName, int quantity, double pricePerNight, int guestsCount) {
+    public long getNights() {
+        return nights;
+    }
+
+    public void setNights(long nights) {
+        this.nights = nights;
+    }
+
+    public BigDecimal getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public void setBookingDetailID(int bookingDetailID) {
         this.bookingDetailID = bookingDetailID;
+    }
+
+    public int getBookingID() {
+        return bookingID;
+    }
+
+    public void setBookingID(int bookingID) {
         this.bookingID = bookingID;
+    }
+
+    public int getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(int roomID) {
+        this.roomID = roomID;
+    }
+
+    public int getRoomTypeID() {
+        return roomTypeID;
+    }
+
+    public void setRoomTypeID(int roomTypeID) {
         this.roomTypeID = roomTypeID;
+    }
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public void setRoomTypeName(String roomTypeName) {
         this.roomTypeName = roomTypeName;
-        this.quantity = quantity;
+    }
+
+    public BigDecimal getPricePerNight() {
+        return pricePerNight;
+    }
+
+    public void setPricePerNight(BigDecimal pricePerNight) {
         this.pricePerNight = pricePerNight;
+    }
+
+    public int getGuestsCount() {
+        return guestsCount;
+    }
+
+    public void setGuestsCount(int guestsCount) {
         this.guestsCount = guestsCount;
     }
 
-    // Getters & Setters
-    public int getBookingDetailID() { return bookingDetailID; }
-    public void setBookingDetailID(int bookingDetailID) { this.bookingDetailID = bookingDetailID; }
+    public String getNotes() {
+        return notes;
+    }
 
-    public int getBookingID() { return bookingID; }
-    public void setBookingID(int bookingID) { this.bookingID = bookingID; }
-
-    public int getRoomTypeID() { return roomTypeID; }
-    public void setRoomTypeID(int roomTypeID) { this.roomTypeID = roomTypeID; }
-
-    public String getRoomTypeName() { return roomTypeName; }
-    public void setRoomTypeName(String roomTypeName) { this.roomTypeName = roomTypeName; }
-
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-
-    public double getPricePerNight() { return pricePerNight; }
-    public void setPricePerNight(double pricePerNight) { this.pricePerNight = pricePerNight; }
-
-    public int getGuestsCount() { return guestsCount; }
-    public void setGuestsCount(int guestsCount) { this.guestsCount = guestsCount; }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }

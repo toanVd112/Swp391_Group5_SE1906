@@ -246,14 +246,14 @@
                                         </ul>
                                     </li>
                                     <c:choose>
-                                        <%-- Nếu người dùng đã đăng nhập --%>
+                                        <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="customerCart"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
-                                        <%-- Nếu chưa đăng nhập --%>
+                                        <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
-                                            <li><a href="myrooms_db.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -998,21 +998,37 @@
             function validateDates() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkin < today) {
+                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
+                    checkinInput.value = '';
+                }
 
                 if (checkin && checkout && checkout <= checkin) {
-                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
                     checkoutInput.value = '';
                 }
             }
 
+
             function validateForm() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Đặt về 00:00:00 để so sánh đúng
 
-                if (checkout <= checkin) {
-                    alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                if (checkin < today) {
+                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
                     return false;
                 }
+
+                if (checkout <= checkin) {
+                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
+                    return false;
+                }
+
                 return true;
             }
         </script>

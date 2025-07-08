@@ -51,7 +51,6 @@
 
         <!-- SHORTCODES ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/shortcodes/shortcodes.css">
-
         <!-- STYLESHEETS ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
@@ -60,13 +59,15 @@
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/layers.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
         <link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
-        <link rel="stylesheet" href="assets/css/listRoom.css">
+
+        <link rel="stylesheet" href="assets/css/booking-styles.css">
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <!-- REVOLUTION SLIDER END -->
         <style>
 
         </style>
+
     </head>
 
     <body id="bg">
@@ -139,16 +140,9 @@
                             <div class="secondary-menu">
                                 <div class="secondary-inner">
                                     <ul>
-                                        <li><a href="javascript:;" class="btn-link"><i
-                                                    class="fa fa-facebook"></i></a></li>
-                                        <li><a href="javascript:;" class="btn-link"><i
-                                                    class="fa fa-google-plus"></i></a></li>
-                                        <li><a href="javascript:;" class="btn-link"><i
-                                                    class="fa fa-linkedin"></i></a></li>
+
                                         <!-- Search Button ==== -->
-                                        <li class="search-btn"><button id="quik-search-btn"
-                                                                       type="button" class="btn-link"><i
-                                                    class="fa fa-search"></i></button></li>
+                                        <li class="search-btn"><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -290,172 +284,234 @@
                 </div>
             </header>
 
+
             <c:choose>
                 <c:when test="${empty sessionScope.userInfo}">
                     <!-- Guest: form tra cứu -->
-                    <form method="get" action="MyBookingServlet" class="mb-4">
-                        <div class="mb-3">
-                            <label>Booking ID</label>
-                            <input type="text" name="bookingID" class="form-control" required>
+                    <div class="guest-lookup-section">
+                        <div class="container">
+                            <div class="lookup-form-wrapper">
+                                <h3 class="lookup-title">Booking Lookup</h3>
+                                <form method="get" action="MyBookingServlet" class="lookup-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Booking ID</label>
+                                            <input type="text" name="bookingID" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Booking Token</label>
+                                            <input type="text" name="bookingToken" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary lookup-btn">
+                                                <i class="fa fa-search"></i> Lookup Booking
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label>Booking Token</label>
-                            <input type="text" name="bookingToken" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Lookup Booking</button>
-                    </form>
+                    </div>
 
                     <!-- Guest: bảng booking nếu tra cứu thành công -->
                     <c:if test="${not empty bookings}">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Booking ID</th>
-                                    <th>Booking Date</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Guests</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="b" items="${bookings}">
-                                    <tr>
-                                        <td>#${b.bookingID}</td>
-                                        <td>${b.bookingDate}</td>
-                                        <td>${b.checkInDate}</td>
-                                        <td>${b.checkOutDate}</td>
-                                        <td>${b.guestsCount}</td>
-                                        <td>$${b.totalAmount}</td>
-                                        <td>${b.status}</td>
-                                        <td>
-                                            <a href="BookingDetailServlet?bookingID=${b.bookingID}"
-                                               class="btn btn-sm btn-info">View</a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                        <div class="container">
+                            <div class="booking-results">
+                                <h4 class="results-title">Booking Results</h4>
+                                <div class="table-responsive">
+                                    <table class="table booking-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="10%">Booking ID</th>
+                                                <th width="12%">Booking Date</th>
+                                                <th width="12%">Check-in</th>
+                                                <th width="12%">Check-out</th>
+                                                <th width="8%">Guests</th>
+                                                <th width="12%">Total Amount</th>
+                                                <th width="10%">Status</th>
+                                                <th width="14%">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="b" items="${bookings}">
+                                                <tr>
+                                                    <td class="booking-id">#${b.bookingID}</td>
+                                                    <td>${b.bookingDate}</td>
+                                                    <td>${b.checkInDate}</td>
+                                                    <td>${b.checkOutDate}</td>
+                                                    <td class="text-center">${b.guestsCount}</td>
+                                                    <td class="amount">$${b.totalAmount}</td>
+                                                    <td>
+                                                        <span class="status-badge status-${fn:toLowerCase(b.status)}">${b.status}</span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-info btn-sm viewBookingBtn"
+                                                                data-booking-id="${b.bookingID}">
+                                                            <i class="fa fa-eye"></i> View
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </c:if>
 
                     <!-- Guest: nếu không có booking -->
                     <c:if test="${empty bookings && not empty param.bookingID}">
-                        <div class="alert alert-warning">
-                            Không tìm thấy booking!
+                        <div class="container">
+                            <div class="alert alert-warning no-results">
+                                <i class="fa fa-exclamation-triangle"></i>
+                                Không tìm thấy booking với thông tin đã cung cấp!
+                            </div>
                         </div>
                     </c:if>
 
                 </c:when>
                 <c:otherwise>
-                    <div class="container mt-5">
-                        <h2 class="mb-4">My Bookings</h2>
-
-                        <!-- Customer: bộ lọc -->
-                        <form method="get" action="MyBookingServlet" class="row mb-3">
-                            <input type="hidden" name="page" value="1">
-                            <div class="col-md-3">
-                                <select name="statusFilter" class="form-select"
-                                        onchange="this.form.submit()">
-                                    <option value="">All Status</option>
-
-                                    <option value="Pending" ${statusFilter == 'Pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="Upcoming">Upcoming</option>
-                                    <option value="Active">Active</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                    <option value="Expired">Expired</option>
-
-                                </select>
+                    <div class="booking-management-section">
+                        <div class="container">
+                            <div class="booking-header">
+                                <h2 class="page-title">
+                                    <i class="fa fa-calendar-check"></i> My Bookings
+                                </h2>
                             </div>
-                            <div class="col-md-3">
-                                <input type="number" name="searchBookingId" class="form-control"
-                                       placeholder="Booking ID">
+
+                            <!-- Customer: bộ lọc -->
+                            <div class="filter-section">
+                                <form method="get" action="MyBookingServlet" class="filter-form">
+                                    <input type="hidden" name="page" value="1">
+                                    <div class="filter-row">
+                                        <div class="filter-group">
+                                            <label>Status Filter</label>
+                                            <select name="statusFilter" class="form-select" onchange="this.form.submit()">
+                                                <option value="">All Status</option>
+                                                <option value="Pending" ${statusFilter == 'Pending' ? 'selected' : ''}>Pending</option>
+                                                <option value="Upcoming" ${statusFilter == 'Upcoming' ? 'selected' : ''}>Upcoming</option>
+                                                <option value="Active" ${statusFilter == 'Active' ? 'selected' : ''}>Active</option>
+                                                <option value="Completed" ${statusFilter == 'Completed' ? 'selected' : ''}>Completed</option>
+                                                <option value="Cancelled" ${statusFilter == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                                <option value="Expired" ${statusFilter == 'Expired' ? 'selected' : ''}>Expired</option>
+                                            </select>
+                                        </div>
+                                        <div class="filter-group">
+                                            <label>Booking ID</label>
+                                            <input type="number" name="searchBookingId" class="form-control"
+                                                   placeholder="Enter Booking ID" value="${searchBookingId}">
+                                        </div>
+                                        <div class="filter-group">
+                                            <button type="submit" class="btn btn-primary search-btn">
+                                                <i class="fa fa-search"></i> Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
 
+                            <!-- Bảng booking -->
+                            <c:if test="${not empty bookings}">
+                                <div class="booking-results">
+                                    <div class="table-responsive">
+                                        <table class="table booking-table">
+                                            <thead>
+                                                <tr>
+                                                    <th width="8%">Booking ID</th>
+                                                    <th width="12%">Booking Date</th>
+                                                    <th width="12%">Expire Time</th>
+                                                    <th width="10%">Check-in</th>
+                                                    <th width="10%">Check-out</th>
+                                                    <th width="6%">Guests</th>
+                                                    <th width="10%">Total Amount</th>
+                                                    <th width="10%">Status</th>
+                                                    <th width="22%">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach var="b" items="${bookings}">
+                                                    <tr>
+                                                        <td class="booking-id">#${b.bookingID}</td>
+                                                        <td>${b.bookingDate}</td>
+                                                        <td>${b.expiryTime}</td>
+                                                        <td>${b.checkInDate}</td>
+                                                        <td>${b.checkOutDate}</td>
+                                                        <td class="text-center">${b.guestsCount}</td>
+                                                        <td class="amount">$${b.totalAmount}</td>
+                                                        <td>
+                                                            <span class="status-badge status-${fn:toLowerCase(b.status)}">${b.status}</span>
+                                                        </td>
+                                                        <td class="actions-cell">
+                                                            <button class="btn btn-info btn-sm viewBookingBtn"
+                                                                    data-booking-id="${b.bookingID}">
+                                                                <i class="fa fa-eye"></i> View
+                                                            </button>
+                                                            <c:if test="${b.status == 'Pending'}">
+                                                                <a href="CancelBookingServlet?bookingID=${b.bookingID}"
+                                                                   class="btn btn-danger btn-sm cancel-booking-btn"
+                                                                   onclick="return confirmCancel();">
+                                                                    <i class="fa fa-times"></i> Cancel
+                                                                </a>
+                                                            </c:if>
 
-                        <!-- Bảng booking -->
-                        <c:if test="${not empty bookings}">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Booking ID</th>
-                                        <th>Booking Date</th>
-                                        <th>Expire Time/th>
-                                        <th>Check-in</th>
-                                        <th>Check-out</th>
-                                        <th>Guests</th>
-                                        <th>Total Amount</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="b" items="${bookings}">
-                                        <tr>
-                                            <td>#${b.bookingID}</td>
-                                            <td>#${b.bookingDate}</td>
-                                            <td>#${b.expiryTime}</td>
-                                            <td>${b.checkInDate}</td>
-                                            <td>${b.checkOutDate}</td>
-                                            <td>${b.guestsCount}</td>
-                                            <td>$${b.totalAmount}</td>
-                                            <td>${b.status}</td>
-                                            <td>
-                                                <a href="BookingDetailServlet?bookingID=${b.bookingID}"
-                                                   class="btn btn-sm btn-info">View</a>
-                                                <c:if test="${b.status == 'Upcoming'}">
-                                                    <a href="CancelBookingServlet?bookingID=${b.bookingID}"
-                                                       class="btn btn-sm btn-danger">Cancel</a>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Pagination -->
+                                    <c:if test="${totalPages > 1}">
+                                        <nav aria-label="Page navigation" class="pagination-wrapper">
+                                            <ul class="pagination">
+                                                <c:if test="${currentPage > 1}">
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="MyBookingServlet?page=${currentPage - 1}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">
+                                                            <i class="fa fa-chevron-left"></i> Previous
+                                                        </a>
+                                                    </li>
                                                 </c:if>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                            <c:if test="${totalPages > 1}">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination">
-                                        <c:if test="${currentPage > 1}">
-                                            <li class="page-item">
-                                                <a class="page-link"
-                                                   href="MyBookingServlet?page=${currentPage - 1}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">Previous</a>
-                                            </li>
-                                        </c:if>
 
-                                        <c:forEach begin="1" end="${totalPages}" var="i">
-                                            <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                <a class="page-link"
-                                                   href="MyBookingServlet?page=${i}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">${i}</a>
-                                            </li>
-                                        </c:forEach>
+                                                <c:forEach begin="1" end="${totalPages}" var="i">
+                                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                                        <a class="page-link"
+                                                           href="MyBookingServlet?page=${i}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">${i}</a>
+                                                    </li>
+                                                </c:forEach>
 
-                                        <c:if test="${currentPage < totalPages}">
-                                            <li class="page-item">
-                                                <a class="page-link"
-                                                   href="MyBookingServlet?page=${currentPage + 1}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">Next</a>
-                                            </li>
-                                        </c:if>
-                                    </ul>
-                                </nav>
+                                                <c:if test="${currentPage < totalPages}">
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="MyBookingServlet?page=${currentPage + 1}&statusFilter=${statusFilter}&searchBookingId=${searchBookingId}">
+                                                            Next <i class="fa fa-chevron-right"></i>
+                                                        </a>
+                                                    </li>
+                                                </c:if>
+                                            </ul>
+                                        </nav>
+                                    </c:if>
+                                </div>
                             </c:if>
 
-
-                        </c:if>
-
-                        <!-- Không có booking -->
-                        <c:if test="${empty bookings}">
-                            <div class="alert alert-warning">
-                                Không tìm thấy booking!
-                            </div>
-                        </c:if>
+                            <!-- Không có booking -->
+                            <c:if test="${empty bookings}">
+                                <div class="no-bookings">
+                                    <div class="no-bookings-content">
+                                        <i class="fa fa-calendar-times"></i>
+                                        <h4>No Bookings Found</h4>
+                                        <p>You don't have any bookings matching the current filters.</p>
+                                        <a href="roomlist" class="btn btn-primary">
+                                            <i class="fa fa-plus"></i> Make a New Booking
+                                        </a>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </div>
                     </div>
                 </c:otherwise>
-
             </c:choose>
-
 
 
             <!-- Content END-->
@@ -622,11 +678,145 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
+
+        <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
         <script>
 
         </script>
 
         <script src="assets/js/hotel-cart.js"></script>
+        <!-- 📌 Modal Booking Detail -->
+        <div class="modal fade" id="bookingDetailModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Booking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Info Booking -->
+                        <div id="bookingInfo" class="mb-3"></div>
+
+                        <!-- Rooms -->
+                        <h6>Rooms</h6>
+                        <div class="table-responsive">
+                            <table
+                                class="table table-bordered table-striped table-hover text-center align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Type</th>
+                                        <th>Price/Night</th>
+                                        <th>Nights</th>
+                                        <th>Guests</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roomsTable"></tbody>
+                            </table>
+                        </div>
+                        <!-- Services -->
+                        <h6>Services</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Quantity</th>
+                                        <th>Unit</th>
+                                        <th>Unit Price</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="servicesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+                                                                       $(document).ready(function () {
+                                                                           $('.viewBookingBtn').click(function () {
+                                                                               const bookingID = $(this).data('booking-id');
+
+                                                                               $.ajax({
+                                                                                   url: 'BookingDetailServlet',
+                                                                                   method: 'GET',
+                                                                                   data: {bookingID: bookingID},
+                                                                                   success: function (data) {
+                                                                                       console.log('Data response:', data);
+
+                                                                                       $('#bookingInfo').empty();
+                                                                                       $('#roomsTable').empty();
+                                                                                       $('#servicesTable').empty();
+                                                                                       console.log('CHECK:', data.bookingID);
+                                                                                       $('#bookingInfo').html('<p><strong>Booking ID:</strong> #' + data.bookingID + '</p>');
+
+
+
+
+                                                                                       if (data.bookingDetails && Array.isArray(data.bookingDetails)) {
+                                                                                           data.bookingDetails.forEach(d => {
+                                                                                               const pricePerNight = Number(d.pricePerNight || 0).toLocaleString();
+                                                                                               const nights = d.nights !== undefined && d.nights !== null ? d.nights : '-';
+                                                                                               const subTotal = Number(d.subTotal || 0).toLocaleString();
+                                                                                               $('#roomsTable').append(
+                                                                                                       '<tr>'
+                                                                                                       + '<td>' + (typeof d.roomID !== 'undefined' && d.roomID !== null ? d.roomID : '-') + '</td>'
+                                                                                                       + '<td>' + (typeof d.roomTypeName !== 'undefined' && d.roomTypeName !== null ? d.roomTypeName : '-') + '</td>'
+                                                                                                       + '<td>' + pricePerNight + '</td>'
+                                                                                                       + '<td>' + nights + '</td>'
+                                                                                                       + '<td>' + (typeof d.guestsCount !== 'undefined' && d.guestsCount !== null ? d.guestsCount : '-') + '</td>'
+                                                                                                       + '<td>' + subTotal + '</td>'
+                                                                                                       + '</tr>'
+                                                                                                       );
+
+
+                                                                                           });
+                                                                                       }
+
+                                                                                       if (data.serviceUsages && Array.isArray(data.serviceUsages)) {
+                                                                                           data.serviceUsages.forEach(s => {
+                                                                                               const unitPrice = Number(s.unitPrice || 0).toLocaleString();
+                                                                                               const subTotal = Number(s.subTotal || 0).toLocaleString();
+
+                                                                                               $('#servicesTable').append(
+                                                                                                       '<tr>'
+                                                                                                       + '<td>' + (typeof s.serviceName !== 'undefined' && s.serviceName !== null ? s.serviceName : '-') + '</td>'
+                                                                                                       + '<td>' + (typeof s.quantity !== 'undefined' && s.quantity !== null ? s.quantity : '-') + '</td>'
+                                                                                                       + '<td>' + (typeof s.unit !== 'undefined' && s.unit !== null ? s.unit : '-') + '</td>'
+                                                                                                       + '<td>$' + unitPrice + '</td>'
+                                                                                                       + '<td>$' + subTotal + '</td>'
+                                                                                                       + '</tr>'
+                                                                                                       );
+
+                                                                                           });
+                                                                                       }
+                                                                                       console.log('INFO DIV:', $('#bookingInfo').html());
+                                                                                       $('#bookingDetailModal').modal('show');
+                                                                                   },
+                                                                                   error: function () {
+                                                                                       alert('Failed to load booking detail!');
+                                                                                   }
+                                                                               });
+                                                                           });
+                                                                       });
+        </script>
+
+
+        <script>
+            function confirmCancel() {
+                return confirm('Are you sure you want to cancel this booking?');
+            }
+        </script>
 
     </body>
 

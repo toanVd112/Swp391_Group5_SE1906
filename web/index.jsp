@@ -137,7 +137,7 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    
+
 
                                     <c:if test="${sessionScope.user != null}">
                                         <li class="nav-item">
@@ -179,11 +179,9 @@
                             <div class="secondary-menu">
                                 <div class="secondary-inner">
                                     <ul>
-                                        <li><a href="javascript:;" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                        <li><a href="javascript:;" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                        <li><a href="javascript:;" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                       
                                         <!-- Search Button ==== -->
-                                        <li class="search-btn"><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
+                                        <li><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -341,7 +339,7 @@
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
-               
+
 
                 <!-- Main Slider -->
                 <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
@@ -749,21 +747,40 @@
             function validateDates() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkin < today) {
+                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
+                    checkinInput.value = '';
+                }
+
                 if (checkin && checkout && checkout <= checkin) {
-                    alert('? Ng?y tr? ph?ng ph?i sau ng?y nh?n ph?ng.');
+                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
                     checkoutInput.value = '';
                 }
             }
 
+
             function validateForm() {
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
-                if (checkout <= checkin) {
-                    alert('? Ng?y tr? ph?ng ph?i sau ng?y nh?n ph?ng.');
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Đặt về 00:00:00 để so sánh đúng
+
+                if (checkin < today) {
+                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
                     return false;
                 }
+
+                if (checkout <= checkin) {
+                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
+                    return false;
+                }
+
                 return true;
             }
+
         </script>
 
 
