@@ -73,6 +73,51 @@
                     <span>Room Inspection Reports</span>
                 </a>
             </c:if>
+
+            <!-- Statistics Menu -->
+            <div class="menu-item dropdown" data-page="statistics">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Statistics</span>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <c:if test="${role eq 'Manager'}">
+                        <a href="${pageContext.request.contextPath}/revenuestats" class="dropdown-item" data-page="revenuestats">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Revenue Statistics</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/roomoccupancy" class="dropdown-item" data-page="roomoccupancy">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Room Occupancy</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/bookingtrends" class="dropdown-item" data-page="bookingtrends">
+                            <i class="fas fa-chart-area"></i>
+                            <span>Booking Trends</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/customerdemographics" class="dropdown-item" data-page="customerdemographics">
+                            <i class="fas fa-users"></i>
+                            <span>Customer Demographics</span>
+                        </a>
+                    </c:if>
+                    <c:if test="${role eq 'Receptionist'}">
+                        <a href="${pageContext.request.contextPath}/bookingtrends" class="dropdown-item" data-page="bookingtrends">
+                            <i class="fas fa-chart-area"></i>
+                            <span>Booking Trends</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/customerdemographics" class="dropdown-item" data-page="customerdemographics">
+                            <i class="fas fa-users"></i>
+                            <span>Customer Demographics</span>
+                        </a>
+                    </c:if>
+                    <c:if test="${role eq 'Staff'}">
+                        <a href="${pageContext.request.contextPath}/maintenancestats" class="dropdown-item" data-page="maintenancestats">
+                            <i class="fas fa-wrench"></i>
+                            <span>Maintenance Statistics</span>
+                        </a>
+                    </c:if>
+                </div>
+            </div>
         </div>
 
         <!-- General Menu -->
@@ -102,6 +147,7 @@
         </a>
     </div>
 </div>
+
 <style>
     /* Enhanced Sidebar Styles with Active States */
     .sidebar {
@@ -242,6 +288,67 @@
         transform: scale(1.1);
     }
 
+    /* Dropdown Styles */
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        text-decoration: none;
+        color: #374151;
+    }
+
+    .dropdown-toggle .dropdown-icon {
+        margin-left: auto;
+        transition: transform 0.3s ease;
+    }
+
+    .dropdown-toggle.active + .dropdown-menu,
+    .dropdown-toggle:hover + .dropdown-menu,
+    .dropdown-menu:hover {
+        display: block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: relative;
+        background: #ffffff;
+        margin-left: 1rem;
+        padding: 0.5rem 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        color: #2563eb;
+        transform: translateX(4px);
+    }
+
+    .dropdown-item.active {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .dropdown-item i {
+        width: 20px;
+        margin-right: 0.75rem;
+        font-size: 1rem;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .sidebar {
@@ -251,6 +358,11 @@
 
         .sidebar.show {
             transform: translateX(0);
+        }
+
+        .dropdown-menu {
+            position: relative;
+            width: 100%;
         }
     }
 
@@ -266,23 +378,23 @@
         }
     }
 
-    .menu-item {
+    .menu-item, .dropdown-item {
         animation: slideIn 0.3s ease forwards;
     }
 
-    .menu-item:nth-child(1) {
+    .menu-item:nth-child(1), .dropdown-item:nth-child(1) {
         animation-delay: 0.1s;
     }
-    .menu-item:nth-child(2) {
+    .menu-item:nth-child(2), .dropdown-item:nth-child(2) {
         animation-delay: 0.2s;
     }
-    .menu-item:nth-child(3) {
+    .menu-item:nth-child(3), .dropdown-item:nth-child(3) {
         animation-delay: 0.3s;
     }
-    .menu-item:nth-child(4) {
+    .menu-item:nth-child(4), .dropdown-item:nth-child(4) {
         animation-delay: 0.4s;
     }
-    .menu-item:nth-child(5) {
+    .menu-item:nth-child(5), .dropdown-item:nth-child(5) {
         animation-delay: 0.5s;
     }
 </style>
@@ -295,7 +407,7 @@
         const currentUrl = currentPath + currentSearch;
 
         // Get all menu items
-        const menuItems = document.querySelectorAll('.menu-item');
+        const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
 
         // Function to set active menu item
         function setActiveMenuItem() {
@@ -310,10 +422,9 @@
             // Check for exact URL match first
             menuItems.forEach(item => {
                 const href = item.getAttribute('href');
-               if (href && currentPath === new URL(href, window.location.origin).pathname) {
-    activeItem = item;
-}
-
+                if (href && currentPath === new URL(href, window.location.origin).pathname) {
+                    activeItem = item;
+                }
             });
 
             // If no exact match, check by data-page attribute
@@ -329,6 +440,11 @@
             // Set active class
             if (activeItem) {
                 activeItem.classList.add('active');
+                // If the active item is a dropdown-item, also activate the parent dropdown
+                const parentDropdown = activeItem.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
             }
         }
 
@@ -346,10 +462,16 @@
                 // Add active class to clicked item
                 this.classList.add('active');
 
+                // If the clicked item is a dropdown-item, activate the parent dropdown
+                const parentDropdown = this.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
+
                 // Store active item in localStorage for persistence
                 const dataPage = this.getAttribute('data-page');
                 if (dataPage) {
-                    localStorage.setItem('activePage', dataPage);
+                    localStorage.setItem('activePage', dataPage Grown-ups: The Next Generation data-page);
                 }
             });
         });
@@ -358,19 +480,27 @@
         const storedActivePage = localStorage.getItem('activePage');
         if (storedActivePage) {
             const storedItem = document.querySelector(`[data-page="${storedActivePage}"]`);
-            if (storedItem && !document.querySelector('.menu-item.active')) {
+            if (storedItem && !document.querySelector('.menu-item.active, .dropdown-item.active')) {
                 storedItem.classList.add('active');
+                const parentDropdown = storedItem.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
             }
         }
     });
 
     // Function to manually set active menu item (can be called from other pages)
     function setActiveMenu(pageName) {
-        const menuItems = document.querySelectorAll('.menu-item');
+        const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
         menuItems.forEach(item => {
             item.classList.remove('active');
             if (item.getAttribute('data-page') === pageName) {
                 item.classList.add('active');
+                const parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
             }
         });
         localStorage.setItem('activePage', pageName);

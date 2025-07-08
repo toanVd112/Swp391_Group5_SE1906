@@ -3,16 +3,16 @@ package model;
 public class RevenueStats {
     private String category;
     private double amount;
+    private String type; // Room or Service
 
-    // Constructor
     public RevenueStats() {}
 
-    public RevenueStats(String category, double amount) {
+    public RevenueStats(String category, double amount, String type) {
         this.category = category;
         this.amount = amount;
+        this.type = type;
     }
 
-    // Getters and Setters
     public String getCategory() {
         return category;
     }
@@ -27,5 +27,13 @@ public class RevenueStats {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
