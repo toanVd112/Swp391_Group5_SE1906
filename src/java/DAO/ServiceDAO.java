@@ -1,5 +1,6 @@
 package DAO;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Service; // Đảm bảo import đúng model Service của bạn
+import model.ServiceUsage;
 
 public class ServiceDAO {
 
@@ -40,7 +42,7 @@ public class ServiceDAO {
         }
         return s;
     }
-    
+
     public List<String> getAllDistinctServiceType() {
         List<String> serviceTypes = new ArrayList<>();
         String sql = "SELECT DISTINCT ServiceType FROM services WHERE ServiceType IS NOT NULL AND ServiceType <> '' ORDER BY ServiceType ASC";
@@ -72,7 +74,7 @@ public class ServiceDAO {
         List<Service> services = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM services WHERE 1=1"); // Mệnh đề WHERE 1=1 để dễ dàng nối thêm AND
         List<Object> params = new ArrayList<>();
-        
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             sql.append(" AND ServiceName LIKE ?");
             params.add("%" + keyword.trim() + "%");
@@ -108,11 +110,11 @@ public class ServiceDAO {
         // params.add(recordsPerPage);
         // params.add((page - 1) * recordsPerPage);
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            
+
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
@@ -167,7 +169,7 @@ public class ServiceDAO {
             return false;
         }
     }
-    
+
     public boolean update(Service s) {
         String sql = "UPDATE services SET ServiceName = ?, Price = ?, Description = ?, AvailabilityStatus = ?, "
                 + "ServiceType = ?, LastUpdatedDate = ?, LastUpdatedBy = ?, ServiceImage = ? WHERE ServiceID = ?";
@@ -209,7 +211,7 @@ public class ServiceDAO {
         }
         return success;
     }
-    
+
     public boolean isDuplicatedServiceName(String name, int excludeId) {
         String sql = "SELECT COUNT(*) FROM services WHERE name = ? AND id != ?";
         try (Connection conn = DBConnect.getConnection(); // Assume getConnection() exists
@@ -225,14 +227,14 @@ public class ServiceDAO {
         }
         return false;
     }
-    
+
     public List<Service> getAvailableServices() throws SQLException {
         List<Service> services = new ArrayList<>();
         String sql = "SELECT * FROM services WHERE AvailabilityStatus = '1'";
-        Connection conn = DBConnect.getConnection();        
+        Connection conn = DBConnect.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
-        
+
         while (rs.next()) {
             Service s = new Service();
             s.setId(rs.getInt("ServiceID"));
@@ -243,8 +245,73 @@ public class ServiceDAO {
             s.setUnit(rs.getString("Unit"));
             services.add(s);
         }
-        
+
         return services;
     }
-    
+
+    public boolean isBookingActive(int bookingID) {
+        String sql = "SELECT 1 FROM bookings WHERE BookingID = ?";
+        try {
+            Connection con = DBConnect.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            boolean exists = rs.next();
+            rs.close();
+            ps.close();
+            con.close();
+            return exists;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<ServiceUsage> getServiceUsageByBookingID(int bookingID) {
+        List<ServiceUsage> list = new ArrayList<>();
+        String sql;
+
+        if (isBookingActive(bookingID)) {
+            sql = "SELECT su.*, s.ServiceName, s.Unit "
+                    + "FROM serviceusage su "
+                    + "JOIN services s ON su.ServiceID = s.ServiceID "
+                    + "WHERE su.BookingID = ?";
+        } else {
+            sql = "SELECT su.*, s.ServiceName, s.Unit "
+                    + "FROM deleted_serviceusage su "
+                    + "JOIN services s ON su.ServiceID = s.ServiceID "
+                    + "WHERE su.BookingID = ?";
+        }
+
+        try {
+            Connection con = DBConnect.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ServiceUsage su = new ServiceUsage();
+                su.setServiceUsageID(rs.getInt("UsageID"));
+                su.setBookingID(rs.getInt("BookingID"));
+                su.setServiceID(rs.getInt("ServiceID"));
+                su.setServiceName(rs.getString("ServiceName"));
+                su.setQuantity(rs.getInt("Quantity"));
+                su.setUnit(rs.getString("Unit"));
+
+                // DB INT → BigDecimal
+                su.setUnitPrice(BigDecimal.valueOf(rs.getInt("UnitPrice")));
+                su.setSubTotal(BigDecimal.valueOf(rs.getInt("SubTotal")));
+
+                su.setNotes(rs.getString("Notes"));
+
+                list.add(su);
+            }
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }
