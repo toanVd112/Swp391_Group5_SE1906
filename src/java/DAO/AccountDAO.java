@@ -465,32 +465,36 @@ public class AccountDAO extends DBConnect {
         return null;
     }
 
-    public boolean changePassword(String email, String currentPassword, String newPassword) throws SQLException {
+    public boolean changePassword(String email, String currentPassword, String newPassword, StringBuilder errorMessage) throws SQLException {
         Connection conn = null;
         try {
             conn = DBConnect.getConnection();
             // Lấy mật khẩu hiện tại từ email
             String oldPassword = getPasswordByEmail(email);
             if (oldPassword == null) {
-                return false; // Email không tồn tại
+                errorMessage.append("Email does not exist in the system!");
+                return false;
             }
 
-        // Kiểm tra mật khẩu hiện tại
+            // Kiểm tra mật khẩu hiện tại
             if (!oldPassword.equals(currentPassword)) {
-                return false; // Mật khẩu hiện tại không đúng
+                errorMessage.append("Current password is incorrect!");
+                return false;
             }
 
-        // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
+            // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
             if (oldPassword.equals(newPassword)) {
-                return false; // Mật khẩu mới trùng mật khẩu cũ
+                errorMessage.append("New password cannot be the same as old password!");
+                return false;
             }
 
-        // Kiểm tra độ dài mật khẩu (tối thiểu 6 ký tự)
+            // Kiểm tra độ dài mật khẩu (tối thiểu 6 ký tự)
             if (newPassword.length() < 6) {
-                return false; // Mật khẩu quá ngắn
+                errorMessage.append("New password must be at least 6 characters!");
+                return false;
             }
 
-        // Cập nhật mật khẩu mới
+            // Cập nhật mật khẩu mới
             String sql = "UPDATE Accounts SET Password = ? WHERE Email = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, newPassword);
@@ -499,8 +503,8 @@ public class AccountDAO extends DBConnect {
                 return rowsAffected > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw e; // Ném lại ngoại lệ để Servlet xử lý
+            errorMessage.append("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
+            throw e;
         } finally {
             if (conn != null) {
                 try {

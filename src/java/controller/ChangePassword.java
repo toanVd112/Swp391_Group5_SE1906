@@ -18,6 +18,9 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.*;
+import model.Account;
+import model.EmailUtil;
+import model.User;
 
 
 /**
@@ -62,13 +65,12 @@ public class ChangePassword extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        // Kiểm tra session để đảm bảo người dùng đã đăng nhập
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("username") == null) {
+        HttpSession session = request.getSession();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-        // Chuyển hướng đến trang thay đổi mật khẩu
         request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
     } 
 
@@ -82,40 +84,65 @@ public class ChangePassword extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        // Kiểm tra session
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("username") == null) {
+        HttpSession session = request.getSession();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        if (accountId == null) {
+            request.setAttribute("mess", "Session expired or invalid! Please log in again.");
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // Lấy thông tin từ form
-        String username = (String) session.getAttribute("username");
+        AccountDAO accountDAO = new AccountDAO();
+        Account account = accountDAO.getAccountByID(String.valueOf(accountId));
+        if (account == null || account.getUsername() == null) {
+            request.setAttribute("mess", "Unable to determine user information!");
+            request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+            return;
+        }
+
+        
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
         // Kiểm tra lỗi cơ bản
         if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
-            request.setAttribute("mess", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            request.setAttribute("mess", "New password and confirm password do not match!");
+            request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+            return;
+        }
+
+        if (newPassword.length() < 6) {
+            request.setAttribute("mess", "New password must be at least 6 characters!");
             request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
             return;
         }
 
         // Kết nối cơ sở dữ liệu và xử lý
-        AccountDAO accountDAO = new AccountDAO();
         try {
-            // Lấy email từ AccountID dựa trên username
-            int accountId = getAccountIdFromUsername(username, accountDAO);
-            String email = accountDAO.getEmailByAccountId(accountId);
+//            int accountIdInt = accountId; // Sử dụng accountId từ session
+            String email = account.getEmail();
+            StringBuilder errorMessage = new StringBuilder();
+            boolean ok = accountDAO.changePassword(email, currentPassword, newPassword, errorMessage);
 
-            // Gọi phương thức changePassword
-            boolean ok = accountDAO.changePassword(email, currentPassword, newPassword);
             if (ok) {
-                request.setAttribute("message", "Đổi mật khẩu thành công vào lúc 04:00 PM +07, Wednesday, July 09, 2025");
-                request.getRequestDispatcher("/user_profile2.jsp").forward(request, response);
+               
+                // Gửi email thông báo bằng EmailUtil
+                String subject = "Password changed successfully";
+                String content = "<h3>Hello,</h3>" +
+                                "<p>Your password has been changed successfully.</p>" +
+                                "<p>If you do not make this change, please contact your administrator immediately.</p>" +
+                                "<p>Thank you so much,<br>Hoang Nam Hotel</p>";
+                boolean emailSent = EmailUtil.sendMail(email, subject, content);
+                if (emailSent) {
+                    System.out.println("Email notification sent successfully to " + email);
+                } else {
+                    System.out.println("Failed to send email notification to " + email);
+                }
+                request.setAttribute("message", "Password changed successfully!");
+                request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
             } else {
-                request.setAttribute("mess", "Có lỗi xảy ra khi thay đổi mật khẩu! Vui lòng kiểm tra mật khẩu hiện tại.");
+                request.setAttribute("mess", errorMessage.toString());
                 request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
             }
         } catch (SQLException e) {
@@ -127,15 +154,18 @@ public class ChangePassword extends HttpServlet {
     // Phương thức bổ sung để lấy AccountID từ Username
     private int getAccountIdFromUsername(String username, AccountDAO accountDAO) throws SQLException {
         String sql = "SELECT AccountID FROM Accounts WHERE Username = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("AccountID");
-                }
+            if (rs.next()) {
+                return rs.getInt("AccountID");
             }
+            throw new SQLException("Không tìm thấy AccountID cho username: " + username);
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy AccountID: " + e.getMessage());
+            throw e;
         }
-        throw new SQLException("Không tìm thấy AccountID cho username: " + username);
     }
     /** 
      * Returns a short description of the servlet.

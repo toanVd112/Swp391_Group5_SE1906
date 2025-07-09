@@ -97,6 +97,8 @@ public class UserProfileServlet extends HttpServlet {
             if (user.getDateOfBirth() != null) {
                 request.setAttribute("formattedDob", user.getDateOfBirth());
             }
+            
+            session.setAttribute("account", account);
 
             request.setAttribute("user", user);
             request.setAttribute("account", account);
@@ -222,6 +224,7 @@ public class UserProfileServlet extends HttpServlet {
                     accountDAO.editAccount(account.getUsername(), account.getPassword(), account.getRole(),
                             account.isActive(), email, String.valueOf(accountId));
                 }
+                session.setAttribute("account", account); // Cập nhật account trong session
                 request.setAttribute("message", "Profile updated successfully!");
             } else {
                 request.setAttribute("error", "Profile update failed!");
@@ -239,6 +242,8 @@ public class UserProfileServlet extends HttpServlet {
             request.setAttribute("account", accountDAO.getAccountByID(String.valueOf(accountId)));
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
+        
+        
     }
 
     private String extractFileName(Part part) {
