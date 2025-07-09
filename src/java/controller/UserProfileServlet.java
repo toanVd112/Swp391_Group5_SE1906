@@ -90,7 +90,7 @@ public class UserProfileServlet extends HttpServlet {
             User user = userDAO.getUserByAccountId(accountId);
             Account account = accountDAO.getAccountByID(String.valueOf(accountId));
             if (user == null || account == null) {
-                request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
+                request.setAttribute("error", "No profile or account information found!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
@@ -133,7 +133,7 @@ public class UserProfileServlet extends HttpServlet {
             User user = userDAO.getUserByAccountId(accountId);
             Account account = accountDAO.getAccountByID(String.valueOf(accountId));
             if (user == null || account == null) {
-                request.setAttribute("error", "Không tìm thấy thông tin hồ sơ hoặc tài khoản!");
+                request.setAttribute("error", "No profile or account information found!");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
                 return;
             }
@@ -148,22 +148,22 @@ public class UserProfileServlet extends HttpServlet {
             // Validation
             List<String> errors = new ArrayList<>();
             if (fullName == null || fullName.trim().isEmpty()) {
-                errors.add("Họ và tên không được để trống!");
+                errors.add("Full name cannot be left blank!");
             } else if (fullName.length() > 50) {
-                errors.add("Họ và tên không được vượt quá 50 ký tự!");
+                errors.add("Full name cannot exceed 50 characters!");
             } else if (!isValidName(fullName)) {
-                errors.add("Họ và tên chỉ được chứa chữ cái và khoảng trắng!");
+                errors.add("Full name can only contain letters and spaces!");
             }
             if (!isValidEmail(email)) {
-                errors.add("Định dạng email không hợp lệ!");
+                errors.add("Invalid email format!");
             } else if (!account.getEmail().equals(email) && accountDAO.isDuplicateAccount(null, email)) {
-                errors.add("Email đã được sử dụng bởi tài khoản khác!");
+                errors.add("Email already in use by another account!");
             }
             if (!isValidPhone(phone)) {
-                errors.add("Số điện thoại phải là 10 chữ số!");
+                errors.add("Phone number must be 10 digits!");
             }
             if (dateOfBirth != null && !dateOfBirth.isEmpty() && !isValidDate(dateOfBirth)) {
-                errors.add("Định dạng ngày sinh không hợp lệ hoặc ngày sinh phải nhỏ hơn hôm nay! Sử dụng YYYY-MM-DD.");
+                errors.add("Invalid date of birth format or date of birth must be less than today! Use YYYY-MM-DD.");
             }
 
             if (!errors.isEmpty()) {
@@ -192,7 +192,7 @@ public class UserProfileServlet extends HttpServlet {
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = extractFileName(filePart);
                 if (!fileName.matches(".*\\.(jpg|jpeg|png|gif)$")) {
-                    request.setAttribute("error", "Định dạng ảnh không hợp lệ! Chỉ chấp nhận JPG, PNG, GIF.");
+                    request.setAttribute("error", "Invalid image format! Only JPG, PNG, GIF are accepted.");
                     request.setAttribute("user", user);
                     request.setAttribute("account", account);
                     request.getRequestDispatcher("user_profile2.jsp").forward(request, response);
@@ -222,9 +222,9 @@ public class UserProfileServlet extends HttpServlet {
                     accountDAO.editAccount(account.getUsername(), account.getPassword(), account.getRole(),
                             account.isActive(), email, String.valueOf(accountId));
                 }
-                request.setAttribute("message", "Cập nhật hồ sơ thành công!");
+                request.setAttribute("message", "Profile updated successfully!");
             } else {
-                request.setAttribute("error", "Cập nhật hồ sơ thất bại!");
+                request.setAttribute("error", "Profile update failed!");
             }
 
             request.setAttribute("formattedDob", user.getDateOfBirth()); 

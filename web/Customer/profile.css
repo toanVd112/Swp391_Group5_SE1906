@@ -1,12 +1,3 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Jun 23, 2025, 8:09:01 AM
-    Author     : AD
-*/
-
 * {
     margin: 0;
     padding: 0;
@@ -18,6 +9,7 @@ body {
     background-color: #f5f5f5;
     padding: 20px;
     line-height: 1.6;
+    color: #333;
 }
 
 .profile-container {
@@ -47,7 +39,6 @@ body {
     height: 120px;
     border-radius: 50%;
     border: 4px solid white;
-    object-fit: cover;
     background-color: #e0e0e0;
     display: flex;
     align-items: center;
@@ -55,35 +46,61 @@ body {
     font-size: 36px;
     font-weight: bold;
     color: #666;
-}
-
-.avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.camera-btn {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+.avatar-initials {
+    color: #666;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    border-radius: 50%;
 }
 
-.camera-btn:hover {
-    background: #45a049;
+.avatar:hover .upload-overlay {
+    opacity: 1;
+}
+
+.avatar:hover .avatar-initials {
+    opacity: 0.3;
+}
+
+.camera-icon {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    margin-bottom: 4px;
+}
+
+.upload-text {
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
 }
 
 .profile-name {
@@ -95,16 +112,69 @@ body {
 .profile-email {
     font-size: 16px;
     opacity: 0.9;
+    margin-bottom: 4px;
 }
 
 .profile-phone {
     font-size: 14px;
     opacity: 0.8;
-    margin-top: 4px;
+}
+
+/* Password Change Page Styles */
+.back-button {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.back-link:hover {
+    opacity: 1;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.title-icon {
+    width: 32px;
+    height: 32px;
+    fill: white;
+}
+
+.page-title h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.page-description {
+    font-size: 16px;
+    opacity: 0.9;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .profile-content {
     padding: 30px;
+}
+
+.profile-form,
+.password-form {
+    width: 100%;
 }
 
 .form-group {
@@ -125,31 +195,31 @@ body {
     border: 2px solid #e1e5e9;
     border-radius: 8px;
     font-size: 16px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: #f8f9fa;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+    font-family: inherit;
 }
 
 .form-input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    background-color: white;
 }
 
-.form-input:disabled {
-    background-color: #f8f9fa;
-    color: #666;
-    cursor: not-allowed;
+.form-input:hover {
+    border-color: #c1c9d2;
 }
 
 .form-textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
     font-family: inherit;
 }
 
 .phone-input {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .phone-prefix {
@@ -158,12 +228,73 @@ body {
     top: 50%;
     transform: translateY(-50%);
     color: #666;
-    pointer-events: none;
+    font-weight: 500;
     z-index: 1;
+    pointer-events: none;
 }
 
 .form-input.with-prefix {
     padding-left: 50px;
+}
+
+/* Password Input Styles */
+.password-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #667eea;
+}
+
+.password-requirements {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+}
+
+.requirements-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.requirements-list {
+    list-style: none;
+    padding: 0;
+}
+
+.requirements-list li {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 4px;
+    position: relative;
+    padding-left: 16px;
+}
+
+.requirements-list li:before {
+    content: "•";
+    color: #667eea;
+    position: absolute;
+    left: 0;
 }
 
 .btn-group {
@@ -174,17 +305,18 @@ body {
 
 .btn {
     flex: 1;
-    padding: 12px 24px;
+    padding: 14px 24px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -194,7 +326,8 @@ body {
 
 .btn-primary:hover {
     background: #5a6fd8;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-secondary {
@@ -206,19 +339,18 @@ body {
 .btn-secondary:hover {
     background: #f8f9fa;
     border-color: #adb5bd;
+    transform: translateY(-1px);
 }
 
-.hidden {
-    display: none;
+.btn-warning {
+    background: #ffc107;
+    color: #212529;
 }
 
-.readonly-field {
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    padding: 12px 16px;
-    border-radius: 8px;
-    color: #495057;
-    white-space: pre-line;
+.btn-warning:hover {
+    background: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
 .icon {
@@ -227,9 +359,14 @@ body {
     fill: currentColor;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     .profile-container {
-        margin: 10px;
+        margin: 0;
     }
     
     .profile-content {
@@ -238,5 +375,89 @@ body {
     
     .btn-group {
         flex-direction: column;
+    }
+    
+    .profile-header {
+        padding: 30px 15px;
+    }
+    
+    .avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 30px;
+    }
+    
+    .camera-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .upload-text {
+        font-size: 9px;
+    }
+    
+    .profile-name,
+    .page-title h1 {
+        font-size: 24px;
+    }
+    
+    .title-icon {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-content {
+        padding: 15px;
+    }
+    
+    .form-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .avatar {
+        width: 90px;
+        height: 90px;
+        font-size: 26px;
+    }
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.form-input:focus,
+.upload-overlay:focus,
+.password-toggle:focus,
+.back-link:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .profile-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .upload-overlay,
+    .btn-group,
+    .password-toggle {
+        display: none;
+    }
+    
+    .profile-header {
+        background: #f8f9fa !important;
+        color: #333 !important;
     }
 }

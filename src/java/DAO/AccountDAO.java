@@ -465,6 +465,50 @@ public class AccountDAO extends DBConnect {
         return null;
     }
 
-    
+    public boolean changePassword(String email, String currentPassword, String newPassword) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DBConnect.getConnection();
+            // Lấy mật khẩu hiện tại từ email
+            String oldPassword = getPasswordByEmail(email);
+            if (oldPassword == null) {
+                return false; // Email không tồn tại
+            }
 
+        // Kiểm tra mật khẩu hiện tại
+            if (!oldPassword.equals(currentPassword)) {
+                return false; // Mật khẩu hiện tại không đúng
+            }
+
+        // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
+            if (oldPassword.equals(newPassword)) {
+                return false; // Mật khẩu mới trùng mật khẩu cũ
+            }
+
+        // Kiểm tra độ dài mật khẩu (tối thiểu 6 ký tự)
+            if (newPassword.length() < 6) {
+                return false; // Mật khẩu quá ngắn
+            }
+
+        // Cập nhật mật khẩu mới
+            String sql = "UPDATE Accounts SET Password = ? WHERE Email = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, newPassword);
+                ps.setString(2, email);
+                int rowsAffected = ps.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Ném lại ngoại lệ để Servlet xử lý
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
