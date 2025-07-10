@@ -63,7 +63,7 @@ public class resetPassword extends HttpServlet {
         
         if (token == null || token.trim().isEmpty()) {
             System.out.println("[DEBUG] Token is null or empty");
-            request.setAttribute("mess", "Link không hợp lệ!");
+            request.setAttribute("mess", "Invalid link!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
@@ -83,7 +83,7 @@ public class resetPassword extends HttpServlet {
         // Lấy email từ accountId
         if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
             System.out.println("[DEBUG] Token invalid or expired");
-            request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
+            request.setAttribute("mess", "Link expired or invalid!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
@@ -118,13 +118,13 @@ public class resetPassword extends HttpServlet {
 
         if (password == null || confirm == null || !password.equals(confirm)) {
             System.out.println("[DEBUG] Passwords do not match");
-            request.setAttribute("mess", "Mật khẩu xác nhận không khớp!");
+            request.setAttribute("mess", "Confirmation password does not match!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
         if (!Validation.validatePassword(password)) {
             System.out.println("[DEBUG] Password does not meet criteria");
-            request.setAttribute("mess", "Mật khẩu phải tối thiểu 6 ký tự.");
+            request.setAttribute("mess", "Password must be at least 6 characters.");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
@@ -139,7 +139,7 @@ public class resetPassword extends HttpServlet {
 
         if (tokenInfo == null || tokenInfo.isUsed() || tokenInfo.getExpiryTime().before(new java.util.Date())) {
             System.out.println("[DEBUG] Token invalid or expired (POST)");
-            request.setAttribute("mess", "Link đã hết hạn hoặc không hợp lệ!");
+            request.setAttribute("mess", "Link expired or invalid!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
@@ -149,7 +149,7 @@ public class resetPassword extends HttpServlet {
 
         if (!email.equalsIgnoreCase(dbEmail)) {
             System.out.println("[DEBUG] Email does not match");
-            request.setAttribute("mess", "Email không hợp lệ!");
+            request.setAttribute("mess", "Invalid email!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
             return;
         }
@@ -160,7 +160,7 @@ public class resetPassword extends HttpServlet {
 
         // Nếu dùng mã hóa mật khẩu, phải hash password trước khi so sánh!
         if (oldPassword != null && password.equals(oldPassword)) {
-            request.setAttribute("mess", "Mật khẩu mới không được trùng với mật khẩu cũ, vui lòng nhập lại!");
+            request.setAttribute("mess", "New password cannot match old password, please re-enter!");
             request.setAttribute("email", email);
             request.setAttribute("token", token);
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
@@ -175,7 +175,7 @@ public class resetPassword extends HttpServlet {
             response.sendRedirect("login.jsp?reset=success");
         } else {
             System.out.println("[DEBUG] Failed to update password");
-            request.setAttribute("mess", "Có lỗi xảy ra, vui lòng thử lại!");
+            request.setAttribute("mess", "An error occurred, please try again!");
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);
         }
     }

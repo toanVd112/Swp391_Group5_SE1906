@@ -20,14 +20,14 @@ public class MailUtils {
     public static void sendBookingPendingMail(String toEmail, String fullName, int bookingID,String token, String confirmLink) throws UnsupportedEncodingException {
         String subject = "[Hotel] Xác nhận giữ chỗ Booking #" + bookingID;
 
-        String content = "Xin chào " + fullName + ",\n\n"
-                + "Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi.\n"
-                + "✔️ Mã booking: #" + bookingID + "\n"
+        String content = "Hello, " + fullName + ",\n\n"
+                + "Thank you for booking a room at our hotel.\n"
+                + "✔️Booking code: #" + bookingID + "\n"
                    + "token booking: #" + token + "\n"
-                + "⏳ Booking sẽ hết hạn trong 10 phút nếu bạn không thanh toán.\n\n"
-                + "👉 Vui lòng kiểm tra hoặc thanh toán tại đây:\n"
+                + "⏳ Booking will expire in 10 minutes if you do not pay.\n\n"
+                + "👉 Please check or pay here:\n"
                 + confirmLink + "\n\n"
-                + "Trân trọng,\nKhách sạn của bạn.";
+                + "Thank you so much,\nHoang Nam Hotel."; 
 
         sendMail(toEmail, subject, content);
     }

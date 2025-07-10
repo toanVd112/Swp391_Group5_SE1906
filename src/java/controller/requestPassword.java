@@ -75,7 +75,7 @@ public class requestPassword extends HttpServlet {
         String email = request.getParameter("email");
         // 1. Kiểm tra email hợp lệ
         if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("mess", "Email không được để trống!");
+            request.setAttribute("mess", "Email cannot be empty!");
             request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
             return;
         }

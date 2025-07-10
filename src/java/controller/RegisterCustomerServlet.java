@@ -83,28 +83,28 @@ public class RegisterCustomerServlet extends HttpServlet {
 
         // 1. Kiểm tra username
         if (!val.validateUsername(username)) {
-            request.setAttribute("result", "Username phải lớn hơn hoặc bằng 4 ký tự và nhỏ hơn 20 ký tự");
+            request.setAttribute("result", "Username must be greater than or equal to 4 characters and less than 20 characters");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         // 2. Kiểm tra password
         if (!val.validatePassword(password)) {
-            request.setAttribute("result", "Password phải lớn hơn hoặc bằng 6 ký tự và nhỏ hơn 20 ký tự");
+            request.setAttribute("result", "Password must be greater than or equal to 6 characters and less than 20 characters");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         // 3. Kiểm tra confirm password
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("result", "Password và Confirm Password không khớp");
+            request.setAttribute("result", "Password and Confirm Password do not match");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         // 4. Kiểm tra trùng username hoặc email
         if (dao.isDuplicateAccount(username, email)) {
-            request.setAttribute("result", "Username hoặc Email đã tồn tại");
+            request.setAttribute("result", "Username or Email already exists");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -124,16 +124,16 @@ public class RegisterCustomerServlet extends HttpServlet {
         // Gửi mail với link đăng nhập
             String context = request.getRequestURL().toString().replace(request.getServletPath(), "");
             String loginLink = context + "/login.jsp";
-            String content = "Chào bạn,<br/>Tài khoản của bạn đã được đăng ký thành công!<br/>"
-                    + "Bạn có thể đăng nhập tại đây: <a href='" + loginLink + "'>Đăng nhập</a>";
+            String content = "Hello,<br/>Your account has been successfully registered!<br/>"
+                    + "You can login here: <a href='" + loginLink + "'>Login</a>";
 
-            EmailUtil.sendMail(email, "Đăng ký tài khoản HoangNam Hotel thành công", content);
+            EmailUtil.sendMail(email, "Hoang Nam Hotel account registration successful", content);
 
             // Hiển thị message ở trang đăng nhập
-            request.setAttribute("success", "Bạn đã đăng ký thành công, xin mời vào email để đăng nhập");
+            request.setAttribute("success", "You have successfully registered, please enter your email to login.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         } else {
-            request.setAttribute("result", "Đăng ký thất bại, vui lòng thử lại");
+            request.setAttribute("result", "Registration failed, please try again");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

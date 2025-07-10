@@ -287,17 +287,17 @@ public class FindAvailableRoomsServlet extends HttpServlet {
             checkout = new java.sql.Date(parsedCheckout.getTime());
 
         } catch (Exception e) {
-            throw new ServletException("❌ Ngày không hợp lệ. Vui lòng nhập đúng định dạng dd/MM/yyyy.");
+            throw new ServletException("❌ Invalid date. Please enter in correct format dd/MM/yyyy.");
         }
 
         if (!checkout.after(checkin)) {
-            throw new ServletException("❌ Ngày đi phải sau ngày đến ít nhất 1 ngày.");
+            throw new ServletException("❌ Departure date must be at least 1 day after arrival date.");
         }
 
         try {
             guests = Integer.parseInt(guestsStr);
         } catch (NumberFormatException e) {
-            throw new ServletException("❌ Số lượng khách không hợp lệ.");
+            throw new ServletException("❌ Invalid number of guests.");
         }
 
         Integer minGuestsPerRoom = (minGuestsPerRoomStr != null && !minGuestsPerRoomStr.isBlank())
