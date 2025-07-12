@@ -129,6 +129,7 @@ public class ServiceDAO {
                     s.setCreatedBy(rs.getString("CreatedBy"));
                     s.setLastUpdateBy(rs.getString("LastUpdatedBy"));
                     s.setServiceImage(rs.getString("ServiceImage"));
+                    s.setUnit(rs.getString("Unit"));
                     services.add(s);
                 }
             }
@@ -149,8 +150,8 @@ public class ServiceDAO {
     // Đảm bảo rằng phương thức toggleServiceStatus hiện tại của bạn hoạt động đúng với ToggleServiceStatusServlet.
     // Ví dụ:
     public boolean addService(Service s) {
-        String sql = "INSERT INTO services (ServiceName, Price, Description, AvailabilityStatus, ServiceType, CreatedDate, LastUpdatedDate, CreatedBy, LastUpdatedBy, ServiceImage) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO services (ServiceName, Price, Description, AvailabilityStatus, ServiceType, CreatedDate, LastUpdatedDate, CreatedBy, LastUpdatedBy, ServiceImage,Unit) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, s.getName());
             ps.setInt(2, s.getPrice());
@@ -162,6 +163,7 @@ public class ServiceDAO {
             ps.setString(8, s.getCreatedBy());
             ps.setString(9, s.getLastUpdateBy());
             ps.setString(10, s.getServiceImage());
+            ps.setString(10, s.getUnit());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             System.err.println("Lỗi khi thêm dịch vụ: " + e.getMessage());

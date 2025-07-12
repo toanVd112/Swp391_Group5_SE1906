@@ -248,12 +248,12 @@
                                     <c:choose>
                                         <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Booking</a></li>
                                             </c:when>
 
                                         <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
-                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Booking</a></li>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -435,7 +435,7 @@
                                                                     </span>
                                                                 </div>
 
-                                                                <div class="combo-row" data-index="${idx.count}">
+                                                                <div >
                                                                     <c:forEach var="sug" items="${combo}">
                                                                         <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}"
                                                                                data-base-price="${sug.roomType.basePrice != null ? sug.roomType.basePrice : 0}"

@@ -67,6 +67,33 @@ public class BookingDAO {
         return null;
     }
 
+    public int getMaxGuestsAvailable(String checkin, String checkout) throws SQLException {
+        int total = 0;
+        String sql = """
+      SELECT SUM(rt.MaxGuests) AS TotalMaxGuests
+      FROM rooms r
+      JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID
+      WHERE r.Status = 'Available'
+      AND NOT EXISTS (
+          SELECT 1 FROM bookingdetails bd
+          JOIN bookings b ON bd.BookingID = b.BookingID
+          WHERE bd.RoomID = r.RoomID
+            AND b.Status IN ('Pending', 'Upcoming', 'Active')
+            AND b.CheckInDate < ? AND b.CheckOutDate > ?
+      )
+    """;
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, checkout);
+            ps.setString(2, checkin);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt("TotalMaxGuests");
+            }
+        }
+        return total;
+    }
+
     public List<Integer> getAvailableRoomIDs(int roomTypeId, String checkin, String checkout, int limit) throws SQLException {
         List<Integer> roomIDs = new ArrayList<>();
         String sql = """
@@ -305,73 +332,71 @@ public class BookingDAO {
         return list;
     }
 
-   public Booking getBookingByIdAndToken(int bookingId, String token) throws SQLException {
-    Booking booking = null;
+    public Booking getBookingByIdAndToken(int bookingId, String token) throws SQLException {
+        Booking booking = null;
 
-    String sqlBooking = "SELECT BookingID, UserID, CheckInDate, BookingDate, ExpiryTime, "
-                      + "CheckOutDate, GuestsCount, TotalAmount, Status, BookingToken, "
-                      + "ContactName, ContactEmail, ContactPhone "
-                      + "FROM bookings WHERE BookingID = ? AND BookingToken = ?";
+        String sqlBooking = "SELECT BookingID, UserID, CheckInDate, BookingDate, ExpiryTime, "
+                + "CheckOutDate, GuestsCount, TotalAmount, Status, BookingToken, "
+                + "ContactName, ContactEmail, ContactPhone "
+                + "FROM bookings WHERE BookingID = ? AND BookingToken = ?";
 
-    String sqlDeleted = "SELECT OriginalBookingID AS BookingID, UserID, BookingDate, ExpiryTime, "
-                      + "CheckInDate, CheckOutDate, GuestsCount, TotalAmount, Status, BookingToken, "
-                      + "ContactName, ContactEmail, ContactPhone "
-                      + "FROM deleted_bookings WHERE OriginalBookingID = ? AND BookingToken = ?";
+        String sqlDeleted = "SELECT OriginalBookingID AS BookingID, UserID, BookingDate, ExpiryTime, "
+                + "CheckInDate, CheckOutDate, GuestsCount, TotalAmount, Status, BookingToken, "
+                + "ContactName, ContactEmail, ContactPhone "
+                + "FROM deleted_bookings WHERE OriginalBookingID = ? AND BookingToken = ?";
 
-    try (Connection con = DBConnect.getConnection();
-         PreparedStatement ps = con.prepareStatement(sqlBooking)) {
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sqlBooking)) {
 
-        ps.setInt(1, bookingId);
-        ps.setString(2, token);
+            ps.setInt(1, bookingId);
+            ps.setString(2, token);
 
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                booking = new Booking();
-                booking.setBookingID(rs.getInt("BookingID"));
-                booking.setUserID(rs.getInt("UserID"));
-                booking.setCheckInDate(rs.getString("CheckInDate"));
-                booking.setBookingDate(rs.getString("BookingDate"));
-                booking.setExpiryTime(rs.getString("ExpiryTime"));
-                booking.setCheckOutDate(rs.getString("CheckOutDate"));
-                booking.setGuestsCount(rs.getInt("GuestsCount"));
-                booking.setTotalAmount(rs.getDouble("TotalAmount"));
-                booking.setStatus(rs.getString("Status"));
-             
-                booking.setContactName(rs.getString("ContactName"));
-                booking.setContactEmail(rs.getString("ContactEmail"));
-                booking.setContactPhone(rs.getString("ContactPhone"));
-            } else {
-                // Không có trong bookings → kiểm tra deleted_bookings
-                try (PreparedStatement psDeleted = con.prepareStatement(sqlDeleted)) {
-                    psDeleted.setInt(1, bookingId);
-                    psDeleted.setString(2, token);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    booking = new Booking();
+                    booking.setBookingID(rs.getInt("BookingID"));
+                    booking.setUserID(rs.getInt("UserID"));
+                    booking.setCheckInDate(rs.getString("CheckInDate"));
+                    booking.setBookingDate(rs.getString("BookingDate"));
+                    booking.setExpiryTime(rs.getString("ExpiryTime"));
+                    booking.setCheckOutDate(rs.getString("CheckOutDate"));
+                    booking.setGuestsCount(rs.getInt("GuestsCount"));
+                    booking.setTotalAmount(rs.getDouble("TotalAmount"));
+                    booking.setStatus(rs.getString("Status"));
 
-                    try (ResultSet rsDeleted = psDeleted.executeQuery()) {
-                        if (rsDeleted.next()) {
-                            booking = new Booking();
-                            booking.setBookingID(rsDeleted.getInt("BookingID"));
-                            booking.setUserID(rsDeleted.getInt("UserID"));
-                            booking.setBookingDate(rsDeleted.getString("BookingDate"));
-                            booking.setExpiryTime(rsDeleted.getString("ExpiryTime"));
-                            booking.setCheckInDate(rsDeleted.getString("CheckInDate"));
-                            booking.setCheckOutDate(rsDeleted.getString("CheckOutDate"));
-                            booking.setGuestsCount(rsDeleted.getInt("GuestsCount"));
-                            booking.setTotalAmount(rsDeleted.getDouble("TotalAmount"));
-                            booking.setStatus("Expired"); // Ghi đè rõ ràng
-                         
-                            booking.setContactName(rsDeleted.getString("ContactName"));
-                            booking.setContactEmail(rsDeleted.getString("ContactEmail"));
-                            booking.setContactPhone(rsDeleted.getString("ContactPhone"));
+                    booking.setContactName(rs.getString("ContactName"));
+                    booking.setContactEmail(rs.getString("ContactEmail"));
+                    booking.setContactPhone(rs.getString("ContactPhone"));
+                } else {
+                    // Không có trong bookings → kiểm tra deleted_bookings
+                    try (PreparedStatement psDeleted = con.prepareStatement(sqlDeleted)) {
+                        psDeleted.setInt(1, bookingId);
+                        psDeleted.setString(2, token);
+
+                        try (ResultSet rsDeleted = psDeleted.executeQuery()) {
+                            if (rsDeleted.next()) {
+                                booking = new Booking();
+                                booking.setBookingID(rsDeleted.getInt("BookingID"));
+                                booking.setUserID(rsDeleted.getInt("UserID"));
+                                booking.setBookingDate(rsDeleted.getString("BookingDate"));
+                                booking.setExpiryTime(rsDeleted.getString("ExpiryTime"));
+                                booking.setCheckInDate(rsDeleted.getString("CheckInDate"));
+                                booking.setCheckOutDate(rsDeleted.getString("CheckOutDate"));
+                                booking.setGuestsCount(rsDeleted.getInt("GuestsCount"));
+                                booking.setTotalAmount(rsDeleted.getDouble("TotalAmount"));
+                                booking.setStatus("Expired"); // Ghi đè rõ ràng
+
+                                booking.setContactName(rsDeleted.getString("ContactName"));
+                                booking.setContactEmail(rsDeleted.getString("ContactEmail"));
+                                booking.setContactPhone(rsDeleted.getString("ContactPhone"));
+                            }
                         }
                     }
                 }
             }
         }
+
+        return booking;
     }
-
-    return booking;
-}
-
 
     public List<Booking> getBookingsWithPagination(
             int userId,
@@ -706,14 +731,13 @@ public class BookingDAO {
     }
 
     public boolean cancelBookingByID(int bookingID) throws SQLException {
-    String sql = "UPDATE bookings SET Status = 'Cancelled' WHERE BookingID = ? AND Status = 'Pending'";
+        String sql = "UPDATE bookings SET Status = 'Cancelled' WHERE BookingID = ? AND Status = 'Pending'";
 
-    try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, bookingID);
-        int affected = ps.executeUpdate();
-        return affected > 0;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            int affected = ps.executeUpdate();
+            return affected > 0;
+        }
     }
-}
-
 
 }

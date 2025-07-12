@@ -9,50 +9,7 @@
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 <%
     // Ki?m tra ?? login hay ch?a
-    Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
-    if (isLoggedIn == null) isLoggedIn = false;
-
-    // L?y th?ng tin user t? session
-    String userFirstName = (String) session.getAttribute("userFirstName");
-    String userLastName  = (String) session.getAttribute("userLastName");
-    String userEmail     = (String) session.getAttribute("userEmail");
-    String userPhone     = (String) session.getAttribute("userPhone");
-    String userCountry   = (String) session.getAttribute("userCountry");
-    String username      = (String) session.getAttribute("username");
-
-    // L?y th?ng tin booking t? request
-    String roomID         = request.getParameter("roomID");
-    String roomTypeID     = request.getParameter("roomTypeID");  // ? ?? B? SUNG
-    String roomTypeName   = request.getParameter("roomTypeName");
-    String pricePerNight  = request.getParameter("pricePerNight");
-    String checkInDate    = request.getParameter("checkInDate");
-    
-    String checkOutDate   = request.getParameter("checkOutDate");
-    String roomDetail     =request.getParameter("roomDetail");
-    // Set default values n?u null
-    userFirstName   = (userFirstName != null) ? userFirstName : "";
-    userLastName    = (userLastName  != null) ? userLastName  : "";
-    userEmail       = (userEmail     != null) ? userEmail     : "";
-    userPhone       = (userPhone     != null) ? userPhone     : "";
-    userCountry     = (userCountry   != null) ? userCountry   : "VNM";
-    username        = (username      != null) ? username      : "";
-
-    roomID          = (roomID        != null) ? roomID        : "101";
-    roomTypeID      = (roomTypeID    != null) ? roomTypeID    : "DELUXE";
-    roomTypeName    = (roomTypeName  != null) ? roomTypeName  : "Deluxe Room";
-    pricePerNight   = (pricePerNight != null) ? pricePerNight : "1000000";
-   if (checkInDate == null || checkInDate.trim().isEmpty()) {
-    checkInDate = "2025-06-21";
-}
-    checkOutDate    = (checkOutDate  != null) ? checkOutDate  : "2025-06-22";
-
-    // G?i ?: n?u b?n c?n d?ng l?i, c? th? l?u v?o session ? ??y
-    session.setAttribute("checkInDate", checkInDate);
-    session.setAttribute("checkOutDate", checkOutDate);
-    session.setAttribute("roomID", roomID);
-    session.setAttribute("roomTypeID", roomTypeID);
-    session.setAttribute("roomTypeName", roomTypeName);
-    session.setAttribute("pricePerNight", pricePerNight);
+   
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -179,7 +136,7 @@
                             <div class="secondary-menu">
                                 <div class="secondary-inner">
                                     <ul>
-                                       
+
                                         <!-- Search Button ==== -->
                                         <li><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
                                     </ul>
@@ -289,12 +246,12 @@
                                     <c:choose>
                                         <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Booking</a></li>
                                             </c:when>
 
                                         <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
-                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Booking</a></li>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -315,15 +272,15 @@
                     <div class="search-row">
                         <div class="search-field">
                             <label><i class="fas fa-calendar-check"></i> Check-in date</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" value="${param.checkin}" required>
+                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" required>
                         </div>
                         <div class="search-field">
                             <label><i class="fas fa-calendar-times"></i> Check-out date</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Choose a date" value="${param.checkout}" required>
+                            <input type="text" id="checkout" name="checkout" placeholder="Choose a date" required>
                         </div>
                         <div class="search-field">
                             <label><i class="fas fa-users"></i> Number of guests</label>
-                            <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
+                            <input type="number" id="guests" name="guests" min="1"  required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
@@ -716,14 +673,14 @@
                     const checkinRaw = "${param.checkin}";
                     flatpickr("#checkin", {
                         dateFormat: "d/m/Y",
-                        defaultDate: checkinRaw ? new Date(checkinRaw) : null
+
                     });
 
 
                     const checkoutRaw = "${param.checkout}";
                     flatpickr("#checkout", {
                         dateFormat: "d/m/Y",
-                        defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
+
                     });
 
         </script>
@@ -763,10 +720,19 @@
 
 
             function validateForm() {
+                if (!checkinInput.value.trim()) {
+                    alert('⚠️ Bạn phải nhập ngày nhận phòng!');
+                    return false;
+                }
+                if (!checkoutInput.value.trim()) {
+                    alert('⚠️ Bạn phải nhập ngày trả phòng!');
+                    return false;
+                }
+
                 const checkin = parseDate(checkinInput.value);
                 const checkout = parseDate(checkoutInput.value);
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Đặt về 00:00:00 để so sánh đúng
+                today.setHours(0, 0, 0, 0);
 
                 if (checkin < today) {
                     alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
@@ -780,6 +746,7 @@
 
                 return true;
             }
+
 
         </script>
 
