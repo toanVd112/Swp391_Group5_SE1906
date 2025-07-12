@@ -270,7 +270,7 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Rooms</a></li>
+                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Booking</a></li>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
