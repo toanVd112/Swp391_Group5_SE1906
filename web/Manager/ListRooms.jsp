@@ -92,7 +92,8 @@
                 </button>
             </div>
 
-            <form class="rs-filters" id="advancedFilters" method="get" action="ListRoomsServlet" onsubmit="return validateFilters()">
+            <form class="rs-filters" id="advancedFilters" method="get" action="ListRoomsServlet#roomList" onsubmit="return true;">
+
                 <div class="rs-filter-row">
                     <div class="rs-filter-group">
                         <label>Loại phòng</label>
@@ -158,7 +159,7 @@
                             </select>
                         </div>
                         <div class="rs-filter-actions">
-                            <button type="submit" class="rs-filter-btn">
+                            <button type="submit" class="btn btn-primary rs-filter-btn">
                                 <i class="fas fa-search"></i> Tìm kiếm
                             </button>
                             <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="rs-reset-btn">
@@ -171,7 +172,7 @@
     </div>
 
     <div class="rs-table-container">
-        <table class="rs-table">
+        <table class="rs-table" id="roomList">
             <thead>
                 <tr>
                     <th class="rs-th-center">#</th>
@@ -243,14 +244,14 @@
                         </td>
                         <td class="rs-td-center">
                             <div class="rs-action-buttons">
-                                <a href="#" class="rs-btn rs-btn-housekeeping" onclick="updateRoomStatus(${room.roomID}, 'Available')" title="Housekeeping">
+<a href="#" class="rs-btn rs-btn-housekeeping" onclick="updateRoomStatus(${room.roomID}, 'Available', event)" title="Housekeeping">
                                     <i class="fas fa-broom"></i>
                                 </a>
                                 <a href="${pageContext.request.contextPath}/AddEditRoomServlet?action=edit&roomId=${room.roomID}" 
                                    class="rs-btn rs-btn-edit" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="#" class="rs-btn rs-btn-delete" onclick="confirmDelete(${room.roomID}, '${room.roomnumber}')" title="Xóa">
+<a href="#" class="rs-btn rs-btn-delete" onclick="confirmDelete(${room.roomID}, '${room.roomnumber}', event)" title="Xóa">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -279,19 +280,43 @@
         <c:if test="${totalPages > 1}">
             <ul class="rs-pagination">
                 <li class="${currentPage <= 1 ? 'disabled' : ''}">
-                    <a href="${currentPage > 1 ? 'ListRoomsServlet?page='.concat(currentPage - 1).concat('&roomTypeId=').concat(f_type != null ? f_type : '').concat('&status=').concat(f_status != null ? f_status : '').concat('&keyword=').concat(f_keyword != null ? f_keyword : '').concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '').concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '').concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '').concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '').concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '').concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '').concat('&pageSize=').concat(pageSize).concat('&sort=').concat(sort != null ? sort : '') : '#'}">
+                    <a href="${currentPage > 1 ? 'ListRoomsServlet?page='.concat(currentPage - 1)
+                               .concat('&roomTypeId=').concat(f_type != null ? f_type : '')
+                               .concat('&status=').concat(f_status != null ? f_status : '')
+                               .concat('&keyword=').concat(f_keyword != null ? f_keyword : '')
+                               .concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '')
+                               .concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '')
+                               .concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '')
+                               .concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '')
+                               .concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '')
+                               .concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '')
+                               .concat('&pageSize=').concat(pageSize)
+                               .concat('&sort=').concat(sort != null ? sort : '')
+                               .concat('#roomList') : '#'}">
                         Trước
                     </a>
                 </li>
                 <c:forEach var="i" begin="1" end="${totalPages}">
                     <li class="${i == currentPage ? 'active' : ''}">
-                        <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}&minGuests=${f_minGuests}&maxGuests=${f_maxGuests}&pageSize=${pageSize}&sort=${sort}">
+                        <a href="ListRoomsServlet?page=${i}&roomTypeId=${f_type}&status=${f_status}&keyword=${f_keyword}&minFloor=${f_minFloor}&maxFloor=${f_maxFloor}&minPrice=${f_minPrice}&maxPrice=${f_maxPrice}&minGuests=${f_minGuests}&maxGuests=${f_maxGuests}&pageSize=${pageSize}&sort=${sort}#roomList">
                             ${i}
                         </a>
                     </li>
                 </c:forEach>
                 <li class="${currentPage >= totalPages ? 'disabled' : ''}">
-                    <a href="${currentPage < totalPages ? 'ListRoomsServlet?page='.concat(currentPage + 1).concat('&roomTypeId=').concat(f_type != null ? f_type : '').concat('&status=').concat(f_status != null ? f_status : '').concat('&keyword=').concat(f_keyword != null ? f_keyword : '').concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '').concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '').concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '').concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '').concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '').concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '').concat('&pageSize=').concat(pageSize).concat('&sort=').concat(sort != null ? sort : '') : '#'}">
+                    <a href="${currentPage < totalPages ? 'ListRoomsServlet?page='.concat(currentPage + 1)
+                               .concat('&roomTypeId=').concat(f_type != null ? f_type : '')
+                               .concat('&status=').concat(f_status != null ? f_status : '')
+                               .concat('&keyword=').concat(f_keyword != null ? f_keyword : '')
+                               .concat('&minFloor=').concat(f_minFloor != null ? f_minFloor : '')
+                               .concat('&maxFloor=').concat(f_maxFloor != null ? f_maxFloor : '')
+                               .concat('&minPrice=').concat(f_minPrice != null ? f_minPrice : '')
+                               .concat('&maxPrice=').concat(f_maxPrice != null ? f_maxPrice : '')
+                               .concat('&minGuests=').concat(f_minGuests != null ? f_minGuests : '')
+                               .concat('&maxGuests=').concat(f_maxGuests != null ? f_maxGuests : '')
+                               .concat('&pageSize=').concat(pageSize)
+                               .concat('&sort=').concat(sort != null ? sort : '')
+                               .concat('#roomList') : '#'}">
                         Tiếp
                     </a>
                 </li>
@@ -1013,29 +1038,88 @@
 
 <!-- Enhanced JavaScript -->
 <script>
-    // Filter toggle functionality
+    // Toggle filter hiển thị
     function toggleFilters() {
         const filters = document.getElementById('advancedFilters');
         const chevron = document.getElementById('filterChevron');
-
-        if (filters.classList.contains('show')) {
-            filters.classList.remove('show');
-            chevron.style.transform = 'rotate(0deg)';
-        } else {
-            filters.classList.add('show');
-            chevron.style.transform = 'rotate(180deg)';
-        }
+        filters.classList.toggle('show');
+        chevron.style.transform = filters.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 
-    // Auto-show filters if any filter is active
+    // Tự mở bộ lọc nếu có filter đang dùng
     document.addEventListener('DOMContentLoaded', function () {
         const hasActiveFilters = ${not empty f_type || not empty f_status || not empty f_keyword || not empty f_minFloor || not empty f_maxFloor || not empty f_minPrice || not empty f_maxPrice || not empty f_minGuests || not empty f_maxGuests || not empty sort};
-
         if (hasActiveFilters) {
             document.getElementById('advancedFilters').classList.add('show');
             document.getElementById('filterChevron').style.transform = 'rotate(180deg)';
         }
+
+        // GẮN SUBMIT FORM & BUTTON LOADING CHUẨN
+        const form = document.getElementById('advancedFilters');
+        const submitBtn = form.querySelector('.rs-filter-btn');
+
+        form.addEventListener('submit', function (e) {
+            if (!validateFilters()) {
+                e.preventDefault();
+                return;
+            }
+            // loading cho nút
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tìm...';
+            submitBtn.disabled = true;
+        });
+
+        // debounce tìm kiếm nhanh
+        let searchTimeout;
+        const quickSearch = document.getElementById('quickSearch');
+        if (quickSearch) {
+            quickSearch.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function () {
+                    const keyword = quickSearch.value;
+                    const url = new URL(window.location);
+                    url.searchParams.set('keyword', keyword);
+                    url.searchParams.set('page', '1');
+                    url.hash = 'roomList';
+                    window.location.href = url.toString();
+                }, 1000);
+            });
+        }
+
+        // Tự ẩn alert
+        setTimeout(() => {
+            document.querySelectorAll('.rs-alert').forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
     });
+
+    function validateFilters() {
+        let isValid = true;
+        const rules = [
+            {name: 'minFloor', maxName: 'maxFloor', label: 'Tầng'},
+            {name: 'minPrice', maxName: 'maxPrice', label: 'Giá'},
+            {name: 'minGuests', maxName: 'maxGuests', label: 'Số khách'}
+        ];
+
+        rules.forEach(({name, maxName, label}) => {
+            const min = document.querySelector(`input[name="${name}"]`);
+            const max = document.querySelector(`input[name="${maxName}"]`);
+            const minVal = min.value ? parseFloat(min.value) : null;
+            const maxVal = max.value ? parseFloat(max.value) : null;
+            min.classList.remove('error');
+            max.classList.remove('error');
+
+            if (minVal !== null && maxVal !== null && minVal > maxVal) {
+                min.classList.add('error');
+                max.classList.add('error');
+                alert(`${label} tối thiểu không được lớn hơn tối đa!`);
+                isValid = false;
+        }
+        });
+        return isValid;
+    }
 
     function changePageSize(size) {
         const url = new URL(window.location);
@@ -1044,84 +1128,17 @@
         window.location.href = url.toString();
     }
 
-    function confirmDelete(roomId, roomnumber) {
-        if (confirm('Bạn có chắc chắn muốn xóa phòng ' + roomnumber + '?')) {
-            window.location.href = 'ListRoomsServlet?action=delete&roomId=' + roomId;
-        }
+    function confirmDelete(roomId, roomnumber, event) {
+    event.preventDefault(); // Ngăn nhảy về đầu trang
+    if (confirm('Bạn có chắc chắn muốn xóa phòng ' + roomnumber + '?')) {
+        window.location.href = 'ListRoomsServlet?action=delete&roomId=' + roomId;
     }
+}
 
-    function updateRoomStatus(roomId, status) {
-        if (confirm('Cập nhật trạng thái phòng thành ' + status + '?')) {
-            window.location.href = 'ListRoomsServlet?action=updateStatus&roomId=' + roomId + '&status=' + status;
-        }
+  function updateRoomStatus(roomId, status, event) {
+    event.preventDefault(); // Ngăn nhảy về đầu trang
+    if (confirm('Cập nhật trạng thái phòng thành ' + status + '?')) {
+        window.location.href = 'ListRoomsServlet?action=updateStatus&roomId=' + roomId + '&status=' + status;
     }
-
-    function quickSearch() {
-        const keyword = document.getElementById('quickSearch').value;
-        const url = new URL(window.location);
-        url.searchParams.set('keyword', keyword);
-        url.searchParams.set('page', '1');
-        window.location.href = url.toString();
-    }
-
-    function validateFilters() {
-        let isValid = true;
-        const inputs = [
-            {name: 'minFloor', maxName: 'maxFloor', label: 'Tầng'},
-            {name: 'minPrice', maxName: 'maxPrice', label: 'Giá'},
-            {name: 'minGuests', maxName: 'maxGuests', label: 'Số khách'}
-        ];
-
-        inputs.forEach(({ name, maxName, label }) => {
-            const minInput = document.querySelector(`input[name="${name}"]`);
-            const maxInput = document.querySelector(`input[name="${maxName}"]`);
-            const minValue = minInput.value ? parseFloat(minInput.value) : null;
-            const maxValue = maxInput.value ? parseFloat(maxInput.value) : null;
-
-            minInput.classList.remove('error');
-            maxInput.classList.remove('error');
-
-            if (minValue !== null && maxValue !== null && minValue > maxValue) {
-                minInput.classList.add('error');
-                maxInput.classList.add('error');
-                alert(`${label} tối thiểu không được lớn hơn ${label} tối đa!`);
-                isValid = false;
-        }
-        });
-
-        return isValid;
-    }
-
-    // Enhanced quick search with debounce
-    let searchTimeout;
-    document.getElementById('quickSearch').addEventListener('input', function () {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(quickSearch, 500);
-    });
-
-    // Auto-hide messages with fade effect
-    setTimeout(function () {
-        const alerts = document.querySelectorAll('.rs-alert');
-        alerts.forEach(function (alert) {
-            alert.style.opacity = '0';
-            alert.style.transition = 'opacity 0.5s';
-            setTimeout(function () {
-                alert.remove();
-            }, 500);
-        });
-    }, 5000);
-
-    // Add loading states for buttons
-    document.querySelectorAll('.rs-filter-btn, .rs-search-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tìm...';
-            this.disabled = true;
-
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.disabled = false;
-            }, 2000);
-        });
-    });
+}
 </script>
