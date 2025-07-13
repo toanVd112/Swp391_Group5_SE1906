@@ -224,7 +224,7 @@ public class ManageRoomDAO {
         String sql = "SELECT * FROM roominspectionreports WHERE IsRoomOk IS NULL AND StaffID = ?";
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql += " AND Notes LIKE ?";
+            sql += " AND RoomID LIKE ?";
         }
 
         sql += " ORDER BY InspectionTime " + ("asc".equals(sort) ? "ASC" : "DESC");
@@ -263,7 +263,7 @@ public class ManageRoomDAO {
     public int countPendingRequests(String keyword) {
         String sql = "SELECT COUNT(*) FROM roominspectionreports WHERE IsRoomOk IS NULL";
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql += " AND Notes LIKE ?";
+            sql += " AND RoomID LIKE ?";
         }
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -299,7 +299,7 @@ public class ManageRoomDAO {
         String sql = "SELECT * FROM MaintenanceRequests WHERE IsResolved = false AND StaffID = ?";
 
         if (search != null && !search.trim().isEmpty()) {
-            sql += " AND Description LIKE ?";
+            sql += " AND RoomID LIKE ?";
         }
 
         sql += " ORDER BY RequestDate " + ("asc".equalsIgnoreCase(sort) ? "ASC" : "DESC");
@@ -338,7 +338,7 @@ public class ManageRoomDAO {
     public int countMaintenanceRequests(String search, int accountID) {
         String sql = "SELECT COUNT(*) FROM MaintenanceRequests WHERE IsResolved = false AND StaffID = ?";
         if (search != null && !search.trim().isEmpty()) {
-            sql += " AND Description LIKE ?";
+            sql += " AND RoomID LIKE ?";
         }
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {

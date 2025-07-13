@@ -89,13 +89,13 @@
                             </div>
                             <div class="col-md-3">
                                 <select name="sort" onchange="this.form.submit()" class="form-select shadow-sm">
-                                    <option value="">Sort by created date</option>
-                                    <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest first</option>
-                                    <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest first</option>
+                                    <option value="">Sort by Created Date</option>
+                                    <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest</option>
+                                    <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest</option>
                                 </select>
                             </div>
                             <div class="col-md-3 d-flex gap-2">
-                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                <button type="submit" class="btn btn-primary btn-sm">Search</button>
                                 <a href="managerAccount" class="btn btn-secondary btn-sm">Reset</a>
                             </div>
                         </div>
@@ -143,7 +143,6 @@
                                                     <a href="loadAccount?aid=${account.accountID}" class="btn btn-primary btn-sm">Edit</a>
                                                     <a href="deleteAccount?aid=${account.accountID}" class="btn btn-danger btn-sm"
                                                        onclick="return confirm('Are you sure you want to delete this account?')">Delete</a>
-                                                    <a href="staffProfile?aid=${account.accountID}" class="btn btn-info btn-sm">Details</a>
                                                 </div>
                                             </td>
                                         </tr>

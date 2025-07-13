@@ -17,7 +17,7 @@
                 padding: 0;
                 background-color: #f3f4f6;
             }
-            .main-content {
+            .imain-content {
                 max-width: 1200px;
                 margin: 40px auto;
                 background-color: #ffffff;
@@ -89,7 +89,7 @@
         </style>
     </head>
     <body>
-        <div class="main-content">
+        <div class="imain-content">
             <h2>Danh sách yêu cầu bảo trì đang chờ xử lý</h2>
 
             <form method="get" action="${pageContext.request.contextPath}/pendingMaintenance">
@@ -97,18 +97,18 @@
                     <div>
                         <input type="text" name="search" placeholder="Tìm ghi chú..." value="${param.search}" 
                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                        <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Tìm</button>
+                        <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
                         <a href="pendingMaintenance" 
                            style="padding: 8px 12px; border-radius: 5px; background-color: #e74c3c; color: white; text-decoration: none; margin-left: 10px;">
-                            Đặt lại
+                            Reset
                         </a>
                     </div>
                     <div>
                         <select name="sort" onchange="this.form.submit()" 
                                 style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                            <option value="">Sắp xếp theo ngày</option>
-                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Cũ nhất</option>
-                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Mới nhất</option>
+                            <option value="">Sort by Created Date</option>
+                            <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest</option>
+                            <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest</option>
                         </select>
                     </div>
                 </div>
@@ -151,7 +151,7 @@
                 <div class="pagination">
                     <ul>
                         <c:if test="${currentPage > 1}">
-                            <li><a href="pendingMaintenance?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Trước</a></li>
+                            <li><a href="pendingMaintenance?page=${currentPage - 1}&search=${param.search}&sort=${param.sort}">Prev</a></li>
                             </c:if>
 
                         <c:forEach begin="1" end="${totalPages}" var="i">
@@ -161,14 +161,14 @@
                         </c:forEach>
 
                         <c:if test="${currentPage < totalPages}">
-                            <li><a href="pendingMaintenance?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Sau</a></li>
+                            <li><a href="pendingMaintenance?page=${currentPage + 1}&search=${param.search}&sort=${param.sort}">Next</a></li>
                             </c:if>
                     </ul>
                 </div>
             </c:if>
 
             <div style="text-align: center; margin-top: 20px;">
-                <a href="${pageContext.request.contextPath}/Staff/staff.jsp" class="btn-back">Quay về trang chính</a>
+                <a href="${pageContext.request.contextPath}/Staff/staff.jsp" class="btn-back">Back to home</a>
             </div>
         </div>
 

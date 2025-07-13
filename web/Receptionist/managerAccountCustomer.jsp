@@ -59,14 +59,14 @@
                             </div>
                             <div class="col-md-3">
                                 <select name="sort" onchange="this.form.submit()" class="form-select shadow-sm">
-                                    <option value="">Sắp xếp theo ngày tạo</option>
-                                    <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Cũ nhất trước</option>
-                                    <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Mới nhất trước</option>
+                                    <option value="">Sort by Created Date</option>
+                                    <option value="asc" ${param.sort == 'asc' ? 'selected' : ''}>Oldest</option>
+                                    <option value="desc" ${param.sort == 'desc' ? 'selected' : ''}>Newest</option>
                                 </select>
                             </div>
                             <div class="col-md-2 d-flex gap-2">
-                                <button type="submit" class="btn btn-primary btn-sm">Tìm kiếm</button>
-                                <a href="managerAccountC" class="btn btn-secondary btn-sm">Đặt lại</a>
+                                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                                <a href="managerAccountC" class="btn btn-secondary btn-sm">Reset</a>
                             </div>
                         </div>
                     </form>
@@ -110,7 +110,6 @@
                                                 </form>
                                                 <a href="deleteAccountC?aid=${account.accountID}" class="btn btn-danger btn-sm"
                                                    onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">Delete</a>
-                                                <a href="staffProfileC?aid=${account.accountID}" class="btn btn-info btn-sm">Details</a>
                                             </div>
                                         </td>
                                     </tr>
