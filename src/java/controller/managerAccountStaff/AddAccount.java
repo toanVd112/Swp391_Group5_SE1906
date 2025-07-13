@@ -67,59 +67,6 @@ public class AddAccount extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        String user = request.getParameter("username");
-        String pass = request.getParameter("password");
-        String role = request.getParameter("role");
-        String active = request.getParameter("isActive");
-        String email = request.getParameter("email");
-        String aid = request.getParameter("aid");
-
-        boolean hasError = false;
-
-        // Kiểm tra username
-        if (user == null || user.trim().isEmpty()) {
-            request.setAttribute("usernameError", "Username không được để trống.");
-            hasError = true;
-        }
-
-        // Kiểm tra password
-        if (pass == null || pass.length() < 6) {
-            request.setAttribute("passwordError", "Password phải có ít nhất 6 ký tự.");
-            hasError = true;
-        }
-
-        // Kiểm tra email
-        if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
-            request.setAttribute("emailError", "Email không hợp lệ.");
-            hasError = true;
-        }
-
-        // Kiểm tra role
-        if (role == null || !(role.equals("Manager") || role.equals("Receptionist") || role.equals("Staff"))) {
-            request.setAttribute("roleError", "Role không hợp lệ.");
-            hasError = true;
-        }
-
-        // Kiểm tra isActive
-        boolean isActive = Boolean.parseBoolean(active);
-
-        if (hasError) {
-            // Gửi lại dữ liệu đã nhập và chuyển hướng về lại trang edit
-            request.setAttribute("username", user);
-            request.setAttribute("password", pass);
-            request.setAttribute("email", email);
-            request.setAttribute("role", role);
-            request.setAttribute("isActive", active);
-            request.setAttribute("aid", aid);
-
-            request.getRequestDispatcher("Manager/editAccount.jsp").forward(request, response);
-        } else {
-            // Nếu hợp lệ thì cập nhật dữ liệu
-            AccountDAO ad = new AccountDAO();
-            Account acc=new Account(0, user, pass, role, isActive, email);
-            ad.addAccount(user, pass, role, isActive, email);
-            response.sendRedirect("managerAccount");
-        }
     }
 
     /**
@@ -143,6 +90,23 @@ public class AddAccount extends HttpServlet {
         String email = request.getParameter("email");
 
         boolean hasError = false;
+        AccountDAO dao = new AccountDAO();
+
+        try {
+            if (dao.isUsernameTaken(user)) {
+                request.setAttribute("usernameError", "Tên đăng nhập đã tồn tại.");
+                hasError = true;
+            }
+
+            if (dao.isEmailTaken(email)) {
+                request.setAttribute("emailError", "Email đã được sử dụng.");
+                hasError = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AddAccount.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("error", "Đã xảy ra lỗi trong quá trình kiểm tra dữ liệu.");
+            hasError = true;
+        }
 
         // Validate input
         if (user == null || user.trim().isEmpty()) {
@@ -176,10 +140,9 @@ public class AddAccount extends HttpServlet {
             request.setAttribute("email", email);
             request.setAttribute("showAddModal", true); // Để mở lại modal
 
-            request.getRequestDispatcher("managerAccount").forward(request, response);
+            request.getRequestDispatcher("/Manager/managerAccount.jsp").forward(request, response);
         } else {
             // Gọi DAO để thêm account mới
-            AccountDAO dao = new AccountDAO();
             dao.addAccount(user, pass, role, isActive, email);
             response.sendRedirect("managerAccount"); // Quay lại danh sách
         }
