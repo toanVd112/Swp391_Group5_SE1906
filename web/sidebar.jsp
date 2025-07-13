@@ -5,6 +5,7 @@
     <!-- Sidebar Header -->
     <div class="sidebar-header">
         <div class="d-flex align-items-center">
+            <span class="text-primary">Hotel Management</span>
         </div>
     </div>
 
@@ -149,7 +150,6 @@
 </div>
 
 <style>
-    /* Enhanced Sidebar Styles with Active States */
     .sidebar {
         width: 280px;
         background: #ffffff;
@@ -190,7 +190,7 @@
         color: #6b7280;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        margin-bottom: 0.5rem;
+        padding-left: 1rem;
     }
 
     .menu-item {
@@ -201,7 +201,6 @@
         text-decoration: none;
         transition: all 0.3s ease;
         position: relative;
-        border-radius: 0;
         margin: 0 0.75rem;
         border-radius: 8px;
     }
@@ -299,27 +298,62 @@
         width: 100%;
         text-decoration: none;
         color: #374151;
+/*        padding: 0.875rem 1.5rem;
+        margin: 0 0.75rem;*/
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-toggle:hover {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        color: #2563eb;
+        text-decoration: none;
+        transform: translateX(4px);
+    }
+
+    .dropdown-toggle i:not(.dropdown-icon) {
+        width: 20px;
+        margin-right: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .dropdown-toggle span {
+        flex-grow: 1;
+        text-align: left;
     }
 
     .dropdown-toggle .dropdown-icon {
         margin-left: auto;
+        font-size: 0.875rem;
         transition: transform 0.3s ease;
     }
 
-    .dropdown-toggle.active + .dropdown-menu,
-    .dropdown-toggle:hover + .dropdown-menu,
-    .dropdown-menu:hover {
+    .dropdown:hover .dropdown-icon {
+        transform: rotate(180deg);
+    }
+
+    .dropdown:hover .dropdown-menu {
         display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        transition: opacity 0.2s ease, visibility 0s linear 0s, transform 0.2s ease;
     }
 
     .dropdown-menu {
-        display: none;
-        position: relative;
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
         background: #ffffff;
         margin-left: 1rem;
         padding: 0.5rem 0;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1001;
+        min-width: 200px;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, visibility 0s linear 0.2s, transform 0.2s ease;
     }
 
     .dropdown-item {
@@ -363,10 +397,16 @@
         .dropdown-menu {
             position: relative;
             width: 100%;
+            margin-left: 0;
+            transform: none;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            transform: none;
         }
     }
 
-    /* Animation for menu items */
+    /* Animations */
     @keyframes slideIn {
         from {
             opacity: 0;
@@ -400,99 +440,103 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get current page info
-        const currentPath = window.location.pathname;
-        const currentSearch = window.location.search;
-        const currentUrl = currentPath + currentSearch;
+document.addEventListener('DOMContentLoaded', function () {
+    // Get current page info
+    const currentPath = window.location.pathname;
+    const currentSearch = window.location.search;
 
-        // Get all menu items
-        const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
+    // Get all menu items
+    const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
 
-        // Function to set active menu item
-        function setActiveMenuItem() {
-            // Remove active class from all items
+    // Function to set active menu item
+    function setActiveMenuItem() {
+        // Remove active class from all items
+        menuItems.forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Find and set active item
+        let activeItem = null;
+
+        // Check for exact URL match first
+        menuItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href && href !== '#' && currentPath === new URL(href, window.location.origin).pathname) {
+                activeItem = item;
+            }
+        });
+
+        // If no exact match, check by data-page attribute
+        if (!activeItem) {
             menuItems.forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // Find and set active item
-            let activeItem = null;
-
-            // Check for exact URL match first
-            menuItems.forEach(item => {
-                const href = item.getAttribute('href');
-                if (href && currentPath === new URL(href, window.location.origin).pathname) {
+                const dataPage = item.getAttribute('data-page');
+                if (dataPage && (currentPath.includes(dataPage) || currentSearch.includes(dataPage))) {
                     activeItem = item;
                 }
             });
-
-            // If no exact match, check by data-page attribute
-            if (!activeItem) {
-                menuItems.forEach(item => {
-                    const dataPage = item.getAttribute('data-page');
-                    if (dataPage && (currentPath.includes(dataPage) || currentSearch.includes(dataPage))) {
-                        activeItem = item;
-                    }
-                });
-            }
-
-            // Set active class
-            if (activeItem) {
-                activeItem.classList.add('active');
-                // If the active item is a dropdown-item, also activate the parent dropdown
-                const parentDropdown = activeItem.closest('.dropdown');
-                if (parentDropdown) {
-                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-                }
-            }
         }
 
-        // Set active menu item on page load
-        setActiveMenuItem();
+        // Set active class
+        if (activeItem) {
+            activeItem.classList.add('active');
+            // If the active item is a dropdown-item, also activate the parent dropdown
+            const parentDropdown = activeItem.closest('.dropdown');
+            if (parentDropdown) {
+                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                // Ensure dropdown is visible for active item
+                parentDropdown.classList.add('show');
+            }
+        }
+    }
 
-        // Add click event listeners to menu items
-        menuItems.forEach(item => {
-            item.addEventListener('click', function (e) {
-                // Remove active class from all items
-                menuItems.forEach(menuItem => {
-                    menuItem.classList.remove('active');
-                });
+    // Set active menu item on page load
+    setActiveMenuItem();
 
-                // Add active class to clicked item
-                this.classList.add('active');
+    // Add click event listeners to menu items
+    menuItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            if (this.classList.contains('dropdown-toggle')) {
+                return; // Prevent default behavior for dropdown toggles
+            }
 
-                // If the clicked item is a dropdown-item, activate the parent dropdown
-                const parentDropdown = this.closest('.dropdown');
-                if (parentDropdown) {
-                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-                }
-
-                // Store active item in localStorage for persistence
-                const dataPage = this.getAttribute('data-page');
-                if (dataPage) {
-                    localStorage.setItem('activePage', dataPage Grown-ups: The Next Generation data-page);
-                }
+            // Remove active class from all items
+            menuItems.forEach(menuItem => {
+                menuItem.classList.remove('active');
             });
-        });
 
-        // Restore active state from localStorage if available
-        const storedActivePage = localStorage.getItem('activePage');
-        if (storedActivePage) {
-            const storedItem = document.querySelector(`[data-page="${storedActivePage}"]`);
-            if (storedItem && !document.querySelector('.menu-item.active, .dropdown-item.active')) {
-                storedItem.classList.add('active');
-                const parentDropdown = storedItem.closest('.dropdown');
-                if (parentDropdown) {
-                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-                }
+            // Add active class to clicked item
+            this.classList.add('active');
+
+            // If the clicked item is a dropdown-item, activate the parent dropdown
+            const parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
             }
-        }
+
+            // Store active item in localStorage
+            const dataPage = this.getAttribute('data-page');
+            if (dataPage) {
+                localStorage.setItem('activePage', dataPage);
+            }
+        });
     });
 
-    // Function to manually set active menu item (can be called from other pages)
-    function setActiveMenu(pageName) {
-        const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
+    // Restore active state from localStorage if available
+    const storedActivePage = localStorage.getItem('activePage');
+    if (storedActivePage) {
+        const storedItem = document.querySelector(`[data-page="${storedActivePage}"]`);
+        if (storedItem && !document.querySelector('.menu-item.active, .dropdown-item.active')) {
+            storedItem.classList.add('active');
+            const parentDropdown = storedItem.closest('.dropdown');
+            if (parentDropdown) {
+                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                parentDropdown.classList.add('show');
+            }
+        }
+    }
+
+    // Function to manually set active menu item
+    window.setActiveMenu = function(pageName) {
         menuItems.forEach(item => {
             item.classList.remove('active');
             if (item.getAttribute('data-page') === pageName) {
@@ -500,9 +544,20 @@
                 const parentDropdown = item.closest('.dropdown');
                 if (parentDropdown) {
                     parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                    parentDropdown.classList.add('show');
                 }
             }
         });
         localStorage.setItem('activePage', pageName);
+    };
+
+    // Ensure dropdowns with active items are visible on load
+    const activeDropdownItem = document.querySelector('.dropdown-item.active');
+    if (activeDropdownItem) {
+        const parentDropdown = activeDropdownItem.closest('.dropdown');
+        if (parentDropdown) {
+            parentDropdown.classList.add('show');
+        }
     }
+});
 </script>

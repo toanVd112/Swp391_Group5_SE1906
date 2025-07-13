@@ -211,7 +211,7 @@ public class editService extends HttpServlet {
 
             boolean success = serviceDAO.update(serviceToUpdate);
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/services?action=list&msg=Update+success");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&msg=Update+success");
             } else {
                 request.setAttribute("errorMessage", "Cập nhật dịch vụ thất bại. Vui lòng thử lại.");
                 request.setAttribute("service", serviceToUpdate);
