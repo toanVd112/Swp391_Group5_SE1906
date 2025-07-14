@@ -15,44 +15,63 @@
 <!DOCTYPE html>
 <html lang="en">
     <%
-        request.setCharacterEncoding("UTF-8");
+    request.setCharacterEncoding("UTF-8");
 
-        // 1️⃣ Lấy userInfo từ session
-        model.User userInfo = (model.User) session.getAttribute("userInfo");
+    String bookingIDParam = request.getParameter("bookingID");
+    int bookingID = -1;
 
-        String fullName = "";
-        String userEmail = "";
-        String userPhone = "";
-    String userCountry = "VNM"; // mặc định luôn VNM
-        if (userInfo != null) {
-            fullName = userInfo.getFullName();
-            userEmail = userInfo.getEmail();
-            userPhone = userInfo.getPhone();
-        }
-    %>
-    <%
-           String bookingIDParam = request.getParameter("bookingID");
-        int bookingID = -1;
-
-        if (bookingIDParam != null && !bookingIDParam.isEmpty()) {
+    if (bookingIDParam != null && !bookingIDParam.trim().isEmpty()) {
+        try {
             bookingID = Integer.parseInt(bookingIDParam);
+        } catch (NumberFormatException e) {
+            bookingID = -1;
         }
+    }
 
-        if (bookingID <= 0) {
-            throw new RuntimeException("bookingID missing or invalid");
-        }
-
-        BookingDAO bookingDAO = new BookingDAO();
-   
-      ServiceDAO s=new ServiceDAO();
-
-        Booking booking = bookingDAO.getBookingByID(bookingID);
-        List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
-        List<ServiceUsage> serviceUsages = s.getServiceUsageByBookingID(bookingID);
-
-        String checkInDate = booking.getCheckInDate();
-        String checkOutDate = booking.getCheckOutDate();
+    if (bookingID <= 0) {
     %>
+    <div style="padding: 60px; text-align: center; color: #b91c1c;">
+        <h2>Invalid Booking ID</h2>
+        <p>The booking ID provided is missing or invalid.</p>
+        <a href="Home" style="color: #059669; font-weight: bold;">Back to Home</a>
+    </div>
+    <%
+        } else {
+            BookingDAO bookingDAO = new BookingDAO();
+            ServiceDAO s = new ServiceDAO();
+
+            Booking booking = bookingDAO.getBookingByID(bookingID);
+
+            if (booking == null) {
+    %>
+    <div style="padding: 60px; text-align: center; color: #b91c1c;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 40px; margin-bottom: 16px;"></i>
+        <h2>This booking has expired or does not exist</h2>
+        <p>The booking information you're trying to access is no longer valid.</p>
+        <a href="Home" style="padding: 10px 20px; background: #059669; color: white; border-radius: 6px; text-decoration: none;">Back to Room List</a>
+    </div>
+    <%
+            } else {
+                List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
+                List<ServiceUsage> serviceUsages = s.getServiceUsageByBookingID(bookingID);
+
+                String checkInDate = booking.getCheckInDate();
+                String checkOutDate = booking.getCheckOutDate();
+                String fullName = booking.getContactName();
+                String userEmail = booking.getContactEmail();
+                String userPhone = booking.getContactPhone();
+                String userCountry = "VNM"; // default
+
+                double roomTotal = booking.getTotalAmount();
+                double serviceTotal = 0;
+
+                for (ServiceUsage su : serviceUsages) {
+                    serviceTotal += su.getSubTotal().doubleValue();
+                }
+
+                double finalTotal = roomTotal + serviceTotal;
+    %>
+
 
     <head>
 
@@ -108,8 +127,8 @@
         <link rel="stylesheet" href="assets/css/booking-styles.css">
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        
-         <link rel="stylesheet" type="text/css" href="assets/css/booking-form-styles.css">
+
+        <link rel="stylesheet" type="text/css" href="assets/css/booking-form-styles.css">
         <!-- REVOLUTION SLIDER END -->
         <style>
 
@@ -331,6 +350,7 @@
                 </div>
             </header>
 
+
             <!-- Breadcrumb Section -->
             <div class="breadcrumb-section">
                 <div class="container">
@@ -517,310 +537,225 @@
 
                             <!-- ✅ BLOCK PAYMENT METHOD -->
                             <div class="card">
-                                <div class="card-header">
-                                    <div class="card-title">Phương thức thanh toán</div>
-                                    <div style="display: flex; align-items: center; gap: 8px; color: #059669; font-size: 14px; margin-top: 8px;">
-                                        <i class="fas fa-check"></i>
-                                        Thanh toán ngay: 0 ₫. Chỉ cần thông tin thanh toán của quý vị để đảm bảo cho đặt phòng
+
+
+
+                                <!-- ✅ NÚT SUBMIT TRONG FORM -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title">Thông tin quan trọng</div>
+                                    </div>
+                                    <div class="card-content">
+
+
+                                        <button type="submit" class="complete-booking-btn" id="submitBtn">
+                                            <span id="btnText">Hoàn tất đặt ›</span>
+                                            <div class="loading-spinner" id="loadingSpinner"></div>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="card-content">
-                                    <div class="payment-icons">
-                                        <div class="payment-icon card">
-                                            <i class="fas fa-credit-card"></i>
+
+
+
+                                <!-- Sidebar -->
+                                <div class="sidebar-content">
+                                    <!-- Hotel Information -->
+
+
+
+                                    <!-- Price Summary -->
+                                    <div class="price-summary">
+
+                                        <div class="price-payment">
+                                            <span>Price</span>
+                                            <span><%= String.format("%,.0f", finalTotal) %> ₫</span>
                                         </div>
-                                        <div class="payment-icon mastercard">MC</div>
-                                        <div class="payment-icon visa">VISA</div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label" for="cardName">Tên chủ thẻ *</label>
-                                        <input type="text" class="form-input" id="cardName" name="cardName" required>
-                                        <div class="error-message" id="cardNameError"></div>
-                                    </div>
+                                </div>
+                            </div>
+                    </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label" for="cardNumber">Số thẻ ghi nợ/tín dụng *</label>
-                                        <input type="text" class="form-input" id="cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required>
-                                        <div class="error-message" id="cardNumberError"></div>
-                                    </div>
+                </div>
+            </div>
 
-                                    <div class="security-note">
-                                        <p><i class="fas fa-shield-alt"></i> Chỉ để đảm bảo đặt chỗ - Thông tin được mã hóa an toàn</p>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label">Ngày hết hạn *</label>
-                                        <div class="expiry-row">
-                                            <select class="form-select" name="expMonth" id="expMonth" required>
-                                                <option value="">Tháng</option>
-                                                <option value="01">01</option>
-                                                <option value="02">02</option>
-                                                ...
-                                                <option value="12">12</option>
-                                            </select>
-                                            <select class="form-select" name="expYear" id="expYear" required>
-                                                <option value="">Năm</option>
-                                                <option value="2024">2024</option>
-                                                <option value="2025">2025</option>
-                                                ...
-                                                <option value="2030">2030</option>
-                                            </select>
+            <!-- Content END-->
+            <!-- Footer ==== -->
+            <footer>
+                <div class="footer-top">
+                    <div class="pt-exebar">
+                        <div class="container">
+                            <div class="d-flex align-items-stretch">
+                                <div class="pt-logo mr-auto">
+                                    <a href="Home"><img src="assets/images/logo-white.png" alt="" /></a>
+                                </div>
+                                <div class="pt-social-link">
+                                    <ul class="list-inline m-a0">
+                                        <li><a href="#" class="btn-link"><i
+                                                    class="fa fa-facebook"></i></a></li>
+                                        <li><a href="#" class="btn-link"><i
+                                                    class="fa fa-twitter"></i></a></li>
+                                        <li><a href="#" class="btn-link"><i
+                                                    class="fa fa-linkedin"></i></a></li>
+                                        <li><a href="#" class="btn-link"><i
+                                                    class="fa fa-google-plus"></i></a></li>
+                                    </ul>
+                                </div>
+                                <div class="pt-btn-join">
+                                    <a href="#" class="btn ">Join Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                                <div class="widget">
+                                    <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                                    <p class="text-capitalize m-b20">Weekly Breaking news analysis and
+                                        cutting edge advices on job searching.</p>
+                                    <div class="subscribe-form m-b20">
+                                        <form class="subscription-form"
+                                              action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php"
+                                              method="post">
+                                            <div class="ajax-message"></div>
+                                            <div class="input-group">
+                                                <input name="email" required="required"
+                                                       class="form-control"
+                                                       placeholder="Your Email Address" type="email">
+                                                <span class="input-group-btn">
+                                                    <button name="submit" value="Submit" type="submit"
+                                                            class="btn"><i
+                                                            class="fa fa-arrow-right"></i></button>
+                                                </span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                                <div class="row">
+                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                        <div class="widget footer_widget">
+                                            <h5 class="footer-title">Company</h5>
+                                            <ul>
+                                                <li><a href="Home">Home</a></li>
+                                                <li><a href="about-1.html">About</a></li>
+                                                <li><a href="faq-1.jsp">FAQs</a></li>
+                                                <li><a href="contact-1.html">Contact</a></li>
+                                            </ul>
                                         </div>
-                                        <div class="error-message" id="expiryError"></div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label" for="cvv">Mã bảo mật *</label>
-                                        <input type="text" class="form-input" id="cvv" name="cvv" maxlength="4" style="width: 120px;" required>
-                                        <div class="error-message" id="cvvError"></div>
+                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                        <div class="widget footer_widget">
+                                            <h5 class="footer-title">Get In Touch</h5>
+                                            <ul>
+                                                <li><a
+                                                        href="http://educhamp.themetrades.com/admin/Home">Dashboard</a>
+                                                </li>
+                                                <li><a href="blog-classic-grid.html">Blog</a></li>
+                                                <li><a href="portfolio.html">Portfolio</a></li>
+                                                <li><a href="event.html">Event</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                        <div class="widget footer_widget">
+                                            <h5 class="footer-title">Rooms</h5>
+                                            <ul>
+                                                <li><a href="roomlist">Rooms</a></li>
+                                                <li><a href="rooms-details.jsp">Details</a></li>
+                                                <li><a href="membership.html">Membership</a></li>
+                                                <li><a href="profile.html">Profile</a></li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- ✅ NÚT SUBMIT TRONG FORM -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="card-title">Thông tin quan trọng</div>
-                                </div>
-                                <div class="card-content">
-                                    <div class="success-message" id="successMessage">
-                                        <i class="fas fa-check-circle"></i> Thông tin đã được xác thực thành công!
-                                    </div>
-
-                                    <button type="submit" class="complete-booking-btn" id="submitBtn">
-                                        <span id="btnText">Hoàn tất đặt ›</span>
-                                        <div class="loading-spinner" id="loadingSpinner"></div>
-                                    </button>
-                                </div>
-                            </div>
-
-                        </form>
-
-
-                        <!-- Sidebar -->
-                        <div class="sidebar-content">
-                            <!-- Hotel Information -->
-                            <div class="sidebar">
-                                <div class="hotel-image">
-                                    <span>Hoang Nam Hotel</span>
-                                </div>
-                                <div class="hotel-info">
-
-                                </div>
-                            </div>
-
-
-                            <!-- Price Summary -->
-                            <div class="price-summary">
-                                <h3>Chi tiết giá</h3>
-                                <div class="price-row">
-                                    <span>1 phòng, <span id="nightCount">1</span> đêm</span>
-                                    <span>6.300.002 ₫</span> <!-- sẽ bị ghi đè -->
-                                </div>
-                                <div class="price-row">
-                                    <span>Thuế</span>
-                                    <span>630.030 ₫</span>
-                                </div>
-                                <div class="price-row">
-                                    <span>Thuế địa phương</span>
-                                    <span>489.923 ₫</span>
-                                </div>
-                                <div class="price-total">
-                                    <span>Tổng</span>
-                                    <span>7.419.955 ₫</span>
-                                </div>
-                                <div class="price-payment now">
-                                    <span>Thanh toán ngay</span>
-                                    <span>0 ₫</span>
-                                </div>
-                                <div class="price-payment">
-                                    <span>Thanh toán tại nơi lưu trú</span>
-                                    <span>7.419.955 ₫</span>
+                            <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                                <div class="widget widget_gallery gallery-grid-4">
+                                    <h5 class="footer-title">Our Gallery</h5>
+                                    <ul class="magnific-image">
+                                        <li><a href="assets/images/gallery/pic1.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic1.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic2.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic2.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic3.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic3.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic4.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic4.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic5.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic5.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic6.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic6.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic7.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic7.jpg" alt=""></a>
+                                        </li>
+                                        <li><a href="assets/images/gallery/pic8.jpg"
+                                               class="magnific-anchor"><img
+                                                    src="assets/images/gallery/pic8.jpg" alt=""></a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-
-            </div>
+                <div class="footer-bottom">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank"
+                                                                                      href="https://www.templateshub.net">Templates Hub</a></div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- Footer END ==== -->
+            <button class="back-to-top fa fa-chevron-up"></button>
         </div>
 
+        <!-- External JavaScripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+        <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+        <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+        <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+        <script src="assets/vendors/counter/waypoints-min.js"></script>
+        <script src="assets/vendors/counter/counterup.min.js"></script>
+        <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+        <script src="assets/vendors/masonry/masonry.js"></script>
+        <script src="assets/vendors/masonry/filter.js"></script>
+        <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+        <script src="assets/js/functions.js"></script>
+        <script src="assets/js/contact.js"></script>
+        <script src='assets/vendors/switcher/switcher.js'></script>
 
-        <!-- Content END-->
-        <!-- Footer ==== -->
-        <footer>
-            <div class="footer-top">
-                <div class="pt-exebar">
-                    <div class="container">
-                        <div class="d-flex align-items-stretch">
-                            <div class="pt-logo mr-auto">
-                                <a href="Home"><img src="assets/images/logo-white.png" alt="" /></a>
-                            </div>
-                            <div class="pt-social-link">
-                                <ul class="list-inline m-a0">
-                                    <li><a href="#" class="btn-link"><i
-                                                class="fa fa-facebook"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i
-                                                class="fa fa-twitter"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i
-                                                class="fa fa-linkedin"></i></a></li>
-                                    <li><a href="#" class="btn-link"><i
-                                                class="fa fa-google-plus"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="pt-btn-join">
-                                <a href="#" class="btn ">Join Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                            <div class="widget">
-                                <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                <p class="text-capitalize m-b20">Weekly Breaking news analysis and
-                                    cutting edge advices on job searching.</p>
-                                <div class="subscribe-form m-b20">
-                                    <form class="subscription-form"
-                                          action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php"
-                                          method="post">
-                                        <div class="ajax-message"></div>
-                                        <div class="input-group">
-                                            <input name="email" required="required"
-                                                   class="form-control"
-                                                   placeholder="Your Email Address" type="email">
-                                            <span class="input-group-btn">
-                                                <button name="submit" value="Submit" type="submit"
-                                                        class="btn"><i
-                                                        class="fa fa-arrow-right"></i></button>
-                                            </span>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                            <div class="row">
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Company</h5>
-                                        <ul>
-                                            <li><a href="Home">Home</a></li>
-                                            <li><a href="about-1.html">About</a></li>
-                                            <li><a href="faq-1.jsp">FAQs</a></li>
-                                            <li><a href="contact-1.html">Contact</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Get In Touch</h5>
-                                        <ul>
-                                            <li><a
-                                                    href="http://educhamp.themetrades.com/admin/Home">Dashboard</a>
-                                            </li>
-                                            <li><a href="blog-classic-grid.html">Blog</a></li>
-                                            <li><a href="portfolio.html">Portfolio</a></li>
-                                            <li><a href="event.html">Event</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                    <div class="widget footer_widget">
-                                        <h5 class="footer-title">Rooms</h5>
-                                        <ul>
-                                            <li><a href="roomlist">Rooms</a></li>
-                                            <li><a href="rooms-details.jsp">Details</a></li>
-                                            <li><a href="membership.html">Membership</a></li>
-                                            <li><a href="profile.html">Profile</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                            <div class="widget widget_gallery gallery-grid-4">
-                                <h5 class="footer-title">Our Gallery</h5>
-                                <ul class="magnific-image">
-                                    <li><a href="assets/images/gallery/pic1.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic1.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic2.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic2.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic3.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic3.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic4.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic4.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic5.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic5.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic6.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic6.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic7.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic7.jpg" alt=""></a>
-                                    </li>
-                                    <li><a href="assets/images/gallery/pic8.jpg"
-                                           class="magnific-anchor"><img
-                                                src="assets/images/gallery/pic8.jpg" alt=""></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank"
-                                                                                  href="https://www.templateshub.net">Templates Hub</a></div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- Footer END ==== -->
-        <button class="back-to-top fa fa-chevron-up"></button>
-    </div>
+        <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- External JavaScripts -->
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-    <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-    <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-    <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-    <script src="assets/vendors/counter/waypoints-min.js"></script>
-    <script src="assets/vendors/counter/counterup.min.js"></script>
-    <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-    <script src="assets/vendors/masonry/masonry.js"></script>
-    <script src="assets/vendors/masonry/filter.js"></script>
-    <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-    <script src="assets/js/functions.js"></script>
-    <script src="assets/js/contact.js"></script>
-    <script src='assets/vendors/switcher/switcher.js'></script>
+        <script>
 
-    <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-
-    </script>
+        </script>
 
 
-</body>
-
+    </body>
+    <%
+            } // <-- đóng else của booking != null
+        } // <-- đóng else của bookingID > 0
+    %>
 </html>

@@ -70,6 +70,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="assets/css/listRoom.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     </head>
 
@@ -619,10 +620,11 @@
                                                 <div class="service-card">
                                                     <c:if test="${not empty service.serviceImage}">
                                                         <div class="service-image">
-                                                            <img src="${service.serviceImage}" alt="${service.name}"
-                                                                 onerror="this.src='/placeholder.svg?height=120&width=180'" />
+                                                            <i class="fas ${service.serviceImage}"></i>
                                                         </div>
                                                     </c:if>
+
+
 
                                                     <div class="service-content">
                                                         <!-- ✅ Header + Checkbox -->
@@ -1117,5 +1119,14 @@
                             )
                     );
         </script>
+        <div id="imageModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeImageModal()">&times;</span>
+                <h4 id="imageTitle"></h4>
+                <img id="modalImage" src="" alt="Dịch vụ" style="max-width: 100%; border-radius: 12px;" />
+            </div>
+        </div>
+
+
     </body>
 </html>

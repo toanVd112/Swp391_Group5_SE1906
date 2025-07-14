@@ -180,6 +180,7 @@ public class BookingDAO {
                 booking.setContactName(rs.getString("ContactName"));
                 booking.setContactEmail(rs.getString("ContactEmail"));
                 booking.setContactPhone(rs.getString("ContactPhone"));
+                booking.setTotalAmount(rs.getDouble("TotalAmount"));
             }
 
         } catch (SQLException e) {
