@@ -248,12 +248,12 @@
                                     <c:choose>
                                         <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
                                         <c:when test="${not empty sessionScope.user}">
-                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Booking</a></li>
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
                                         <%-- N?u ch?a ??ng nh?p --%>
                                         <c:otherwise>
-                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Booking</a></li>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -274,31 +274,27 @@
                     <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                         <div class="search-row">
                             <div class="search-field">
-                                <label><i class="fas fa-calendar-check"></i>Ngày nhận phòng</label>
+                                <label><i class="fas fa-calendar-check"></i>Check-in Date</label>
                                 <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
                             </div>
                             <div class="search-field">
-                                <label><i class="fas fa-calendar-times"></i> Ngày trả phòng</label>
+                                <label><i class="fas fa-calendar-times"></i>Check-out Date</label>
                                 <input type="text" id="checkout" name="checkout" placeholder="Chọn ngày" value="${param.checkout}" required>
                             </div>
                             <div class="search-field">
-                                <label><i class="fas fa-users"></i> Số khách</label>
-                                <input type="number" id="guests" name="guests" min="1"  max="${sessionScope.maxGuests}" value="${param.guests}" required>
+                                <label><i class="fas fa-users"></i>Number of Guests</label>
+                                <input type="number" id="guests" name="guests" min="1"   value="${param.guests}" required>
                             </div>
                             <div class="search-field">
-                                <button type="submit" class="search-btn">
-                                    <i class="fas fa-search"></i>
-                                    Tìm phòng
-                                </button>
+                                <button type="submit" class="search-btn">Search Rooms</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
                 <div class="search-results-header">
-                    <h1 class="results-title">Kết quả tìm phòng cho ${guests} người</h1>
-                    <p class="results-subtitle">Tìm thấy các tổ hợp phòng phù hợp và phòng trống cho kỳ nghỉ của bạn</p>
-                </div>
+                    <h1  class="results-title">Room Results for ${guests} Guest(s)</h1>
+                    <p class="results-subtitle">Matching room combinations and available rooms for your stay</p>                </div>
             </div>
 
             <!-- Main Content -->
@@ -315,20 +311,20 @@
                                     <div class="tab-buttons">
                                         <button class="tab-btn active" onclick="switchTab('suggestions')" id="suggestionsTab">
                                             <i class="fas fa-magic"></i>
-                                            <span>Gợi ý tổ hợp</span>
+                                            <span>Recommended Combos</span>
                                         </button>
                                         <button class="tab-btn" onclick="switchTab('manual')" id="manualTab">
                                             <i class="fas fa-list"></i>
-                                            <span>Tự chọn phòng</span>
+                                            <span>Manual Selection</span>
                                         </button>
                                         <button class="tab-btn" onclick="switchTab('services')" id="servicesTab">
                                             <i class="fas fa-concierge-bell"></i>
-                                            <span>Dịch vụ</span>
+                                            <span>Services</span>
                                         </button>
                                     </div>
                                     <button class="filter-toggle-btn" onclick="toggleFilters()">
                                         <i class="fas fa-filter"></i>
-                                        <span>Bộ lọc</span>
+                                        <span>Filter</span>
                                     </button>
                                 </div>
                             </div>
@@ -336,7 +332,7 @@
                             <!-- Filter Panel -->
                             <div class="filter-panel" id="filterPanel">
                                 <div class="filter-content">
-                                    <h3><i class="fas fa-filter"></i> Bộ lọc nâng cao</h3>
+                                    <h3><i class="fas fa-filter"></i> Advanced Filters</h3>
                                     <form method="get" action="FindAvailableRoomsServlet">
                                         <div class="filter-row">
                                             <input type="hidden" name="checkin" value="${param.checkin}">
@@ -344,23 +340,20 @@
                                             <input type="hidden" name="guests" value="${param.guests}">
 
                                             <div class="filter-field">
-                                                <label>Loại phòng</label>
+                                                <label>Room Type</label>
                                                 <select name="roomType">
-                                                    <option value="">Tất cả loại phòng</option>
+                                                    <option value="">All Room Types</option>
                                                     <c:forEach var="type" items="${roomTypes}">
                                                         <option value="${type.name}" <c:if test="${param.roomType == type.name}">selected</c:if>>${type.name}</option>
                                                     </c:forEach>
                                                 </select>
                                             </div>
                                             <div class="filter-field">
-                                                <label>Giá tối đa (VND)</label>
-                                                <input type="number" name="maxPrice" placeholder="Nhập giá tối đa" value="${param.maxPrice}">
+                                                <label>Max Price (VND)</label>
+                                                <input type="number" name="maxPrice" placeholder="Max Price (VND)" value="${param.maxPrice}">
                                             </div>
                                             <div class="filter-field">
-                                                <button type="submit" class="filter-btn">
-                                                    <i class="fas fa-search"></i>
-                                                    Áp dụng
-                                                </button>
+                                                <button type="submit" class="filter-btn">Apply</button>
                                             </div>
                                         </div>
                                     </form>
@@ -373,8 +366,7 @@
                                 <div id="suggestionsContent" class="tab-content active">
                                     <div class="suggestions-section">
                                         <div class="section-header">
-                                            <h2><i class="fas fa-magic"></i> Gợi ý tổ hợp phòng phù hợp</h2>
-                                            <p>Các tổ hợp phòng được đề xuất dựa trên số lượng khách và ngân sách của bạn</p>
+                                            <h2><i class="fas fa-magic"></i> Recommended Room Combinations</h2>                                       
                                         </div>
 
                                         <c:choose>
@@ -391,7 +383,7 @@
                                                                         <c:forEach var="sug" items="${combo}">
                                                                             <c:set var="totalCapacity" value="${totalCapacity + sug.quantity * sug.roomType.maxGuests}" />
                                                                         </c:forEach>
-                                                                        ${totalCapacity} khách
+                                                                        ${totalCapacity} guests
                                                                     </span>
                                                                     <span class="stat-item">
                                                                         <i class="fas fa-door-open"></i>
@@ -399,7 +391,7 @@
                                                                         <c:forEach var="sug" items="${combo}">
                                                                             <c:set var="totalRooms" value="${totalRooms + sug.quantity}" />
                                                                         </c:forEach>
-                                                                        ${totalRooms} phòng
+                                                                        ${totalRooms} Rooms
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -414,7 +406,7 @@
                                                                         </div>
                                                                         <div class="room-combo-info">
                                                                             <h4><a href="RoomDetail?id=${sug.roomType.roomTypeID}">${sug.roomType.name}</a></h4>
-                                                                            <p class="room-capacity"><i class="fas fa-user"></i> Tối đa ${sug.roomType.maxGuests} người</p>
+                                                                            <p class="room-capacity"><i class="fas fa-user"></i> Max ${sug.roomType.maxGuests} guest</p>
                                                                             <p class="room-price">
                                                                                 <fmt:formatNumber value="${sug.roomType.basePrice}" type="number" maxFractionDigits="0"/> VND/đêm
                                                                             </p>
@@ -425,7 +417,7 @@
 
                                                             <div class="suggestion-footer">
                                                                 <div class="total-price">
-                                                                    <span class="price-label">Tổng cộng:</span>
+                                                                    <span class="price-label">Total price:</span>
                                                                     <c:set var="totalPrice" value="0"/>
                                                                     <c:forEach var="sug" items="${combo}">
                                                                         <c:set var="totalPrice" value="${totalPrice + sug.quantity * sug.roomType.basePrice}" />
@@ -435,7 +427,7 @@
                                                                     </span>
                                                                 </div>
 
-                                                                <div >
+                                                                <div class="combo-row" data-index="${idx.count}">
                                                                     <c:forEach var="sug" items="${combo}">
                                                                         <input type="hidden" name="roomTypeId" value="${sug.roomType.roomTypeID}"
                                                                                data-base-price="${sug.roomType.basePrice != null ? sug.roomType.basePrice : 0}"
@@ -445,7 +437,7 @@
                                                                     </c:forEach>
                                                                     <button type="button" class="select-combo-btn" onclick="handleComboSelection(${idx.count})">
                                                                         <i class="fas fa-check"></i>
-                                                                        Chọn tổ hợp này
+                                                                        Choose this combo
                                                                     </button>
                                                                 </div>
 
@@ -470,11 +462,11 @@
                                                     <div class="empty-icon">
                                                         <i class="fas fa-search"></i>
                                                     </div>
-                                                    <h3>Không tìm thấy tổ hợp phù hợp</h3>
-                                                    <p>Vui lòng thử điều chỉnh lại số người, loại phòng, hoặc ngày nhận/trả phòng.</p>
+                                                    <h3>No Suitable Combination Found</h3>
+                                                    <p>Please try adjusting the number of guests, room type, or dates.</p>
                                                     <button class="retry-btn" onclick="switchTab('manual')">
                                                         <i class="fas fa-list"></i>
-                                                        Tự chọn phòng
+                                                        Manual Room Selection
                                                     </button>
                                                 </div>
                                             </c:otherwise>
@@ -486,8 +478,10 @@
                                 <div id="manualContent" class="tab-content">
                                     <div class="manual-section">
                                         <div class="section-header">
-                                            <h2><i class="fas fa-list"></i> Tự chọn phòng từ danh sách</h2>
-                                            <p>Chọn từng phòng theo ý muốn từ danh sách phòng còn trống</p>
+                                            <h2><i class="fas fa-list"></i> 
+
+                                                Select Room from List</h2>
+                                            <p>Select each room of your choice from the list of available rooms</p>
                                         </div>
 
                                         <c:choose>
@@ -500,7 +494,7 @@
                                                                      onerror="this.src='/placeholder.svg?height=250&width=400'">
                                                                 <div class="room-badge">
                                                                     <i class="fas fa-door-open"></i>
-                                                                    ${room.availableRooms} phòng trống
+                                                                    ${room.availableRooms} Room Available
                                                                 </div>
                                                             </div>
 
@@ -513,7 +507,7 @@
                                                                         <span class="price-amount">
                                                                             <fmt:formatNumber value="${room.basePrice}" type="number" maxFractionDigits="0"/> VND
                                                                         </span>
-                                                                        <span class="price-unit">/ đêm</span>
+                                                                        <span class="price-unit">/ Night</span>
                                                                     </div>
                                                                 </div>
 
@@ -522,25 +516,25 @@
                                                                 <div class="room-meta">
                                                                     <span class="meta-item">
                                                                         <i class="fas fa-users"></i>
-                                                                        Tối đa ${room.maxGuests} người
+                                                                        Max ${room.maxGuests} Guests
                                                                     </span>
                                                                 </div>
                                                                 <div class="room-amenities">
                                                                     <span class="amenity-badge">
                                                                         <i class="fas fa-wifi"></i>
-                                                                        Wifi miễn phí
+                                                                        Wifi free
                                                                     </span>
                                                                     <span class="amenity-badge">
                                                                         <i class="fas fa-car"></i>
-                                                                        Bãi đỗ xe
+                                                                        Park
                                                                     </span>
                                                                     <span class="amenity-badge">
                                                                         <i class="fas fa-swimming-pool"></i>
-                                                                        Hồ bơi
+                                                                        Pool
                                                                     </span>
                                                                     <span class="amenity-badge">
                                                                         <i class="fas fa-dumbbell"></i>
-                                                                        Phòng gym
+                                                                        gym room
                                                                     </span>
                                                                 </div>
 
@@ -552,9 +546,9 @@
                                                                     <input type="hidden" name="roomCapacity" value="${room.maxGuests}">
                                                                     <input type="hidden" name="roomPrice" value="${room.basePrice}">
                                                                     <div class="quantity-selection">
-                                                                        <label>Số lượng phòng:</label>
+                                                                        <label>Quantity room:</label>
                                                                         <div class="quantity-controls">
-                                                                            <button type="button" class="qty-btn minus" onclick="changeQuantity(this, -1)">
+                                                                            <button type="button" class="qty-btn minus" onclick="changeQuantity(this, - 1)">
                                                                                 <i class="fas fa-minus"></i>
                                                                             </button>
                                                                             <input type="number" name="quantity" class="qty-input" min="1" max="${room.availableRooms}" value="1">
@@ -566,7 +560,7 @@
 
                                                                     <button type="submit" class="select-room-btn">
                                                                         <i class="fas fa-plus-circle"></i>
-                                                                        Thêm vào giỏ
+                                                                        Choose
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -595,8 +589,8 @@
                                 <div id="servicesContent" class="tab-content">
                                     <div class="services-section">
                                         <div class="section-header">
-                                            <h2><i class="fas fa-concierge-bell"></i> Dịch vụ bổ sung</h2>
-                                            <p>Nâng cao trải nghiệm của bạn với các dịch vụ cao cấp</p>
+                                            <h2><i class="fas fa-concierge-bell"></i>Additional Services</h2>
+                                            <p>Enhance your experience with premium services</p>
                                         </div>
 
                                         <!-- ===================================== -->
@@ -741,39 +735,39 @@
                         <div class="cart-sidebar">
                             <div class="cart-container">
                                 <div class="cart-header">
-                                    <h3><i class="fas fa-shopping-cart"></i> Thông tin đặt phòng</h3>
+                                    <h3><i class="fas fa-shopping-cart"></i>Info rooms</h3>
                                 </div>
 
                                 <div class="cart-content">
                                     <div class="selected-rooms" id="selectedRoomsList">
                                         <div class="empty-cart">
                                             <i class="fas fa-bed"></i>
-                                            <p>Chưa có phòng nào được chọn</p>
+                                            <p>No rooms selected yet</p>
                                         </div>
                                     </div>
 
                                     <div class="cart-summary">
                                         <div class="summary-row">
-                                            <span>Số đêm:</span>
-                                            <span id="nightsCount">0 đêm</span>
+                                            <span>Number of nights:</span>
+                                            <span id="nightsCount">0 Night</span>
                                         </div>
                                         <div class="summary-row">
-                                            <span>Tạm tính:</span>
+                                            <span>Provisional:</span>
                                             <span id="roomsTotal">0 VND</span>
                                         </div>
                                         <div class="summary-row">
-                                            <span>Thuế (10%):</span>
+                                            <span>Tax (10%):</span>
                                             <span id="taxAmount">0 VND</span>
                                         </div>
                                         <div class="summary-row total">
-                                            <span>Tổng cộng:</span>
+                                            <span>Total:</span>
                                             <span id="grandTotal">0 VND</span>
                                         </div>
                                     </div>
 
                                     <button id="bookingBtn" type="button" class="checkout-btn" onclick="proceedToBooking()" disabled>
                                         <i class="fas fa-credit-card"></i>
-                                        Tiến hành thanh toán
+                                        Process pay
                                     </button>
                                 </div>
                             </div>
@@ -804,11 +798,11 @@
                                 <div id="guestInfoModal" class="modal">
                                     <div class="modal-content">
                                         <span class="close-btn" onclick="closeModal()">&times;</span>
-                                        <h3>Nhập thông tin liên hệ</h3>
-                                        <label>Họ tên: <input type="text" id="guestFullName"></label><br>
+                                        <h3>Enter contact information</h3>
+                                        <label>Full Name: <input type="text" id="guestFullName"></label><br>
                                         <label>Email: <input type="email" id="guestEmail"></label><br>
-                                        <label>Điện thoại: <input type="tel" id="guestPhone"></label><br>
-                                        <button onclick="confirmGuestInfo()">Xác nhận</button>
+                                        <label>Phone number: <input type="tel" id="guestPhone"></label><br>
+                                        <button onclick="confirmGuestInfo()">Confirm</button>
                                     </div>
                                 </div>
                             </form>
@@ -962,91 +956,132 @@
             document.getElementById('guestInfoModal').style.display = 'block';
             document.getElementById('guestInfoModal').style.display = 'none';
             function closeModal() {
-                document.getElementById('guestInfoModal').style.display = 'none';
+            document.getElementById('guestInfoModal').style.display = 'none';
             }
 
 
+        </script>
+
+        <script>
+            const hotelMaxGuests = <%= (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0 %>;
         </script>
 
         <script>
             flatpickr("#checkin", {
-                dateFormat: "d/m/Y", // Định dạng dd/mm/yyyy
-                defaultDate: "${param.checkin}"   // Ngày từ request param
+            dateFormat: "d/m/Y",
+                    defaultDate: "${param.checkin}"
             });
-
             flatpickr("#checkout", {
-                dateFormat: "d/m/Y",
-                defaultDate: "${param.checkout}"
+            dateFormat: "d/m/Y",
+                    defaultDate: "${param.checkout}"
             });
         </script>
         <script>
+            const hotelMaxGuests = <%= (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0 %>;
+            console.log("✅ hotelMaxGuests =", hotelMaxGuests);
+        </script>
+
+        <script>
             const checkinInput = document.getElementById('checkin');
             const checkoutInput = document.getElementById('checkout');
-
+            const guestInput = document.getElementById('guests');
             checkinInput.addEventListener('change', validateDates);
             checkoutInput.addEventListener('change', validateDates);
-
             function parseDate(dateStr) {
-                // format: dd/MM/yyyy
-                const parts = dateStr.split('/');
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
-                const year = parseInt(parts[2], 10);
-                return new Date(year, month, day);
+            if (!dateStr)
+                    return null;
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]); // yyyy, mm-1, dd
             }
 
             function validateDates() {
-                const checkin = parseDate(checkinInput.value);
-                const checkout = parseDate(checkoutInput.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (checkin < today) {
-                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
-                    checkinInput.value = '';
-                }
-
-                if (checkin && checkout && checkout <= checkin) {
-                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
-                    checkoutInput.value = '';
-                }
+            const checkin = parseDate(checkinInput.value);
+            const checkout = parseDate(checkoutInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (checkin && checkin < today) {
+            Swal.fire({
+            icon: 'warning',
+                    title: 'Invalid Check-in Date',
+                    text: 'Check-in date cannot be before today!'
+            });
+            checkinInput.value = '';
             }
 
+            if (checkin && checkout && checkout <= checkin) {
+            Swal.fire({
+            icon: 'warning',
+                    title: 'Invalid Check-out Date',
+                    text: 'Check-out date must be after check-in date!'
+            });
+            checkoutInput.value = '';
+            }
+            }
+
+            function parseDate(dateStr) {
+            if (!dateStr) return null;
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
 
             function validateForm() {
-                const checkin = parseDate(checkinInput.value);
-                const checkout = parseDate(checkoutInput.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); // Đặt về 00:00:00 để so sánh đúng
-
-                if (checkin < today) {
-                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
-                    return false;
-                }
-
-                if (checkout <= checkin) {
-                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
-                    return false;
-                }
-
-                return true;
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            const guestInput = document.getElementById('guests');
+            const checkin = parseDate(checkinInput.value);
+            const checkout = parseDate(checkoutInput.value);
+            const guests = parseInt(guestInput.value, 10) || 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (!checkin) {
+            Swal.fire({ icon: 'warning', title: 'Missing Check-in Date', text: 'You must enter a check-in date!' });
+            return false;
             }
+
+            if (!checkout) {
+            Swal.fire({ icon: 'warning', title: 'Missing Check-out Date', text: 'You must enter a check-out date!' });
+            return false;
+            }
+
+            if (checkin < today) {
+            Swal.fire({ icon: 'warning', title: 'Invalid Check-in Date', text: 'Check-in date cannot be before today!' });
+            return false;
+            }
+
+            if (checkout <= checkin) {
+            Swal.fire({ icon: 'warning', title: 'Invalid Check-out Date', text: 'Check-out date must be after check-in date!' });
+            return false;
+            }
+
+            console.log("💡 guests =", guests);
+            console.log("💡 hotelMaxGuests =", hotelMaxGuests);
+            if (guests > hotelMaxGuests && hotelMaxGuests > 0) {
+            Swal.fire({
+            icon: 'warning',
+                    title: 'Too Many Guests',
+                    text: 'Maximum allowed guests in the hotel is ' + hotelMaxGuests + '.'
+            });
+            return false;
+            }
+
+            return true;
+            }
+
+            window.validateForm = validateForm;
         </script>
+
         <script >
             function changeQuantity(btn, delta) {
-                const input = btn.parentElement.querySelector('.qty-input');
-                let val = parseInt(input.value) || 1;
-                const min = parseInt(input.min) || 1;
-                const max = parseInt(input.max) || 99;
-
-                val += delta;
-
-                if (val < min)
+            const input = btn.parentElement.querySelector('.qty-input');
+            let val = parseInt(input.value) || 1;
+            const min = parseInt(input.min) || 1;
+            const max = parseInt(input.max) || 99;
+            val += delta;
+            if (val < min)
                     val = min;
-                if (val > max)
+            if (val > max)
                     val = max;
-
-                input.value = val;
+            input.value = val;
             }
 
         </script>
@@ -1061,34 +1096,16 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const rows = document.querySelectorAll(".combo-row");
-                const showMoreBtn = document.getElementById("showMoreBtn");
-                const showLessBtn = document.getElementById("showLessBtn");
-                const limit = 5;
-
-                rows.forEach((row, idx) => {
-                    if (idx >= limit)
-                        row.style.display = "none";
-                });
-
-                if (rows.length <= limit) {
+            const rows = document.querySelectorAll(".combo-row");
+            const showMoreBtn = document.getElementById("showMoreBtn");
+            const showLessBtn = document.getElementById("showLessBtn");
+            // 👉 Luôn hiển thị toàn bộ combo-row
+            rows.forEach(row => row.style.display = "");
+            // 👉 Ẩn luôn 2 nút điều khiển
+            if (showMoreBtn)
                     showMoreBtn.style.display = "none";
-                }
-
-                window.showMoreCombos = function () {
-                    rows.forEach(row => row.style.display = "");
-                    showMoreBtn.style.display = "none";
-                    showLessBtn.style.display = "";
-                };
-
-                window.showLessCombos = function () {
-                    rows.forEach((row, idx) => {
-                        if (idx >= limit)
-                            row.style.display = "none";
-                    });
-                    showMoreBtn.style.display = "";
+            if (showLessBtn)
                     showLessBtn.style.display = "none";
-                };
             });
         </script>
 

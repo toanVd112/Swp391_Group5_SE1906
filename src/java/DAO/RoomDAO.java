@@ -85,6 +85,22 @@ public class RoomDAO {
         return list;
     }
 
+    public int getMaxGuests() {
+        int maxGuests = 1; // default value
+        String query = "SELECT MAX(MaxGuests) FROM roomtypes";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                maxGuests = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return maxGuests;
+    }
+
     // --- Đếm số phòng có áp dụng bộ lọc ---
     public int countRoomsByFilter(Integer floor, Integer typeId) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM rooms WHERE 1=1");
@@ -172,7 +188,6 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                       
                         roomType
                 );
             }
@@ -227,37 +242,37 @@ public class RoomDAO {
         }
         return 0;
     }
-public List<CartRoom> getCartByAccountId(int accountId) {
-    List<CartRoom> list = new ArrayList<>();
-    String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, " +
-                 "       rt.MaxGuests, " +
-                 "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity " +
-                 "FROM CartRooms c " +
-                 "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID " +
-                 "WHERE c.AccountID = ?";
 
-    try (Connection conn = DBConnect.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+    public List<CartRoom> getCartByAccountId(int accountId) {
+        List<CartRoom> list = new ArrayList<>();
+        String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, "
+                + "       rt.MaxGuests, "
+                + "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
+                + "FROM CartRooms c "
+                + "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID "
+                + "WHERE c.AccountID = ?";
 
-        ps.setInt(1, accountId);
-        ResultSet rs = ps.executeQuery();
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        while (rs.next()) {
-            CartRoom room = new CartRoom();
-            room.setRoomTypeId(rs.getInt("RoomTypeID"));
-            room.setRoomName(rs.getString("RoomName"));
-            room.setBasePrice(rs.getDouble("BasePrice"));
-            room.setImageUrl(rs.getString("imageUrl"));
-            room.setMaxguest(rs.getInt("MaxGuests"));
-            room.setAvailableQuantity(rs.getInt("availableQuantity"));
-            list.add(room);
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                CartRoom room = new CartRoom();
+                room.setRoomTypeId(rs.getInt("RoomTypeID"));
+                room.setRoomName(rs.getString("RoomName"));
+                room.setBasePrice(rs.getDouble("BasePrice"));
+                room.setImageUrl(rs.getString("imageUrl"));
+                room.setMaxguest(rs.getInt("MaxGuests"));
+                room.setAvailableQuantity(rs.getInt("availableQuantity"));
+                list.add(room);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
 
-    return list;
-}
-    
 }

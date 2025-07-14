@@ -5,6 +5,8 @@
 package controller;
 
 import DAO.AccountDAO;
+import DAO.BookingDAO;
+import DAO.RoomDAO;
 import DAO.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,6 +92,8 @@ public class LoginCustomerServlet extends HttpServlet {
         if (account != null) {
             HttpSession session = request.getSession();
             session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
+            RoomDAO b = new RoomDAO();
+            int maxGuests = b.getMaxGuests();
             UserDao u = new UserDao();
             int accountId = account.getAccountID();
             User userInfo = null;
@@ -98,15 +102,14 @@ public class LoginCustomerServlet extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            session.setAttribute("maxGuests", maxGuests);
             session.setAttribute("userInfo", userInfo);
             session.setAttribute("user", account);
-            
+
 //            session.setAttribute("account", account);
 //            UserDao userDAO = new UserDao();
 //            User user = userDAO.getUserByAccountId(account.getAccountID());
 //            session.setAttribute("user", user);
-            
             session.setAttribute("accountId", account.getAccountID());
 
             response.sendRedirect("Home");

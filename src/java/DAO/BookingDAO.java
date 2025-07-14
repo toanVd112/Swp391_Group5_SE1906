@@ -613,36 +613,47 @@ public class BookingDAO {
         }
     }
 
-    public static void main(String[] args) {
-        int bookingID = 1; // 👈 Sửa ID để test
-//        BookingDAO dao = new BookingDAO();
-//        dao.truncateAllBookingTables();
-        BookingDAO bookingDAO = new BookingDAO();
-        ServiceDAO serviceDAO = new ServiceDAO();
+    public static void main(String[] args) throws SQLException {
+//        int bookingID = 1; // 👈 Sửa ID để test
+        BookingDAO dao = new BookingDAO();
+////        dao.truncateAllBookingTables();
+//        BookingDAO bookingDAO = new BookingDAO();
+//        ServiceDAO serviceDAO = new ServiceDAO();
+//
+//        System.out.println("=== Booking Details ===");
+//        List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
+//        for (BookingDetail bd : bookingDetails) {
+//            System.out.println("BookingDetailID: " + bd.getBookingDetailID());
+//            System.out.println("RoomID: " + bd.getRoomID());
+//            System.out.println("RoomTypeName: " + bd.getRoomTypeName());
+//            System.out.println("PricePerNight: " + bd.getPricePerNight());
+//            System.out.println("GuestsCount: " + bd.getGuestsCount());
+//            System.out.println("Notes: " + bd.getNotes());
+//            System.out.println("----------------------");
+//        }
+//
+//        System.out.println("\n=== Service Usage ===");
+//        List<ServiceUsage> services = serviceDAO.getServiceUsageByBookingID(bookingID);
+//        for (ServiceUsage su : services) {
+//            System.out.println("ServiceUsageID: " + su.getServiceUsageID());
+//            System.out.println("ServiceName: " + su.getServiceName());
+//            System.out.println("Quantity: " + su.getQuantity());
+//            System.out.println("Unit: " + su.getUnit());
+//            System.out.println("UnitPrice: " + su.getUnitPrice());
+//            System.out.println("SubTotal: " + su.getSubTotal());
+//            System.out.println("Notes: " + su.getNotes());
+//            System.out.println("----------------------");
+        // Gán ngày checkin/checkout test
+        String checkin = "2025-07-13";
+        String checkout = "2025-07-26";
 
-        System.out.println("=== Booking Details ===");
-        List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
-        for (BookingDetail bd : bookingDetails) {
-            System.out.println("BookingDetailID: " + bd.getBookingDetailID());
-            System.out.println("RoomID: " + bd.getRoomID());
-            System.out.println("RoomTypeName: " + bd.getRoomTypeName());
-            System.out.println("PricePerNight: " + bd.getPricePerNight());
-            System.out.println("GuestsCount: " + bd.getGuestsCount());
-            System.out.println("Notes: " + bd.getNotes());
-            System.out.println("----------------------");
-        }
-
-        System.out.println("\n=== Service Usage ===");
-        List<ServiceUsage> services = serviceDAO.getServiceUsageByBookingID(bookingID);
-        for (ServiceUsage su : services) {
-            System.out.println("ServiceUsageID: " + su.getServiceUsageID());
-            System.out.println("ServiceName: " + su.getServiceName());
-            System.out.println("Quantity: " + su.getQuantity());
-            System.out.println("Unit: " + su.getUnit());
-            System.out.println("UnitPrice: " + su.getUnitPrice());
-            System.out.println("SubTotal: " + su.getSubTotal());
-            System.out.println("Notes: " + su.getNotes());
-            System.out.println("----------------------");
+        try {
+            int available = dao.getMaxGuestsAvailable(checkin, checkout);
+            System.out.println("✅ Available guests from " + checkin + " to " + checkout + " = " + available);
+        } catch (SQLException e) {
+            System.out.println("❌ SQL Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Other Error: " + e.getMessage());
         }
     }
 

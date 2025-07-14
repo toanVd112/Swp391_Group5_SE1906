@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.RoomType;
 
-
 /**
  *
  * @author Arcueid
@@ -55,8 +54,10 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-          RoomTypeDAO roomDao = new RoomTypeDAO();
-            int maxGuests = 0;
+        RoomDAO b = new RoomDAO();
+        int maxGuests = b.getMaxGuests();
+        RoomTypeDAO roomDao = new RoomTypeDAO();
+
         try {
             maxGuests = roomDao.getTotalAvailableGuests();
         } catch (SQLException ex) {
@@ -64,25 +65,22 @@ public class HomeController extends HttpServlet {
         }
 
 // đẩy lên JSP
-          HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(60 * 60);
-            session.setAttribute("maxGuests", maxGuests);
-       RoomDAO dao =new RoomDAO();
-               List<RoomType> roomTypes = null;
+        HttpSession session = request.getSession();
+        session.setAttribute("maxGuests", maxGuests);
+        session.setMaxInactiveInterval(60 * 60);
+        session.setAttribute("maxGuests", maxGuests);
+        RoomDAO dao = new RoomDAO();
+        List<RoomType> roomTypes = null;
         try {
             roomTypes = dao.getAllRoomTypes();
         } catch (SQLException ex) {
             Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-         
-            request.setAttribute("roomTypes", roomTypes);
-            
-               // Gửi danh sách về JSP
-          
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-            
+        request.setAttribute("roomTypes", roomTypes);
 
+        // Gửi danh sách về JSP
+        request.getRequestDispatcher("index.jsp").forward(request, response);
 
     }
 

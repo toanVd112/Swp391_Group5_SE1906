@@ -8,9 +8,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="isCustomer" value="${not empty sessionScope.user}" />
 <%
-    // Ki?m tra ?? login hay ch?a
-   
+    int maxGuests = (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0;
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -272,15 +272,15 @@
                     <div class="search-row">
                         <div class="search-field">
                             <label><i class="fas fa-calendar-check"></i> Check-in date</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" required>
+                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" required autocomplete="off" >
                         </div>
                         <div class="search-field">
                             <label><i class="fas fa-calendar-times"></i> Check-out date</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Choose a date" required>
+                            <input type="text" id="checkout" name="checkout" placeholder="Choose a date" required autocomplete="off">
                         </div>
                         <div class="search-field">
                             <label><i class="fas fa-users"></i> Number of guests</label>
-                            <input type="number" id="guests" name="guests" min="1"  required>
+                            <input type="number" id="guests" name="guests" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
@@ -669,86 +669,164 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script>
-                    const checkinRaw = "${param.checkin}";
-                    flatpickr("#checkin", {
-                        dateFormat: "d/m/Y",
 
-                    });
-
-
-                    const checkoutRaw = "${param.checkout}";
-                    flatpickr("#checkout", {
-                        dateFormat: "d/m/Y",
-
-                    });
-
-        </script>
 
 
         <!-- Confirm Modal -->
+
         <script>
-            const checkinInput = document.getElementById('checkin');
-            const checkoutInput = document.getElementById('checkout');
-            checkinInput.addEventListener('change', validateDates);
-            checkoutInput.addEventListener('change', validateDates);
-            function parseDate(dateStr) {
-                // format: dd/MM/yyyy
-                const parts = dateStr.split('/');
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
-                const year = parseInt(parts[2], 10);
-                return new Date(year, month, day);
-            }
-
-            function validateDates() {
-                const checkin = parseDate(checkinInput.value);
-                const checkout = parseDate(checkoutInput.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (checkin < today) {
-                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
-                    checkinInput.value = '';
-                }
-
-                if (checkin && checkout && checkout <= checkin) {
-                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
-                    checkoutInput.value = '';
-                }
-            }
 
 
-            function validateForm() {
-                if (!checkinInput.value.trim()) {
-                    alert('⚠️ Bạn phải nhập ngày nhận phòng!');
-                    return false;
-                }
-                if (!checkoutInput.value.trim()) {
-                    alert('⚠️ Bạn phải nhập ngày trả phòng!');
-                    return false;
-                }
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const checkinInput = document.getElementById('checkin');
+                        const checkoutInput = document.getElementById('checkout');
+                        const guestInput = document.getElementById('guests');
+                        let maxAvailableGuests = 0;
 
-                const checkin = parseDate(checkinInput.value);
-                const checkout = parseDate(checkoutInput.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                        function isValidDateFormat(dateStr) {
+                            return /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
+                        }
 
-                if (checkin < today) {
-                    alert('⚠️ Ngày nhận phòng không được trước hôm nay!');
-                    return false;
-                }
+                        function formatToYYYYMMDD(dateStr) {
+                            if (!dateStr)
+                                return "--";
 
-                if (checkout <= checkin) {
-                    alert('⚠️ Ngày trả phòng phải sau ngày nhận phòng.');
-                    return false;
-                }
+                            dateStr = dateStr.trim(); // Loại bỏ khoảng trắng
 
-                return true;
-            }
+                            console.log("📦 Đang format:", dateStr);
+                            console.log("🔎 Loại ký tự:", [...dateStr].map(c => c.charCodeAt(0)));
+
+                            // Regex kiểm tra định dạng dd/MM/yyyy
+                            const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+                            if (!match) {
+                                console.warn("⚠️ Không khớp định dạng:", dateStr);
+                                return "--";
+                            }
+
+                            const [, day, month, year] = match;
+                            return `${year}-${month}-${day}`;
+                                    }
 
 
+
+                                    function parseDate(dateStr) {
+                                        const parts = dateStr.split('/');
+                                        return new Date(parts[2], parts[1] - 1, parts[0]);
+                                    }
+
+
+
+                                    function validateDates() {
+                                        const checkin = parseDate(checkinInput.value);
+                                        const checkout = parseDate(checkoutInput.value);
+                                        const today = new Date();
+                                        today.setHours(0, 0, 0, 0);
+
+                                        if (checkin < today) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Invalid Check-in Date',
+                                                text: 'Check-in date cannot be before today!'
+                                            });
+                                            checkinInput.value = '';
+                                            return false;
+                                        }
+
+                                        if (checkout <= checkin) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Invalid Check-out Date',
+                                                text: 'Check-out date must be after check-in date!'
+                                            });
+                                            checkoutInput.value = '';
+                                            return false;
+                                        }
+
+                                        return true;
+                                    }
+
+                                    function validateForm() {
+                                        if (!checkinInput.value.trim()) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Missing Check-in Date',
+                                                text: 'You must enter a check-in date!'
+                                            });
+                                            return false;
+                                        }
+
+                                        if (!checkoutInput.value.trim()) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Missing Check-out Date',
+                                                text: 'You must enter a check-out date!'
+                                            });
+                                            return false;
+                                        }
+
+                                        const hotelMaxGuests = <%= (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0 %>;
+                                        const guests = parseInt(guestInput.value, 10);
+                                        console.log("✅ hotelMaxGuests =", hotelMaxGuests);
+
+                                        if (guests > hotelMaxGuests && hotelMaxGuests > 0) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Too Many Guests',
+                                                   text: 'Maximum allowed guests in the hotel is ' + hotelMaxGuests + '.'
+                                            });
+                                            return false;
+                                        }
+
+                                        return true;
+                                    }
+
+                                    function onDateChange() {
+                                        const checkin = checkinInput.value.trim();
+                                        const checkout = checkoutInput.value.trim();
+
+                                        if (!isValidDateFormat(checkin) || !isValidDateFormat(checkout)) {
+                                            console.log("⛔ Chưa đủ ngày hợp lệ, chưa gọi fetch");
+                                            return;
+                                        }
+
+                                        const valid = validateDates();
+                                        if (!valid)
+                                            return;
+
+
+                                    }
+
+                                    flatpickr("#checkin", {
+                                        dateFormat: "d/m/Y",
+                                        allowInput: true,
+                                        onChange: function (selectedDates, dateStr) {
+                                            checkinInput.value = dateStr;
+                                            validateDates();  // <-- Gọi trực tiếp validate
+                                            onDateChange();
+                                        }
+                                    });
+
+                                    flatpickr("#checkout", {
+                                        dateFormat: "d/m/Y",
+                                        allowInput: true,
+                                        onChange: function (selectedDates, dateStr) {
+                                            checkoutInput.value = dateStr;
+                                            validateDates();  // <-- Gọi validate luôn
+                                            onDateChange();
+                                        }
+                                    });
+
+
+                                    window.validateForm = validateForm;
+                                });
         </script>
+
+
+
+
+
+
+
 
 
     </body>
