@@ -10,7 +10,6 @@ import model.RoomType;
 import model.RoomTypeOccupancy;
 
 /**
- *
  * @author Arcueid
  */
 public class RoomDAO {
@@ -172,7 +171,6 @@ public class RoomDAO {
                         rs.getString("RoomNumber"),
                         rs.getInt("Floor"),
                         rs.getString("Status"),
-                       
                         roomType
                 );
             }
@@ -214,6 +212,51 @@ public class RoomDAO {
         return occupancyList;
     }
 
+    // --- Lấy thống kê tỷ lệ lấp đầy phòng theo ngày/tháng/năm ---
+    public List<RoomTypeOccupancy> getRoomOccupancyStatisticsByPeriod(String periodType, String periodValue) {
+        List<RoomTypeOccupancy> occupancyList = new ArrayList<>();
+        String sql = "SELECT rt.RoomTypeID, rt.Name AS TypeName, "
+                + "COUNT(DISTINCT res.RoomID) AS occupiedRooms, "
+                + "COUNT(DISTINCT r.RoomID) AS totalRooms "
+                + "FROM roomtypes rt "
+                + "LEFT JOIN rooms r ON rt.RoomTypeID = r.RoomTypeID "
+                + "LEFT JOIN reservations res ON r.RoomID = res.RoomID ";
+
+        if ("day".equalsIgnoreCase(periodType)) {
+            sql += "AND DATE(res.CheckInDate) = ? ";
+        } else if ("month".equalsIgnoreCase(periodType)) {
+            sql += "AND DATE_FORMAT(res.CheckInDate, '%Y-%m') = ? ";
+        } else if ("year".equalsIgnoreCase(periodType)) {
+            sql += "AND YEAR(res.CheckInDate) = ? ";
+        }
+
+        sql += "GROUP BY rt.RoomTypeID, rt.Name";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (periodType != null && periodValue != null) {
+                ps.setString(1, periodValue);
+            }
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                RoomTypeOccupancy occupancy = new RoomTypeOccupancy();
+                occupancy.setRoomTypeID(rs.getInt("RoomTypeID"));
+                occupancy.setTypeName(rs.getString("TypeName"));
+                occupancy.setOccupiedRooms(rs.getInt("occupiedRooms"));
+                occupancy.setTotalRooms(rs.getInt("totalRooms"));
+
+                double rate = occupancy.getTotalRooms() > 0
+                        ? (occupancy.getOccupiedRooms() * 100.0) / occupancy.getTotalRooms()
+                        : 0.0;
+                occupancy.setOccupancyRate(Math.round(rate * 100.0) / 100.0);
+                occupancyList.add(occupancy);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return occupancyList;
+    }
+
     public int getAvailableRoomCount(String roomTypeId) {
         String sql = "SELECT COUNT(*) FROM Rooms WHERE RoomTypeID = ? AND Status = 'Available'";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -227,37 +270,33 @@ public class RoomDAO {
         }
         return 0;
     }
-public List<CartRoom> getCartByAccountId(int accountId) {
-    List<CartRoom> list = new ArrayList<>();
-    String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, " +
-                 "       rt.MaxGuests, " +
-                 "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity " +
-                 "FROM CartRooms c " +
-                 "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID " +
-                 "WHERE c.AccountID = ?";
 
-    try (Connection conn = DBConnect.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+    public List<CartRoom> getCartByAccountId(int accountId) {
+        List<CartRoom> list = new ArrayList<>();
+        String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, "
+                + "rt.MaxGuests, "
+                + "(SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
+                + "FROM CartRooms c "
+                + "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID "
+                + "WHERE c.AccountID = ?";
 
-        ps.setInt(1, accountId);
-        ResultSet rs = ps.executeQuery();
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            CartRoom room = new CartRoom();
-            room.setRoomTypeId(rs.getInt("RoomTypeID"));
-            room.setRoomName(rs.getString("RoomName"));
-            room.setBasePrice(rs.getDouble("BasePrice"));
-            room.setImageUrl(rs.getString("imageUrl"));
-            room.setMaxguest(rs.getInt("MaxGuests"));
-            room.setAvailableQuantity(rs.getInt("availableQuantity"));
-            list.add(room);
+            while (rs.next()) {
+                CartRoom room = new CartRoom();
+                room.setRoomTypeId(rs.getInt("RoomTypeID"));
+                room.setRoomName(rs.getString("RoomName"));
+                room.setBasePrice(rs.getDouble("BasePrice"));
+                room.setImageUrl(rs.getString("imageUrl"));
+                room.setMaxguest(rs.getInt("MaxGuests"));
+                room.setAvailableQuantity(rs.getInt("availableQuantity"));
+                list.add(room);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
-    
 }

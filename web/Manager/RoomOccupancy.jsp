@@ -26,11 +26,36 @@
     <div class="container">
         <h2>Room Occupancy Statistics</h2>
         <p>Occupancy rates by room type (Occupied Rooms / Total Rooms)</p>
-        
+
+        <!-- Filter Form -->
+        <form method="get" action="${pageContext.request.contextPath}/roomoccupancy" class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="periodType" class="form-label">Period Type</label>
+                    <select name="periodType" id="periodType" class="form-select">
+                        <option value="">All Time</option>
+                        <option value="day" <c:if test="${periodType == 'day'}">selected</c:if>>Day</option>
+                        <option value="month" <c:if test="${periodType == 'month'}">selected</c:if>>Month</option>
+                        <option value="year" <c:if test="${periodType == 'year'}">selected</c:if>>Year</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="periodValue" class="form-label">Period Value</label>
+                    <input type="text" name="periodValue" id="periodValue" class="form-control" 
+                           placeholder="e.g., 2025-07-14 (Day), 2025-07 (Month), 2025 (Year)"
+                           value="${periodValue}">
+                </div>
+                <div class="col-md-4 align-self-end">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="${pageContext.request.contextPath}/roomoccupancy?action=export" class="btn btn-success">Export to Excel</a>
+                </div>
+            </div>
+        </form>
+
         <div class="chart-container">
             <canvas id="occupancyChart"></canvas>
         </div>
-        
+
         <div class="mt-4">
             <a href="${pageContext.request.contextPath}/discountcodes/list" class="btn btn-secondary">Back to Dashboard</a>
         </div>
