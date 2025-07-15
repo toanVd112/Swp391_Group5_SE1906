@@ -12,6 +12,9 @@
 <%@page import="model.BookingDetail" %>
 <%@page import="model.ServiceUsage" %>
 <%@page import="java.util.List" %>
+<%@ page import="DAO.DiscountCodeDAO" %>
+<%@ page import="model.DiscountCode" %>
+
 <!DOCTYPE html>
 <html lang="en">
     <%
@@ -70,6 +73,24 @@
                 }
 
                 double finalTotal = roomTotal + serviceTotal;
+    %>
+    <%
+        String discountCodeParam = request.getParameter("discountCode");
+        double discountAmount = 0;
+        String discountError = null;
+
+        if (discountCodeParam != null && !discountCodeParam.isEmpty()) {
+            DiscountCodeDAO ddao = new DiscountCodeDAO();
+         int discountCodeID = Integer.parseInt(discountCodeParam); // nếu discountCodeParam là ID
+DiscountCode dc = ddao.getDiscountCodeByID(discountCodeID);
+
+            if (dc != null && "Active".equals(dc.getStatus()) && dc.getExpiryDate().isAfter(java.time.LocalDate.now())) {
+                discountAmount = finalTotal * dc.getDiscountPercent() / 100;
+            } else {
+                discountError = "❌ Mã giảm giá không hợp lệ hoặc đã hết hạn.";
+            }
+        }
+        double payableAmount = finalTotal - discountAmount;
     %>
 
 
@@ -450,130 +471,135 @@
                         </div>
 
                         <!-- ✅ MỞ FORM TỪ ĐẦU -->
-                        <form method="post" action="/PaymentGatewayServlet" id="bookingForm" novalidate>
-
-                            <!-- ✅ Hidden BookingID -->
-                            <input type="hidden" name="bookingID" value="<%= bookingID %>">
-
-                            <!-- ✅ Hidden Check-in/out từ Booking -->
-                            <input type="hidden" name="checkInDate" value="<%= booking.getCheckInDate() %>">
-                            <input type="hidden" name="checkOutDate" value="<%= booking.getCheckOutDate() %>">
-
-                            <!-- ✅ Hidden: loggedIn flag -->
 
 
-                            <!-- ✅ THÔNG TIN KHÁCH -->
-                            <div class="hidden-info">
-                                <strong>Thông tin booking:</strong>
-                                Booking ID: <%= bookingID %>,
-                                Check-in: <%= booking.getCheckInDate() %>,
-                                Check-out: <%= booking.getCheckOutDate() %>
-                            </div>
+                        <!-- ✅ Hidden BookingID -->
+                        <input type="hidden" name="bookingID" value="<%= bookingID %>">
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label" for="fullName">Họ và tên: *</label>
-                                    <input type="text"
-                                           class="form-input <%= !fullName.isEmpty() ? "prefilled" : "" %>"
-                                           id="fullName"
-                                           name="fullName"
-                                           placeholder="(VD: Nguyen Van A)"
-                                           value="<%= fullName %>"
-                                           required>
+                        <!-- ✅ Hidden Check-in/out từ Booking -->
+                        <input type="hidden" name="checkInDate" value="<%= booking.getCheckInDate() %>">
+                        <input type="hidden" name="checkOutDate" value="<%= booking.getCheckOutDate() %>">
 
-                                    <div class="error-message" id="firstNameError"></div>
-                                </div>
+                        <!-- ✅ Hidden: loggedIn flag -->
 
-                            </div>
 
+                        <!-- ✅ THÔNG TIN KHÁCH -->
+                        <div class="hidden-info">
+                            <strong>Thông tin booking:</strong>
+                            Booking ID: <%= bookingID %>,
+                            Check-in: <%= booking.getCheckInDate() %>,
+                            Check-out: <%= booking.getCheckOutDate() %>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label" for="email">Địa chỉ email *</label>
-                                <input type="email"
-                                       class="form-input <%= !userEmail.isEmpty() ? "prefilled" : "" %>"
-                                       id="email"
-                                       name="email"
-                                       placeholder="Email để xác nhận"
-                                       value="<%= userEmail %>"
+                                <label class="form-label" for="fullName">Họ và tên: *</label>
+                                <input type="text"
+                                       class="form-input <%= !fullName.isEmpty() ? "prefilled" : "" %>"
+                                       id="fullName"
+                                       name="fullName"
+                                       placeholder="(VD: Nguyen Van A)"
+                                       value="<%= fullName %>"
                                        required>
 
-
-                                <div class="error-message" id="emailError"></div>
+                                <div class="error-message" id="firstNameError"></div>
                             </div>
 
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="emailOptIn" name="emailOptIn">
-                                <label for="emailOptIn">
-                                    Nhận email về ưu đãi, khuyến mãi và thông tin khác từ chúng tôi.
-                                </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Địa chỉ email *</label>
+                            <input type="email"
+                                   class="form-input <%= !userEmail.isEmpty() ? "prefilled" : "" %>"
+                                   id="email"
+                                   name="email"
+                                   placeholder="Email để xác nhận"
+                                   value="<%= userEmail %>"
+                                   required>
+
+
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="emailOptIn" name="emailOptIn">
+                            <label for="emailOptIn">
+                                Nhận email về ưu đãi, khuyến mãi và thông tin khác từ chúng tôi.
+                            </label>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="country">Quốc gia/khu vực *</label>
+                                <select class="form-select" id="country" name="country" required>
+                                    <option value="VNM" <%= "VNM".equals(userCountry) ? "selected" : "" %>>VNM +84</option>
+
+                                </select>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Số điện thoại *</label>
+                                <input type="tel"
+                                       class="form-input <%= !userPhone.isEmpty() ? "prefilled" : "" %>"
+                                       id="phone"
+                                       name="phone"
+                                       value="<%= userPhone %>"
+                                       required>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label" for="country">Quốc gia/khu vực *</label>
-                                    <select class="form-select" id="country" name="country" required>
-                                        <option value="VNM" <%= "VNM".equals(userCountry) ? "selected" : "" %>>VNM +84</option>
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+                        </div>
 
-                                    </select>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="smsOptIn" name="smsOptIn" checked>
+                            <label for="smsOptIn">
+                                Nhận tin nhắn thông báo về chuyến đi (miễn phí).
+                            </label>
+                        </div>
+
+                        <!-- ✅ BLOCK PAYMENT METHOD -->
+                        <!-- Sidebar -->
+                        <div class="sidebar-content">
+                            <!-- Form nhập mã giảm giá -->
+                            <form method="get" action="thanhtoan.jsp" class="form-group" style="margin-bottom: 16px;">
+                                <label for="discountCode">Mã giảm giá</label>
+                                <input type="hidden" name="bookingID" value="<%= bookingID %>" />
+                                <input type="text"
+                                       name="discountCode"
+                                       id="discountCode"
+                                       class="form-input"
+                                       value="<%= discountCodeParam != null ? discountCodeParam : "" %>"
+                                       placeholder="Nhập mã giảm giá"
+                                       onblur="checkDiscountCode()" />
+
+                                <button type="submit" style="margin-top: 8px;">Áp dụng</button>
+
+                                <% if (discountError != null) { %>
+                                <div style="color:red; font-weight:bold; margin-top: 8px;"><%= discountError %></div>
+                                <% } %>
+                                <div id="discountMessage" style="font-weight: bold; margin-top: 6px;"></div>
+                            </form>
+
+
+                            <!-- Price Summary -->
+                            <div class="price-summary">
+                                <div class="price-payment">
+                                    <span>Tổng tiền:</span>
+                                    <span><%= String.format("%,.0f", finalTotal) %> ₫</span>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="phone">Số điện thoại *</label>
-                                    <input type="tel"
-                                           class="form-input <%= !userPhone.isEmpty() ? "prefilled" : "" %>"
-                                           id="phone"
-                                           name="phone"
-                                           value="<%= userPhone %>"
-                                           required>
 
-                                    <div class="error-message" id="phoneError"></div>
+                                <% if (discountAmount > 0) { %>
+                                <div class="price-payment">
+                                    <span>Giảm giá:</span>
+                                    <span>-<%= String.format("%,.0f", discountAmount) %> ₫</span>
                                 </div>
-                            </div>
-
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="smsOptIn" name="smsOptIn" checked>
-                                <label for="smsOptIn">
-                                    Nhận tin nhắn thông báo về chuyến đi (miễn phí).
-                                </label>
-                            </div>
-
-                            <!-- ✅ BLOCK PAYMENT METHOD -->
-                            <div class="card">
-
-
-
-                                <!-- ✅ NÚT SUBMIT TRONG FORM -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <div class="card-title">Thông tin quan trọng</div>
-                                    </div>
-                                    <div class="card-content">
-
-
-                                        <button type="submit" class="complete-booking-btn" id="submitBtn">
-                                            <span id="btnText">Hoàn tất đặt ›</span>
-                                            <div class="loading-spinner" id="loadingSpinner"></div>
-                                        </button>
-                                    </div>
+                                <div class="price-payment">
+                                    <strong>Phải thanh toán:</strong>
+                                    <strong><%= String.format("%,.0f", payableAmount) %> ₫</strong>
                                 </div>
-
-
-
-                                <!-- Sidebar -->
-                                <div class="sidebar-content">
-                                    <!-- Hotel Information -->
-
-
-
-                                    <!-- Price Summary -->
-                                    <div class="price-summary">
-
-                                        <div class="price-payment">
-                                            <span>Price</span>
-                                            <span><%= String.format("%,.0f", finalTotal) %> ₫</span>
-                                        </div>
-                                    </div>
-
-                                </div>
+                                <% } %>
                             </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -758,4 +784,26 @@
             } // <-- đóng else của booking != null
         } // <-- đóng else của bookingID > 0
     %>
+    <script>
+        function checkDiscountCode() {
+            const code = document.getElementById("discountCode").value;
+            if (!code)
+                return;
+
+            fetch(`CheckDiscountCode?code=${code}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const msgBox = document.getElementById("discountMessage");
+                        if (data.valid) {
+                            msgBox.innerHTML = `✅ Mã hợp lệ: Giảm ${data.discountPercent}%`;
+                            msgBox.style.color = "green";
+                        } else {
+                            msgBox.innerHTML = data.message;
+                            msgBox.style.color = "red";
+                        }
+                    });
+        }
+    </script>
+
+
 </html>

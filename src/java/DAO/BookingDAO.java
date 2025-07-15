@@ -410,21 +410,37 @@ public class BookingDAO {
         List<Booking> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
-        SELECT 
-            BookingID, UserID, CheckInDate, BookingDate, CheckOutDate, ExpiryTime,GuestsCount, TotalAmount,
-            CASE WHEN Status = 'Pending' AND ExpiryTime < NOW() THEN 'Expired' ELSE Status END AS Status,
-            BookingToken, ContactName, ContactEmail, ContactPhone
-        FROM bookings
-        WHERE UserID = ?
-        AND (
-            (? = 'Pending' AND Status = 'Pending' AND ExpiryTime >= NOW())
-            OR (? = 'Expired' AND Status = 'Pending' AND ExpiryTime < NOW())
-            OR (? = 'Upcoming' AND Status = 'Confirmed' AND CheckInDate > NOW())
-            OR (? = 'Active' AND (Status = 'Confirmed' OR Status = 'Checked-in') AND CheckInDate <= NOW() AND CheckOutDate >= NOW())
-            OR (? = 'Completed' AND (Status = 'Checked-out' OR (Status = 'Confirmed' AND CheckOutDate < NOW())))
-            OR (? = 'Cancelled' AND Status = 'Cancelled')
-            OR (? = '')
-        )
+       SELECT 
+    BookingID, UserID, CheckInDate, BookingDate, CheckOutDate, ExpiryTime, GuestsCount, TotalAmount,
+    CASE 
+        WHEN Status = 'Pending' AND ExpiryTime < NOW() THEN 'Expired'
+        ELSE Status
+    END AS Status,
+    BookingToken, ContactName, ContactEmail, ContactPhone
+FROM bookings
+WHERE UserID = ?
+AND (
+    (? = 'Pending' AND Status = 'Pending' AND ExpiryTime >= NOW())
+    OR (? = 'Expired' AND Status = 'Pending' AND ExpiryTime < NOW())
+    OR (? = 'Upcoming' AND Status = 'Upcoming' AND DATE(CheckInDate) >= CURDATE())
+
+    OR (? = 'Active'
+    AND Status IN ('Confirmed', 'Checked-in')
+    AND DATE(CheckInDate) <= CURDATE()
+    AND DATE(CheckOutDate) >= CURDATE()
+)
+
+OR (? = 'Completed'
+    AND (
+        Status = 'Checked-out'
+        OR (Status = 'Confirmed' AND DATE(CheckOutDate) < CURDATE())
+    )
+)
+
+    OR (? = 'Cancelled' AND Status = 'Cancelled')
+    OR (? = '')
+)
+
     """);
 
         if (searchBookingId != null) {
@@ -645,16 +661,34 @@ public class BookingDAO {
 //            System.out.println("Notes: " + su.getNotes());
 //            System.out.println("----------------------");
         // Gán ngày checkin/checkout test
-        String checkin = "2025-07-13";
-        String checkout = "2025-07-26";
 
         try {
-            int available = dao.getMaxGuestsAvailable(checkin, checkout);
-            System.out.println("✅ Available guests from " + checkin + " to " + checkout + " = " + available);
-        } catch (SQLException e) {
-            System.out.println("❌ SQL Error: " + e.getMessage());
+            List<Booking> bookings = dao.getBookingsWithPagination(
+                    45, // userId
+                    "Expired", // statusFilter
+                    null, // searchBookingId
+                    0, // offset
+                    10 // limit
+            );
+
+            if (bookings.isEmpty()) {
+                System.out.println("❌ Không có booking nào được tìm thấy.");
+            } else {
+                System.out.println("✅ Danh sách booking:");
+                for (Booking b : bookings) {
+                    System.out.printf("➡️ ID: %d | Status: %s | CheckIn: %s | CheckOut: %s | Tổng: %.0f\n",
+                            b.getBookingID(),
+                            b.getStatus(),
+                            b.getCheckInDate(),
+                            b.getCheckOutDate(),
+                            b.getTotalAmount()
+                    );
+                }
+            }
+
         } catch (Exception e) {
-            System.out.println("❌ Other Error: " + e.getMessage());
+            System.err.println("❌ Lỗi khi lấy danh sách booking: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -749,6 +783,46 @@ public class BookingDAO {
             ps.setInt(1, bookingID);
             int affected = ps.executeUpdate();
             return affected > 0;
+        }
+    }
+
+    public boolean updateBookingStatus(int bookingID, String status) {
+        String sql = "UPDATE bookings SET Status = ? WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setInt(2, bookingID);
+            int rowsUpdated = ps.executeUpdate();
+
+            return rowsUpdated > 0; // ✅ true nếu có bản ghi bị cập nhật
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // ❌ lỗi thì trả về false
+        }
+    }
+
+    public List<Integer> getRoomIDsByBookingID(int bookingID) {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT RoomID FROM bookingdetails WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getInt("RoomID"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void clearExpiryTime(int bookingID) {
+        String sql = "UPDATE bookings SET ExpiryTime = NULL WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
