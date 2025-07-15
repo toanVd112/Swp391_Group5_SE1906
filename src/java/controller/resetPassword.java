@@ -160,7 +160,7 @@ public class resetPassword extends HttpServlet {
 
         // Nếu dùng mã hóa mật khẩu, phải hash password trước khi so sánh!
         if (oldPassword != null && password.equals(oldPassword)) {
-            request.setAttribute("mess", "New password cannot match old password, please re-enter!");
+            request.setAttribute("mess", "Password already exists, please re-enter another password!");
             request.setAttribute("email", email);
             request.setAttribute("token", token);
             request.getRequestDispatcher("resetPassword.jsp").forward(request, response);

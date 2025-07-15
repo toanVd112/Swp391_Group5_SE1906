@@ -83,40 +83,61 @@ public class LoginCustomerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String username = request.getParameter("username");
+       String username = request.getParameter("username");
         String password = request.getParameter("password");
-        AccountDAO dao = new AccountDAO();
 
+        AccountDAO dao = new AccountDAO();
         Account account = dao.login(username, password);
 
         if (account != null) {
             HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
-            RoomDAO b = new RoomDAO();
-            int maxGuests = b.getMaxGuests();
-            UserDao u = new UserDao();
-            int accountId = account.getAccountID();
+            session.setMaxInactiveInterval(60 * 60); // 60 minutes
+
+            // Lưu thông tin tài khoản
+            session.setAttribute("account", account);
+            session.setAttribute("accountId", account.getAccountID());
+
+            // Lấy thông tin người dùng
+            UserDao userDao = new UserDao();
             User userInfo = null;
             try {
-                userInfo = u.getUserInfoByAccountID(accountId);
+                userInfo = userDao.getUserInfoByAccountID(account.getAccountID());
+                if (userInfo == null) {
+                    // Tạo user mặc định nếu chưa có (tùy chọn)
+                    // userInfo = new User();
+                    // userInfo.setAccountId(account.getAccountID());
+                    // userDao.updateUser(userInfo); // Cần thêm logic insert nếu muốn
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-            session.setAttribute("maxGuests", maxGuests);
-            session.setAttribute("userInfo", userInfo);
-            session.setAttribute("user", account);
+            session.setAttribute("userInfo", userInfo); // Có thể null nếu không có bản ghi User
 
-//            session.setAttribute("account", account);
-//            UserDao userDAO = new UserDao();
-//            User user = userDAO.getUserByAccountId(account.getAccountID());
-//            session.setAttribute("user", user);
-            session.setAttribute("accountId", account.getAccountID());
-
-            response.sendRedirect("Home");
+            // Chuyển hướng theo vai trò
+            String role = account.getRole();
+            switch (role.toLowerCase()) {
+                case "customer":
+                    response.sendRedirect("Home");
+                    break;
+                case "manager":
+                    response.sendRedirect("Manager/manager.jsp");
+                    break;
+                case "receptionist":
+                    response.sendRedirect("Receptionist/reception.jsp");
+                    break;
+                case "staff":
+                    response.sendRedirect("Staff/staff.jsp");
+                    break;
+                default:
+                    request.setAttribute("result", "Vai trò không được hỗ trợ!");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    break;
+            }
         } else {
+            // Đăng nhập thất bại
             request.setAttribute("username", username);
             request.setAttribute("pass", password);
-            request.setAttribute("result", "Invalid username or password");
+            request.setAttribute("result", "Incorrect username or password, Re-Enter, please!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

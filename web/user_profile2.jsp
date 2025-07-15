@@ -173,26 +173,24 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    
-
-                                    <c:if test="${sessionScope.user != null}">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.user.username}</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="Logout">Logout</a>
-
-                                        </li>
-                                    </c:if>
-                                    <c:if test="${sessionScope.user == null}">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="login.jsp">Login</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="register.jsp">Register</a>
-                                        </li>
-                                    </c:if>
-
+                                    <c:choose>
+                                        <c:when test="${sessionScope.account != null}">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.account.username}</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="Logout">Logout</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="login.jsp">Login</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="register.jsp">Register</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                             </div>
                         </div>

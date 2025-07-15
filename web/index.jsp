@@ -6,14 +6,12 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="isCustomer" value="${not empty sessionScope.user}" />
 <%
     int maxGuests = (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0;
 %>
 
 <!DOCTYPE html>
 <html lang="en">
-
 
     <head>
 
@@ -25,11 +23,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
+        <meta name="description" content="Kh�ch s?n Hoang Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Kh?ch s?n Ho??ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
-        <meta property="og:description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Kh�ch s?n Hoang Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:description" content="Kh�ch s?n Hoang Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -50,14 +48,8 @@
 
         <!-- All PLUGINS CSS ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/assets.css">
-
-        <!-- TYPOGRAPHY ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/typography.css">
-
-        <!-- SHORTCODES ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/shortcodes/shortcodes.css">
-
-        <!-- STYLESHEETS ============================================= -->
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <link class="skin" rel="stylesheet" type="text/css" href="assets/css/color/color-1.css">
 
@@ -71,9 +63,8 @@
         <link rel="stylesheet" href="assets/css/listRoom.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-        <!-- REVOLUTION SLIDER END -->	
         <style>
-
+            /* Th�m CSS t�y ch?nh n?u c?n */
         </style>
 
     </head>
@@ -94,26 +85,24 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-
-
-                                    <c:if test="${sessionScope.user != null}">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.user.username}</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="Logout">Logout</a>
-
-                                        </li>
-                                    </c:if>
-                                    <c:if test="${sessionScope.user == null}">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="login.jsp">Login</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="register.jsp">Register</a>
-                                        </li>
-                                    </c:if>
-
+                                    <c:choose>
+                                        <c:when test="${sessionScope.account != null}">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.account.username}</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="Logout">Logout</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="login.jsp">Login</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="register.jsp">Register</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                             </div>
                         </div>
@@ -136,7 +125,6 @@
                             <div class="secondary-menu">
                                 <div class="secondary-inner">
                                     <ul>
-
                                         <!-- Search Button ==== -->
                                         <li><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
                                     </ul>
@@ -244,17 +232,13 @@
                                         </ul>
                                     </li>
                                     <c:choose>
-                                        <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
-                                        <c:when test="${not empty sessionScope.user}">
+                                        <c:when test="${not empty sessionScope.account}">
                                             <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Booking</a></li>
-                                            </c:when>
-
-                                        <%-- N?u ch?a ??ng nh?p --%>
+                                        </c:when>
                                         <c:otherwise>
                                             <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Booking</a></li>
-                                            </c:otherwise>
-                                        </c:choose>
-
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -272,7 +256,7 @@
                     <div class="search-row">
                         <div class="search-field">
                             <label><i class="fas fa-calendar-check"></i> Check-in date</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" required autocomplete="off" >
+                            <input type="text" id="checkin" name="checkin" placeholder="Choose a date" required autocomplete="off">
                         </div>
                         <div class="search-field">
                             <label><i class="fas fa-calendar-times"></i> Check-out date</label>
@@ -292,39 +276,27 @@
                 </form>
             </div>
 
-
             <!-- Header Top END ==== -->
             <!-- Content -->
             <div class="page-content bg-white">
-
-
                 <!-- Main Slider -->
                 <div class="section-area section-sp1 ovpr-dark bg-fix online-cours" style="background-image:url(https://rootytrip.com/wp-content/uploads/2024/01/khach-san-gan-bai-bien-phu-quoc.jpeg);">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-12 text-center text-white">
                                 <h2>Welcome to Hoang Nam Hotel</h2>
-
-
-                                <h5>The Best Place To Stay</h5>
-
-
+                                <c:if test="${not empty sessionScope.account}">
+                                    <h5>Welcome, ${sessionScope.account.username}!</h5>
+                                </c:if>
+                                <c:if test="${empty sessionScope.account}">
+                                    <h5>The Best Place To Stay</h5>
+                                </c:if>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <!-- Main Slider -->
                 <div class="content-block">
-                    <c:choose>
-                        <c:when test="${sessionScope.account != null}">
-                            <c:set var="isCustomer" value="true"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="isCustomer" value="false"/>
-                        </c:otherwise>
-                    </c:choose>
-
                     <!-- Popular Rooms -->
                     <div class="section-area section-sp2 popular-rooms-bx">
                         <div class="container">
@@ -343,7 +315,6 @@
                                                     <img src="${room.imageUrl}" alt="">
                                                     <a href="RoomDetail?id=${room.roomTypeID}" class="btn">View room details</a>
                                                 </div>
-
                                                 <div class="info-bx text-center">
                                                     <h5>
                                                         <a href="RoomDetail?id=${room.roomTypeID}" class="text-primary" style="text-decoration: none;">
@@ -352,7 +323,6 @@
                                                     </h5>
                                                     <span>${room.description}</span>
                                                 </div>
-
                                                 <div class="cours-more-info">
                                                     <div class="review">
                                                         <span>3 Review</span>
@@ -373,7 +343,6 @@
                                         </div>
                                     </c:forEach>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -667,168 +636,132 @@
         <script src='assets/vendors/switcher/switcher.js'></script>
         <script src="assets/js/hotel-cart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
-
         <!-- Confirm Modal -->
-
         <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const checkinInput = document.getElementById('checkin');
+                const checkoutInput = document.getElementById('checkout');
+                const guestInput = document.getElementById('guests');
+                let maxAvailableGuests = <%= maxGuests %>;
 
+                function isValidDateFormat(dateStr) {
+                    return /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
+                }
 
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const checkinInput = document.getElementById('checkin');
-                        const checkoutInput = document.getElementById('checkout');
-                        const guestInput = document.getElementById('guests');
-                        let maxAvailableGuests = 0;
+                function formatToYYYYMMDD(dateStr) {
+                    if (!dateStr) return "--";
+                    dateStr = dateStr.trim();
+                    const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+                    if (!match) return "--";
+                    const [, day, month, year] = match;
+                    return `${year}-${month}-${day}`;
+                }
 
-                        function isValidDateFormat(dateStr) {
-                            return /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
-                        }
+                function parseDate(dateStr) {
+                    const parts = dateStr.split('/');
+                    return new Date(parts[2], parts[1] - 1, parts[0]);
+                }
 
-                        function formatToYYYYMMDD(dateStr) {
-                            if (!dateStr)
-                                return "--";
+                function validateDates() {
+                    const checkin = parseDate(checkinInput.value);
+                    const checkout = parseDate(checkoutInput.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-                            dateStr = dateStr.trim(); // Loại bỏ khoảng trắng
+                    if (checkin < today) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid Check-in Date',
+                            text: 'Check-in date cannot be before today!'
+                        });
+                        checkinInput.value = '';
+                        return false;
+                    }
 
-                            console.log("📦 Đang format:", dateStr);
-                            console.log("🔎 Loại ký tự:", [...dateStr].map(c => c.charCodeAt(0)));
+                    if (checkout <= checkin) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid Check-out Date',
+                            text: 'Check-out date must be after check-in date!'
+                        });
+                        checkoutInput.value = '';
+                        return false;
+                    }
 
-                            // Regex kiểm tra định dạng dd/MM/yyyy
-                            const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-                            if (!match) {
-                                console.warn("⚠️ Không khớp định dạng:", dateStr);
-                                return "--";
-                            }
+                    return true;
+                }
 
-                            const [, day, month, year] = match;
-                            return `${year}-${month}-${day}`;
-                                    }
+                function validateForm() {
+                    if (!checkinInput.value.trim()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Missing Check-in Date',
+                            text: 'You must enter a check-in date!'
+                        });
+                        return false;
+                    }
 
+                    if (!checkoutInput.value.trim()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Missing Check-out Date',
+                            text: 'You must enter a check-out date!'
+                        });
+                        return false;
+                    }
 
+                    const hotelMaxGuests = <%= maxGuests %>;
+                    const guests = parseInt(guestInput.value, 10);
 
-                                    function parseDate(dateStr) {
-                                        const parts = dateStr.split('/');
-                                        return new Date(parts[2], parts[1] - 1, parts[0]);
-                                    }
+                    if (guests > hotelMaxGuests && hotelMaxGuests > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Too Many Guests',
+                            text: 'Maximum allowed guests in the hotel is ' + hotelMaxGuests + '.'
+                        });
+                        return false;
+                    }
 
+                    return true;
+                }
 
+                function onDateChange() {
+                    const checkin = checkinInput.value.trim();
+                    const checkout = checkoutInput.value.trim();
 
-                                    function validateDates() {
-                                        const checkin = parseDate(checkinInput.value);
-                                        const checkout = parseDate(checkoutInput.value);
-                                        const today = new Date();
-                                        today.setHours(0, 0, 0, 0);
+                    if (!isValidDateFormat(checkin) || !isValidDateFormat(checkout)) {
+                        console.log("? Ch?a ?? ng�y h?p l?, ch?a g?i fetch");
+                        return;
+                    }
 
-                                        if (checkin < today) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Invalid Check-in Date',
-                                                text: 'Check-in date cannot be before today!'
-                                            });
-                                            checkinInput.value = '';
-                                            return false;
-                                        }
+                    const valid = validateDates();
+                    if (!valid) return;
+                }
 
-                                        if (checkout <= checkin) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Invalid Check-out Date',
-                                                text: 'Check-out date must be after check-in date!'
-                                            });
-                                            checkoutInput.value = '';
-                                            return false;
-                                        }
+                flatpickr("#checkin", {
+                    dateFormat: "d/m/Y",
+                    allowInput: true,
+                    onChange: function (selectedDates, dateStr) {
+                        checkinInput.value = dateStr;
+                        validateDates();
+                        onDateChange();
+                    }
+                });
 
-                                        return true;
-                                    }
+                flatpickr("#checkout", {
+                    dateFormat: "d/m/Y",
+                    allowInput: true,
+                    onChange: function (selectedDates, dateStr) {
+                        checkoutInput.value = dateStr;
+                        validateDates();
+                        onDateChange();
+                    }
+                });
 
-                                    function validateForm() {
-                                        if (!checkinInput.value.trim()) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Missing Check-in Date',
-                                                text: 'You must enter a check-in date!'
-                                            });
-                                            return false;
-                                        }
-
-                                        if (!checkoutInput.value.trim()) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Missing Check-out Date',
-                                                text: 'You must enter a check-out date!'
-                                            });
-                                            return false;
-                                        }
-
-                                        const hotelMaxGuests = <%= (session.getAttribute("maxGuests") != null) ? (Integer) session.getAttribute("maxGuests") : 0 %>;
-                                        const guests = parseInt(guestInput.value, 10);
-                                        console.log("✅ hotelMaxGuests =", hotelMaxGuests);
-
-                                        if (guests > hotelMaxGuests && hotelMaxGuests > 0) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Too Many Guests',
-                                                   text: 'Maximum allowed guests in the hotel is ' + hotelMaxGuests + '.'
-                                            });
-                                            return false;
-                                        }
-
-                                        return true;
-                                    }
-
-                                    function onDateChange() {
-                                        const checkin = checkinInput.value.trim();
-                                        const checkout = checkoutInput.value.trim();
-
-                                        if (!isValidDateFormat(checkin) || !isValidDateFormat(checkout)) {
-                                            console.log("⛔ Chưa đủ ngày hợp lệ, chưa gọi fetch");
-                                            return;
-                                        }
-
-                                        const valid = validateDates();
-                                        if (!valid)
-                                            return;
-
-
-                                    }
-
-                                    flatpickr("#checkin", {
-                                        dateFormat: "d/m/Y",
-                                        allowInput: true,
-                                        onChange: function (selectedDates, dateStr) {
-                                            checkinInput.value = dateStr;
-                                            validateDates();  // <-- Gọi trực tiếp validate
-                                            onDateChange();
-                                        }
-                                    });
-
-                                    flatpickr("#checkout", {
-                                        dateFormat: "d/m/Y",
-                                        allowInput: true,
-                                        onChange: function (selectedDates, dateStr) {
-                                            checkoutInput.value = dateStr;
-                                            validateDates();  // <-- Gọi validate luôn
-                                            onDateChange();
-                                        }
-                                    });
-
-
-                                    window.validateForm = validateForm;
-                                });
+                window.validateForm = validateForm;
+            });
         </script>
-
-
-
-
-
-
-
-
-
     </body>
-
 </html>

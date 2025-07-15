@@ -69,7 +69,7 @@
                         <div class="heading-bx left">
                             <h2 class="title-head">Login to your <span>Account</span></h2>
                             <p>Don't have an account? <a href="register.jsp">Create one here</a></p>
-                            <p>Manager, Staff? <a href="login_2.jsp">Login here</a></p>
+                            
                             <p>Forget password <a href="requestPassword.jsp">Click here</a></p>
                             <p>Comeback to Home <a href="Home">Click here</a></p>
                         </div>	

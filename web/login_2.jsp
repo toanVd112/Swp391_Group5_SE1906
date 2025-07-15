@@ -44,7 +44,7 @@
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <label>Username</label>
-                                        <!-- đổ lại username nếu có -->
+                                        <!-- ?? l?i username n?u c� -->
                                         <input name="username" type="text" class="form-control"
                                                required
                                                value="${username != null ? username : ''}">
@@ -54,7 +54,7 @@
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <label>Password</label>
-                                        <!-- thường không đổ password lại vì bảo mật -->
+                                        <!-- th??ng kh�ng ?? password l?i v� b?o m?t -->
                                         <input name="password" type="password" class="form-control"
                                                required
                                                value="${pass != null ? pass : ''}">
@@ -88,7 +88,7 @@
                             </div>
                         </form>
 
-                        <!-- Hiển thị lỗi nếu login thất bại -->
+                        <!-- Hi?n th? l?i n?u login th?t b?i -->
                         <c:if test="${not empty result}">
                             <p class="alert alert-danger">${result}</p>
                         </c:if>
