@@ -56,7 +56,8 @@ public class RevenueStatsServlet extends HttpServlet {
         request.setAttribute("endDate", endDate);
         request.setAttribute("groupBy", groupBy);
 
-        request.getRequestDispatcher("/Manager/RevenueStats.jsp").forward(request, response);
+        // Forward to manager.jsp with page parameter
+        request.getRequestDispatcher("/Manager/manager.jsp?page=RevenueStats.jsp").forward(request, response);
     }
 
     @Override
