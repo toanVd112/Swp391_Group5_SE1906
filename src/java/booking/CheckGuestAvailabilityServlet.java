@@ -2,33 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package booking;
 
-import DAO.AccountDAO;
 import DAO.BookingDAO;
-import DAO.RoomDAO;
-import DAO.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Account;
-import model.User;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginCustomerServlet extends HttpServlet {
+@WebServlet(name = "CheckGuestAvailabilityServlet", urlPatterns = {"/checkGuestCapacity"})
+public class CheckGuestAvailabilityServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +40,10 @@ public class LoginCustomerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet CheckGuestAvailabilityServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CheckGuestAvailabilityServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,7 +61,21 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        String checkin = request.getParameter("checkin");
+        String checkout = request.getParameter("checkout");
+        System.out.println("💡 Servlet nhận: checkin = " + checkin + ", checkout = " + checkout);
+        int availableGuests = 0;
+        try {
+            BookingDAO dao = new BookingDAO();
+            availableGuests = dao.getMaxGuestsAvailable(checkin, checkout);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+            Logger.getLogger(CheckGuestAvailabilityServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        response.setContentType("application/json");
+        response.getWriter().write("{\"availableGuests\":" + availableGuests + "}");
     }
 
     /**
@@ -82,43 +89,7 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        AccountDAO dao = new AccountDAO();
-
-        Account account = dao.login(username, password);
-
-        if (account != null) {
-            HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
-            RoomDAO b = new RoomDAO();
-            int maxGuests = b.getMaxGuests();
-            UserDao u = new UserDao();
-            int accountId = account.getAccountID();
-            User userInfo = null;
-            try {
-                userInfo = u.getUserInfoByAccountID(accountId);
-            } catch (SQLException ex) {
-                Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            session.setAttribute("maxGuests", maxGuests);
-            session.setAttribute("userInfo", userInfo);
-            session.setAttribute("user", account);
-
-//            session.setAttribute("account", account);
-//            UserDao userDAO = new UserDao();
-//            User user = userDAO.getUserByAccountId(account.getAccountID());
-//            session.setAttribute("user", user);
-            session.setAttribute("accountId", account.getAccountID());
-
-            response.sendRedirect("Home");
-        } else {
-            request.setAttribute("username", username);
-            request.setAttribute("pass", password);
-            request.setAttribute("result", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**

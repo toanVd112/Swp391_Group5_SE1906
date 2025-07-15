@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscountCodeDAO {
+
     // Check if code is duplicated
     public boolean isDuplicatedCode(String code) {
         String sql = "SELECT COUNT(*) FROM discountcodes WHERE Code = ?";
@@ -81,8 +82,6 @@ public class DiscountCodeDAO {
         return null;
     }
 
-    
-
     // Get all distinct discount code types
     public List<String> getAllDistinctDiscountTypes() {
         List<String> types = new ArrayList<>();
@@ -96,7 +95,8 @@ public class DiscountCodeDAO {
         }
         return types;
     }
-public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, String status, int page, int recordsPerPage) {
+
+    public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, String status, int page, int recordsPerPage) {
         List<DiscountCode> discountCodes = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM discountcodes WHERE 1=1");
         List<Object> params = new ArrayList<>();
@@ -177,8 +177,6 @@ public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, 
         }
         return 0;
     }
-    
-    
 
     // Toggle discount code status (Active/Inactive)
     public boolean toggleDiscountCodeStatus(int id) {
@@ -193,5 +191,35 @@ public List<DiscountCode> getFilteredDiscountCodes(String keyword, String type, 
         }
     }
 
+    // Lấy mã welcome còn hạn, đang active
+    public String getActiveWelcomeCode() {
+        String sql = "SELECT Code FROM discountcodes WHERE Code = 'WELCOME10' AND status = 'Active' AND ExpiryDate >= CURDATE()";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Code");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+// Đếm số lượng booking theo email (dành cho guest)
+    public int countBookingsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM bookings WHERE ContactEmail = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
    
+
 }

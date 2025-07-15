@@ -2,33 +2,27 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package booking;
 
-import DAO.AccountDAO;
 import DAO.BookingDAO;
 import DAO.RoomDAO;
-import DAO.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.Account;
-import model.User;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import model.Booking;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginCustomerServlet extends HttpServlet {
+@WebServlet(name = "CompleteBooking", urlPatterns = {"/CompleteBooking"})
+public class CompleteBooking extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +41,10 @@ public class LoginCustomerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet CompleteBooking</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CompleteBooking at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,7 +62,7 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -82,42 +76,41 @@ public class LoginCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int bookingID = Integer.parseInt(request.getParameter("bookingID"));
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        AccountDAO dao = new AccountDAO();
+        BookingDAO bookingDAO = new BookingDAO();
+        RoomDAO roomDAO = new RoomDAO();
 
-        Account account = dao.login(username, password);
+        Booking booking = bookingDAO.getBookingByID(bookingID);
 
-        if (account != null) {
-            HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(60 * 60); // 60 phút (3600 giây)
-            RoomDAO b = new RoomDAO();
-            int maxGuests = b.getMaxGuests();
-            UserDao u = new UserDao();
-            int accountId = account.getAccountID();
-            User userInfo = null;
-            try {
-                userInfo = u.getUserInfoByAccountID(accountId);
-            } catch (SQLException ex) {
-                Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
+        // 1. Gửi mail xác nhận
+        try {
+            MailUtils.sendBookingSuccessMail(
+                    booking.getContactEmail(),
+                    booking.getContactName(),
+                    bookingID,
+                    booking.getCheckInDate(),
+                    booking.getCheckOutDate()
+            );
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        // 2. Cập nhật trạng thái booking
+        boolean a;
+        a = bookingDAO.updateBookingStatus(bookingID, "Upcoming");
+        if (a) {
+            // 3. Cập nhật trạng thái các phòng
+            List<Integer> roomIDs = bookingDAO.getRoomIDsByBookingID(bookingID);
+            for (int roomID : roomIDs) {
+                roomDAO.updateRoomStatus(roomID, "Occupied");
             }
-            session.setAttribute("maxGuests", maxGuests);
-            session.setAttribute("userInfo", userInfo);
-            session.setAttribute("user", account);
 
-//            session.setAttribute("account", account);
-//            UserDao userDAO = new UserDao();
-//            User user = userDAO.getUserByAccountId(account.getAccountID());
-//            session.setAttribute("user", user);
-            session.setAttribute("accountId", account.getAccountID());
+            // 4. Xoá ExpiryTime nếu cần
+            bookingDAO.clearExpiryTime(bookingID);
 
+            // 5. Điều hướng trang thành công
             response.sendRedirect("Home");
-        } else {
-            request.setAttribute("username", username);
-            request.setAttribute("pass", password);
-            request.setAttribute("result", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 

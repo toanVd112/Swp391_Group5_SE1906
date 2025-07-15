@@ -119,12 +119,14 @@ public class AccountDAO extends DBConnect {
         return list;
     }
 
-    public void deleteAccount(String aid) {
-        String sql = "DELETE FROM Accounts WHERE AccountID = ?";
+    public void deleteAccount(String aid, boolean isActive) {
+        String sql = "UPDATE Accounts SET IsActive = ? WHERE AccountID = ?";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, aid);
+            ps.setBoolean(1, isActive);  // true để kích hoạt, false để vô hiệu hóa
+            ps.setString(2, aid);
             ps.executeUpdate();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -514,5 +516,29 @@ public class AccountDAO extends DBConnect {
                 }
             }
         }
+    }
+
+    public boolean isUsernameTaken(String username) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Accounts WHERE username = ?";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    public boolean isEmailTaken(String email) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Accounts WHERE email = ?";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
 }

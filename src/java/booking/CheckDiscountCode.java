@@ -5,7 +5,7 @@
 
 package booking;
 
-import DAO.BookingDAO;
+import DAO.DiscountCodeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,16 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import model.DiscountCode;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name="GetMaxGuestsServlet", urlPatterns={"/GetMaxGuestsServlet"})
-public class GetMaxGuestsServlet extends HttpServlet {
+@WebServlet(name="CheckDiscountCode", urlPatterns={"/CheckDiscountCode"})
+public class CheckDiscountCode extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -39,10 +37,10 @@ public class GetMaxGuestsServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet GetMaxGuestsServlet</title>");  
+            out.println("<title>Servlet CheckDiscountCode</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet GetMaxGuestsServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CheckDiscountCode at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,22 +57,20 @@ public class GetMaxGuestsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-          
-        String checkin = request.getParameter("checkin");
-        String checkout = request.getParameter("checkout");
         
-        BookingDAO dao = new BookingDAO();
-        int maxGuests = 0;
-        try {
-            maxGuests = dao.getMaxGuestsAvailable(checkin, checkout);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (Exception ex) {
-            Logger.getLogger(GetMaxGuestsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        response.setContentType("application/json;charset=UTF-8");
+      
+        int code=Integer.parseInt(request.getParameter("code"));
+        DiscountCodeDAO dao = new DiscountCodeDAO();
+        DiscountCode dc = dao.getDiscountCodeByID(code);
+
+        try (PrintWriter out = response.getWriter()) {
+            if (dc != null && "Active".equals(dc.getStatus()) && dc.getExpiryDate().isAfter(java.time.LocalDate.now())) {
+                out.print("{ \"valid\": true, \"discountPercent\": " + dc.getDiscountPercent() + ", \"message\": \"Mã hợp lệ\" }");
+            } else {
+                out.print("{ \"valid\": false, \"discountPercent\": 0, \"message\": \"Mã không hợp lệ hoặc đã hết hạn\" }");
+            }
         }
-        
-        response.setContentType("application/json");
-        response.getWriter().write("{\"maxGuests\":" + maxGuests + "}");
     } 
 
     /** 

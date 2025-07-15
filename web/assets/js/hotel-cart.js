@@ -77,85 +77,86 @@ function renderCartUI() {
     let totalSlots = 0;
     const nights = calcNights();
 
-    // Phòng & Combo
-    selectedRooms.forEach(c => {
+    // Rooms & Combos
+    selectedRooms.forEach(combo => {
         let html = '';
-        if (c.rooms && c.rooms.length > 0) {
-            const roomsHtml = c.rooms.map(r => {
-                const slotsPerRoom = r.roomCapacity || 1;
-                const totalSlotRoom = r.quantity * slotsPerRoom;
-                return `<li>${r.quantity} ${r.roomName} | ${slotsPerRoom} slot/phòng | Giá/phòng: ${formatCurrency(r.basePrice)}</li>`;
+        if (combo.rooms && combo.rooms.length > 0) {
+            const roomsHtml = combo.rooms.map(room => {
+                const slotsPerRoom = room.roomCapacity || 1;
+                const totalRoomSlots = room.quantity * slotsPerRoom;
+                return `<li>${room.quantity} ${room.roomName} | ${slotsPerRoom} slot/room | Price/room: ${formatCurrency(room.basePrice)}</li>`;
             }).join('');
 
-            const slots = c.rooms.reduce((sum, r) => sum + r.quantity * (r.roomCapacity || 1), 0);
-            totalSlots += slots;
+            const comboSlots = combo.rooms.reduce((sum, room) => sum + room.quantity * (room.roomCapacity || 1), 0);
+            totalSlots += comboSlots;
 
             html = `
         <div class="selected-room-item">
-          <h5>Combo #${c.comboId}</h5>
+          <h5>Combo #${combo.comboId}</h5>
           <ul>${roomsHtml}</ul>
-          <p><strong>Tổng Slots Combo:</strong> ${slots}</p>
-          <button onclick="removeRoom(${c.comboId})" class="btn btn-sm btn-danger">Xóa Combo</button>
+          <p><strong>Total Combo Slots:</strong> ${comboSlots}</p>
+          <button onclick="removeRoom(${combo.comboId})" class="btn btn-sm btn-danger">Remove Combo</button>
         </div>
       `;
-            total += (c.basePrice || 0) * c.quantity * nights;
+            total += (combo.basePrice || 0) * combo.quantity * nights;
         } else {
-            const slots = c.quantity * (c.roomCapacity || 1);
+            const slots = combo.quantity * (combo.roomCapacity || 1);
             totalSlots += slots;
 
             html = `
     <div class="selected-room-item">
-      <h5>${c.roomName}</h5>
+      <h5>${combo.roomName}</h5>
       <div>
-        <button onclick="decreaseQuantity(${c.roomTypeId})" class="btn btn-sm btn-outline-secondary">-</button>
-        <span style="margin: 0 10px;">${c.quantity}</span>
-        <button onclick="increaseQuantity(${c.roomTypeId})" class="btn btn-sm btn-outline-secondary">+</button>
+        <button onclick="decreaseQuantity(${combo.roomTypeId})" class="btn btn-sm btn-outline-secondary">-</button>
+        <span style="margin: 0 10px;">${combo.quantity}</span>
+        <button onclick="increaseQuantity(${combo.roomTypeId})" class="btn btn-sm btn-outline-secondary">+</button>
       </div>
-      <p>${slots} slot/phòng</p>
-      <p>Giá/phòng: ${formatCurrency(c.basePrice)}</p>
-      <button onclick="removeRoom(${c.roomTypeId})" class="btn btn-sm btn-danger">Xóa</button>
+      <p>${slots} slot/room</p>
+      <p>Price/room: ${formatCurrency(combo.basePrice)}</p>
+      <button onclick="removeRoom(${combo.roomTypeId})" class="btn btn-sm btn-danger">Remove</button>
     </div>
   `;
-            total += (c.basePrice || 0) * c.quantity * nights;
+            total += (combo.basePrice || 0) * combo.quantity * nights;
         }
 
         list.innerHTML += html;
     });
 
-    // DỊCH VỤ
+    // SERVICES
     if (selectedServices.length > 0) {
-        selectedServices.forEach(s => {
-            const subTotal = s.price * (s.quantity || 1);
+        selectedServices.forEach(service => {
+            const subTotal = service.price * (service.quantity || 1);
             const html = `
       <div class="selected-room-item">
-        <p><strong>Dịch vụ:</strong> ${s.name}</p>
-        <p>Đơn giá: ${formatCurrency(s.price)} × ${s.quantity || 1} = ${formatCurrency(subTotal)}</p>
-        <button onclick="removeService(${s.serviceId})" class="btn btn-sm btn-danger">Xóa</button>
+        <p><strong>Service:</strong> ${service.name}</p>
+        <p>Unit price: ${formatCurrency(service.price)} × ${service.quantity || 1} = ${formatCurrency(subTotal)}</p>
+        <button onclick="removeService(${service.serviceId})" class="btn btn-sm btn-danger">Remove</button>
       </div>`;
             list.innerHTML += html;
             total += subTotal;
         });
     }
 
-
+    // Totals
     const tax = total * 0.1;
-    const grand = total + tax;
+    const grandTotal = total + tax;
 
-    document.getElementById('nightsCount').textContent = `${nights} đêm`;
+    document.getElementById('nightsCount').textContent = `${nights} night(s)`;
     document.getElementById('roomsTotal').textContent = formatCurrency(total);
     document.getElementById('taxAmount').textContent = formatCurrency(tax);
-    document.getElementById('grandTotal').textContent = formatCurrency(grand);
+    document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
 
     const guestInput = parseInt(document.getElementById('guests').value) || 0;
     const slotSummary = `
     <hr>
-    <p>Slots tổng: ${totalSlots} | Khách: ${guestInput}</p>
+    <p>Total Slots: ${totalSlots} | Guests: ${guestInput}</p>
   `;
     list.innerHTML += slotSummary;
 
-    // Nếu KHÔNG có phòng & KHÔNG có dịch vụ ➜ Disable nút
+    // Disable booking button if NO rooms & NO services
     document.getElementById('bookingBtn').disabled = selectedRooms.length === 0 && selectedServices.length === 0;
 }
+
 function increaseQuantity(roomTypeId) {
     const index = selectedRooms.findIndex(r => r.roomTypeId === roomTypeId);
     if (index !== -1) {
@@ -438,25 +439,27 @@ function toggleService(el) {
     renderCartUI();
 }
 function updateServiceQty(input) {
-  const min = parseInt(input.min) || 1;
-  const max = parseInt(input.max) || 100;
-  let qty = parseInt(input.value) || 1;
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max) || 100;
+    let qty = parseInt(input.value) || 1;
 
-  if (qty < min) qty = min;
-  if (qty > max) qty = max;
+    if (qty < min)
+        qty = min;
+    if (qty > max)
+        qty = max;
 
-  input.value = qty; // gán lại input để user thấy số đúng
+    input.value = qty; // gán lại input để user thấy số đúng
 
-  const card = input.closest('.service-card');
-  const checkbox = card.querySelector('input[type="checkbox"]');
-  const id = parseInt(checkbox.value);
+    const card = input.closest('.service-card');
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    const id = parseInt(checkbox.value);
 
-  const index = selectedServices.findIndex(s => s.serviceId === id);
-  if (index >= 0) {
-    selectedServices[index].quantity = qty;
-    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
-    renderCartUI();
-  }
+    const index = selectedServices.findIndex(s => s.serviceId === id);
+    if (index >= 0) {
+        selectedServices[index].quantity = qty;
+        localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        renderCartUI();
+    }
 }
 
 

@@ -61,24 +61,27 @@ public class DeleteAccount extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String aid = request.getParameter("aid");
-
+        String action = request.getParameter("action"); // activate hoặc deactivate
         AccountDAO ad = new AccountDAO();
         Account currentUser = (Account) request.getSession().getAttribute("account");
 
         try {
-            // Ghi log trước khi xoá
+            boolean isActive = "activate".equalsIgnoreCase(action); // true nếu kích hoạt, false nếu vô hiệu hóa
+
+            // Ghi log
             ActivityStaffDAO logDAO = new ActivityStaffDAO();
             logDAO.logAction(
-                    currentUser.getAccountID(), // ID người xoá
-                    "Delete", // Hành động
-                    "accounts", // Bảng bị tác động
-                    Integer.parseInt(aid) // ID tài khoản bị xoá
+                    currentUser.getAccountID(),
+                    isActive ? "Activate" : "Deactivate",
+                    "accounts",
+                    Integer.parseInt(aid)
             );
 
-            // Tiến hành xoá
-            ad.deleteAccount(aid);
+            // Cập nhật trạng thái
+            ad.deleteAccount(aid, isActive);
+
         } catch (Exception ex) {
-            ex.printStackTrace(); // Ghi log lỗi nếu cần
+            ex.printStackTrace();
         }
 
         response.sendRedirect("managerAccount");

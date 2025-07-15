@@ -6,6 +6,7 @@ package booking;
 
 import DAO.AccountDAO;
 import DAO.BookingDAO;
+import DAO.DiscountCodeDAO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -144,6 +145,17 @@ public class ProceedBookingServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+        DiscountCodeDAO ddao = new DiscountCodeDAO();
+        int firstTime = ddao.countBookingsByEmail(email);
+
+        if (firstTime == 1) {
+            String welcomeCode = ddao.getActiveWelcomeCode();
+            if (welcomeCode != null) {
+                MailUtils.sendWelcomeDiscountMail(email, fullName, welcomeCode);
+                System.out.println("✅ Đã gửi mã welcome cho " + email + ": " + welcomeCode);
+            }
+        }
+
         if (b.getBookingID() <= 0) {
             throw new RuntimeException(
                     "❌ Insert booking failed:\n"
@@ -251,25 +263,24 @@ public class ProceedBookingServlet extends HttpServlet {
         }
 
 // Insert service
-       for (ServiceItem s : selectedServices) {
-    try {
-        // 1️⃣ Lấy giá gốc từ DB
-        int unitPrice = bookingDAO.getServicePriceByID(s.serviceId);
+        for (ServiceItem s : selectedServices) {
+            try {
+                // 1️⃣ Lấy giá gốc từ DB
+                int unitPrice = bookingDAO.getServicePriceByID(s.serviceId);
 
-        // 2️⃣ Lấy quantity từ JSON, fallback 1
-        int quantity = s.quantity > 0 ? s.quantity : 1;
+                // 2️⃣ Lấy quantity từ JSON, fallback 1
+                int quantity = s.quantity > 0 ? s.quantity : 1;
 
-        // 3️⃣ Tính tổng
-        int subTotal = unitPrice * quantity;
+                // 3️⃣ Tính tổng
+                int subTotal = unitPrice * quantity;
 
-        // 4️⃣ Insert đủ 5 field!
-        bookingDAO.insertServiceUsage(b.getBookingID(), s.serviceId, quantity, unitPrice, subTotal);
+                // 4️⃣ Insert đủ 5 field!
+                bookingDAO.insertServiceUsage(b.getBookingID(), s.serviceId, quantity, unitPrice, subTotal);
 
-    } catch (SQLException ex) {
-        Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
-    }
-}
-
+            } catch (SQLException ex) {
+                Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         System.out.println("✅ Insert OK ➜ bookingID = " + b.getBookingID());
         String confirmLink = "http://localhost:8080/HotelManagement/thanhtoan.jsp?bookingID="

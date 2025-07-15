@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-       
+
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,7 +12,7 @@
                 padding: 0;
                 background-color: #f3f4f6;
             }
-            .main-content {
+            .imain-content {
                 max-width: 1200px;
                 margin: 40px auto;
                 background-color: #ffffff;
@@ -62,10 +62,29 @@
             .btn-back:hover {
                 background-color: #2563eb;
             }
+            .pagination {
+                margin-top: 20px;
+                text-align: center;
+            }
+            .pagination li {
+                display: inline-block;
+                margin: 0 4px;
+            }
+            .pagination li a {
+                padding: 8px 12px;
+                background-color: #ddd;
+                border-radius: 5px;
+                text-decoration: none;
+                color: black;
+            }
+            .pagination li.active a {
+                background-color: #3b82f6;
+                color: white;
+            }
         </style>
     </head>
     <body>
-        <div class="main-content">
+        <div class="imain-content">
             <h2>Danh sách yêu cầu kiểm tra phòng đang chờ xử lý</h2>
 
             <c:if test="${empty pendingRequests}">
@@ -144,10 +163,10 @@
             </c:if>
             <!-- sau thẻ </form> -->
             <div style="text-align: center; margin-top: 20px;">
-                <a href="${pageContext.request.contextPath}/Staff/staff.jsp" class="btn-back">Quay về trang chính</a>
+                <a href="${pageContext.request.contextPath}/Staff/staff.jsp" class="btn-back">Back to home</a>
             </div>
 
         </div>
 
-          </body>
+    </body>
 </html>

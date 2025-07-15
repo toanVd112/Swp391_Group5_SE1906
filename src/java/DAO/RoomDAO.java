@@ -84,6 +84,22 @@ public class RoomDAO {
         return list;
     }
 
+    public int getMaxGuests() {
+        int maxGuests = 1; // default value
+        String query = "SELECT MAX(MaxGuests) FROM roomtypes";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                maxGuests = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return maxGuests;
+    }
+
     // --- Đếm số phòng có áp dụng bộ lọc ---
     public int countRoomsByFilter(Integer floor, Integer typeId) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM rooms WHERE 1=1");
@@ -274,16 +290,28 @@ public class RoomDAO {
     public List<CartRoom> getCartByAccountId(int accountId) {
         List<CartRoom> list = new ArrayList<>();
         String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, "
+<<<<<<< HEAD
                 + "rt.MaxGuests, "
                 + "(SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
+=======
+                + "       rt.MaxGuests, "
+                + "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
+>>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7
                 + "FROM CartRooms c "
                 + "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID "
                 + "WHERE c.AccountID = ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+<<<<<<< HEAD
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
 
+=======
+
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+
+>>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7
             while (rs.next()) {
                 CartRoom room = new CartRoom();
                 room.setRoomTypeId(rs.getInt("RoomTypeID"));
@@ -294,9 +322,31 @@ public class RoomDAO {
                 room.setAvailableQuantity(rs.getInt("availableQuantity"));
                 list.add(room);
             }
+<<<<<<< HEAD
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
     }
 }
+=======
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public void updateRoomStatus(int roomID, String status) {
+        String sql = "UPDATE rooms SET Status = ? WHERE RoomID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, roomID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+>>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7

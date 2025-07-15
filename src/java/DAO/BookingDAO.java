@@ -180,6 +180,7 @@ public class BookingDAO {
                 booking.setContactName(rs.getString("ContactName"));
                 booking.setContactEmail(rs.getString("ContactEmail"));
                 booking.setContactPhone(rs.getString("ContactPhone"));
+                booking.setTotalAmount(rs.getDouble("TotalAmount"));
             }
 
         } catch (SQLException e) {
@@ -409,21 +410,37 @@ public class BookingDAO {
         List<Booking> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
-        SELECT 
-            BookingID, UserID, CheckInDate, BookingDate, CheckOutDate, ExpiryTime,GuestsCount, TotalAmount,
-            CASE WHEN Status = 'Pending' AND ExpiryTime < NOW() THEN 'Expired' ELSE Status END AS Status,
-            BookingToken, ContactName, ContactEmail, ContactPhone
-        FROM bookings
-        WHERE UserID = ?
-        AND (
-            (? = 'Pending' AND Status = 'Pending' AND ExpiryTime >= NOW())
-            OR (? = 'Expired' AND Status = 'Pending' AND ExpiryTime < NOW())
-            OR (? = 'Upcoming' AND Status = 'Confirmed' AND CheckInDate > NOW())
-            OR (? = 'Active' AND (Status = 'Confirmed' OR Status = 'Checked-in') AND CheckInDate <= NOW() AND CheckOutDate >= NOW())
-            OR (? = 'Completed' AND (Status = 'Checked-out' OR (Status = 'Confirmed' AND CheckOutDate < NOW())))
-            OR (? = 'Cancelled' AND Status = 'Cancelled')
-            OR (? = '')
-        )
+       SELECT 
+    BookingID, UserID, CheckInDate, BookingDate, CheckOutDate, ExpiryTime, GuestsCount, TotalAmount,
+    CASE 
+        WHEN Status = 'Pending' AND ExpiryTime < NOW() THEN 'Expired'
+        ELSE Status
+    END AS Status,
+    BookingToken, ContactName, ContactEmail, ContactPhone
+FROM bookings
+WHERE UserID = ?
+AND (
+    (? = 'Pending' AND Status = 'Pending' AND ExpiryTime >= NOW())
+    OR (? = 'Expired' AND Status = 'Pending' AND ExpiryTime < NOW())
+    OR (? = 'Upcoming' AND Status = 'Upcoming' AND DATE(CheckInDate) >= CURDATE())
+
+    OR (? = 'Active'
+    AND Status IN ('Confirmed', 'Checked-in')
+    AND DATE(CheckInDate) <= CURDATE()
+    AND DATE(CheckOutDate) >= CURDATE()
+)
+
+OR (? = 'Completed'
+    AND (
+        Status = 'Checked-out'
+        OR (Status = 'Confirmed' AND DATE(CheckOutDate) < CURDATE())
+    )
+)
+
+    OR (? = 'Cancelled' AND Status = 'Cancelled')
+    OR (? = '')
+)
+
     """);
 
         if (searchBookingId != null) {
@@ -613,36 +630,65 @@ public class BookingDAO {
         }
     }
 
-    public static void main(String[] args) {
-        int bookingID = 1; // 👈 Sửa ID để test
-//        BookingDAO dao = new BookingDAO();
-//        dao.truncateAllBookingTables();
-        BookingDAO bookingDAO = new BookingDAO();
-        ServiceDAO serviceDAO = new ServiceDAO();
+    public static void main(String[] args) throws SQLException {
+//        int bookingID = 1; // 👈 Sửa ID để test
+        BookingDAO dao = new BookingDAO();
+////        dao.truncateAllBookingTables();
+//        BookingDAO bookingDAO = new BookingDAO();
+//        ServiceDAO serviceDAO = new ServiceDAO();
+//
+//        System.out.println("=== Booking Details ===");
+//        List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
+//        for (BookingDetail bd : bookingDetails) {
+//            System.out.println("BookingDetailID: " + bd.getBookingDetailID());
+//            System.out.println("RoomID: " + bd.getRoomID());
+//            System.out.println("RoomTypeName: " + bd.getRoomTypeName());
+//            System.out.println("PricePerNight: " + bd.getPricePerNight());
+//            System.out.println("GuestsCount: " + bd.getGuestsCount());
+//            System.out.println("Notes: " + bd.getNotes());
+//            System.out.println("----------------------");
+//        }
+//
+//        System.out.println("\n=== Service Usage ===");
+//        List<ServiceUsage> services = serviceDAO.getServiceUsageByBookingID(bookingID);
+//        for (ServiceUsage su : services) {
+//            System.out.println("ServiceUsageID: " + su.getServiceUsageID());
+//            System.out.println("ServiceName: " + su.getServiceName());
+//            System.out.println("Quantity: " + su.getQuantity());
+//            System.out.println("Unit: " + su.getUnit());
+//            System.out.println("UnitPrice: " + su.getUnitPrice());
+//            System.out.println("SubTotal: " + su.getSubTotal());
+//            System.out.println("Notes: " + su.getNotes());
+//            System.out.println("----------------------");
+        // Gán ngày checkin/checkout test
 
-        System.out.println("=== Booking Details ===");
-        List<BookingDetail> bookingDetails = bookingDAO.getBookingDetailsByBookingID(bookingID);
-        for (BookingDetail bd : bookingDetails) {
-            System.out.println("BookingDetailID: " + bd.getBookingDetailID());
-            System.out.println("RoomID: " + bd.getRoomID());
-            System.out.println("RoomTypeName: " + bd.getRoomTypeName());
-            System.out.println("PricePerNight: " + bd.getPricePerNight());
-            System.out.println("GuestsCount: " + bd.getGuestsCount());
-            System.out.println("Notes: " + bd.getNotes());
-            System.out.println("----------------------");
-        }
+        try {
+            List<Booking> bookings = dao.getBookingsWithPagination(
+                    45, // userId
+                    "Expired", // statusFilter
+                    null, // searchBookingId
+                    0, // offset
+                    10 // limit
+            );
 
-        System.out.println("\n=== Service Usage ===");
-        List<ServiceUsage> services = serviceDAO.getServiceUsageByBookingID(bookingID);
-        for (ServiceUsage su : services) {
-            System.out.println("ServiceUsageID: " + su.getServiceUsageID());
-            System.out.println("ServiceName: " + su.getServiceName());
-            System.out.println("Quantity: " + su.getQuantity());
-            System.out.println("Unit: " + su.getUnit());
-            System.out.println("UnitPrice: " + su.getUnitPrice());
-            System.out.println("SubTotal: " + su.getSubTotal());
-            System.out.println("Notes: " + su.getNotes());
-            System.out.println("----------------------");
+            if (bookings.isEmpty()) {
+                System.out.println("❌ Không có booking nào được tìm thấy.");
+            } else {
+                System.out.println("✅ Danh sách booking:");
+                for (Booking b : bookings) {
+                    System.out.printf("➡️ ID: %d | Status: %s | CheckIn: %s | CheckOut: %s | Tổng: %.0f\n",
+                            b.getBookingID(),
+                            b.getStatus(),
+                            b.getCheckInDate(),
+                            b.getCheckOutDate(),
+                            b.getTotalAmount()
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi lấy danh sách booking: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -737,6 +783,46 @@ public class BookingDAO {
             ps.setInt(1, bookingID);
             int affected = ps.executeUpdate();
             return affected > 0;
+        }
+    }
+
+    public boolean updateBookingStatus(int bookingID, String status) {
+        String sql = "UPDATE bookings SET Status = ? WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setInt(2, bookingID);
+            int rowsUpdated = ps.executeUpdate();
+
+            return rowsUpdated > 0; // ✅ true nếu có bản ghi bị cập nhật
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // ❌ lỗi thì trả về false
+        }
+    }
+
+    public List<Integer> getRoomIDsByBookingID(int bookingID) {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT RoomID FROM bookingdetails WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getInt("RoomID"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void clearExpiryTime(int bookingID) {
+        String sql = "UPDATE bookings SET ExpiryTime = NULL WHERE BookingID = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -69,4 +69,29 @@ public class MailUtils {
         }
     }
 
+    public static void sendBookingSuccessMail(String toEmail, String fullName, int bookingID, String checkIn, String checkOut) throws UnsupportedEncodingException {
+    String subject = "[Hotel] Đặt phòng thành công - Booking #" + bookingID;
+
+    String content = "Xin chào, " + fullName + ",<br><br>"
+            + "Chúng tôi đã nhận được thanh toán của bạn. Dưới đây là thông tin đặt phòng:<br>"
+            + "✔️ Mã đặt phòng: #" + bookingID + "<br>"
+            + "📅 Nhận phòng: " + checkIn + "<br>"
+            + "📤 Trả phòng: " + checkOut + "<br><br>"
+            + "Cảm ơn bạn đã lựa chọn khách sạn Hoàng Nam!<br>";
+
+    sendMail(toEmail, subject, content);
+}
+
+   public static void sendWelcomeDiscountMail(String toEmail, String fullName, String discountCode) throws UnsupportedEncodingException {
+    String subject = "[Hoang Nam Hotel] Mã ưu đãi dành riêng cho bạn!";
+    String content = "Xin chào <b>" + fullName + "</b>,<br><br>"
+            + "Cảm ơn bạn đã thực hiện đơn đặt phòng đầu tiên tại <b>Hoang Nam Hotel</b>.<br>"
+            + "🎁 Mã giảm giá dành cho bạn: <b style='color:#d97706;'>" + discountCode + "</b><br><br>"
+            + "👉 Vui lòng nhập mã này ở bước thanh toán để nhận ưu đãi.<br><br>"
+            + "Trân trọng,<br>Đội ngũ Hoang Nam Hotel.";
+    sendMail(toEmail, subject, content);
+}
+
+
+
 }
