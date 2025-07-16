@@ -60,7 +60,7 @@ public class Logout extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        String redirectURL = "index.jsp"; // mặc định là Customer
+        String redirectURL = "Home"; // mặc định là Customer
 
         if (session != null) {
             Object accObj = session.getAttribute("account");
@@ -94,7 +94,7 @@ public class Logout extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
         session.removeAttribute("user");// remove session
-        response.sendRedirect("index.jsp");
+        response.sendRedirect("Home");
     }
 }
 

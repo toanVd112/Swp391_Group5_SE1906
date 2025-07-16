@@ -102,7 +102,7 @@
                 flex-direction: column;
             }
 
-            /* === NÚT ĐÓNG CẢI THIỆN === */
+            /* === N�T ?�NG C?I THI?N === */
             .close-btn {
                 position: absolute;
                 top: 20px;
@@ -140,7 +140,7 @@
                 transform: rotate(90deg);
             }
 
-            /* === CATEGORY TABS CẢI THIỆN === */
+            /* === CATEGORY TABS C?I THI?N === */
             .category-tabs {
                 flex-shrink: 0;
                 position: sticky;
@@ -332,14 +332,24 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    <li>
-                                        <select class="header-lang-bx">
-                                            <option data-icon="flag flag-uk">English UK</option>
-                                            <option data-icon="flag flag-us">English US</option>
-                                        </select>
-                                    </li>
-                                    <li><a href="login.jsp">Login</a></li>
-                                    <li><a href="register.html">Register</a></li>
+                                    <c:choose>
+                                        <c:when test="${sessionScope.account != null}">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.account.username}</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="Logout">Logout</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="login.jsp">Login</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="register.jsp">Register</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                             </div>
                         </div>
@@ -456,7 +466,7 @@
                                             <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
                                             <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
-                                            <li><a href="admin/user-profile.html">User Profile</a></li>
+                                            <li><a href="${pageContext.request.contextPath}/user-profile">User Profile</a></li>
                                             <li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
                                                     <li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
@@ -488,21 +498,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ngày nhận phòng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Chọn ngày" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> Ng�y nh?n ph�ng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng�y" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ngày trả phòng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Chọn ngày" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> Ng�y tr? ph�ng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng�y" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> Số khách</label>
+                            <label><i class="fas fa-users"></i> S? kh�ch</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                Tìm phòng
+                                T�m ph�ng
                             </button>
                         </div>
                     </div>
@@ -550,10 +560,10 @@
                                                     <h5 class="availability" style="font-size: 20px; font-weight: bold;">
                                                         <c:choose>
                                                             <c:when test="${availableRooms != null and availableRooms > 0}">
-                                                                <span class="text-success">${availableRooms} phòng còn trống</span>
+                                                                <span class="text-success">${availableRooms} ph�ng c�n tr?ng</span>
                                                             </c:when>
                                                             <c:when test="${availableRooms == 0 or empty availableRooms}">
-                                                                <span class="text-danger">Hết phòng</span>
+                                                                <span class="text-danger">H?t ph�ng</span>
                                                             </c:when>
                                                         </c:choose>
                                                     </h5>
@@ -606,7 +616,7 @@
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
-                                            <!-- Cột trái: Tiện ích -->
+                                            <!-- C?t tr�i: Ti?n �ch -->
                                             <div class="col-md-12 col-lg-4">
                                                 <ul class="course-features">
                                                     <c:choose>
@@ -616,50 +626,50 @@
                                                                 </c:forEach>
                                                             </c:when>
                                                             <c:otherwise>
-                                                            <li class="no-data">Không có tiện ích nào để hiển thị.</li>
+                                                            <li class="no-data">Kh�ng c� ti?n �ch n�o ?? hi?n th?.</li>
                                                             </c:otherwise>
                                                         </c:choose>
                                                 </ul>
                                             </div>
 
-                                            <!-- Cột phải: Policy, Info, FAQ -->
+                                            <!-- C?t ph?i: Policy, Info, FAQ -->
                                             <div class="col-md-12 col-lg-8">
-                                                <h5 class="m-b5">Chính sách</h5>
+                                                <h5 class="m-b5">Ch�nh s�ch</h5>
                                                 <ul>
-                                                    <li>Trả phòng: Trước 12:00</li>
-                                                    <li>Có thể nhận/trả phòng sớm hoặc muộn, tùy tình hình thực tế và có thể thu phí.</li>
-                                                    <li>Tuổi tối thiểu để nhận phòng: 18 tuổi.</li>
-                                                    <li>Không cho phép mang vật nuôi (trừ vật nuôi hỗ trợ người khuyết tật).</li>
-                                                    <li>Khách chưa kết hôn có thể không được lưu trú chung phòng theo quy định địa phương.</li>
-                                                    <li>Không được mang đồ ăn/thức uống bên ngoài vào khuôn viên khách sạn.</li>                                                
+                                                    <li>Tr? ph�ng: Tr??c 12:00</li>
+                                                    <li>C� th? nh?n/tr? ph�ng s?m ho?c mu?n, t�y t�nh h�nh th?c t? v� c� th? thu ph�.</li>
+                                                    <li>Tu?i t?i thi?u ?? nh?n ph�ng: 18 tu?i.</li>
+                                                    <li>Kh�ng cho ph�p mang v?t nu�i (tr? v?t nu�i h? tr? ng??i khuy?t t?t).</li>
+                                                    <li>Kh�ch ch?a k?t h�n c� th? kh�ng ???c l?u tr� chung ph�ng theo quy ??nh ??a ph??ng.</li>
+                                                    <li>Kh�ng ???c mang ?? ?n/th?c u?ng b�n ngo�i v�o khu�n vi�n kh�ch s?n.</li>                                                
                                                 </ul>
 
-                                                <h5 class="m-b5">Thông tin quan trọng</h5>
+                                                <h5 class="m-b5">Th�ng tin quan tr?ng</h5>
                                                 <ul>
-                                                    <li>Có dịch vụ đưa đón sân bay, cần đặt trước ít nhất 48 giờ (phí: 270,000 VND/người/lượt).</li>
-                                                    <li>Phụ phí bữa sáng buffet: 345,000 VND (người lớn), 172,500 VND (trẻ em).</li>
-                                                    <li>Phí giường phụ: 900,000 VND/đêm.</li>
-                                                    <li>Cần mang theo giấy tờ tùy thân và đặt cọc bằng tiền mặt/thẻ khi nhận phòng.</li>
-                                                    <li>Khách sạn có không gian ngoài trời (ban công, sân thượng) – không phù hợp với trẻ nhỏ nếu không giám sát.</li>
-                                                    <li>Khách dưới 18 tuổi được sử dụng spa dưới sự giám sát của người lớn.</li>
-                                                    <li>Chấp nhận thanh toán bằng tiền mặt, thẻ ghi nợ và thẻ tín dụng.</li>
+                                                    <li>C� d?ch v? ??a ?�n s�n bay, c?n ??t tr??c �t nh?t 48 gi? (ph�: 270,000 VND/ng??i/l??t).</li>
+                                                    <li>Ph? ph� b?a s�ng buffet: 345,000 VND (ng??i l?n), 172,500 VND (tr? em).</li>
+                                                    <li>Ph� gi??ng ph?: 900,000 VND/?�m.</li>
+                                                    <li>C?n mang theo gi?y t? t�y th�n v� ??t c?c b?ng ti?n m?t/th? khi nh?n ph�ng.</li>
+                                                    <li>Kh�ch s?n c� kh�ng gian ngo�i tr?i (ban c�ng, s�n th??ng) ? kh�ng ph� h?p v?i tr? nh? n?u kh�ng gi�m s�t.</li>
+                                                    <li>Kh�ch d??i 18 tu?i ???c s? d?ng spa d??i s? gi�m s�t c?a ng??i l?n.</li>
+                                                    <li>Ch?p nh?n thanh to�n b?ng ti?n m?t, th? ghi n? v� th? t�n d?ng.</li>
                                                 </ul>
 
-                                                <h5 class="m-b5">Câu hỏi thường gặp (FAQ)</h5>
+                                                <h5 class="m-b5">C�u h?i th??ng g?p (FAQ)</h5>
                                                 <ul class="list-checked primary">
-                                                    <li><strong>Khách sạn Hoàng Nam có hồ bơi không?</strong><br/>Có, khách sạn có hồ bơi phục vụ khách lưu trú.</li>
-                                                    <li><strong>Khách sạn có cho phép mang theo vật nuôi không?</strong><br/>Không, khách sạn không cho phép vật nuôi.</li>
-                                                    <li><strong>Phí đậu xe là bao nhiêu?</strong><br/>Vui lòng liên hệ trực tiếp để biết chi tiết.</li>
-                                                    <li><strong>Giờ nhận phòng tại khách sạn Hoàng Nam?</strong><br/>Từ 15:00 mỗi ngày.</li>
-                                                    <li><strong>Giờ trả phòng?</strong><br/>Trước 12:00 trưa.</li>
-                                                    <li><strong>Khách sạn có dịch vụ đưa đón sân bay không?</strong><br/>Có, với phụ phí và cần đặt trước ít nhất 48 giờ.</li>
-                                                    <li><strong>Khách sạn Hoàng Nam tọa lạc ở đâu?</strong><br/>Khách sạn nằm tại trung tâm thành phố, gần biển và các điểm tham quan nổi bật.</li>
+                                                    <li><strong>Kh�ch s?n Ho�ng Nam c� h? b?i kh�ng?</strong><br/>C�, kh�ch s?n c� h? b?i ph?c v? kh�ch l?u tr�.</li>
+                                                    <li><strong>Kh�ch s?n c� cho ph�p mang theo v?t nu�i kh�ng?</strong><br/>Kh�ng, kh�ch s?n kh�ng cho ph�p v?t nu�i.</li>
+                                                    <li><strong>Ph� ??u xe l� bao nhi�u?</strong><br/>Vui l�ng li�n h? tr?c ti?p ?? bi?t chi ti?t.</li>
+                                                    <li><strong>Gi? nh?n ph�ng t?i kh�ch s?n Ho�ng Nam?</strong><br/>T? 15:00 m?i ng�y.</li>
+                                                    <li><strong>Gi? tr? ph�ng?</strong><br/>Tr??c 12:00 tr?a.</li>
+                                                    <li><strong>Kh�ch s?n c� d?ch v? ??a ?�n s�n bay kh�ng?</strong><br/>C�, v?i ph? ph� v� c?n ??t tr??c �t nh?t 48 gi?.</li>
+                                                    <li><strong>Kh�ch s?n Ho�ng Nam t?a l?c ? ?�u?</strong><br/>Kh�ch s?n n?m t?i trung t�m th�nh ph?, g?n bi?n v� c�c ?i?m tham quan n?i b?t.</li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Tiêu đề gallery -->
+                                    <!-- Ti�u ?? gallery -->
                                     <div class="photo-gallery-title" id="pictures">
                                         <h4>Pictures</h4>
                                         <div class="image-gallery-row">
@@ -667,13 +677,13 @@
                                                 <c:choose>
                                                     <c:when test="${not empty images and not empty images[0].imageUrl}">
                                                         <img src="${fn:escapeXml(images[0].imageUrl)}"
-                                                             alt="Ảnh chính của ${fn:escapeXml(roomType.name)}"
+                                                             alt="?nh ch�nh c?a ${fn:escapeXml(roomType.name)}"
                                                              onclick="openGallery('all')"
                                                              loading="lazy"
                                                              onerror="this.style.display='none'" />
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Không có ảnh chính để hiển thị.</p>
+                                                        <p class="no-data">Kh�ng c� ?nh ch�nh ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -682,14 +692,14 @@
                                                     <c:when test="${not empty images and fn:length(images) > 1}">
                                                         <c:forEach var="img" items="${images}" begin="1" end="4">
                                                             <img src="${fn:escapeXml(img.imageUrl)}"
-                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Ảnh phòng'}"
+                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh ph�ng'}"
                                                                  onclick="openGallery('${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'})"
                                                                  loading="lazy"
                                                                  onerror="this.style.display='none'" />
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Không có ảnh phụ để hiển thị.</p>
+                                                        <p class="no-data">Kh�ng c� ?nh ph? ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -703,7 +713,7 @@
                                                 <i class="ti-control-backward"></i>
                                             </span>
                                             <div class="category-tabs">
-                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">Tất cả</button>
+                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">T?t c?</button>
                                                 <c:choose>
                                                     <c:when test="${not empty categories}">
                                                         <c:forEach var="category" items="${categories}">
@@ -714,7 +724,7 @@
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Không có danh mục nào để hiển thị.</p>
+                                                        <p class="no-data">Kh�ng c� danh m?c n�o ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -726,15 +736,15 @@
                                                                 <div class="gallery-item" 
                                                                      data-category="${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'}">
                                                                     <img src="${fn:escapeXml(img.imageUrl)}" 
-                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Ảnh phòng'}"
+                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh ph�ng'}"
                                                                          loading="lazy"
                                                                          onerror="this.style.display='none'" />
-                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Không xác định'}</p>
+                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Kh�ng x�c ??nh'}</p>
                                                                 </div>
                                                             </c:forEach>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <p class="no-data">Không có ảnh nào để hiển thị.</p>
+                                                            <p class="no-data">Kh�ng c� ?nh n�o ?? hi?n th?.</p>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -1031,7 +1041,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkin && checkout && checkout <= checkin) {
-                        alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                        alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
                         checkoutInput.value = '';
                     }
                 }
@@ -1040,7 +1050,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkout <= checkin) {
-                        alert('❌ Ngày trả phòng phải sau ngày nhận phòng.');
+                        alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
                         return false;
                     }
                     return true;

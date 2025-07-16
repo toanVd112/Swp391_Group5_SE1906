@@ -17,21 +17,30 @@
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-globe me-1"></i>
-                            English UK
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">English UK</a></li>
-                            <li><a class="dropdown-item" href="#">English US</a></li>
-                        </ul>
-                    </div>
+                    
 
-                    <c:if test="${sessionScope.account != null}">
-                        <span class="text-muted">Hello, ${username}</span>
-                        <a href="${pageContext.request.contextPath}/Logout" class="btn btn-sm btn-outline-danger">Logout</a>
-                    </c:if>
+                    <div class="topbar-right">
+                                <ul>
+                                    <c:choose>
+                                        <c:when test="${sessionScope.account != null}">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.account.username}</a>
+                                            </li>
+<!--                                            <li class="nav-item">
+                                                <a class="nav-link" href="${pageContext.request.contextPath}/Logout">Logout</a>
+                                            </li>-->
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="login.jsp">Login</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="register.jsp">Register</a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </ul>
+                            </div>
                 </div>
             </div>
         </div>
@@ -64,7 +73,7 @@
                             <i class="fas fa-user"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile.jsp">Profile</a></li>
+                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/user-profile">Profile</a></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/settings.jsp">Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/Logout">Logout</a></li>

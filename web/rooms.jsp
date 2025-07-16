@@ -125,7 +125,7 @@
 
                 let openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
 
-                // Đang mở → đóng
+                // ?ang m? ? ?�ng
                 if (section.style.maxHeight && section.style.maxHeight !== "0px") {
                     section.classList.add("closing");
                     section.style.maxHeight = section.scrollHeight + "px";
@@ -139,10 +139,10 @@
                     });
                     iconBtn.classList.remove("rotate");
 
-                    // Xóa khỏi danh sách mở
+                    // X�a kh?i danh s�ch m?
                     openSections = openSections.filter(sid => sid !== id);
                 } else {
-                    // Đang đóng → mở
+                    // ?ang ?�ng ? m?
                     section.classList.add("opening");
                     section.style.maxHeight = section.scrollHeight + "px";
                     section.addEventListener("transitionend", function handler() {
@@ -152,7 +152,7 @@
                     });
                     iconBtn.classList.add("rotate");
 
-                    // Thêm vào danh sách mở nếu chưa có
+                    // Th�m v�o danh s�ch m? n?u ch?a c�
                     if (!openSections.includes(id)) {
                         openSections.push(id);
                     }
@@ -161,7 +161,7 @@
                 localStorage.setItem("openSections", JSON.stringify(openSections));
             }
 
-            // Tự động mở lại nhiều phần đã lưu sau reload
+            // T? ??ng m? l?i nhi?u ph?n ?� l?u sau reload
             window.addEventListener("DOMContentLoaded", () => {
                 const openSections = JSON.parse(localStorage.getItem("openSections") || "[]");
 
@@ -197,22 +197,17 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    <li>
-                                        <select class="header-lang-bx">
-                                            <option data-icon="flag flag-uk">English UK</option>
-                                            <option data-icon="flag flag-us">English US</option>
-                                        </select>
-                                    </li>
-                                    <c:if test="${sessionScope.user != null}">
+                                    
+                                    <c:if test="${sessionScope.account != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="admin/user-profile.jsp">Hello, ${sessionScope.account.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
 
                                         </li>
                                     </c:if>
-                                    <c:if test="${sessionScope.user == null}">
+                                    <c:if test="${sessionScope.account == null}">
                                         <li class="nav-item">
                                             <a class="nav-link" href="login.jsp">Login</a>
                                         </li>
@@ -337,7 +332,7 @@
                                             <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
                                             <li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
-                                            <li><a href="admin/user-profile.html">User Profile</a></li>
+                                            <li><a href="${pageContext.request.contextPath}/user-profile">User Profile</a></li>
                                             <li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
                                                     <li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
@@ -406,7 +401,7 @@
 
                                     <div class="widget widget_archive">
 
-                                        <!-- LOẠI PHÒNG -->
+                                        <!-- LO?I PH�NG -->
                                         <h5 class="widget-title style-1">
                                             All Room Types
                                             <button class="toggle-btn" onclick="toggleSection('typeSection', this)">
@@ -443,7 +438,7 @@
                                             </ul>
                                         </div>
 
-                                        <!-- TẦNG -->
+                                        <!-- T?NG -->
                                         <h5 class="widget-title style-1">
                                             Floor
                                             <button class="toggle-btn" onclick="toggleSection('floorSection', this)">
@@ -480,7 +475,7 @@
                                             </ul>
                                         </div>
 
-                                        <!-- SẮP XẾP -->
+                                        <!-- S?P X?P -->
                                         <h5 class="widget-title style-1">
                                             Sort By
                                             <button class="toggle-btn" onclick="toggleSection('sortSection', this)">
@@ -503,10 +498,10 @@
                                                     <li class="${sort == option ? 'active' : ''}">
                                                         <a href="${urlSort}">
                                                             <c:choose>
-                                                                <c:when test="${option == 'asc'}">Giá tăng dần</c:when>
-                                                                <c:when test="${option == 'desc'}">Giá giảm dần</c:when>
-                                                                <c:when test="${option == 'floor-asc'}">Tầng tăng dần</c:when>
-                                                                <c:when test="${option == 'floor-desc'}">Tầng giảm dần</c:when>
+                                                                <c:when test="${option == 'asc'}">Gi� t?ng d?n</c:when>
+                                                                <c:when test="${option == 'desc'}">Gi� gi?m d?n</c:when>
+                                                                <c:when test="${option == 'floor-asc'}">T?ng t?ng d?n</c:when>
+                                                                <c:when test="${option == 'floor-desc'}">T?ng gi?m d?n</c:when>
                                                             </c:choose>
                                                         </a>
                                                     </li>
@@ -559,7 +554,7 @@
                                             <div class="col-md-6 col-lg-4 col-sm-6 m-b30">
                                                 <div class="cours-bx">
                                                     <div class="action-box">
-                                                        <!-- Dùng ảnh  -->
+                                                        <!-- D�ng ?nh  -->
                                                         <img src="${pageContext.request.contextPath}/${r.roomImage}" alt="Room Image">
 
                                                         <a href="${pageContext.request.contextPath}/RoomDetail?id=${r.roomID}" class="btn">Read More</a>
@@ -572,7 +567,7 @@
                                                             </a>
                                                         </h5>
                                                         <h5>Floor ${r.floor}</h5>
-                                                        <span>${r.roomType.name}</span> <!-- Tên loại phòng -->
+                                                        <span>${r.roomType.name}</span> <!-- T�n lo?i ph�ng -->
                                                     </div>
                                                     <div class="cours-more-info">
 
@@ -590,12 +585,12 @@
                                                             <h4>
                                                                 <span class="status-${fn:toLowerCase(r.status)}">${r.status}</span>
                                                             </h4>
-                                                            <h5>$${r.roomType.basePrice}</h5> <!-- Giá phòng -->
+                                                            <h5>$${r.roomType.basePrice}</h5> <!-- Gi� ph�ng -->
                                                         </div>
                                                     </div>
                                                     <c:choose>
                                                         <c:when test="${sessionScope.user == null}">
-                                                            <!-- Chưa đăng nhập: thêm vào localStorage -->
+                                                            <!-- Ch?a ??ng nh?p: th�m v�o localStorage -->
                                                             <button class="btn btn-warning btn-sm m-t10"
                                                                     onclick="addRoomFromElement(this)"
                                                                     data-id="${r.roomID}"
@@ -604,15 +599,15 @@
                                                                     data-type="${fn:escapeXml(r.roomType.name)}"
                                                                     data-price="${r.roomType.basePrice}"
                                                                     data-image="${pageContext.request.contextPath}/${r.roomImage}">
-                                                                <i class="fa fa-plus"></i> Thêm vào danh sách 
+                                                                <i class="fa fa-plus"></i> Th�m v�o danh s�ch 
                                                             </button>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <!-- Đã login: gửi bằng fetch đến servlet -->
+                                                            <!-- ?� login: g?i b?ng fetch ??n servlet -->
                                                             <button class="btn btn-success btn-sm m-t10"
                                                                     onclick="addRoomToDatabase(this)"
                                                                     data-id="${r.roomID}">
-                                                                <i class="fa fa-plus"></i> Thêm vào danh sách (DB)
+                                                                <i class="fa fa-plus"></i> Th�m v�o danh s�ch (DB)
                                                             </button>
                                                         </c:otherwise>
 
