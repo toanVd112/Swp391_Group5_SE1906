@@ -19,12 +19,12 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="Kh�ch s?n Ho�ng Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
+        <meta name="description" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Kh�ch s?n Ho�ng Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:description"
-              content="Kh�ch s?n Ho�ng Nam - Chu?i kh�ch s?n l?n nh?t mi?n b?c" />
+              content="Kh?ch s?n Ho?ng Nam - Chu?i kh?ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -93,12 +93,7 @@
                             </div>
                             <div class="topbar-right">
                                 <ul>
-                                    <li>
-                                        <select class="header-lang-bx">
-                                            <option data-icon="flag flag-uk">English UK</option>
-                                            <option data-icon="flag flag-us">English US</option>
-                                        </select>
-                                    </li>
+                                    
 
                                     <c:if test="${sessionScope.account != null}">
                                         <li class="nav-item">
@@ -252,7 +247,7 @@
                                             <li><a href="admin/bookmark.html">Bookmark</a></li>
                                             <li><a href="admin/roomlist">Rooms</a></li>
                                             <li><a href="admin/review.html">Review</a></li>
-                                            <li><a href="admin/user-profile.jsp">User Profile</a></li>
+                                            <li><a href="${pageContext.request.contextPath}/user-profile">User Profile</a></li>
                                             <li><a href="javascript:;">Calendar<i
                                                         class="fa fa-angle-right"></i></a>
                                                 <ul class="sub-menu">
@@ -291,7 +286,7 @@
 
             <c:choose>
                 <c:when test="${empty sessionScope.userInfo}">
-                    <!-- Guest: form tra cứu -->
+                    <!-- Guest: form tra c?u -->
                     <div class="guest-lookup-section">
                         <div class="container">
                             <div class="lookup-form-wrapper">
@@ -317,7 +312,7 @@
                         </div>
                     </div>
 
-                    <!-- Guest: bảng booking nếu tra cứu thành công -->
+                    <!-- Guest: b?ng booking n?u tra c?u th�nh c�ng -->
                     <c:if test="${not empty bookings}">
                         <div class="container">
                             <div class="booking-results">
@@ -363,12 +358,12 @@
                         </div>
                     </c:if>
 
-                    <!-- Guest: nếu không có booking -->
+                    <!-- Guest: n?u kh�ng c� booking -->
                     <c:if test="${empty bookings && not empty param.bookingID}">
                         <div class="container">
                             <div class="alert alert-warning no-results">
                                 <i class="fa fa-exclamation-triangle"></i>
-                                Không tìm thấy booking với thông tin đã cung cấp!
+                                Kh�ng t�m th?y booking v?i th�ng tin ?� cung c?p!
                             </div>
                         </div>
                     </c:if>
@@ -383,7 +378,7 @@
                                 </h2>
                             </div>
 
-                            <!-- Customer: bộ lọc -->
+                            <!-- Customer: b? l?c -->
                             <div class="filter-section">
                                 <form method="get" action="MyBookingServlet" class="filter-form" onsubmit="return validateMyBookingForm()">
                                     <input type="hidden" name="page" value="1">
@@ -432,7 +427,7 @@
                                 </form>
                             </div>
 
-                            <!-- Bảng booking -->
+                            <!-- B?ng booking -->
                             <c:if test="${not empty bookings}">
                                 <div class="booking-results">
                                     <div class="table-responsive">
@@ -517,7 +512,7 @@
                                 </div>
                             </c:if>
 
-                            <!-- Không có booking -->
+                            <!-- Kh�ng c� booking -->
                             <c:if test="${empty bookings}">
                                 <div class="no-bookings">
                                     <div class="no-bookings-content">
@@ -713,7 +708,7 @@
         </script>
 
         <script src="assets/js/hotel-cart.js"></script>
-        <!-- 📌 Modal Booking Detail -->
+        <!-- ? Modal Booking Detail -->
         <div class="modal fade" id="bookingDetailModal" tabindex="-1">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">

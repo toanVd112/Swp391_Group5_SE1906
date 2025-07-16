@@ -75,16 +75,16 @@
                     <h5 class="footer-title">Our Gallery</h5>
                     <div class="gallery-grid">
                         <div class="gallery-item">
-                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic1.jpg" alt="Gallery 1">
+                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic10.jpg" alt="Gallery 1">
                         </div>
                         <div class="gallery-item">
-                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic2.jpg" alt="Gallery 2">
+                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic11.jpg" alt="Gallery 2">
                         </div>
                         <div class="gallery-item">
-                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic3.jpg" alt="Gallery 3">
+                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic12.jpg" alt="Gallery 3">
                         </div>
                         <div class="gallery-item">
-                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic4.jpg" alt="Gallery 4">
+                            <img src="${pageContext.request.contextPath}/assets/images/gallery/pic13.jpg" alt="Gallery 4">
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
     <div class="footer-bottom">
         <div class="container-fluid">
             <div class="text-center py-3">
-                <p class="mb-0 text-muted">Â© 2024 Hoang Nam Hotel. All rights reserved.</p>
+                <p class="mb-0 text-muted">© 2024 Hoang Nam Hotel. All rights reserved.</p>
             </div>
         </div>
     </div>

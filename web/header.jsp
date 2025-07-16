@@ -26,9 +26,9 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" href="${pageContext.request.contextPath}/user-profile">Hello, ${sessionScope.account.username}</a>
                                             </li>
-<!--                                            <li class="nav-item">
+                                            <li class="nav-item">
                                                 <a class="nav-link" href="${pageContext.request.contextPath}/Logout">Logout</a>
-                                            </li>-->
+                                            </li>
                                         </c:when>
                                         <c:otherwise>
                                             <li class="nav-item">
@@ -40,7 +40,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </ul>
-                            </div>
+                        </div>
                 </div>
             </div>
         </div>

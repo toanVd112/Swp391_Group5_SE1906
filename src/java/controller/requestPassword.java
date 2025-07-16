@@ -83,8 +83,13 @@ public class requestPassword extends HttpServlet {
         // 2. Kiểm tra email có trong hệ thống không
         Account account = new AccountDAO().getAccountByEmail(email);
 
-        // Nếu tài khoản tồn tại
-        if (account != null) {
+        if (account == null) {
+            request.setAttribute("error", "Email does not exist!");
+            request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+            return;
+        }
+        
+        // Nếu tài khoản tồn tại, xu ly gui email
             // 3. Sinh token ngẫu nhiên
             String token = java.util.UUID.randomUUID().toString();
             // 4. Thời gian hết hạn (ví dụ: 30 phút từ bây giờ)
@@ -98,12 +103,18 @@ public class requestPassword extends HttpServlet {
             String subject = "Reset Password - Hoang Nam Hotel";
             String content = "Enter the link to reset password (valid for 30 minutes): " + link;
 
-            EmailUtil.sendMail(email, subject, content); 
-        }
+            boolean emailSent = EmailUtil.sendMail(email, subject, content);
+            if (emailSent) {
+                request.setAttribute("success", "Email sent successfully! Please check your inbox.");
+            } else {
+                request.setAttribute("error", "Email failed to send. Please try again later!");
+            }
 
-        // 7. Luôn trả về thông báo không tiết lộ email đúng/sai
-        request.setAttribute("mess", "Nếu email hợp lệ, bạn sẽ nhận được hướng dẫn trong hộp thư của mình!");
-        request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+        
+
+        
+        
     }
 
     /** 

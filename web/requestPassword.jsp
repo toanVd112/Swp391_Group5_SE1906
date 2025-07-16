@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="assets/css/shortcodes/shortcodes.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link class="skin" rel="stylesheet" href="assets/css/color/color-1.css">
+    <style>
+        .message-success { color: green; font-size: 16px; margin-bottom: 10px; }
+        .message-error { color: red; font-size: 16px; margin-bottom: 10px; }
+    </style>
 </head>
 <body id="bg">
     <div class="page-wraper">
@@ -27,6 +31,7 @@
                         <h2 class="title-head">Forget <span>Password</span></h2>
                         <p>Login Your Account <a href="login.jsp">Click here</a></p>
                     </div>
+                    
                     <form method="post" action="${pageContext.request.contextPath}/requestPassword" class="contact-bx">
                         <div class="row placeani">
                             <div class="col-lg-12">
@@ -41,7 +46,14 @@
                                 <button type="submit" class="btn button-md">Submit</button>
                             </div>
                         </div>
+                            
                     </form>
+                        <c:if test="${not empty success}">
+                        <div class="message-success">${success}</div>
+                    </c:if>
+                    <c:if test="${not empty error}">
+                        <div class="message-error">${error}</div>
+                    </c:if>
                 </div>
             </div>
         </div>

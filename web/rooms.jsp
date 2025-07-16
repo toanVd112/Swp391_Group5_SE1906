@@ -304,7 +304,7 @@
                                                 <h5 class="menu-adv-title">Our Rooms</h5>
                                                 <ul>
                                                     <li><a href="roomlist">Rooms </a></li>
-                                                    <li><a href="rooms-details.html">Rooms Details</a></li>
+                                                    <li><a href="rooms-details.jsp">Rooms Details</a></li>
                                                     <li><a href="profile.html">Instructor Profile</a></li>
                                                     <li><a href="event.html">Upcoming Event</a></li>
                                                     <li><a href="membership.html">Membership</a></li>
@@ -754,14 +754,14 @@
                                 <div class="widget widget_gallery gallery-grid-4">
                                     <h5 class="footer-title">Our Gallery</h5>
                                     <ul class="magnific-image">
-                                        <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                        <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                                        <li><a href="assets/images/gallery/pic10.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic10.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic11.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic11.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic12.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic12.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic13.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic13.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic14.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic14.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic15.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic15.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic16.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic16.jpg" alt=""></a></li>
+                                            <li><a href="assets/images/gallery/pic17.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic17.jpg" alt=""></a></li>
                                     </ul>
                                 </div>
                             </div>
