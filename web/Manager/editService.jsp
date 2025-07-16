@@ -280,7 +280,7 @@
             </div>
             <input type="submit" value="Update">
         </form>
-        <a class="back-link" href="${pageContext.request.contextPath}/services?action=list">← Back to Service List</a>
+        <a class="back-link" href="${pageContext.request.contextPath}/serviceslist?action=list">← Back to Service List</a>
     </div>
 </body>
 </html>

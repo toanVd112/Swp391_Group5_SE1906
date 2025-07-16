@@ -155,7 +155,7 @@ public class addService extends HttpServlet {
         }
 
         if (success) {
-            response.sendRedirect(request.getContextPath() + "/services?action=list&addStatus=success");
+            response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&addStatus=success");
         } else {
             request.setAttribute("errorMessage", "Thêm dịch vụ mới thất bại. Vui lòng thử lại.");
             request.setAttribute("serviceTypes", allServiceTypes);
