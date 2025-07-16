@@ -102,7 +102,7 @@
                 flex-direction: column;
             }
 
-            /* === N⁄T ?”NG C?I THI?N === */
+            /* === NÔøΩT ?ÔøΩNG C?I THI?N === */
             .close-btn {
                 position: absolute;
                 top: 20px;
@@ -498,21 +498,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ng‡y nh?n phÚng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng‡y" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> NgÔøΩy nh?n phÔøΩng</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ngÔøΩy" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ng‡y tr? phÚng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng‡y" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> NgÔøΩy tr? phÔøΩng</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ngÔøΩy" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> S? kh·ch</label>
+                            <label><i class="fas fa-users"></i> S? khÔøΩch</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                TÏm phÚng
+                                TÔøΩm phÔøΩng
                             </button>
                         </div>
                     </div>
@@ -560,10 +560,10 @@
                                                     <h5 class="availability" style="font-size: 20px; font-weight: bold;">
                                                         <c:choose>
                                                             <c:when test="${availableRooms != null and availableRooms > 0}">
-                                                                <span class="text-success">${availableRooms} phÚng cÚn tr?ng</span>
+                                                                <span class="text-success">${availableRooms} phÔøΩng cÔøΩn tr?ng</span>
                                                             </c:when>
                                                             <c:when test="${availableRooms == 0 or empty availableRooms}">
-                                                                <span class="text-danger">H?t phÚng</span>
+                                                                <span class="text-danger">H?t phÔøΩng</span>
                                                             </c:when>
                                                         </c:choose>
                                                     </h5>
@@ -616,7 +616,7 @@
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
-                                            <!-- C?t tr·i: Ti?n Ìch -->
+                                            <!-- C?t trÔøΩi: Ti?n ÔøΩch -->
                                             <div class="col-md-12 col-lg-4">
                                                 <ul class="course-features">
                                                     <c:choose>
@@ -626,7 +626,7 @@
                                                                 </c:forEach>
                                                             </c:when>
                                                             <c:otherwise>
-                                                            <li class="no-data">KhÙng cÛ ti?n Ìch n‡o ?? hi?n th?.</li>
+                                                            <li class="no-data">KhÔøΩng cÔøΩ ti?n ÔøΩch nÔøΩo ?? hi?n th?.</li>
                                                             </c:otherwise>
                                                         </c:choose>
                                                 </ul>
@@ -634,42 +634,42 @@
 
                                             <!-- C?t ph?i: Policy, Info, FAQ -->
                                             <div class="col-md-12 col-lg-8">
-                                                <h5 class="m-b5">ChÌnh s·ch</h5>
+                                                <h5 class="m-b5">ChÔøΩnh sÔøΩch</h5>
                                                 <ul>
-                                                    <li>Tr? phÚng: Tr??c 12:00</li>
-                                                    <li>CÛ th? nh?n/tr? phÚng s?m ho?c mu?n, t˘y tÏnh hÏnh th?c t? v‡ cÛ th? thu phÌ.</li>
-                                                    <li>Tu?i t?i thi?u ?? nh?n phÚng: 18 tu?i.</li>
-                                                    <li>KhÙng cho phÈp mang v?t nuÙi (tr? v?t nuÙi h? tr? ng??i khuy?t t?t).</li>
-                                                    <li>Kh·ch ch?a k?t hÙn cÛ th? khÙng ???c l?u tr˙ chung phÚng theo quy ??nh ??a ph??ng.</li>
-                                                    <li>KhÙng ???c mang ?? ?n/th?c u?ng bÍn ngo‡i v‡o khuÙn viÍn kh·ch s?n.</li>                                                
+                                                    <li>Tr? phÔøΩng: Tr??c 12:00</li>
+                                                    <li>CÔøΩ th? nh?n/tr? phÔøΩng s?m ho?c mu?n, tÔøΩy tÔøΩnh hÔøΩnh th?c t? vÔøΩ cÔøΩ th? thu phÔøΩ.</li>
+                                                    <li>Tu?i t?i thi?u ?? nh?n phÔøΩng: 18 tu?i.</li>
+                                                    <li>KhÔøΩng cho phÔøΩp mang v?t nuÔøΩi (tr? v?t nuÔøΩi h? tr? ng??i khuy?t t?t).</li>
+                                                    <li>KhÔøΩch ch?a k?t hÔøΩn cÔøΩ th? khÔøΩng ???c l?u trÔøΩ chung phÔøΩng theo quy ??nh ??a ph??ng.</li>
+                                                    <li>KhÔøΩng ???c mang ?? ?n/th?c u?ng bÔøΩn ngoÔøΩi vÔøΩo khuÔøΩn viÔøΩn khÔøΩch s?n.</li>                                                
                                                 </ul>
 
-                                                <h5 class="m-b5">ThÙng tin quan tr?ng</h5>
+                                                <h5 class="m-b5">ThÔøΩng tin quan tr?ng</h5>
                                                 <ul>
-                                                    <li>CÛ d?ch v? ??a ?Ûn s‚n bay, c?n ??t tr??c Ìt nh?t 48 gi? (phÌ: 270,000 VND/ng??i/l??t).</li>
-                                                    <li>Ph? phÌ b?a s·ng buffet: 345,000 VND (ng??i l?n), 172,500 VND (tr? em).</li>
-                                                    <li>PhÌ gi??ng ph?: 900,000 VND/?Ím.</li>
-                                                    <li>C?n mang theo gi?y t? t˘y th‚n v‡ ??t c?c b?ng ti?n m?t/th? khi nh?n phÚng.</li>
-                                                    <li>Kh·ch s?n cÛ khÙng gian ngo‡i tr?i (ban cÙng, s‚n th??ng) ? khÙng ph˘ h?p v?i tr? nh? n?u khÙng gi·m s·t.</li>
-                                                    <li>Kh·ch d??i 18 tu?i ???c s? d?ng spa d??i s? gi·m s·t c?a ng??i l?n.</li>
-                                                    <li>Ch?p nh?n thanh to·n b?ng ti?n m?t, th? ghi n? v‡ th? tÌn d?ng.</li>
+                                                    <li>CÔøΩ d?ch v? ??a ?ÔøΩn sÔøΩn bay, c?n ??t tr??c ÔøΩt nh?t 48 gi? (phÔøΩ: 270,000 VND/ng??i/l??t).</li>
+                                                    <li>Ph? phÔøΩ b?a sÔøΩng buffet: 345,000 VND (ng??i l?n), 172,500 VND (tr? em).</li>
+                                                    <li>PhÔøΩ gi??ng ph?: 900,000 VND/?ÔøΩm.</li>
+                                                    <li>C?n mang theo gi?y t? tÔøΩy thÔøΩn vÔøΩ ??t c?c b?ng ti?n m?t/th? khi nh?n phÔøΩng.</li>
+                                                    <li>KhÔøΩch s?n cÔøΩ khÔøΩng gian ngoÔøΩi tr?i (ban cÔøΩng, sÔøΩn th??ng) ? khÔøΩng phÔøΩ h?p v?i tr? nh? n?u khÔøΩng giÔøΩm sÔøΩt.</li>
+                                                    <li>KhÔøΩch d??i 18 tu?i ???c s? d?ng spa d??i s? giÔøΩm sÔøΩt c?a ng??i l?n.</li>
+                                                    <li>Ch?p nh?n thanh toÔøΩn b?ng ti?n m?t, th? ghi n? vÔøΩ th? tÔøΩn d?ng.</li>
                                                 </ul>
 
-                                                <h5 class="m-b5">C‚u h?i th??ng g?p (FAQ)</h5>
+                                                <h5 class="m-b5">CÔøΩu h?i th??ng g?p (FAQ)</h5>
                                                 <ul class="list-checked primary">
-                                                    <li><strong>Kh·ch s?n Ho‡ng Nam cÛ h? b?i khÙng?</strong><br/>CÛ, kh·ch s?n cÛ h? b?i ph?c v? kh·ch l?u tr˙.</li>
-                                                    <li><strong>Kh·ch s?n cÛ cho phÈp mang theo v?t nuÙi khÙng?</strong><br/>KhÙng, kh·ch s?n khÙng cho phÈp v?t nuÙi.</li>
-                                                    <li><strong>PhÌ ??u xe l‡ bao nhiÍu?</strong><br/>Vui lÚng liÍn h? tr?c ti?p ?? bi?t chi ti?t.</li>
-                                                    <li><strong>Gi? nh?n phÚng t?i kh·ch s?n Ho‡ng Nam?</strong><br/>T? 15:00 m?i ng‡y.</li>
-                                                    <li><strong>Gi? tr? phÚng?</strong><br/>Tr??c 12:00 tr?a.</li>
-                                                    <li><strong>Kh·ch s?n cÛ d?ch v? ??a ?Ûn s‚n bay khÙng?</strong><br/>CÛ, v?i ph? phÌ v‡ c?n ??t tr??c Ìt nh?t 48 gi?.</li>
-                                                    <li><strong>Kh·ch s?n Ho‡ng Nam t?a l?c ? ?‚u?</strong><br/>Kh·ch s?n n?m t?i trung t‚m th‡nh ph?, g?n bi?n v‡ c·c ?i?m tham quan n?i b?t.</li>
+                                                    <li><strong>KhÔøΩch s?n HoÔøΩng Nam cÔøΩ h? b?i khÔøΩng?</strong><br/>CÔøΩ, khÔøΩch s?n cÔøΩ h? b?i ph?c v? khÔøΩch l?u trÔøΩ.</li>
+                                                    <li><strong>KhÔøΩch s?n cÔøΩ cho phÔøΩp mang theo v?t nuÔøΩi khÔøΩng?</strong><br/>KhÔøΩng, khÔøΩch s?n khÔøΩng cho phÔøΩp v?t nuÔøΩi.</li>
+                                                    <li><strong>PhÔøΩ ??u xe lÔøΩ bao nhiÔøΩu?</strong><br/>Vui lÔøΩng liÔøΩn h? tr?c ti?p ?? bi?t chi ti?t.</li>
+                                                    <li><strong>Gi? nh?n phÔøΩng t?i khÔøΩch s?n HoÔøΩng Nam?</strong><br/>T? 15:00 m?i ngÔøΩy.</li>
+                                                    <li><strong>Gi? tr? phÔøΩng?</strong><br/>Tr??c 12:00 tr?a.</li>
+                                                    <li><strong>KhÔøΩch s?n cÔøΩ d?ch v? ??a ?ÔøΩn sÔøΩn bay khÔøΩng?</strong><br/>CÔøΩ, v?i ph? phÔøΩ vÔøΩ c?n ??t tr??c ÔøΩt nh?t 48 gi?.</li>
+                                                    <li><strong>KhÔøΩch s?n HoÔøΩng Nam t?a l?c ? ?ÔøΩu?</strong><br/>KhÔøΩch s?n n?m t?i trung tÔøΩm thÔøΩnh ph?, g?n bi?n vÔøΩ cÔøΩc ?i?m tham quan n?i b?t.</li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- TiÍu ?? gallery -->
+                                    <!-- TiÔøΩu ?? gallery -->
                                     <div class="photo-gallery-title" id="pictures">
                                         <h4>Pictures</h4>
                                         <div class="image-gallery-row">
@@ -677,13 +677,13 @@
                                                 <c:choose>
                                                     <c:when test="${not empty images and not empty images[0].imageUrl}">
                                                         <img src="${fn:escapeXml(images[0].imageUrl)}"
-                                                             alt="?nh chÌnh c?a ${fn:escapeXml(roomType.name)}"
+                                                             alt="?nh chÔøΩnh c?a ${fn:escapeXml(roomType.name)}"
                                                              onclick="openGallery('all')"
                                                              loading="lazy"
                                                              onerror="this.style.display='none'" />
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">KhÙng cÛ ?nh chÌnh ?? hi?n th?.</p>
+                                                        <p class="no-data">KhÔøΩng cÔøΩ ?nh chÔøΩnh ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -692,14 +692,14 @@
                                                     <c:when test="${not empty images and fn:length(images) > 1}">
                                                         <c:forEach var="img" items="${images}" begin="1" end="4">
                                                             <img src="${fn:escapeXml(img.imageUrl)}"
-                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh phÚng'}"
+                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh phÔøΩng'}"
                                                                  onclick="openGallery('${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'})"
                                                                  loading="lazy"
                                                                  onerror="this.style.display='none'" />
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">KhÙng cÛ ?nh ph? ?? hi?n th?.</p>
+                                                        <p class="no-data">KhÔøΩng cÔøΩ ?nh ph? ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -724,7 +724,7 @@
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">KhÙng cÛ danh m?c n‡o ?? hi?n th?.</p>
+                                                        <p class="no-data">KhÔøΩng cÔøΩ danh m?c nÔøΩo ?? hi?n th?.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -736,15 +736,15 @@
                                                                 <div class="gallery-item" 
                                                                      data-category="${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'}">
                                                                     <img src="${fn:escapeXml(img.imageUrl)}" 
-                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh phÚng'}"
+                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh phÔøΩng'}"
                                                                          loading="lazy"
                                                                          onerror="this.style.display='none'" />
-                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'KhÙng x·c ??nh'}</p>
+                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'KhÔøΩng xÔøΩc ??nh'}</p>
                                                                 </div>
                                                             </c:forEach>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <p class="no-data">KhÙng cÛ ?nh n‡o ?? hi?n th?.</p>
+                                                            <p class="no-data">KhÔøΩng cÔøΩ ?nh nÔøΩo ?? hi?n th?.</p>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -752,41 +752,107 @@
                                         </div>
                                     </div>
 
-                                    <div class="" id="instructor">
-                                        <h4>Instructor</h4>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic1.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                            </div>
-                                        </div>
-                                        <div class="instructor-bx">
-                                            <div class="instructor-author">
-                                                <img src="assets/images/testimonials/pic2.jpg" alt="">
-                                            </div>
-                                            <div class="instructor-info">
-                                                <h6>Keny White </h6>
-                                                <span>Professor</span>
-                                                <ul class="list-inline m-tb10">
-                                                    <li><a href="#" class="btn sharp-sm facebook"><i class="fa fa-facebook"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm twitter"><i class="fa fa-twitter"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm linkedin"><i class="fa fa-linkedin"></i></a></li>
-                                                    <li><a href="#" class="btn sharp-sm google-plus"><i class="fa fa-google-plus"></i></a></li>
-                                                </ul>
-                                                <p class="m-b0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                                            </div>
+                                    <!-- üîΩ B·∫ÆT ƒê·∫¶U BLOCK FEEDBACK -->
+                                    <div class="section" id="instructor">
+                                        <h4>Feedback</h4>
+                                        <div class="review-bx">
+
+                                            <!-- ‚úÖ TH√îNG B√ÅO L·ªñI n·∫øu ng∆∞·ªùi d√πng ch∆∞a ƒë·∫∑t ph√≤ng m√† c·ªë g·ª≠i ƒë√°nh gi√° -->
+                                            <c:if test="${param.error == 'unauthorized'}">
+                                                <p class="text-danger mt-2">‚ö†Ô∏è B·∫°n c·∫ßn t·ª´ng ƒë·∫∑t lo·∫°i ph√≤ng n√†y m·ªõi c√≥ th·ªÉ g·ª≠i ƒë√°nh gi√°.</p>
+                                            </c:if>
+
+                                            <!-- ‚úÖ FORM G·ª¨I ƒê√ÅNH GI√Å: lu√¥n hi·ªÉn th·ªã n·∫øu ƒë√£ ƒëƒÉng nh·∫≠p -->
+                                            <c:if test="${sessionScope.user != null}">
+                                                <div class="submit-feedback-box mt-4">
+                                                    <h5>G·ª≠i ƒë√°nh gi√° c·ªßa b·∫°n</h5>
+                                                    <form action="submit-feedback" method="post" class="feedback-form">
+                                                        <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
+                                                        <input type="hidden" name="bookingID" value="${bookingID}" />
+
+                                                        <div class="form-group">
+                                                            <label>Ch·ªçn s·ªë sao:</label>
+                                                            <select name="rating" class="form-control" required>
+                                                                <option value="5">‚òÖ‚òÖ‚òÖ‚òÖ‚òÖ - Tuy·ªát v·ªùi</option>
+                                                                <option value="4">‚òÖ‚òÖ‚òÖ‚òÖ - T·ªët</option>
+                                                                <option value="3">‚òÖ‚òÖ‚òÖ - Trung b√¨nh</option>
+                                                                <option value="2">‚òÖ‚òÖ - K√©m</option>
+                                                                <option value="1">‚òÖ - R·∫•t t·ªá</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label>B√¨nh lu·∫≠n:</label>
+                                                            <textarea name="comment" class="form-control" rows="4" required placeholder="Nh·∫≠p c·∫£m nh·∫≠n c·ªßa b·∫°n..."></textarea>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <p>Th√¥ng tin hi·ªÉn th·ªã k√®m ƒë√°nh gi√°:</p>
+                                                            <label><input type="checkbox" name="showEmail" checked> Email</label>
+                                                            <label><input type="checkbox" name="showFacebook" checked> Facebook</label>
+                                                            <label><input type="checkbox" name="showInstagram" checked> Instagram</label>
+                                                        </div>
+
+                                                        <button type="submit" class="btn btn-primary">G·ª≠i ƒë√°nh gi√°</button>
+                                                    </form>
+                                                </div>
+                                            </c:if>
+
+                                            <c:if test="${sessionScope.user == null}">
+                                                <p class="text-muted mt-3">Vui l√≤ng <a href="login.jsp">ƒëƒÉng nh·∫≠p</a> ƒë·ªÉ g·ª≠i ƒë√°nh gi√°.</p>
+                                            </c:if>
+
+                                            <!-- ‚úÖ DANH S√ÅCH FEEDBACK -->
+                                            <hr/>
+                                            <c:choose>
+                                                <c:when test="${not empty feedbacks}">
+                                                    <c:forEach var="fb" items="${feedbacks}">
+                                                        <div class="instructor-bx m-b30">
+                                                            <div class="instructor-info">
+                                                                <h6>${empty fb.fullName ? '·∫®n danh' : fn:escapeXml(fb.fullName)}</h6>
+
+                                                                <ul class="cours-star list-inline m-tb10">
+                                                                    <c:forEach var="i" begin="1" end="5">
+                                                                        <li class="${i <= fb.rating ? 'active' : ''}"><i class="fa fa-star"></i></li>
+                                                                        </c:forEach>
+                                                                </ul>
+
+                                                                <p class="m-b5">${empty fb.comment ? 'Kh√¥ng c√≥ b√¨nh lu·∫≠n' : fn:escapeXml(fb.comment)}</p>
+
+                                                                <div class="m-tb5">
+                                                                    <c:if test="${fb.showEmail}">
+                                                                        <i class="fa fa-envelope"></i> ${empty fb.email ? '·∫®n' : fn:escapeXml(fb.email)}<br/>
+                                                                    </c:if>
+                                                                    <c:if test="${fb.showFacebook}">
+                                                                        <i class="fa fa-facebook"></i> ${empty fb.facebook ? '·∫®n' : fn:escapeXml(fb.facebook)}<br/>
+                                                                    </c:if>
+                                                                    <c:if test="${fb.showInstagram}">
+                                                                        <i class="fa fa-instagram"></i> ${empty fb.instagram ? '·∫®n' : fn:escapeXml(fb.instagram)}<br/>
+                                                                    </c:if>
+                                                                </div>
+
+                                                                <small class="text-muted">
+                                                                    <c:choose>
+                                                                        <c:when test="${not empty fb.feedbackDate}">
+                                                                            <fmt:formatDate value="${fb.feedbackDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <span class="text-warning">Ng√†y kh√¥ng x√°c ƒë·ªãnh</span>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </c:forEach>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <p class="text-muted">Ph√≤ng n√†y ch∆∞a c√≥ ƒë√°nh gi√° n√†o.</p>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
+                                    <!-- üîº K·∫æT TH√öC BLOCK FEEDBACK -->
+
 
                                     <div class="" id="reviews">
                                         <h4>Reviews</h4>
@@ -1041,7 +1107,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkin && checkout && checkout <= checkin) {
-                        alert('? Ng‡y tr? phÚng ph?i sau ng‡y nh?n phÚng.');
+                        alert('? NgÔøΩy tr? phÔøΩng ph?i sau ngÔøΩy nh?n phÔøΩng.');
                         checkoutInput.value = '';
                     }
                 }
@@ -1050,7 +1116,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkout <= checkin) {
-                        alert('? Ng‡y tr? phÚng ph?i sau ng‡y nh?n phÚng.');
+                        alert('? NgÔøΩy tr? phÔøΩng ph?i sau ngÔøΩy nh?n phÔøΩng.');
                         return false;
                     }
                     return true;

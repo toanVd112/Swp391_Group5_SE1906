@@ -97,7 +97,7 @@ public class LoginCustomerServlet extends HttpServlet {
             // Lưu thông tin tài khoản
             session.setAttribute("account", account);
             session.setAttribute("accountId", account.getAccountID());
-
+            session.setAttribute("user", account);
             // Lấy thông tin người dùng
             UserDao userDao = new UserDao();
             User userInfo = null;
