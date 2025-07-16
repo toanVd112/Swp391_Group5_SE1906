@@ -102,7 +102,7 @@
                 flex-direction: column;
             }
 
-            /* === N�T ?�NG C?I THI?N === */
+            /* === CLOSE BUTTON IMPROVEMENT === */
             .close-btn {
                 position: absolute;
                 top: 20px;
@@ -140,7 +140,7 @@
                 transform: rotate(90deg);
             }
 
-            /* === CATEGORY TABS C?I THI?N === */
+            /* === CATEGORY TABS IMPROVEMENT === */
             .category-tabs {
                 flex-shrink: 0;
                 position: sticky;
@@ -498,21 +498,21 @@
                 <form method="get" action="FindAvailableRoomsServlet" class="modern-search-form" onsubmit="return validateForm()">
                     <div class="search-row">
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-check"></i> Ng�y nh?n ph�ng</label>
-                            <input type="text" id="checkin" name="checkin" placeholder="Ch?n ng�y" value="${param.checkin}" required>
+                            <label><i class="fas fa-calendar-check"></i> Check-in Date</label>
+                            <input type="text" id="checkin" name="checkin" placeholder="Select date" value="${param.checkin}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-calendar-times"></i> Ng�y tr? ph�ng</label>
-                            <input type="text" id="checkout" name="checkout" placeholder="Ch?n ng�y" value="${param.checkout}" required>
+                            <label><i class="fas fa-calendar-times"></i> Check-out Date</label>
+                            <input type="text" id="checkout" name="checkout" placeholder="Select date" value="${param.checkout}" required>
                         </div>
                         <div class="search-field">
-                            <label><i class="fas fa-users"></i> S? kh�ch</label>
+                            <label><i class="fas fa-users"></i> Number of Guests</label>
                             <input type="number" id="guests" name="guests" min="1" value="${param.guests}" required>
                         </div>
                         <div class="search-field">
                             <button type="submit" class="search-btn">
                                 <i class="fas fa-search"></i>
-                                T�m ph�ng
+                                Search Rooms
                             </button>
                         </div>
                     </div>
@@ -560,10 +560,10 @@
                                                     <h5 class="availability" style="font-size: 20px; font-weight: bold;">
                                                         <c:choose>
                                                             <c:when test="${availableRooms != null and availableRooms > 0}">
-                                                                <span class="text-success">${availableRooms} ph�ng c�n tr?ng</span>
+                                                                <span class="text-success">${availableRooms} rooms available</span>
                                                             </c:when>
                                                             <c:when test="${availableRooms == 0 or empty availableRooms}">
-                                                                <span class="text-danger">H?t ph�ng</span>
+                                                                <span class="text-danger">No rooms available</span>
                                                             </c:when>
                                                         </c:choose>
                                                     </h5>
@@ -588,7 +588,7 @@
                                         <div class="course-info-list scroll-page">
                                             <ul class="navbar">
                                                 <li><a class="nav-link" href="#overview"><i class="ti-zip"></i>Overview</a></li>
-                                                <li><a class="nav-link" href="#pictures"><i class="ti-bookmark-alt"></i>pictures</a></li>
+                                                <li><a class="nav-link" href="#pictures"><i class="ti-bookmark-alt"></i>Pictures</a></li>
                                                 <li><a class="nav-link" href="#instructor"><i class="ti-user"></i>Instructor</a></li>
                                                 <li><a class="nav-link" href="#reviews"><i class="ti-comments"></i>Reviews</a></li>
                                             </ul>
@@ -616,60 +616,60 @@
                                     <div class="courese-overview" id="overview">
                                         <h4>Overview</h4>
                                         <div class="row">
-                                            <!-- C?t tr�i: Ti?n �ch -->
+                                            <!-- Left column: Amenities -->
                                             <div class="col-md-12 col-lg-4">
                                                 <ul class="course-features">
                                                     <c:choose>
                                                         <c:when test="${not empty amenities}">
                                                             <c:forEach var="a" items="${amenities}">
                                                                 <li><i class="${fn:escapeXml(a.icon)}"></i> ${fn:escapeXml(a.amenityName)}</li>
-                                                                </c:forEach>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                            <li class="no-data">Kh�ng c� ti?n �ch n�o ?? hi?n th?.</li>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                            </c:forEach>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <li class="no-data">No amenities to display.</li>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </ul>
                                             </div>
 
-                                            <!-- C?t ph?i: Policy, Info, FAQ -->
+                                            <!-- Right column: Policy, Info, FAQ -->
                                             <div class="col-md-12 col-lg-8">
-                                                <h5 class="m-b5">Ch�nh s�ch</h5>
+                                                <h5 class="m-b5">Policies</h5>
                                                 <ul>
-                                                    <li>Tr? ph�ng: Tr??c 12:00</li>
-                                                    <li>C� th? nh?n/tr? ph�ng s?m ho?c mu?n, t�y t�nh h�nh th?c t? v� c� th? thu ph�.</li>
-                                                    <li>Tu?i t?i thi?u ?? nh?n ph�ng: 18 tu?i.</li>
-                                                    <li>Kh�ng cho ph�p mang v?t nu�i (tr? v?t nu�i h? tr? ng??i khuy?t t?t).</li>
-                                                    <li>Kh�ch ch?a k?t h�n c� th? kh�ng ???c l?u tr� chung ph�ng theo quy ??nh ??a ph??ng.</li>
-                                                    <li>Kh�ng ???c mang ?? ?n/th?c u?ng b�n ngo�i v�o khu�n vi�n kh�ch s?n.</li>                                                
+                                                    <li>Check-out: Before 12:00</li>
+                                                    <li>Early or late check-in/check-out possible depending on availability and may incur a fee.</li>
+                                                    <li>Minimum age to check in: 18 years.</li>
+                                                    <li>Pets are not allowed (except for service animals).</li>
+                                                    <li>Unmarried guests may not be allowed to share a room according to local regulations.</li>
+                                                    <li>Outside food and drinks are not permitted in the hotel premises.</li>                                                
                                                 </ul>
 
-                                                <h5 class="m-b5">Th�ng tin quan tr?ng</h5>
+                                                <h5 class="m-b5">Important Information</h5>
                                                 <ul>
-                                                    <li>C� d?ch v? ??a ?�n s�n bay, c?n ??t tr??c �t nh?t 48 gi? (ph�: 270,000 VND/ng??i/l??t).</li>
-                                                    <li>Ph? ph� b?a s�ng buffet: 345,000 VND (ng??i l?n), 172,500 VND (tr? em).</li>
-                                                    <li>Ph� gi??ng ph?: 900,000 VND/?�m.</li>
-                                                    <li>C?n mang theo gi?y t? t�y th�n v� ??t c?c b?ng ti?n m?t/th? khi nh?n ph�ng.</li>
-                                                    <li>Kh�ch s?n c� kh�ng gian ngo�i tr?i (ban c�ng, s�n th??ng) ? kh�ng ph� h?p v?i tr? nh? n?u kh�ng gi�m s�t.</li>
-                                                    <li>Kh�ch d??i 18 tu?i ???c s? d?ng spa d??i s? gi�m s�t c?a ng??i l?n.</li>
-                                                    <li>Ch?p nh?n thanh to�n b?ng ti?n m?t, th? ghi n? v� th? t�n d?ng.</li>
+                                                    <li>Airport shuttle service available, must be booked at least 48 hours in advance (fee: 270,000 VND/person/trip).</li>
+                                                    <li>Breakfast buffet surcharge: 345,000 VND (adults), 172,500 VND (children).</li>
+                                                    <li>Extra bed fee: 900,000 VND/night.</li>
+                                                    <li>Bring identification and deposit cash/card upon check-in.</li>
+                                                    <li>Hotel has outdoor areas (balcony, rooftop) – not suitable for young children without supervision.</li>
+                                                    <li>Guests under 18 can use the spa under adult supervision.</li>
+                                                    <li>Payment accepted via cash, debit cards, and credit cards.</li>
                                                 </ul>
 
-                                                <h5 class="m-b5">C�u h?i th??ng g?p (FAQ)</h5>
+                                                <h5 class="m-b5">Frequently Asked Questions (FAQ)</h5>
                                                 <ul class="list-checked primary">
-                                                    <li><strong>Kh�ch s?n Ho�ng Nam c� h? b?i kh�ng?</strong><br/>C�, kh�ch s?n c� h? b?i ph?c v? kh�ch l?u tr�.</li>
-                                                    <li><strong>Kh�ch s?n c� cho ph�p mang theo v?t nu�i kh�ng?</strong><br/>Kh�ng, kh�ch s?n kh�ng cho ph�p v?t nu�i.</li>
-                                                    <li><strong>Ph� ??u xe l� bao nhi�u?</strong><br/>Vui l�ng li�n h? tr?c ti?p ?? bi?t chi ti?t.</li>
-                                                    <li><strong>Gi? nh?n ph�ng t?i kh�ch s?n Ho�ng Nam?</strong><br/>T? 15:00 m?i ng�y.</li>
-                                                    <li><strong>Gi? tr? ph�ng?</strong><br/>Tr??c 12:00 tr?a.</li>
-                                                    <li><strong>Kh�ch s?n c� d?ch v? ??a ?�n s�n bay kh�ng?</strong><br/>C�, v?i ph? ph� v� c?n ??t tr??c �t nh?t 48 gi?.</li>
-                                                    <li><strong>Kh�ch s?n Ho�ng Nam t?a l?c ? ?�u?</strong><br/>Kh�ch s?n n?m t?i trung t�m th�nh ph?, g?n bi?n v� c�c ?i?m tham quan n?i b?t.</li>
+                                                    <li><strong>Does HoangNam Hotel have a pool?</strong><br/>Yes, the hotel has a pool for staying guests.</li>
+                                                    <li><strong>Does the hotel allow pets?</strong><br/>No, pets are not allowed.</li>
+                                                    <li><strong>What is the parking fee?</strong><br/>Please contact us directly for details.</li>
+                                                    <li><strong>Check-in time at HoangNam Hotel?</strong><br/>From 15:00 daily.</li>
+                                                    <li><strong>Check-out time?</strong><br/>Before 12:00 noon.</li>
+                                                    <li><strong>Does the hotel offer airport shuttle service?</strong><br/>Yes, with a fee and must be booked at least 48 hours in advance.</li>
+                                                    <li><strong>Where is HoangNam Hotel located?</strong><br/>The hotel is located in the city center, near the beach and popular attractions.</li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Ti�u ?? gallery -->
+                                    <!-- Gallery Title -->
                                     <div class="photo-gallery-title" id="pictures">
                                         <h4>Pictures</h4>
                                         <div class="image-gallery-row">
@@ -677,13 +677,13 @@
                                                 <c:choose>
                                                     <c:when test="${not empty images and not empty images[0].imageUrl}">
                                                         <img src="${fn:escapeXml(images[0].imageUrl)}"
-                                                             alt="?nh ch�nh c?a ${fn:escapeXml(roomType.name)}"
+                                                             alt="Main photo of ${fn:escapeXml(roomType.name)}"
                                                              onclick="openGallery('all')"
                                                              loading="lazy"
                                                              onerror="this.style.display='none'" />
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Kh�ng c� ?nh ch�nh ?? hi?n th?.</p>
+                                                        <p class="no-data">No main photo to display.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -692,14 +692,14 @@
                                                     <c:when test="${not empty images and fn:length(images) > 1}">
                                                         <c:forEach var="img" items="${images}" begin="1" end="4">
                                                             <img src="${fn:escapeXml(img.imageUrl)}"
-                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh ph�ng'}"
+                                                                 alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Room photo'}"
                                                                  onclick="openGallery('${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'})"
                                                                  loading="lazy"
                                                                  onerror="this.style.display='none'" />
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Kh�ng c� ?nh ph? ?? hi?n th?.</p>
+                                                        <p class="no-data">No additional photos to display.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -713,7 +713,7 @@
                                                 <i class="ti-control-backward"></i>
                                             </span>
                                             <div class="category-tabs">
-                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">T?t c?</button>
+                                                <button class="tab-btn active" data-category="all" onclick="filterCategory('all', this)" aria-pressed="true">All</button>
                                                 <c:choose>
                                                     <c:when test="${not empty categories}">
                                                         <c:forEach var="category" items="${categories}">
@@ -724,7 +724,7 @@
                                                         </c:forEach>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <p class="no-data">Kh�ng c� danh m?c n�o ?? hi?n th?.</p>
+                                                        <p class="no-data">No categories to display.</p>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -736,15 +736,15 @@
                                                                 <div class="gallery-item" 
                                                                      data-category="${not empty img.categoriesAsString ? fn:toLowerCase(fn:escapeXml(img.categoriesAsString)) : 'uncategorized'}">
                                                                     <img src="${fn:escapeXml(img.imageUrl)}" 
-                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : '?nh ph�ng'}"
+                                                                         alt="${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Room photo'}"
                                                                          loading="lazy"
                                                                          onerror="this.style.display='none'" />
-                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Kh�ng x�c ??nh'}</p>
+                                                                    <p class="image-caption">${not empty img.categoriesAsString ? fn:escapeXml(img.categoriesAsString) : 'Undefined'}</p>
                                                                 </div>
                                                             </c:forEach>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <p class="no-data">Kh�ng c� ?nh n�o ?? hi?n th?.</p>
+                                                            <p class="no-data">No photos to display.</p>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -752,82 +752,82 @@
                                         </div>
                                     </div>
 
-                                    <!-- 🔽 BẮT ĐẦU BLOCK FEEDBACK -->
+                                    <!-- 🔽 START FEEDBACK BLOCK -->
                                     <div class="section" id="instructor">
                                         <h4>Feedback</h4>
                                         <div class="review-bx">
 
-                                            <!-- ✅ THÔNG BÁO LỖI nếu người dùng chưa đặt phòng mà cố gửi đánh giá -->
+                                            <!-- ✅ ERROR NOTIFICATION if user tries to submit feedback without booking -->
                                             <c:if test="${param.error == 'unauthorized'}">
-                                                <p class="text-danger mt-2">⚠️ Bạn cần từng đặt loại phòng này mới có thể gửi đánh giá.</p>
+                                                <p class="text-danger mt-2">⚠️ You must have booked this room type to submit a review.</p>
                                             </c:if>
 
-                                            <!-- ✅ FORM GỬI ĐÁNH GIÁ: luôn hiển thị nếu đã đăng nhập -->
+                                            <!-- ✅ FEEDBACK FORM: always displayed if logged in -->
                                             <c:if test="${sessionScope.user != null}">
                                                 <div class="submit-feedback-box mt-4">
-                                                    <h5>Gửi đánh giá của bạn</h5>
+                                                    <h5>Submit Your Review</h5>
                                                     <form action="submit-feedback" method="post" class="feedback-form">
                                                         <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
                                                         <input type="hidden" name="bookingID" value="${bookingID}" />
 
                                                         <div class="form-group">
-                                                            <label>Chọn số sao:</label>
+                                                            <label>Select Rating:</label>
                                                             <select name="rating" class="form-control" required>
-                                                                <option value="5">★★★★★ - Tuyệt vời</option>
-                                                                <option value="4">★★★★ - Tốt</option>
-                                                                <option value="3">★★★ - Trung bình</option>
-                                                                <option value="2">★★ - Kém</option>
-                                                                <option value="1">★ - Rất tệ</option>
+                                                                <option value="5">★★★★★ - Excellent</option>
+                                                                <option value="4">★★★★ - Good</option>
+                                                                <option value="3">★★★ - Average</option>
+                                                                <option value="2">★★ - Poor</option>
+                                                                <option value="1">★ - Very Poor</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label>Bình luận:</label>
-                                                            <textarea name="comment" class="form-control" rows="4" required placeholder="Nhập cảm nhận của bạn..."></textarea>
+                                                            <label>Comment:</label>
+                                                            <textarea name="comment" class="form-control" rows="4" required placeholder="Enter your feedback..."></textarea>
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <p>Thông tin hiển thị kèm đánh giá:</p>
+                                                            <p>Information to display with review:</p>
                                                             <label><input type="checkbox" name="showEmail" checked> Email</label>
                                                             <label><input type="checkbox" name="showFacebook" checked> Facebook</label>
                                                             <label><input type="checkbox" name="showInstagram" checked> Instagram</label>
                                                         </div>
 
-                                                        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                                        <button type="submit" class="btn btn-primary">Submit Review</button>
                                                     </form>
                                                 </div>
                                             </c:if>
 
                                             <c:if test="${sessionScope.user == null}">
-                                                <p class="text-muted mt-3">Vui lòng <a href="login.jsp">đăng nhập</a> để gửi đánh giá.</p>
+                                                <p class="text-muted mt-3">Please <a href="login.jsp">log in</a> to submit a review.</p>
                                             </c:if>
 
-                                            <!-- ✅ DANH SÁCH FEEDBACK -->
+                                            <!-- ✅ FEEDBACK LIST -->
                                             <hr/>
                                             <c:choose>
                                                 <c:when test="${not empty feedbacks}">
                                                     <c:forEach var="fb" items="${feedbacks}">
                                                         <div class="instructor-bx m-b30">
                                                             <div class="instructor-info">
-                                                                <h6>${empty fb.fullName ? 'Ẩn danh' : fn:escapeXml(fb.fullName)}</h6>
+                                                                <h6>${empty fb.fullName ? 'Anonymous' : fn:escapeXml(fb.fullName)}</h6>
 
                                                                 <ul class="cours-star list-inline m-tb10">
                                                                     <c:forEach var="i" begin="1" end="5">
                                                                         <li class="${i <= fb.rating ? 'active' : ''}"><i class="fa fa-star"></i></li>
-                                                                        </c:forEach>
+                                                                    </c:forEach>
                                                                 </ul>
 
-                                                                <p class="m-b5">${empty fb.comment ? 'Không có bình luận' : fn:escapeXml(fb.comment)}</p>
+                                                                <p class="m-b5">${empty fb.comment ? 'No comment' : fn:escapeXml(fb.comment)}</p>
 
                                                                 <div class="m-tb5">
                                                                     <c:if test="${fb.showEmail}">
-                                                                        <i class="fa fa-envelope"></i> ${empty fb.email ? 'Ẩn' : fn:escapeXml(fb.email)}<br/>
+                                                                        <i class="fa fa-envelope"></i> ${empty fb.email ? 'Hidden' : fn:escapeXml(fb.email)}<br/>
                                                                     </c:if>
                                                                     <c:if test="${fb.showFacebook}">
-                                                                        <i class="fa fa-facebook"></i> ${empty fb.facebook ? 'Ẩn' : fn:escapeXml(fb.facebook)}<br/>
+                                                                        <i class="fa fa-facebook"></i> ${empty fb.facebook ? 'Hidden' : fn:escapeXml(fb.facebook)}<br/>
                                                                     </c:if>
                                                                     <c:if test="${fb.showInstagram}">
-                                                                        <i class="fa fa-instagram"></i> ${empty fb.instagram ? 'Ẩn' : fn:escapeXml(fb.instagram)}<br/>
+                                                                        <i class="fa fa-instagram"></i> ${empty fb.instagram ? 'Hidden' : fn:escapeXml(fb.instagram)}<br/>
                                                                     </c:if>
                                                                 </div>
 
@@ -837,7 +837,7 @@
                                                                             <fmt:formatDate value="${fb.feedbackDate}" pattern="dd/MM/yyyy HH:mm" />
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <span class="text-warning">Ngày không xác định</span>
+                                                                            <span class="text-warning">Date not specified</span>
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                 </small>
@@ -846,13 +846,12 @@
                                                     </c:forEach>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <p class="text-muted">Phòng này chưa có đánh giá nào.</p>
+                                                    <p class="text-muted">This room has no reviews yet.</p>
                                                 </c:otherwise>
                                             </c:choose>
                                         </div>
                                     </div>
-                                    <!-- 🔼 KẾT THÚC BLOCK FEEDBACK -->
-
+                                    <!-- 🔼 END FEEDBACK BLOCK -->
 
                                     <div class="" id="reviews">
                                         <h4>Reviews</h4>
@@ -866,7 +865,7 @@
                                                     <li><i class="fa fa-star"></i></li>
                                                     <li><i class="fa fa-star"></i></li>
                                                 </ul>
-                                                <span>3 Rating</span>
+                                                <span>3 Ratings</span>
                                             </div>
                                             <div class="review-bar">
                                                 <div class="bar-bx">
@@ -1075,19 +1074,17 @@
 
             <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             <script>
-                                                                        const checkinRaw = "${param.checkin}";
-                                                                        flatpickr("#checkin", {
-                                                                            dateFormat: "d/m/Y",
-                                                                            defaultDate: checkinRaw ? new Date(checkinRaw) : null
-                                                                        });
+                const checkinRaw = "${param.checkin}";
+                flatpickr("#checkin", {
+                    dateFormat: "d/m/Y",
+                    defaultDate: checkinRaw ? new Date(checkinRaw) : null
+                });
 
-
-                                                                        const checkoutRaw = "${param.checkout}";
-                                                                        flatpickr("#checkout", {
-                                                                            dateFormat: "d/m/Y",
-                                                                            defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
-                                                                        });
-
+                const checkoutRaw = "${param.checkout}";
+                flatpickr("#checkout", {
+                    dateFormat: "d/m/Y",
+                    defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
+                });
             </script>
             <script>
                 const checkinInput = document.getElementById('checkin');
@@ -1107,7 +1104,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkin && checkout && checkout <= checkin) {
-                        alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
+                        alert('❌ Check-out date must be after check-in date.');
                         checkoutInput.value = '';
                     }
                 }
@@ -1116,7 +1113,7 @@
                     const checkin = parseDate(checkinInput.value);
                     const checkout = parseDate(checkoutInput.value);
                     if (checkout <= checkin) {
-                        alert('? Ng�y tr? ph�ng ph?i sau ng�y nh?n ph�ng.');
+                        alert('❌ Check-out date must be after check-in date.');
                         return false;
                     }
                     return true;
