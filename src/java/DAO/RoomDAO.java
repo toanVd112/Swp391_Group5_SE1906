@@ -290,28 +290,16 @@ public class RoomDAO {
     public List<CartRoom> getCartByAccountId(int accountId) {
         List<CartRoom> list = new ArrayList<>();
         String sql = "SELECT rt.RoomTypeID, rt.Name AS RoomName, rt.BasePrice, rt.RoomTypeImage AS imageUrl, "
-<<<<<<< HEAD
                 + "rt.MaxGuests, "
                 + "(SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
-=======
-                + "       rt.MaxGuests, "
-                + "       (SELECT COUNT(*) FROM Rooms r WHERE r.RoomTypeID = rt.RoomTypeID AND r.Status = 'Available') AS availableQuantity "
->>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7
                 + "FROM CartRooms c "
                 + "JOIN RoomTypes rt ON c.RoomTypeID = rt.RoomTypeID "
                 + "WHERE c.AccountID = ?";
 
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-<<<<<<< HEAD
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
 
-=======
-
-            ps.setInt(1, accountId);
-            ResultSet rs = ps.executeQuery();
-
->>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7
             while (rs.next()) {
                 CartRoom room = new CartRoom();
                 room.setRoomTypeId(rs.getInt("RoomTypeID"));
@@ -322,15 +310,6 @@ public class RoomDAO {
                 room.setAvailableQuantity(rs.getInt("availableQuantity"));
                 list.add(room);
             }
-<<<<<<< HEAD
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-}
-=======
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -349,4 +328,3 @@ public class RoomDAO {
         }
     }
 }
->>>>>>> 75bdf5b71390169dd8882306d3fcf946670d5cf7

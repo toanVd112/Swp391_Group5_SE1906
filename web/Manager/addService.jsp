@@ -160,9 +160,9 @@
             const descriptionInput = document.getElementById("description");
             const priceInput = document.getElementById("price");
             const serviceTypeInput = document.getElementById("serviceType");
-            const serviceImageInput = document.getElementById("serviceImage");
+          
 
-            if (!nameInput || !descriptionInput || !priceInput || !serviceTypeInput || !serviceImageInput) {
+            if (!nameInput || !descriptionInput || !priceInput || !serviceTypeInput ) {
                 alert("Lỗi: Không tìm thấy các trường dữ liệu cần thiết.");
                 return false;
             }
@@ -171,7 +171,7 @@
             const description = descriptionInput.value.trim();
             const price = priceInput.value.trim();
             const serviceType = serviceTypeInput.value.trim();
-            const serviceImage = serviceImageInput.value.trim();
+          
 
             document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
 
@@ -210,14 +210,7 @@
                 isValid = false;
             }
 
-            if (serviceImage) {
-                const imageRegex = /^(https?:\/\/[a-zA-Z0-9\-\.]+\/.+|\/[a-zA-Z0-9\-\/]+|assets\/[a-zA-Z0-9\-\/]+)\.(jpg|jpeg|png|gif)$/i;
-                if (!imageRegex.test(serviceImage)) {
-                    serviceImageInput.classList.add("input-error");
-                    errorMessages.push("URL hình ảnh không hợp lệ.");
-                    isValid = false;
-                }
-            }
+            
 
             if (!isValid) {
                 alert(errorMessages.join("\n"));
@@ -266,10 +259,7 @@
                             <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt động</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="serviceImage">Hình ảnh: <span title="URL hợp lệ (jpg, jpeg, png, gif), tối đa 255 ký tự"></span></label>
-                        <input type="text" id="serviceImage" name="serviceImage" value="${service.serviceImage}" maxlength="255" pattern="^(https?://|\/|assets\/).+\.(jpg|jpeg|png|gif)$" title="URL hợp lệ với định dạng jpg, jpeg, png, gif">
-                    </div>
+                   
                 </div>
             </div>
             <input type="submit" value="Save">

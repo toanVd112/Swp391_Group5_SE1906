@@ -1,5 +1,6 @@
 package DAO;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Service; // Đảm bảo import đúng model Service của bạn
+import model.ServiceUsage;
 
 public class ServiceDAO {
 
@@ -246,5 +248,72 @@ public class ServiceDAO {
         
         return services;
     }
+
+     public List<ServiceUsage> getServiceUsageByBookingID(int bookingID) {
+        List<ServiceUsage> list = new ArrayList<>();
+        String sql;
+
+        if (isBookingActive(bookingID)) {
+            sql = "SELECT su.*, s.ServiceName, s.Unit "
+                    + "FROM serviceusage su "
+                    + "JOIN services s ON su.ServiceID = s.ServiceID "
+                    + "WHERE su.BookingID = ?";
+        } else {
+            sql = "SELECT su.*, s.ServiceName, s.Unit "
+                    + "FROM deleted_serviceusage su "
+                    + "JOIN services s ON su.ServiceID = s.ServiceID "
+                    + "WHERE su.BookingID = ?";
+        }
+
+        try {
+            Connection con = DBConnect.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ServiceUsage su = new ServiceUsage();
+                su.setServiceUsageID(rs.getInt("UsageID"));
+                su.setBookingID(rs.getInt("BookingID"));
+                su.setServiceID(rs.getInt("ServiceID"));
+                su.setServiceName(rs.getString("ServiceName"));
+                su.setQuantity(rs.getInt("Quantity"));
+                su.setUnit(rs.getString("Unit"));
+
+                // DB INT → BigDecimal
+                su.setUnitPrice(BigDecimal.valueOf(rs.getInt("UnitPrice")));
+                su.setSubTotal(BigDecimal.valueOf(rs.getInt("SubTotal")));
+
+                su.setNotes(rs.getString("Notes"));
+
+                list.add(su);
+            }
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+   
+    public boolean isBookingActive(int bookingID) {
+        String sql = "SELECT 1 FROM bookings WHERE BookingID = ?";
+        try {
+            Connection con = DBConnect.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            boolean exists = rs.next();
+            rs.close();
+            ps.close();
+            con.close();
+            return exists;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     
 }
