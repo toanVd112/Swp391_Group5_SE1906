@@ -50,6 +50,10 @@
             </c:if>
 
             <c:if test="${role eq 'Receptionist'}">
+                <a href="${pageContext.request.contextPath}/bookingList" class="menu-item" data-page="bookingList">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Booking List</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/managerAccountC" class="menu-item" data-page="managerAccountC">
                     <i class="fas fa-clipboard-list"></i>
                     <span>View Account Customer</span>
@@ -65,11 +69,11 @@
             </c:if>
 
             <c:if test="${role eq 'Staff'}">
-                <a href="${pageContext.request.contextPath}/layout.jsp?page=staff/maintenance.jsp" class="menu-item" data-page="staff/maintenance">
+                <a href="${pageContext.request.contextPath}/pendingMaintenance" class="menu-item" data-page="staff/maintenance">
                     <i class="fas fa-wrench"></i>
                     <span>View Maintenance Requests</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/layout.jsp?page=staff/inspection.jsp" class="menu-item" data-page="staff/inspection">
+                <a href="${pageContext.request.contextPath}/pendingCheckout" class="menu-item" data-page="staff/inspection">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Room Inspection Reports</span>
                 </a>
@@ -298,8 +302,8 @@
         width: 100%;
         text-decoration: none;
         color: #374151;
-/*        padding: 0.875rem 1.5rem;
-        margin: 0 0.75rem;*/
+        /*        padding: 0.875rem 1.5rem;
+                margin: 0 0.75rem;*/
         border-radius: 8px;
         transition: all 0.3s ease;
     }
@@ -440,124 +444,124 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Get current page info
-    const currentPath = window.location.pathname;
-    const currentSearch = window.location.search;
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get current page info
+        const currentPath = window.location.pathname;
+        const currentSearch = window.location.search;
 
-    // Get all menu items
-    const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
+        // Get all menu items
+        const menuItems = document.querySelectorAll('.menu-item, .dropdown-item');
 
-    // Function to set active menu item
-    function setActiveMenuItem() {
-        // Remove active class from all items
-        menuItems.forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Find and set active item
-        let activeItem = null;
-
-        // Check for exact URL match first
-        menuItems.forEach(item => {
-            const href = item.getAttribute('href');
-            if (href && href !== '#' && currentPath === new URL(href, window.location.origin).pathname) {
-                activeItem = item;
-            }
-        });
-
-        // If no exact match, check by data-page attribute
-        if (!activeItem) {
+        // Function to set active menu item
+        function setActiveMenuItem() {
+            // Remove active class from all items
             menuItems.forEach(item => {
-                const dataPage = item.getAttribute('data-page');
-                if (dataPage && (currentPath.includes(dataPage) || currentSearch.includes(dataPage))) {
+                item.classList.remove('active');
+            });
+
+            // Find and set active item
+            let activeItem = null;
+
+            // Check for exact URL match first
+            menuItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && href !== '#' && currentPath === new URL(href, window.location.origin).pathname) {
                     activeItem = item;
                 }
             });
-        }
 
-        // Set active class
-        if (activeItem) {
-            activeItem.classList.add('active');
-            // If the active item is a dropdown-item, also activate the parent dropdown
-            const parentDropdown = activeItem.closest('.dropdown');
-            if (parentDropdown) {
-                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-                // Ensure dropdown is visible for active item
-                parentDropdown.classList.add('show');
+            // If no exact match, check by data-page attribute
+            if (!activeItem) {
+                menuItems.forEach(item => {
+                    const dataPage = item.getAttribute('data-page');
+                    if (dataPage && (currentPath.includes(dataPage) || currentSearch.includes(dataPage))) {
+                        activeItem = item;
+                    }
+                });
+            }
+
+            // Set active class
+            if (activeItem) {
+                activeItem.classList.add('active');
+                // If the active item is a dropdown-item, also activate the parent dropdown
+                const parentDropdown = activeItem.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                    // Ensure dropdown is visible for active item
+                    parentDropdown.classList.add('show');
+                }
             }
         }
-    }
 
-    // Set active menu item on page load
-    setActiveMenuItem();
+        // Set active menu item on page load
+        setActiveMenuItem();
 
-    // Add click event listeners to menu items
-    menuItems.forEach(item => {
-        item.addEventListener('click', function (e) {
-            if (this.classList.contains('dropdown-toggle')) {
-                return; // Prevent default behavior for dropdown toggles
-            }
-
-            // Remove active class from all items
-            menuItems.forEach(menuItem => {
-                menuItem.classList.remove('active');
-            });
-
-            // Add active class to clicked item
-            this.classList.add('active');
-
-            // If the clicked item is a dropdown-item, activate the parent dropdown
-            const parentDropdown = this.closest('.dropdown');
-            if (parentDropdown) {
-                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-            }
-
-            // Store active item in localStorage
-            const dataPage = this.getAttribute('data-page');
-            if (dataPage) {
-                localStorage.setItem('activePage', dataPage);
-            }
-        });
-    });
-
-    // Restore active state from localStorage if available
-    const storedActivePage = localStorage.getItem('activePage');
-    if (storedActivePage) {
-        const storedItem = document.querySelector(`[data-page="${storedActivePage}"]`);
-        if (storedItem && !document.querySelector('.menu-item.active, .dropdown-item.active')) {
-            storedItem.classList.add('active');
-            const parentDropdown = storedItem.closest('.dropdown');
-            if (parentDropdown) {
-                parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
-                parentDropdown.classList.add('show');
-            }
-        }
-    }
-
-    // Function to manually set active menu item
-    window.setActiveMenu = function(pageName) {
+        // Add click event listeners to menu items
         menuItems.forEach(item => {
-            item.classList.remove('active');
-            if (item.getAttribute('data-page') === pageName) {
-                item.classList.add('active');
-                const parentDropdown = item.closest('.dropdown');
+            item.addEventListener('click', function (e) {
+                if (this.classList.contains('dropdown-toggle')) {
+                    return; // Prevent default behavior for dropdown toggles
+                }
+
+                // Remove active class from all items
+                menuItems.forEach(menuItem => {
+                    menuItem.classList.remove('active');
+                });
+
+                // Add active class to clicked item
+                this.classList.add('active');
+
+                // If the clicked item is a dropdown-item, activate the parent dropdown
+                const parentDropdown = this.closest('.dropdown');
+                if (parentDropdown) {
+                    parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
+
+                // Store active item in localStorage
+                const dataPage = this.getAttribute('data-page');
+                if (dataPage) {
+                    localStorage.setItem('activePage', dataPage);
+                }
+            });
+        });
+
+        // Restore active state from localStorage if available
+        const storedActivePage = localStorage.getItem('activePage');
+        if (storedActivePage) {
+            const storedItem = document.querySelector(`[data-page="${storedActivePage}"]`);
+            if (storedItem && !document.querySelector('.menu-item.active, .dropdown-item.active')) {
+                storedItem.classList.add('active');
+                const parentDropdown = storedItem.closest('.dropdown');
                 if (parentDropdown) {
                     parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
                     parentDropdown.classList.add('show');
                 }
             }
-        });
-        localStorage.setItem('activePage', pageName);
-    };
-
-    // Ensure dropdowns with active items are visible on load
-    const activeDropdownItem = document.querySelector('.dropdown-item.active');
-    if (activeDropdownItem) {
-        const parentDropdown = activeDropdownItem.closest('.dropdown');
-        if (parentDropdown) {
-            parentDropdown.classList.add('show');
         }
-    }
-});
+
+        // Function to manually set active menu item
+        window.setActiveMenu = function (pageName) {
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageName) {
+                    item.classList.add('active');
+                    const parentDropdown = item.closest('.dropdown');
+                    if (parentDropdown) {
+                        parentDropdown.querySelector('.dropdown-toggle').classList.add('active');
+                        parentDropdown.classList.add('show');
+                    }
+                }
+            });
+            localStorage.setItem('activePage', pageName);
+        };
+
+        // Ensure dropdowns with active items are visible on load
+        const activeDropdownItem = document.querySelector('.dropdown-item.active');
+        if (activeDropdownItem) {
+            const parentDropdown = activeDropdownItem.closest('.dropdown');
+            if (parentDropdown) {
+                parentDropdown.classList.add('show');
+            }
+        }
+    });
 </script>

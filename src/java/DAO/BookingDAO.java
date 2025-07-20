@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import model.BookingResult;
 import java.sql.Date;
+
 /**
  *
  * @author Admin
@@ -858,6 +859,115 @@ public class BookingDAO {
             }
         }
         return list;
+    }
+
+    public List<Booking> getAllBookings() {
+        List<Booking> list = new ArrayList<>();
+        String sql = "SELECT * FROM bookings";
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Booking booking = new Booking();
+                booking.setBookingID(rs.getInt("BookingID"));
+                booking.setUserID(rs.getInt("UserID"));
+                booking.setCheckInDate(rs.getString("CheckInDate"));
+                booking.setCheckOutDate(rs.getString("CheckOutDate"));
+                booking.setGuestsCount(rs.getInt("GuestsCount"));
+                booking.setStatus(rs.getString("Status"));
+                booking.setContactName(rs.getString("ContactName"));
+                booking.setContactEmail(rs.getString("ContactEmail"));
+                booking.setContactPhone(rs.getString("ContactPhone"));
+                booking.setTotalAmount(rs.getDouble("TotalAmount"));
+
+                list.add(booking);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public List<Booking> getBookingsWithPaging(String search, String sort, int page, int pageSize) {
+        List<Booking> list = new ArrayList<>();
+
+        String baseSql = "SELECT * FROM bookings "
+                + "WHERE (ContactName LIKE ? OR ContactPhone LIKE ?) "
+                + "AND Status IN ('Pending', 'Upcoming', 'Active')";
+
+        String order = " ORDER BY BookingDate ";
+        order += (sort != null && sort.equalsIgnoreCase("asc")) ? "ASC " : "DESC ";
+        String paging = " LIMIT ? OFFSET ?";
+
+        String sql = baseSql + order + paging;
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            String keyword = "%" + (search == null ? "" : search.trim()) + "%";
+            ps.setString(1, keyword);
+            ps.setString(2, keyword);
+            ps.setInt(3, pageSize);
+            ps.setInt(4, (page - 1) * pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.setBookingID(rs.getInt("BookingID"));
+                b.setUserID(rs.getInt("UserID"));
+                b.setCheckInDate(rs.getString("CheckInDate"));
+                b.setCheckOutDate(rs.getString("CheckOutDate"));
+                b.setGuestsCount(rs.getInt("GuestsCount"));
+                b.setStatus(rs.getString("Status"));
+                b.setContactName(rs.getString("ContactName"));
+                b.setContactPhone(rs.getString("ContactPhone"));
+                b.setTotalAmount(rs.getDouble("TotalAmount"));
+                list.add(b);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countAllBookings(String search) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM bookings "
+                + "WHERE (ContactName LIKE ? OR ContactPhone LIKE ?) "
+                + "AND Status IN ('Pending', 'Upcoming', 'Active')";
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            String keyword = "%" + (search == null ? "" : search.trim()) + "%";
+            ps.setString(1, keyword);
+            ps.setString(2, keyword);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    public void updateBookingStatus1(int bookingID, String status) {
+        String sql = "UPDATE bookings SET Status = ? WHERE BookingID = ?";
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setInt(2, bookingID);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
