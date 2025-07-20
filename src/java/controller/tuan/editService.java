@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class editService extends HttpServlet {
 
     // Regex for service name: letters (including Vietnamese), numbers, spaces, hyphens, underscores
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}0-9\\s-_]{3,100}$");
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}0-9\\s-_]{3,64}$");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,7 +40,7 @@ public class editService extends HttpServlet {
             String idParam = request.getParameter("id");
             if (idParam == null || idParam.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "ID dịch vụ không được cung cấp.");
-                response.sendRedirect(request.getContextPath() + "/services?action=list");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list");
                 return;
             }
             int id = Integer.parseInt(idParam);
@@ -53,18 +53,18 @@ public class editService extends HttpServlet {
                 request.getRequestDispatcher(jspPath).forward(request, response);
             } else {
                 request.setAttribute("errorMessage", "Không tìm thấy dịch vụ với ID: " + id);
-                response.sendRedirect(request.getContextPath() + "/services?action=list");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list");
             }
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "ID dịch vụ không hợp lệ.");
-            response.sendRedirect(request.getContextPath() + "/services?action=list&error=invalidIdFormat");
+            response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&error=invalidIdFormat");
         } catch (Exception e) {
             this.log("Lỗi hệ thống khi tải dữ liệu dịch vụ: " + e.getMessage());
             request.setAttribute("errorMessage", "Lỗi hệ thống khi tải dữ liệu dịch vụ: " + e.getMessage());
             try {
                 request.getRequestDispatcher(jspPath).forward(request, response);
             } catch (Exception ex) {
-                response.sendRedirect(request.getContextPath() + "/services?action=list&error=systemError");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&error=systemError");
             }
         }
     }
@@ -90,7 +90,7 @@ public class editService extends HttpServlet {
             String idParam = request.getParameter("id");
             if (idParam == null || idParam.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "ID dịch vụ không được gửi trong form.");
-                response.sendRedirect(request.getContextPath() + "/services?action=list&error=missingFormId");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&error=missingFormId");
                 return;
             }
             serviceId = Integer.parseInt(idParam);
@@ -115,7 +115,7 @@ public class editService extends HttpServlet {
             }
 
             if (!NAME_PATTERN.matcher(name).matches()) {
-                request.setAttribute("errorMessage", "Tên dịch vụ phải từ 3 đến 100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
+                request.setAttribute("errorMessage", "Tên dịch vụ phải từ 3 đến 64 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
                 Service serviceToEdit = serviceDAO.getServiceByID(serviceId);
                 request.setAttribute("service", serviceToEdit);
                 request.setAttribute("serviceTypes", allServiceTypes);
@@ -124,7 +124,7 @@ public class editService extends HttpServlet {
             }
 
             if (serviceDAO.isDuplicatedServiceName(name, serviceId)) {
-                request.setAttribute("errorMessage", "Tên dịch vụ đã tồn tại.");
+                request.setAttribute("errorMessage", "Tên dịch vụ đã tồn tại. Vui lòng chọn tên khác.");
                 Service serviceToEdit = serviceDAO.getServiceByID(serviceId);
                 request.setAttribute("service", serviceToEdit);
                 request.setAttribute("serviceTypes", allServiceTypes);
@@ -205,7 +205,7 @@ public class editService extends HttpServlet {
                 serviceToUpdate.setCreatedBy(existingService.getCreatedBy());
             } else {
                 request.setAttribute("errorMessage", "Không tìm thấy dịch vụ gốc để cập nhật.");
-                response.sendRedirect(request.getContextPath() + "/services?action=list&error=originalNotFound");
+                response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&error=originalNotFound");
                 return;
             }
 
@@ -220,7 +220,7 @@ public class editService extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "ID dịch vụ không hợp lệ trong form gửi đi.");
-            response.sendRedirect(request.getContextPath() + "/services?action=list&error=invalidFormId");
+            response.sendRedirect(request.getContextPath() + "/serviceslist?action=list&error=invalidFormId");
         } catch (Exception e) {
             this.log("Lỗi hệ thống khi cập nhật dịch vụ: " + e.getMessage());
             request.setAttribute("errorMessage", "Lỗi hệ thống khi cập nhật dịch vụ: " + e.getMessage());

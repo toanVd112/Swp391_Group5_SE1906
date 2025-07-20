@@ -74,14 +74,14 @@ public class addService extends HttpServlet {
         }
 
         if (!NAME_PATTERN.matcher(name).matches()) {
-            request.setAttribute("errorMessage", "Tên dịch vụ phải từ 3 đến 100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
+            request.setAttribute("errorMessage", "Tên dịch vụ phải từ 3 đến 64 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
             request.setAttribute("serviceTypes", allServiceTypes);
             request.getRequestDispatcher(jspPath).forward(request, response);
             return;
         }
 
         if (serviceDAO.isDuplicatedServiceName(name, -1)) {
-            request.setAttribute("errorMessage", "Tên dịch vụ đã tồn tại.");
+            request.setAttribute("errorMessage", "Tên dịch vụ đã tồn tại. Vui lòng chọn tên khác.");
             request.setAttribute("serviceTypes", allServiceTypes);
             request.getRequestDispatcher(jspPath).forward(request, response);
             return;
@@ -109,7 +109,7 @@ public class addService extends HttpServlet {
         }
 
         if (status == null || (!status.equals("0") && !status.equals("1"))) {
-            request.setAttribute("errorMessage", "Trạng态 dịch vụ không hợp lệ. Phải là '0' hoặc '1'.");
+            request.setAttribute("errorMessage", "Trạng thái dịch vụ không hợp lệ. Phải là '0' hoặc '1'.");
             request.setAttribute("serviceTypes", allServiceTypes);
             request.getRequestDispatcher(jspPath).forward(request, response);
             return;

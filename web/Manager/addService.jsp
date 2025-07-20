@@ -73,6 +73,7 @@
             transition: border-color 0.3s;
             word-break: break-word;
             overflow-wrap: break-word;
+            min-height: 40px;
         }
         input[type="text"]:focus,
         input[type="number"]:focus,
@@ -125,7 +126,7 @@
         }
         @media (max-width: 600px) {
             .container {
-                padding: 20px;
+                padding: 15px;
             }
             h2 {
                 font-size: 20px;
@@ -133,23 +134,33 @@
             .form-column {
                 min-width: 100%;
             }
+            input[type="text"],
+            input[type="number"],
+            textarea,
+            select {
+                font-size: 14px;
+                padding: 8px;
+            }
         }
     </style>
     <script>
         async function isDupeServiceName(input) {
-            const dataToSend = input;
+            const dataToSend = { name: input, id: -1 }; // id = -1 cho thêm mới
             try {
                 const response = await fetch('${pageContext.request.contextPath}/services/dupe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: dataToSend })
+                    body: JSON.stringify(dataToSend)
                 });
-                if (!response.ok) throw new Error('Phản hồi từ API không thành công');
+                if (!response.ok) {
+                    throw new Error('Phản hồi từ API không thành công: ' + response.status);
+                }
                 const result = await response.json();
                 return result === true || result === "true";
             } catch (error) {
-                console.error('Lỗi:', error);
-                return false;
+                console.error('Lỗi kiểm tra trùng tên:', error);
+                alert('Lỗi khi kiểm tra tên dịch vụ. Vui lòng thử lại.');
+                return false; // Giả sử không trùng để server kiểm tra lại
             }
         }
 
@@ -160,9 +171,8 @@
             const descriptionInput = document.getElementById("description");
             const priceInput = document.getElementById("price");
             const serviceTypeInput = document.getElementById("serviceType");
-          
 
-            if (!nameInput || !descriptionInput || !priceInput || !serviceTypeInput ) {
+            if (!nameInput || !descriptionInput || !priceInput || !serviceTypeInput) {
                 alert("Lỗi: Không tìm thấy các trường dữ liệu cần thiết.");
                 return false;
             }
@@ -171,11 +181,10 @@
             const description = descriptionInput.value.trim();
             const price = priceInput.value.trim();
             const serviceType = serviceTypeInput.value.trim();
-          
 
             document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
 
-            const nameRegex = /^[a-zA-Z0-9\s-_]{3,100}$/;
+            const nameRegex = /^[a-zA-Z0-9\u00C0-\u017F\s-_]{3,64}$/;
             const isDupServiceName = await isDupeServiceName(name);
             if (!name) {
                 nameInput.classList.add("input-error");
@@ -183,7 +192,7 @@
                 isValid = false;
             } else if (!nameRegex.test(name)) {
                 nameInput.classList.add("input-error");
-                errorMessages.push("Tên dịch vụ phải từ 3 đến 100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
+                errorMessages.push("Tên dịch vụ phải từ 3 đến 64 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang hoặc gạch dưới.");
                 isValid = false;
             } else if (isDupServiceName) {
                 nameInput.classList.add("input-error");
@@ -210,8 +219,6 @@
                 isValid = false;
             }
 
-            
-
             if (!isValid) {
                 alert(errorMessages.join("\n"));
             } else {
@@ -230,8 +237,8 @@
             <div class="form-container">
                 <div class="form-column">
                     <div class="form-group">
-                        <label for="name">Tên dịch vụ: <span title="Từ 3-100 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
-                        <input type="text" id="name" name="name" value="${service.name}" required maxlength="100">
+                        <label for="name">Tên dịch vụ: <span title="Từ 3-64 ký tự, chỉ chứa chữ, số, dấu cách, gạch ngang, gạch dưới">*</span></label>
+                        <input type="text" id="name" name="name" value="${service.name}" required maxlength="64" placeholder="Nhập tên dịch vụ (tối đa 64 ký tự)">
                     </div>
                     <div class="form-group">
                         <label for="price">Giá: <span title="Số nguyên từ 0 đến 1,000,000,000">*</span></label>
@@ -259,7 +266,6 @@
                             <option value="0" ${service.status == '0' ? 'selected' : ''}>Ngừng Hoạt động</option>
                         </select>
                     </div>
-                   
                 </div>
             </div>
             <input type="submit" value="Save">

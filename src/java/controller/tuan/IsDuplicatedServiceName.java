@@ -19,6 +19,9 @@ public class IsDuplicatedServiceName extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -32,24 +35,27 @@ public class IsDuplicatedServiceName extends HttpServlet {
         Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> jsonMap = gson.fromJson(inputString, mapType);
 
-        String serviceName = (String) jsonMap.get("name");
-        String idStr = (String) jsonMap.get("id");
+        String serviceName = jsonMap.get("name") != null ? jsonMap.get("name").toString().trim() : "";
         int serviceId = -1;
-        if (idStr != null && !idStr.trim().isEmpty()) {
+        if (jsonMap.get("id") != null) {
             try {
-                serviceId = Integer.parseInt(idStr);
+                serviceId = (int) Double.parseDouble(jsonMap.get("id").toString());
             } catch (NumberFormatException e) {
                 // Ignore invalid ID
             }
         }
 
+        if (serviceName.isEmpty()) {
+            try (PrintWriter out = response.getWriter()) {
+                out.print(gson.toJson(false));
+                out.flush();
+            }
+            return;
+        }
+
         boolean isDupeServiceName = new ServiceDAO().isDuplicatedServiceName(serviceName, serviceId);
+        String responseJson = gson.toJson(isDupeServiceName);
 
-        String responseMessage = isDupeServiceName ? "true" : "false";
-        String responseJson = gson.toJson(responseMessage);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
             out.print(responseJson);
             out.flush();

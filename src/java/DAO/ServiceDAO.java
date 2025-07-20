@@ -70,9 +70,9 @@ public class ServiceDAO {
      * trang/lấy tất cả).
      * @return Danh sách các dịch vụ.
      */
-    public List<Service> getFilteredServices(String keyword, String type, String status, String sortBy, int page) {
+    public List<Service> getFilteredServices(String keyword, String type, String status, String sortBy, int page, int recordsPerPage) {
         List<Service> services = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM services WHERE 1=1"); // Mệnh đề WHERE 1=1 để dễ dàng nối thêm AND
+        StringBuilder sql = new StringBuilder("SELECT * FROM services WHERE 1=1");
         List<Object> params = new ArrayList<>();
         
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -84,37 +84,37 @@ public class ServiceDAO {
             params.add(type.trim());
         }
         if (status != null && !status.trim().isEmpty()) {
-            // Giả sử cột AvailabilityStatus trong DB là '1' (Available) hoặc '0' (Not Available)
             sql.append(" AND AvailabilityStatus = ?");
             params.add(status.trim());
         }
 
-        // Ví dụ về sắp xếp (có thể mở rộng thêm)
         if (sortBy != null && !sortBy.trim().isEmpty()) {
-            // Cần cẩn thận với SQL Injection nếu sortBy đến trực tiếp từ người dùng mà không qua kiểm tra
-            // Tốt nhất là dùng whitelist cho các giá trị sortBy hợp lệ
             if (sortBy.equalsIgnoreCase("name_asc")) {
                 sql.append(" ORDER BY ServiceName ASC");
             } else if (sortBy.equalsIgnoreCase("name_desc")) {
                 sql.append(" ORDER BY ServiceName DESC");
-            } // Thêm các trường hợp sắp xếp khác nếu cần
-            else {
-                sql.append(" ORDER BY ServiceID ASC"); // Sắp xếp mặc định
+            } else if (sortBy.equalsIgnoreCase("price_asc")) {
+                sql.append(" ORDER BY Price ASC");
+            } else if (sortBy.equalsIgnoreCase("price_desc")) {
+                sql.append(" ORDER BY Price DESC");
+            } else {
+                sql.append(" ORDER BY ServiceID ASC");
             }
         } else {
-            sql.append(" ORDER BY ServiceID ASC"); // Sắp xếp mặc định nếu không có sortBy
+            sql.append(" ORDER BY ServiceID ASC");
         }
 
-        // Nếu có phân trang, bạn sẽ thêm LIMIT và OFFSET ở đây
-        // Ví dụ: sql.append(" LIMIT ? OFFSET ?");
-        // params.add(recordsPerPage);
-        // params.add((page - 1) * recordsPerPage);
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            
+        if (recordsPerPage > 0 && page > 0) {
+            sql.append(" LIMIT ? OFFSET ?");
+            params.add(recordsPerPage);
+            params.add((page - 1) * recordsPerPage);
+        }
+
+        try (Connection conn = DBConnect.getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
@@ -129,11 +129,12 @@ public class ServiceDAO {
                     s.setCreatedBy(rs.getString("CreatedBy"));
                     s.setLastUpdateBy(rs.getString("LastUpdatedBy"));
                     s.setServiceImage(rs.getString("ServiceImage"));
+                    s.setUnit(rs.getString("Unit"));
                     services.add(s);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace(); // Nên ghi log lỗi này
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return services;
     }
@@ -141,8 +142,7 @@ public class ServiceDAO {
     // Ghi đè hoặc sửa phương thức getAll() để sử dụng getFilteredServices
     // Điều này đảm bảo tính nhất quán nếu các phần khác của code vẫn gọi getAll()
     public List<Service> getAll() {
-        // Gọi getFilteredServices không có bộ lọc, không sắp xếp cụ thể, không phân trang
-        return getFilteredServices(null, null, null, null, 0);
+        return getFilteredServices(null, null, null, null, 0, 0);
     }
 
     // ... (các phương thức addService, update, toggleServiceStatus hiện có của bạn) ...
@@ -213,16 +213,20 @@ public class ServiceDAO {
     }
     
     public boolean isDuplicatedServiceName(String name, int excludeId) {
-        String sql = "SELECT COUNT(*) FROM services WHERE name = ? AND id != ?";
-        try (Connection conn = DBConnect.getConnection(); // Assume getConnection() exists
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, name);
+        if (name == null || name.trim().isEmpty()) {
+            return false; // Không kiểm tra nếu tên rỗng
+        }
+        String sql = "SELECT COUNT(*) FROM services WHERE ServiceName = ? AND ServiceID != ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name.trim());
             stmt.setInt(2, excludeId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi kiểm tra trùng tên dịch vụ: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -295,7 +299,38 @@ public class ServiceDAO {
         }
         return list;
     }
+public int countFilteredServices(String keyword, String type, String status) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM services WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND ServiceName LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (type != null && !type.trim().isEmpty()) {
+            sql.append(" AND ServiceType = ?");
+            params.add(type.trim());
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND AvailabilityStatus = ?");
+            params.add(status.trim());
+        }
 
+        try (Connection conn = DBConnect.getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
    
     public boolean isBookingActive(int bookingID) {
         String sql = "SELECT 1 FROM bookings WHERE BookingID = ?";
