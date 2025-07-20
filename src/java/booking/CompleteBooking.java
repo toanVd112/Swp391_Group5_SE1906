@@ -5,6 +5,7 @@
 package booking;
 
 import DAO.BookingDAO;
+import DAO.DiscountCodeDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import model.Booking;
+import model.DiscountCode;
 
 /**
  *
@@ -76,18 +78,55 @@ public class CompleteBooking extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
         int bookingID = Integer.parseInt(request.getParameter("bookingID"));
+        String discountCode = request.getParameter("discountCode");
 
         BookingDAO bookingDAO = new BookingDAO();
         RoomDAO roomDAO = new RoomDAO();
+        DiscountCodeDAO discountDAO = new DiscountCodeDAO();
 
         Booking booking = bookingDAO.getBookingByID(bookingID);
+        if (booking == null) {
+            response.sendRedirect("error.jsp");
+            return;
+        }
 
-        // 1. Gửi mail xác nhận
+        String email = booking.getContactEmail();
+        String fullName = booking.getContactName();
+        double discountAmount = 0;
+
+        // ⚙️ Kiểm tra discountCode (nếu có nhập)
+        if (discountCode != null && !discountCode.trim().isEmpty()) {
+            DiscountCode dc = discountDAO.getDiscountCodeByCode(discountCode.trim());
+
+            boolean valid = false;
+            if (dc != null && "Active".equals(dc.getStatus()) && dc.getExpiryDate().isAfter(java.time.LocalDate.now())) {
+                valid = discountDAO.isUserEligibleForCode(email, discountCode.trim());
+            }
+
+            if (valid) {
+                double total = booking.getTotalAmount();
+                discountAmount = total * dc.getDiscountPercent() / 100;
+                total=total-discountAmount;
+                // Nếu bạn có cột DiscountCode và DiscountAmount trong bảng bookings thì ghi lại:
+                bookingDAO.applyDiscountToBooking(bookingID, dc.getDiscountCodeID(), total);
+
+                // (Optional) Thông báo mã đã dùng
+                request.getSession().setAttribute("flashMsg", "🎉 Mã giảm giá đã được áp dụng thành công!");
+            } else {
+                request.getSession().setAttribute("flashMsg", "❌ Mã giảm giá không hợp lệ hoặc bạn chưa đủ điều kiện.");
+                response.sendRedirect("thanhtoan.jsp?bookingID=" + bookingID);
+                return;
+            }
+        }
+
+        // Gửi mail xác nhận
         try {
             MailUtils.sendBookingSuccessMail(
-                    booking.getContactEmail(),
-                    booking.getContactName(),
+                    email,
+                    fullName,
                     bookingID,
                     booking.getCheckInDate(),
                     booking.getCheckOutDate()
@@ -96,21 +135,45 @@ public class CompleteBooking extends HttpServlet {
             e.printStackTrace();
         }
 
-        // 2. Cập nhật trạng thái booking
-        boolean a;
-        a = bookingDAO.updateBookingStatus(bookingID, "Upcoming");
-        if (a) {
-            // 3. Cập nhật trạng thái các phòng
+        // Cập nhật trạng thái booking
+        boolean updated = bookingDAO.updateBookingStatus(bookingID, "Upcoming");
+        if (updated) {
+            // Cập nhật trạng thái phòng
             List<Integer> roomIDs = bookingDAO.getRoomIDsByBookingID(bookingID);
             for (int roomID : roomIDs) {
                 roomDAO.updateRoomStatus(roomID, "Occupied");
             }
 
-            // 4. Xoá ExpiryTime nếu cần
+            // Xoá expiryTime nếu có
             bookingDAO.clearExpiryTime(bookingID);
+// Sau khi xác nhận thành công, kiểm tra để gửi mã khuyến mãi mới
+            int bookingCount = discountDAO.countCompletedBookingsByEmail(email);
 
-            // 5. Điều hướng trang thành công
+            String level = null;
+            if (bookingCount == 1) {
+                level = "WELCOME";
+            } else if (bookingCount == 3) {
+                level = "LOYAL";
+            } else if (bookingCount >= 5) {
+                level = "VIP";
+            }
+
+            if (level != null) {
+                String nextCode = discountDAO.getActiveCodeByLevel(level);
+                if (nextCode != null) {
+                    try {
+                        MailUtils.sendWelcomeDiscountMail(email, fullName, nextCode);
+                        System.out.println("✅ Đã gửi mã " + nextCode + " cho khách " + email);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            // Điều hướng về Home
             response.sendRedirect("Home");
+        } else {
+            response.sendRedirect("error.jsp");
         }
     }
 

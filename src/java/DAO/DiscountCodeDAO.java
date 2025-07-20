@@ -206,8 +206,8 @@ public class DiscountCodeDAO {
     }
 
 // Đếm số lượng booking theo email (dành cho guest)
-    public int countBookingsByEmail(String email) {
-        String sql = "SELECT COUNT(*) FROM bookings WHERE ContactEmail = ?";
+    public int countCompletedBookingsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM bookings WHERE ContactEmail = ? AND status IN ('Upcoming', 'Active', 'Completed')";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -220,6 +220,64 @@ public class DiscountCodeDAO {
         return 0;
     }
 
-   
+    // Lấy mã đang hoạt động theo loại (WELCOME / LOYAL / VIP...)
+    public String getActiveCodeByLevel(String level) {
+        String sql = "SELECT Code FROM discountcodes WHERE type = ? AND status = 'Active' AND ExpiryDate >= CURDATE() LIMIT 1";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, level);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Code");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean isUserEligibleForCode(String email, String code) {
+        String sql = "SELECT type FROM discountcodes WHERE Code = ? AND status = 'Active' AND ExpiryDate >= CURDATE()";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String type = rs.getString("type");
+                int bookingCount = countCompletedBookingsByEmail(email);
+
+                switch (type) {
+                    case "WELCOME":
+                        return bookingCount == 1;
+                    case "LOYAL":
+                        return bookingCount == 3;
+                    case "VIP":
+                        return bookingCount >= 5;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public DiscountCode getDiscountCodeByCode(String code) {
+        String sql = "SELECT * FROM discountcodes WHERE Code = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                DiscountCode dc = new DiscountCode();
+                dc.setDiscountCodeID(rs.getInt("DiscountCodeID"));
+                dc.setCode(rs.getString("Code"));
+                dc.setDiscountPercent(rs.getDouble("DiscountPercent"));
+                dc.setExpiryDate(rs.getObject("ExpiryDate", java.time.LocalDate.class));
+                dc.setType(rs.getString("type"));
+                dc.setStatus(rs.getString("status"));
+                return dc;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

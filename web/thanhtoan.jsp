@@ -74,24 +74,7 @@
 
                 double finalTotal = roomTotal + serviceTotal;
     %>
-    <%
-        String discountCodeParam = request.getParameter("discountCode");
-        double discountAmount = 0;
-        String discountError = null;
 
-        if (discountCodeParam != null && !discountCodeParam.isEmpty()) {
-            DiscountCodeDAO ddao = new DiscountCodeDAO();
-         int discountCodeID = Integer.parseInt(discountCodeParam); // nếu discountCodeParam là ID
-DiscountCode dc = ddao.getDiscountCodeByID(discountCodeID);
-
-            if (dc != null && "Active".equals(dc.getStatus()) && dc.getExpiryDate().isAfter(java.time.LocalDate.now())) {
-                discountAmount = finalTotal * dc.getDiscountPercent() / 100;
-            } else {
-                discountError = "❌ Mã giảm giá không hợp lệ hoặc đã hết hạn.";
-            }
-        }
-        double payableAmount = finalTotal - discountAmount;
-    %>
 
 
     <head>
@@ -560,24 +543,24 @@ DiscountCode dc = ddao.getDiscountCodeByID(discountCodeID);
                         <!-- Sidebar -->
                         <div class="sidebar-content">
                             <!-- Form nhập mã giảm giá -->
-                            <form method="get" action="thanhtoan.jsp" class="form-group" style="margin-bottom: 16px;">
-                                <label for="discountCode">Mã giảm giá</label>
+                            <form method="post" action="CompleteBooking" class="form-group" style="margin-bottom: 16px;">
                                 <input type="hidden" name="bookingID" value="<%= bookingID %>" />
+
+                                <label for="discountCode">Mã giảm giá</label>
                                 <input type="text"
                                        name="discountCode"
                                        id="discountCode"
                                        class="form-input"
-                                       value="<%= discountCodeParam != null ? discountCodeParam : "" %>"
-                                       placeholder="Nhập mã giảm giá"
-                                       onblur="checkDiscountCode()" />
+                                       placeholder="Nhập mã giảm giá (nếu có)" />
 
-                                <button type="submit" style="margin-top: 8px;">Áp dụng</button>
-
-                                <% if (discountError != null) { %>
-                                <div style="color:red; font-weight:bold; margin-top: 8px;"><%= discountError %></div>
-                                <% } %>
-                                <div id="discountMessage" style="font-weight: bold; margin-top: 6px;"></div>
+                                <div style="margin-top: 8px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        Tiến hành thanh toán
+                                    </button>
+                                </div>
                             </form>
+
+
 
 
                             <!-- Price Summary -->
@@ -587,16 +570,9 @@ DiscountCode dc = ddao.getDiscountCodeByID(discountCodeID);
                                     <span><%= String.format("%,.0f", finalTotal) %> ₫</span>
                                 </div>
 
-                                <% if (discountAmount > 0) { %>
-                                <div class="price-payment">
-                                    <span>Giảm giá:</span>
-                                    <span>-<%= String.format("%,.0f", discountAmount) %> ₫</span>
-                                </div>
-                                <div class="price-payment">
-                                    <strong>Phải thanh toán:</strong>
-                                    <strong><%= String.format("%,.0f", payableAmount) %> ₫</strong>
-                                </div>
-                                <% } %>
+                               <small class="form-text text-muted">Mã sẽ được áp dụng khi xác nhận thanh toán.</small>
+
+
                             </div>
                         </div>
 

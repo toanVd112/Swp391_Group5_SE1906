@@ -63,6 +63,10 @@
         <link rel="stylesheet" href="assets/css/booking-styles.css">
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <!-- Flatpickr CSS & JS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
         <!-- REVOLUTION SLIDER END -->
         <style>
 
@@ -96,17 +100,17 @@
                                         </select>
                                     </li>
 
-                                    <c:if test="${sessionScope.user != null}">
+                                    <c:if test="${sessionScope.account != null}">
                                         <li class="nav-item">
                                             <a class="nav-link" href="user-profile">Hello,
-                                                ${sessionScope.user.username}</a>
+                                                ${sessionScope.account.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
 
                                         </li>
                                     </c:if>
-                                    <c:if test="${sessionScope.user == null}">
+                                    <c:if test="${sessionScope.account == null}">
                                         <li class="nav-item">
                                             <a class="nav-link" href="login.jsp">Login</a>
                                         </li>
@@ -386,7 +390,7 @@
                                     <div class="filter-row">
                                         <div class="filter-group">
                                             <label>Status Filter</label>
-                                            <select name="statusFilter" class="form-select" onchange="this.form.submit()">
+                                            <select name="statusFilter" class="form-select" >
                                                 <option value="">All Status</option>
                                                 <option value="Pending" ${statusFilter == 'Pending' ? 'selected' : ''}>Pending</option>
                                                 <option value="Upcoming" ${statusFilter == 'Upcoming' ? 'selected' : ''}>Upcoming</option>
@@ -401,6 +405,24 @@
                                             <input type="number" name="searchBookingId" class="form-control"
                                                    placeholder="Enter Booking ID" value="${searchBookingId}">
                                         </div>
+                                        <div class="filter-group">
+                                            <label>Booking Date (From)</label>
+                                            <input type="text" id="bookingDateFrom" name="bookingDateFrom" class="form-control" value="${param.bookingDateFrom}" autocomplete="off">
+                                        </div>
+                                        <div class="filter-group">
+                                            <label>Booking Date (To)</label>
+                                            <input type="text" id="bookingDateTo" name="bookingDateTo" class="form-control" value="${param.bookingDateTo}" autocomplete="off">
+                                        </div>
+                                        <div class="filter-group">
+                                            <label>Check-in Date</label>
+                                            <input type="text" id="checkinDate" name="checkinDate" class="form-control" value="${param.checkinDate}" autocomplete="off">
+                                        </div>
+                                        <div class="filter-group">
+                                            <label>Check-out Date</label>
+                                            <input type="text" id="checkoutDate" name="checkoutDate" class="form-control" value="${param.checkoutDate}" autocomplete="off">
+                                        </div>
+
+
                                         <div class="filter-group">
                                             <button type="submit" class="btn btn-primary search-btn">
                                                 <i class="fa fa-search"></i> Search
@@ -678,6 +700,10 @@
         <script src="assets/js/functions.js"></script>
         <script src="assets/js/contact.js"></script>
         <script src='assets/vendors/switcher/switcher.js'></script>
+        <!-- Flatpickr & Validation -->
+
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -741,74 +767,113 @@
             </div>
         </div>
 
-
         <script>
-                                                                       $(document).ready(function () {
-                                                                           $('.viewBookingBtn').click(function () {
-                                                                               const bookingID = $(this).data('booking-id');
+                                                                       function isValidDateFormat(dateStr) {
+                                                                           return /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
+                                                                       }
 
-                                                                               $.ajax({
-                                                                                   url: 'BookingDetailServlet',
-                                                                                   method: 'GET',
-                                                                                   data: {bookingID: bookingID},
-                                                                                   success: function (data) {
-                                                                                       console.log('Data response:', data);
+                                                                       function parseDate(dateStr) {
+                                                                           const parts = dateStr.split('/');
+                                                                           return new Date(parts[2], parts[1] - 1, parts[0]);
+                                                                       }
 
-                                                                                       $('#bookingInfo').empty();
-                                                                                       $('#roomsTable').empty();
-                                                                                       $('#servicesTable').empty();
-                                                                                       console.log('CHECK:', data.bookingID);
-                                                                                       $('#bookingInfo').html('<p><strong>Booking ID:</strong> #' + data.bookingID + '</p>');
+                                                                       function validateMyBookingForm() {
+                                                                           const from = document.getElementById("bookingDateFrom").value.trim();
+                                                                           const to = document.getElementById("bookingDateTo").value.trim();
+                                                                           const ci = document.getElementById("checkinDate").value.trim();
+                                                                           const co = document.getElementById("checkoutDate").value.trim();
 
+                                                                           for (let d of [from, to, ci, co]) {
+                                                                               if (d && !isValidDateFormat(d)) {
+                                                                                   Swal.fire("Invalid Date", "Use dd/MM/yyyy format!", "warning");
+                                                                                   return false;
+                                                                               }
+                                                                           }
 
+                                                                           if (ci && co && parseDate(co) <= parseDate(ci)) {
+                                                                               Swal.fire("Invalid Check-out", "Check-out must be after check-in!", "warning");
+                                                                               return false;
+                                                                           }
 
+                                                                           return true;
+                                                                       }
 
-                                                                                       if (data.bookingDetails && Array.isArray(data.bookingDetails)) {
-                                                                                           data.bookingDetails.forEach(d => {
-                                                                                               const pricePerNight = Number(d.pricePerNight || 0).toLocaleString();
-                                                                                               const nights = d.nights !== undefined && d.nights !== null ? d.nights : '-';
-                                                                                               const subTotal = Number(d.subTotal || 0).toLocaleString();
-                                                                                               $('#roomsTable').append(
-                                                                                                       '<tr>'
-                                                                                                       + '<td>' + (typeof d.roomID !== 'undefined' && d.roomID !== null ? d.roomID : '-') + '</td>'
-                                                                                                       + '<td>' + (typeof d.roomTypeName !== 'undefined' && d.roomTypeName !== null ? d.roomTypeName : '-') + '</td>'
-                                                                                                       + '<td>' + pricePerNight + '</td>'
-                                                                                                       + '<td>' + nights + '</td>'
-                                                                                                       + '<td>' + (typeof d.guestsCount !== 'undefined' && d.guestsCount !== null ? d.guestsCount : '-') + '</td>'
-                                                                                                       + '<td>' + subTotal + '</td>'
-                                                                                                       + '</tr>'
-                                                                                                       );
-
-
-                                                                                           });
-                                                                                       }
-
-                                                                                       if (data.serviceUsages && Array.isArray(data.serviceUsages)) {
-                                                                                           data.serviceUsages.forEach(s => {
-                                                                                               const unitPrice = Number(s.unitPrice || 0).toLocaleString();
-                                                                                               const subTotal = Number(s.subTotal || 0).toLocaleString();
-
-                                                                                               $('#servicesTable').append(
-                                                                                                       '<tr>'
-                                                                                                       + '<td>' + (typeof s.serviceName !== 'undefined' && s.serviceName !== null ? s.serviceName : '-') + '</td>'
-                                                                                                       + '<td>' + (typeof s.quantity !== 'undefined' && s.quantity !== null ? s.quantity : '-') + '</td>'
-                                                                                                       + '<td>' + (typeof s.unit !== 'undefined' && s.unit !== null ? s.unit : '-') + '</td>'
-                                                                                                       + '<td>$' + unitPrice + '</td>'
-                                                                                                       + '<td>$' + subTotal + '</td>'
-                                                                                                       + '</tr>'
-                                                                                                       );
-
-                                                                                           });
-                                                                                       }
-                                                                                       console.log('INFO DIV:', $('#bookingInfo').html());
-                                                                                       $('#bookingDetailModal').modal('show');
-                                                                                   },
-                                                                                   error: function () {
-                                                                                       alert('Failed to load booking detail!');
-                                                                                   }
-                                                                               });
+                                                                       // Gắn flatpickr
+                                                                       ["bookingDateFrom", "bookingDateTo", "checkinDate", "checkoutDate"].forEach(id => {
+                                                                           flatpickr("#" + id, {
+                                                                               dateFormat: "d/m/Y",
+                                                                               allowInput: true
                                                                            });
                                                                        });
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                $('.viewBookingBtn').click(function () {
+                    const bookingID = $(this).data('booking-id');
+
+                    $.ajax({
+                        url: 'BookingDetailServlet',
+                        method: 'GET',
+                        data: {bookingID: bookingID},
+                        success: function (data) {
+                            console.log('Data response:', data);
+
+                            $('#bookingInfo').empty();
+                            $('#roomsTable').empty();
+                            $('#servicesTable').empty();
+                            console.log('CHECK:', data.bookingID);
+                            $('#bookingInfo').html('<p><strong>Booking ID:</strong> #' + data.bookingID + '</p>');
+
+
+
+
+                            if (data.bookingDetails && Array.isArray(data.bookingDetails)) {
+                                data.bookingDetails.forEach(d => {
+                                    const pricePerNight = Number(d.pricePerNight || 0).toLocaleString();
+                                    const nights = d.nights !== undefined && d.nights !== null ? d.nights : '-';
+                                    const subTotal = Number(d.subTotal || 0).toLocaleString();
+                                    $('#roomsTable').append(
+                                            '<tr>'
+                                            + '<td>' + (typeof d.roomID !== 'undefined' && d.roomID !== null ? d.roomID : '-') + '</td>'
+                                            + '<td>' + (typeof d.roomTypeName !== 'undefined' && d.roomTypeName !== null ? d.roomTypeName : '-') + '</td>'
+                                            + '<td>' + pricePerNight + '</td>'
+                                            + '<td>' + nights + '</td>'
+                                            + '<td>' + (typeof d.guestsCount !== 'undefined' && d.guestsCount !== null ? d.guestsCount : '-') + '</td>'
+                                            + '<td>' + subTotal + '</td>'
+                                            + '</tr>'
+                                            );
+
+
+                                });
+                            }
+
+                            if (data.serviceUsages && Array.isArray(data.serviceUsages)) {
+                                data.serviceUsages.forEach(s => {
+                                    const unitPrice = Number(s.unitPrice || 0).toLocaleString();
+                                    const subTotal = Number(s.subTotal || 0).toLocaleString();
+
+                                    $('#servicesTable').append(
+                                            '<tr>'
+                                            + '<td>' + (typeof s.serviceName !== 'undefined' && s.serviceName !== null ? s.serviceName : '-') + '</td>'
+                                            + '<td>' + (typeof s.quantity !== 'undefined' && s.quantity !== null ? s.quantity : '-') + '</td>'
+                                            + '<td>' + (typeof s.unit !== 'undefined' && s.unit !== null ? s.unit : '-') + '</td>'
+                                            + '<td>$' + unitPrice + '</td>'
+                                            + '<td>$' + subTotal + '</td>'
+                                            + '</tr>'
+                                            );
+
+                                });
+                            }
+                            console.log('INFO DIV:', $('#bookingInfo').html());
+                            $('#bookingDetailModal').modal('show');
+                        },
+                        error: function () {
+                            alert('Failed to load booking detail!');
+                        }
+                    });
+                });
+            });
         </script>
 
 

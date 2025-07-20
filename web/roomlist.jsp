@@ -8,7 +8,7 @@
 
 <fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="0"/>
 
-<c:set var="isCustomer" value="${not empty sessionScope.user}" />
+<c:set var="isCustomer" value="${not empty sessionScope.account}" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -97,16 +97,16 @@
                                         </select>
                                     </li>
 
-                                    <c:if test="${sessionScope.user != null}">
+                                    <c:if test="${sessionScope.account != null}">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="user_profile2.html">Hello, ${sessionScope.user.username}</a>
+                                            <a class="nav-link" href="user_profile2.html">Hello, ${sessionScope.account.username}</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="Logout">Logout</a>
 
                                         </li>
                                     </c:if>
-                                    <c:if test="${sessionScope.user == null}">
+                                    <c:if test="${sessionScope.account == null}">
                                         <li class="nav-item">
                                             <a class="nav-link" href="login.jsp">Login</a>
                                         </li>
@@ -248,7 +248,7 @@
                                     </li>
                                     <c:choose>
                                         <%-- N?u ng??i d?ng ?? ??ng nh?p --%>
-                                        <c:when test="${not empty sessionScope.user}">
+                                        <c:when test="${not empty sessionScope.account}">
                                             <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Rooms</a></li>
                                             </c:when>
 
@@ -954,7 +954,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
-            const isCustomer = ${sessionScope.user != null ? true : false};
+            const isCustomer = ${sessionScope.account != null ? true : false};
             document.getElementById('guestInfoModal').style.display = 'block';
             document.getElementById('guestInfoModal').style.display = 'none';
             function closeModal() {
@@ -1088,7 +1088,7 @@
 
         </script>
         <script>
-            const isCustomer = ${sessionScope.user != null ? 'true' : 'false'};
+            const isCustomer = ${sessionScope.account != null ? 'true' : 'false'};
         </script>
         <script src="assets/js/listRoom.js"></script>
         <script src="assets/js/hotel-cart.js"></script>

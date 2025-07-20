@@ -112,8 +112,8 @@ public class ProceedBookingServlet extends HttpServlet {
         double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
         AccountDAO a = new AccountDAO();
         Integer userID = null;
-        if (request.getSession().getAttribute("user") != null) {
-            Account acc = (Account) request.getSession().getAttribute("user");
+        if (request.getSession().getAttribute("account") != null) {
+            Account acc = (Account) request.getSession().getAttribute("account");
             int accountId = acc.getAccountID(); // Hoặc getId()
 
             try {
@@ -145,16 +145,7 @@ public class ProceedBookingServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(ProceedBookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        DiscountCodeDAO ddao = new DiscountCodeDAO();
-        int firstTime = ddao.countBookingsByEmail(email);
-
-        if (firstTime == 1) {
-            String welcomeCode = ddao.getActiveWelcomeCode();
-            if (welcomeCode != null) {
-                MailUtils.sendWelcomeDiscountMail(email, fullName, welcomeCode);
-                System.out.println("✅ Đã gửi mã welcome cho " + email + ": " + welcomeCode);
-            }
-        }
+       
 
         if (b.getBookingID() <= 0) {
             throw new RuntimeException(

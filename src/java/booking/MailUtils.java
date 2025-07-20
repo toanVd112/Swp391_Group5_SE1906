@@ -87,7 +87,7 @@ public class MailUtils {
     String content = "Xin chào <b>" + fullName + "</b>,<br><br>"
             + "Cảm ơn bạn đã thực hiện đơn đặt phòng đầu tiên tại <b>Hoang Nam Hotel</b>.<br>"
             + "🎁 Mã giảm giá dành cho bạn: <b style='color:#d97706;'>" + discountCode + "</b><br><br>"
-            + "👉 Vui lòng nhập mã này ở bước thanh toán để nhận ưu đãi.<br><br>"
+            + "👉 Vui lòng nhập mã này ở bước thanh toán trong booking lần tới để nhận ưu đãi.<br><br>"
             + "Trân trọng,<br>Đội ngũ Hoang Nam Hotel.";
     sendMail(toEmail, subject, content);
 }

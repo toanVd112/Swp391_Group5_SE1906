@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import model.Booking;
@@ -60,7 +62,17 @@ public class MyBookingServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+    private String convertDate(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return null;
+        }
+
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy");
+        DateTimeFormatter sqlFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return LocalDate.parse(raw.trim(), inputFormat).format(sqlFormat);
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -76,7 +88,8 @@ public class MyBookingServlet extends HttpServlet {
 
             if (userInfo != null) {
                 int userId = userInfo.getUserId();
-
+                DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("d/M/yyyy");
+                DateTimeFormatter sqlFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 String statusFilter = request.getParameter("statusFilter");
                 if (statusFilter == null || statusFilter.trim().isEmpty()) {
                     statusFilter = "";
@@ -92,6 +105,10 @@ public class MyBookingServlet extends HttpServlet {
                         // Ignore invalid input
                     }
                 }
+                String bookingDateFrom = convertDate(request.getParameter("bookingDateFrom"));
+                String bookingDateTo = convertDate(request.getParameter("bookingDateTo"));
+                String checkinDate = convertDate(request.getParameter("checkinDate"));
+                String checkoutDate = convertDate(request.getParameter("checkoutDate"));
 
                 // Phân trang
                 int page = 1;
@@ -107,7 +124,18 @@ public class MyBookingServlet extends HttpServlet {
                 int offset = (page - 1) * limit;
 
                 // Lấy danh sách phân trang kèm filter
-                bookings = bookingDAO.getBookingsWithPagination(userId, statusFilter, searchBookingId, offset, limit);
+                bookings = bookingDAO.getBookingsWithAdvancedFilters(
+                        userId,
+                        statusFilter,
+                        searchBookingId,
+                        bookingDateFrom,
+                        bookingDateTo,
+                        checkinDate,
+                        checkoutDate,
+                        offset,
+                        limit
+                );
+
                 int totalBookings = bookingDAO.countBookingsByUser(userId, statusFilter, searchBookingId);
                 int totalPages = (int) Math.ceil((double) totalBookings / limit);
 
@@ -115,6 +143,10 @@ public class MyBookingServlet extends HttpServlet {
                 if (bookings == null) {
                     bookings = new ArrayList<>();
                 }
+                request.setAttribute("bookingDateFrom", request.getParameter("bookingDateFrom"));
+                request.setAttribute("bookingDateTo", request.getParameter("bookingDateTo"));
+                request.setAttribute("checkinDate", request.getParameter("checkinDate"));
+                request.setAttribute("checkoutDate", request.getParameter("checkoutDate"));
 
                 request.setAttribute("bookings", bookings);
                 request.setAttribute("currentPage", page);
