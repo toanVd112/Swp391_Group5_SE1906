@@ -83,11 +83,12 @@ public class LoginCustomerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-       String username = request.getParameter("username");
+        String username = request.getParameter("username");
         String password = request.getParameter("password");
 
         AccountDAO dao = new AccountDAO();
         Account account = dao.login(username, password);
+        int accountId = account.getAccountID();
 
         if (account != null) {
             HttpSession session = request.getSession();
@@ -101,14 +102,15 @@ public class LoginCustomerServlet extends HttpServlet {
             UserDao userDao = new UserDao();
             User userInfo = null;
             try {
-                userInfo = userDao.getUserInfoByAccountID(account.getAccountID());
+                userInfo = userDao.getUserByAccountId(account.getAccountID());
+              
                 if (userInfo == null) {
                     // Tạo user mặc định nếu chưa có (tùy chọn)
                     // userInfo = new User();
                     // userInfo.setAccountId(account.getAccountID());
                     // userDao.updateUser(userInfo); // Cần thêm logic insert nếu muốn
                 }
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(LoginCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
             session.setAttribute("userInfo", userInfo); // Có thể null nếu không có bản ghi User

@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import model.BookingResult;
-
+import java.sql.Date;
 /**
  *
  * @author Admin
@@ -399,19 +399,19 @@ public class BookingDAO {
         return booking;
     }
 
-   public List<Booking> getBookingsWithAdvancedFilters(
-        int userId,
-        String statusFilter,
-        Integer searchBookingId,
-        String bookingDateFrom,
-        String bookingDateTo,
-        String checkinDate,
-        String checkoutDate,
-        int offset,
-        int limit
-) throws SQLException {
-    List<Booking> list = new ArrayList<>();
-    StringBuilder sql = new StringBuilder("""
+    public List<Booking> getBookingsWithAdvancedFilters(
+            int userId,
+            String statusFilter,
+            Integer searchBookingId,
+            String bookingDateFrom,
+            String bookingDateTo,
+            String checkinDate,
+            String checkoutDate,
+            int offset,
+            int limit
+    ) throws SQLException {
+        List<Booking> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
         SELECT 
             BookingID, UserID, CheckInDate, BookingDate, CheckOutDate, ExpiryTime, GuestsCount, TotalAmount,
             CASE 
@@ -432,15 +432,25 @@ public class BookingDAO {
           )
     """);
 
-    // Điều kiện bổ sung
-    if (bookingDateFrom != null) sql.append(" AND BookingDate >= ? ");
-    if (bookingDateTo != null) sql.append(" AND BookingDate <= ? ");
-    if (checkinDate != null) sql.append(" AND CheckInDate >= ? ");
-    if (checkoutDate != null) sql.append(" AND CheckOutDate <= ? ");
-    if (searchBookingId != null) sql.append(" AND BookingID = ? ");
+        // Điều kiện bổ sung
+        if (bookingDateFrom != null) {
+            sql.append(" AND BookingDate >= ? ");
+        }
+        if (bookingDateTo != null) {
+            sql.append(" AND BookingDate <= ? ");
+        }
+        if (checkinDate != null) {
+            sql.append(" AND CheckInDate >= ? ");
+        }
+        if (checkoutDate != null) {
+            sql.append(" AND CheckOutDate <= ? ");
+        }
+        if (searchBookingId != null) {
+            sql.append(" AND BookingID = ? ");
+        }
 
-    // deleted_bookings
-    sql.append("""
+        // deleted_bookings
+        sql.append("""
         UNION ALL
         SELECT 
             OriginalBookingID AS BookingID,
@@ -455,63 +465,93 @@ public class BookingDAO {
           )
     """);
 
-    if (bookingDateFrom != null) sql.append(" AND BookingDate >= ? ");
-    if (bookingDateTo != null) sql.append(" AND BookingDate <= ? ");
-    if (checkinDate != null) sql.append(" AND CheckInDate >= ? ");
-    if (checkoutDate != null) sql.append(" AND CheckOutDate <= ? ");
-    if (searchBookingId != null) sql.append(" AND OriginalBookingID = ? ");
-
-    sql.append(" ORDER BY CheckInDate DESC LIMIT ? OFFSET ? ");
-
-    try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql.toString())) {
-        int i = 1;
-
-        ps.setInt(i++, userId);
-       // Đếm đúng số `?` cho statusFilter bên trên
-for (int j = 0; j < 7; j++) ps.setString(i++, statusFilter);  // nếu SQL chỉ có 7 cái
-
-
-        if (bookingDateFrom != null) ps.setString(i++, bookingDateFrom);
-        if (bookingDateTo != null) ps.setString(i++, bookingDateTo);
-        if (checkinDate != null) ps.setString(i++, checkinDate);
-        if (checkoutDate != null) ps.setString(i++, checkoutDate);
-        if (searchBookingId != null) ps.setInt(i++, searchBookingId);
-
-        ps.setInt(i++, userId);
-        ps.setString(i++, statusFilter);
-        ps.setString(i++, statusFilter);
-
-        if (bookingDateFrom != null) ps.setString(i++, bookingDateFrom);
-        if (bookingDateTo != null) ps.setString(i++, bookingDateTo);
-        if (checkinDate != null) ps.setString(i++, checkinDate);
-        if (checkoutDate != null) ps.setString(i++, checkoutDate);
-        if (searchBookingId != null) ps.setInt(i++, searchBookingId);
-
-        ps.setInt(i++, limit);
-        ps.setInt(i++, offset);
-
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Booking b = new Booking();
-            b.setBookingID(rs.getInt("BookingID"));
-            b.setUserID(rs.getInt("UserID"));
-            b.setBookingDate(rs.getString("BookingDate"));
-            b.setCheckInDate(rs.getString("CheckInDate"));
-            b.setCheckOutDate(rs.getString("CheckOutDate"));
-            b.setGuestsCount(rs.getInt("GuestsCount"));
-            b.setStatus(rs.getString("Status"));
-            b.setTotalAmount(rs.getDouble("TotalAmount"));
-            b.setContactName(rs.getString("ContactName"));
-            b.setContactEmail(rs.getString("ContactEmail"));
-            b.setContactPhone(rs.getString("ContactPhone"));
-            b.setExpiryTime(rs.getString("ExpiryTime"));
-            list.add(b);
+        if (bookingDateFrom != null) {
+            sql.append(" AND BookingDate >= ? ");
         }
+        if (bookingDateTo != null) {
+            sql.append(" AND BookingDate <= ? ");
+        }
+        if (checkinDate != null) {
+            sql.append(" AND CheckInDate >= ? ");
+        }
+        if (checkoutDate != null) {
+            sql.append(" AND CheckOutDate <= ? ");
+        }
+        if (searchBookingId != null) {
+            sql.append(" AND OriginalBookingID = ? ");
+        }
+
+        sql.append(" ORDER BY CheckInDate DESC LIMIT ? OFFSET ? ");
+
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            int i = 1;
+
+            ps.setInt(i++, userId);
+            // Đếm đúng số `?` cho statusFilter bên trên
+            for (int j = 0; j < 7; j++) {
+                ps.setString(i++, statusFilter);  // nếu SQL chỉ có 7 cái
+            }
+
+            if (bookingDateFrom != null) {
+                ps.setString(i++, bookingDateFrom);
+            }
+            if (bookingDateTo != null) {
+                ps.setString(i++, bookingDateTo);
+            }
+            if (checkinDate != null) {
+                ps.setString(i++, checkinDate);
+            }
+            if (checkoutDate != null) {
+                ps.setString(i++, checkoutDate);
+            }
+            if (searchBookingId != null) {
+                ps.setInt(i++, searchBookingId);
+            }
+
+            ps.setInt(i++, userId);
+            ps.setString(i++, statusFilter);
+            ps.setString(i++, statusFilter);
+
+            if (bookingDateFrom != null) {
+                ps.setString(i++, bookingDateFrom);
+            }
+            if (bookingDateTo != null) {
+                ps.setString(i++, bookingDateTo);
+            }
+            if (checkinDate != null) {
+                ps.setString(i++, checkinDate);
+            }
+            if (checkoutDate != null) {
+                ps.setString(i++, checkoutDate);
+            }
+            if (searchBookingId != null) {
+                ps.setInt(i++, searchBookingId);
+            }
+
+            ps.setInt(i++, limit);
+            ps.setInt(i++, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.setBookingID(rs.getInt("BookingID"));
+                b.setUserID(rs.getInt("UserID"));
+                b.setBookingDate(rs.getString("BookingDate"));
+                b.setCheckInDate(rs.getString("CheckInDate"));
+                b.setCheckOutDate(rs.getString("CheckOutDate"));
+                b.setGuestsCount(rs.getInt("GuestsCount"));
+                b.setStatus(rs.getString("Status"));
+                b.setTotalAmount(rs.getDouble("TotalAmount"));
+                b.setContactName(rs.getString("ContactName"));
+                b.setContactEmail(rs.getString("ContactEmail"));
+                b.setContactPhone(rs.getString("ContactPhone"));
+                b.setExpiryTime(rs.getString("ExpiryTime"));
+                list.add(b);
+            }
+        }
+
+        return list;
     }
-
-    return list;
-}
-
 
     public int countBookingsByUser(
             int userId,
@@ -793,6 +833,31 @@ for (int j = 0; j < 7; j++) ps.setString(i++, statusFilter);  // nếu SQL chỉ
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+// Lấy danh sách booking COMPLETED chưa lập hóa đơn
+
+    public List<Booking> getCompletedBookingsWithoutInvoice() throws SQLException {
+        List<Booking> list = new ArrayList<>();
+        String sql = "SELECT * FROM bookings WHERE Status = 'COMPLETED' AND BookingID NOT IN (SELECT BookingID FROM invoices)";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.setBookingID(rs.getInt("BookingID"));
+                b.setContactName(rs.getString("ContactName"));
+
+                // Convert java.sql.Date to String
+                Date checkOutDate = rs.getDate("CheckOutDate");
+                if (checkOutDate != null) {
+                    String formattedDate = new java.text.SimpleDateFormat("dd/MM/yyyy").format(checkOutDate);
+                    b.setCheckOutDate(formattedDate);
+                }
+
+                list.add(b);
+            }
+        }
+        return list;
     }
 
 }

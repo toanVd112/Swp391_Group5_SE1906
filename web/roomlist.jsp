@@ -738,6 +738,9 @@
                             <div class="cart-container">
                                 <div class="cart-header">
                                     <h3><i class="fas fa-shopping-cart"></i>Info rooms</h3>
+                                    <p>User Email: <c:out value="${userInfo.email}" /></p>
+                                    <p>User Phone: <c:out value="${userInfo.phone}" /></p>
+
                                 </div>
 
                                 <div class="cart-content">
@@ -773,6 +776,8 @@
                                     </button>
                                 </div>
                             </div>
+
+
 
                             <!-- ✅ Form ẩn: đặt ngay sau Sidebar -->
                             <form id="bookingForm" action="${pageContext.request.contextPath}/ProceedBookingServlet" method="POST">
@@ -1126,6 +1131,8 @@
                 <img id="modalImage" src="" alt="Dịch vụ" style="max-width: 100%; border-radius: 12px;" />
             </div>
         </div>
+
+
 
 
     </body>

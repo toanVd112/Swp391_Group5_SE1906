@@ -54,32 +54,13 @@ public class UserDao extends DBConnect {
         }
     }
 
-    public User getUserInfoByAccountID(int accountId) throws SQLException {
-        String sql = "SELECT UserID, FullName, Email, Phone FROM Users WHERE AccountID = ?";
-
-        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, accountId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    User user = new User();
-                    user.setUserId(rs.getInt("UserID"));
-                    user.setFullName(rs.getString("FullName"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setPhone(rs.getString("Phone"));
-                    return user;
-                }
-            }
-        }
-        return null;
-    }
-
+   
     public static void main(String[] args) {
         UserDao uDao = new UserDao();
-        int accountId = 28; // 👈 Thay bằng AccountID bạn muốn test
+        int accountId = 84; // 👈 Thay bằng AccountID bạn muốn test
 
         try {
-            User user = uDao.getUserInfoByAccountID(accountId);
+            User user = uDao.getUserByAccountId(accountId);
             if (user != null) {
                 System.out.println("✅ Found user:");
                 System.out.println("UserID: " + user.getUserId());

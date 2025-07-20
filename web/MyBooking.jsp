@@ -385,7 +385,7 @@
 
                             <!-- Customer: bộ lọc -->
                             <div class="filter-section">
-                                <form method="get" action="MyBookingServlet" class="filter-form">
+                                <form method="get" action="MyBookingServlet" class="filter-form" onsubmit="return validateMyBookingForm()">
                                     <input type="hidden" name="page" value="1">
                                     <div class="filter-row">
                                         <div class="filter-group">
@@ -403,7 +403,7 @@
                                         <div class="filter-group">
                                             <label>Booking ID</label>
                                             <input type="number" name="searchBookingId" class="form-control"
-                                                   placeholder="Enter Booking ID" value="${searchBookingId}">
+                                                   placeholder="Enter Booking ID" value="${searchBookingId}" max="99999">
                                         </div>
                                         <div class="filter-group">
                                             <label>Booking Date (From)</label>
@@ -790,6 +790,11 @@
                                                                                }
                                                                            }
 
+                                                                           if (from && to && parseDate(to) < parseDate(from)) {
+                                                                               Swal.fire("Invalid Booking Date Range", "'To' date must be after 'From'!", "warning");
+                                                                               return false;
+                                                                           }
+
                                                                            if (ci && co && parseDate(co) <= parseDate(ci)) {
                                                                                Swal.fire("Invalid Check-out", "Check-out must be after check-in!", "warning");
                                                                                return false;
@@ -798,14 +803,47 @@
                                                                            return true;
                                                                        }
 
-                                                                       // Gắn flatpickr
-                                                                       ["bookingDateFrom", "bookingDateTo", "checkinDate", "checkoutDate"].forEach(id => {
-                                                                           flatpickr("#" + id, {
-                                                                               dateFormat: "d/m/Y",
-                                                                               allowInput: true
-                                                                           });
+                                                                       // Gắn flatpickr cho từng field kèm kiểm tra realtime
+                                                                       flatpickr("#bookingDateFrom", {
+                                                                           dateFormat: "d/m/Y",
+                                                                           allowInput: true
+                                                                       });
+
+                                                                       flatpickr("#bookingDateTo", {
+                                                                           dateFormat: "d/m/Y",
+                                                                           allowInput: true,
+                                                                           onChange: function () {
+                                                                               const from = document.getElementById("bookingDateFrom").value.trim();
+                                                                               const to = document.getElementById("bookingDateTo").value.trim();
+                                                                               if (from && to && isValidDateFormat(from) && isValidDateFormat(to)) {
+                                                                                   if (parseDate(to) < parseDate(from)) {
+                                                                                       Swal.fire("Invalid Booking Date Range", "'Booking Date To' must be after 'From'!", "warning");
+                                                                                   }
+                                                                               }
+                                                                           }
+                                                                       });
+
+                                                                       flatpickr("#checkinDate", {
+                                                                           dateFormat: "d/m/Y",
+                                                                           allowInput: true
+                                                                       });
+
+                                                                       flatpickr("#checkoutDate", {
+                                                                           dateFormat: "d/m/Y",
+                                                                           allowInput: true,
+                                                                           onChange: function () {
+                                                                               const ci = document.getElementById("checkinDate").value.trim();
+                                                                               const co = document.getElementById("checkoutDate").value.trim();
+                                                                               if (ci && co && isValidDateFormat(ci) && isValidDateFormat(co)) {
+                                                                                   if (parseDate(co) <= parseDate(ci)) {
+                                                                                       Swal.fire("Invalid Check-out", "Check-out must be after check-in!", "warning");
+                                                                                   }
+                                                                               }
+                                                                           }
                                                                        });
         </script>
+
+
 
         <script>
             $(document).ready(function () {
