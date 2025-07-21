@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import model.BookingResult;
 import java.sql.Date;
+import model.InvoiceData;
 
 /**
  *
@@ -687,7 +688,93 @@ public class BookingDAO {
 //            System.out.println("Notes: " + su.getNotes());
 //            System.out.println("----------------------");
         // Gán ngày checkin/checkout test
+        // Giả lập dữ liệu
+//        Integer userId = 6;
+//        String checkin = LocalDate.now().minusDays(2).toString();      // 2 ngày trước
+//        String checkout = LocalDate.now().toString();                  // hôm nay
+//        int guests = 2;
+//        String status = "Completed";
+//        String name = "Test User";
+//        String email = "test@example.com";
+//        String phone = "0987654321";
+//        double totalAmount = 150.0;
+//
+//        try {
+//            BookingResult result = dao.insertBooking(userId, checkin, checkout, guests, status, name, email, phone, totalAmount);
+//            if (result != null) {
+//                System.out.println("Inserted Booking ID: " + result.getBookingID());
+//                System.out.println("Booking Token: " + result.getBookingToken());
+//            } else {
+//                System.out.println("Insert failed.");
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
+//        try {
+//            List<Booking> list = dao.getCompletedBookingsWithoutInvoice();
+//            for (Booking b : list) {
+//                System.out.println("Booking ID: " + b.getBookingID());
+//                System.out.println("Customer: " + b.getContactName());
+//                System.out.println("Checkout: " + b.getCheckOutDate());
+//                System.out.println("-------------------------");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//          int bookingId = 141; // BookingID đã tồn tại, có đủ dữ liệu
+//   InvoiceDAO a=new InvoiceDAO();
+//        try {
+//            InvoiceData data = a.getInvoiceDataByBookingId(bookingId);
+//            if (data != null) {
+//                System.out.println("Customer: " + data.getCustomerName());
+//                System.out.println("Room total: " + data.getRoomTotal());
+//                System.out.println("Service total: " + data.getServiceTotal());
+//                System.out.println("Discount: " + data.getDiscountPercent() + "%");
+//                System.out.println("Final total: " + data.getTotalAmount());
+//            } else {
+//                System.out.println("No data found for BookingID " + bookingId);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+ try {
+        BookingDAO bookingDAO = new BookingDAO(); // giả sử bạn đã có DAO này
+        int userId = 6; // userID giả định (phải tồn tại trong bảng accounts)
+        String checkin = "2025-08-01";
+        String checkout = "2025-08-03";
+        int guests = 2;
+        String status = "Completed";
+        double baseTotal = 200.0;
+
+        for (int i = 0; i < 10; i++) {
+            String name = "Test Customer " + (i + 1);
+            String email = "test" + (i + 1) + "@example.com";
+            String phone = "09000000" + i;
+            double total = baseTotal + i * 10;
+
+            BookingResult result = bookingDAO.insertBooking(
+                userId,
+                checkin,
+                checkout,
+                guests,
+                status,
+                name,
+                email,
+                phone,
+                total
+            );
+
+            if (result != null) {
+                System.out.println("✅ Inserted booking with ID: " + result.getBookingID()+
+                        " | Token: " + result.getBookingToken());
+            } else {
+                System.out.println("❌ Failed to insert booking #" + (i + 1));
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     public int getServicePriceByID(int serviceID) throws SQLException {

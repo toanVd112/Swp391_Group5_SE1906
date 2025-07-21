@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import model.BookingResult;
 import model.InvoiceData;
+import java.time.LocalDate;
+import java.sql.Date;
 
 /**
  *
@@ -88,7 +90,10 @@ public class InvoiceDAO {
         }
 
         // 3. Tính tổng tiền phòng
-        String sqlRoom = "SELECT SUM(PricePerNight * DATEDIFF(CheckOutDate, CheckInDate)) AS RoomTotal FROM bookingdetails WHERE BookingID = ?";
+        String sqlRoom = "SELECT SUM(bd.PricePerNight * DATEDIFF(bk.CheckOutDate, bk.CheckInDate)) AS RoomTotal\n"
+                + "FROM bookingdetails bd\n"
+                + "JOIN bookings bk ON bd.BookingID = bk.BookingID\n"
+                + "WHERE bd.BookingID = ?";
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sqlRoom)) {
             ps.setInt(1, bookingId);
             ResultSet rs = ps.executeQuery();
@@ -115,4 +120,61 @@ public class InvoiceDAO {
         return data;
     }
 
+    public List<InvoiceData> getLastInvoices(int limit) throws SQLException {
+        List<InvoiceData> list = new ArrayList<>();
+        String sql = "SELECT i.BookingID, b.ContactName AS CustomerName, i.IssuedDate, i.TotalAmount "
+                + "FROM invoices i "
+                + "JOIN bookings b ON i.BookingID = b.BookingID "
+              
+                + "ORDER BY i.IssuedDate DESC "
+                + "LIMIT ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                InvoiceData inv = new InvoiceData();
+                inv.setBookingId(rs.getInt("BookingID"));
+                inv.setCustomerName(rs.getString("CustomerName"));
+                Timestamp ts = rs.getTimestamp("IssuedDate");
+                inv.setIssuedDate(ts.toLocalDateTime().toLocalDate());
+
+                inv.setTotalAmount(rs.getDouble("TotalAmount"));
+                list.add(inv);
+            }
+        }
+
+        return list;
+    }
+
+    public static void main(String[] args) {
+        try {
+        InvoiceDAO dao = new InvoiceDAO();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (int i = 0; i < 10; i++) {
+            Invoice invoice = new Invoice();
+            invoice.setBookingId(141 + i); // Tăng bookingId mỗi dòng
+            invoice.setRoomTotal(100.0 + i * 10); // Tăng tiền để dễ phân biệt
+            invoice.setServiceTotal(20.0); // giữ nguyên
+            invoice.setDiscountCode(null);
+            invoice.setDiscountPercent(0);
+            invoice.setTotalAmount(invoice.getRoomTotal() + invoice.getServiceTotal());
+            invoice.setPaymentStatus("PAID");
+            invoice.setNote("Test insert #" + (i + 1));
+            invoice.setIssuedDate(now.minusDays(i)); // Mỗi dòng lùi ngày một chút
+            invoice.setIssuedBy(49);
+
+            dao.insertInvoice(invoice);
+            System.out.println("✅ Inserted invoice for BookingID: " + invoice.getBookingId());
+        }
+
+    } catch (Exception e) {
+        System.out.println("❌ Error inserting invoices:");
+        e.printStackTrace();
+    }
+        
+    }
 }

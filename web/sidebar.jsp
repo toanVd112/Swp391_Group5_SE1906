@@ -66,6 +66,10 @@
                     <i class="fas fa-clipboard-list"></i>
                     <span>Room Inspection Reports</span>
                 </a>
+                     <a href="${pageContext.request.contextPath}/LoadInvoiceDataServlet" class="menu-item" data-page="Create invoice">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Create invoice</span>
+                </a>
             </c:if>
 
             <c:if test="${role eq 'Staff'}">
