@@ -159,9 +159,10 @@ public class MyBookingServlet extends HttpServlet {
             } else {
                 // Xử lý Guest tra cứu
                 String bookingIdParam = request.getParameter("bookingID");
-                String bookingToken = request.getParameter("bookingToken").trim();
+                String bookingTokenRaw = request.getParameter("bookingToken");
 
-                if (bookingIdParam != null && bookingToken != null) {
+                if (bookingIdParam != null && bookingTokenRaw != null && !bookingTokenRaw.trim().isEmpty()) {
+                    String bookingToken = bookingTokenRaw.trim();
                     try {
                         int bookingId = Integer.parseInt(bookingIdParam.trim());
                         Booking guestBooking = bookingDAO.getBookingByIdAndToken(bookingId, bookingToken);

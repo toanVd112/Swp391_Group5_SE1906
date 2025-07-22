@@ -269,7 +269,14 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li><a href="myrooms"><i class="fa fa-bed"></i> My Booking</a></li>
+                                     <c:choose>
+                                        <c:when test="${not empty sessionScope.account}">
+                                            <li><a href="MyBookingServlet"><i class="fa fa-bed"></i> My Booking</a></li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li><a href="MyBooking.jsp"><i class="fa fa-bed"></i> My Booking</a></li>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                                 <div class="nav-social-link">
                                     <a href="javascript:;"><i class="fa fa-facebook"></i></a>
@@ -312,7 +319,7 @@
                         </div>
                     </div>
 
-                    <!-- Guest: b?ng booking n?u tra c?u thành công -->
+                    <!-- Guest: b?ng booking n?u tra c?u thï¿½nh cï¿½ng -->
                     <c:if test="${not empty bookings}">
                         <div class="container">
                             <div class="booking-results">
@@ -358,12 +365,12 @@
                         </div>
                     </c:if>
 
-                    <!-- Guest: n?u không có booking -->
+                    <!-- Guest: n?u khï¿½ng cï¿½ booking -->
                     <c:if test="${empty bookings && not empty param.bookingID}">
                         <div class="container">
                             <div class="alert alert-warning no-results">
                                 <i class="fa fa-exclamation-triangle"></i>
-                                Không tìm th?y booking v?i thông tin ?ã cung c?p!
+                                Khï¿½ng tï¿½m th?y booking v?i thï¿½ng tin ?ï¿½ cung c?p!
                             </div>
                         </div>
                     </c:if>
@@ -512,7 +519,7 @@
                                 </div>
                             </c:if>
 
-                            <!-- Không có booking -->
+                            <!-- Khï¿½ng cï¿½ booking -->
                             <c:if test="${empty bookings}">
                                 <div class="no-bookings">
                                     <div class="no-bookings-content">

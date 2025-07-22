@@ -80,7 +80,7 @@ public class InvoiceListServlet extends HttpServlet {
         java.sql.Date toDate = null;
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             if (fromDateStr != null && !fromDateStr.isEmpty()) {
                 java.util.Date utilFromDate = sdf.parse(fromDateStr);
                 fromDate = new java.sql.Date(utilFromDate.getTime());

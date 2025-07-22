@@ -99,11 +99,13 @@
                 transform: translateY(-1px);
                 box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             }
-            
+
             .text-nowrap {
                 white-space: nowrap;
             }
         </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     </head>
 
     <body class="bg-light">
@@ -125,16 +127,17 @@
                             Search filters
                         </h5>
 
-                        <form method="get" action="InvoiceListServlet" class="filter-form"> 
+                        <form method="get" action="InvoiceListServlet" class="filter-form" id="filterForm" onsubmit="return validateForm();"> 
                             <div class="row g-3"> 
                                 <div class="col-md-3"> 
                                     <label class="form-label fw-bold"> 
                                         <i class="fas fa-user me-1"></i> 
                                         Customer name: 
                                     </label> 
-                                    <input type="text" name="customerName" 
-                                           value="<%= request.getAttribute("customerName") != null ? request.getAttribute("customerName") : "" %>" 
-                                           class="form-control" placeholder="Enter customer name..." /> 
+                                    <input type="text" name="customerName" id="customerName"
+                                           value="<%= request.getAttribute("customerName") != null ? request.getAttribute("customerName") : "" %>"
+                                           class="form-control" placeholder="Enter customer name..." />
+
                                 </div> 
 
                                 <div class="col-md-2"> 
@@ -142,9 +145,12 @@
                                         <i class="fas fa-calendar-alt me-1"></i> 
                                         From date: 
                                     </label> 
-                                    <input type="date" name="fromDate" 
-                                           value="<%= request.getAttribute("fromDate") != null ? request.getAttribute("fromDate") : "" %>" 
-                                           class="form-control" /> 
+                                    <input type="text" name="fromDate" id="fromDate"
+                                           value="<%= request.getAttribute("fromDate") != null ? request.getAttribute("fromDate") : "" %>"
+                                           class="form-control" placeholder="dd-MM-yyyy" />
+
+
+
                                 </div> 
 
                                 <div class="col-md-2"> 
@@ -152,9 +158,11 @@
                                         <i class="fas fa-calendar-alt me-1"></i> 
                                         To date: 
                                     </label> 
-                                    <input type="date" name="toDate" 
-                                           value="<%= request.getAttribute("toDate") != null ? request.getAttribute("toDate") : "" %>" 
-                                           class="form-control" /> 
+                                    <input type="text" name="toDate" id="toDate"
+                                           value="<%= request.getAttribute("toDate") != null ? request.getAttribute("toDate") : "" %>"
+                                           class="form-control" placeholder="dd-MM-yyyy" />
+
+
                                 </div> 
 
                                 <div class="col-md-3"> 
@@ -396,62 +404,160 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-            // Export to PDF function
-            function exportToPDF(invoiceId) {
-                // Show loading state
-                const button = event.target.closest('button');
-                const originalContent = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Exporting...';
-                button.disabled = true;
+                                                    // Export to PDF function
+                                                    function exportToPDF(invoiceId) {
+                                                        // Show loading state
+                                                        const button = event.target.closest('button');
+                                                        const originalContent = button.innerHTML;
+                                                        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Exporting...';
+                                                        button.disabled = true;
 
-                // Open PDF in new window
-                window.open('GenerateInvoicePDFServlet?invoiceId=' + invoiceId, '_blank');
+                                                        // Open PDF in new window
+                                                        window.open('GenerateInvoicePDFServlet?invoiceId=' + invoiceId, '_blank');
 
-                // Reset button after 2 seconds
-                setTimeout(() => {
-                    button.innerHTML = originalContent;
-                    button.disabled = false;
-                }, 2000);
+                                                        // Reset button after 2 seconds
+                                                        setTimeout(() => {
+                                                            button.innerHTML = originalContent;
+                                                            button.disabled = false;
+                                                        }, 2000);
+                                                    }
+
+                                                    // Auto-submit form when date changes
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const dateInputs = document.querySelectorAll('input[type="date"]');
+                                                        dateInputs.forEach(input => {
+                                                            input.addEventListener('change', function () {
+                                                                // Optional: Auto-submit form when date changes
+                                                                // this.form.submit();
+                                                            });
+                                                        });
+
+                                                        // Add loading state to filter button
+                                                        const filterForm = document.querySelector('.filter-form');
+                                                        if (filterForm) {
+                                                            filterForm.addEventListener('submit', function () {
+                                                                const submitBtn = this.querySelector('button[type="submit"]');
+                                                                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Filtering...';
+                                                                submitBtn.disabled = true;
+                                                            });
+                                                        }
+                                                    });
+
+                                                    // Print functionality
+                                                    function printInvoiceList() {
+                                                        window.print();
+                                                    }
+
+                                                    // Responsive table handling
+                                                    function handleResponsiveTable() {
+                                                        const table = document.querySelector('.table-responsive');
+                                                        if (window.innerWidth < 768) {
+                                                            table.style.fontSize = '0.875rem';
+                                                        } else {
+                                                            table.style.fontSize = '1rem';
+                                                        }
+                                                    }
+
+                                                    window.addEventListener('resize', handleResponsiveTable);
+                                                    document.addEventListener('DOMContentLoaded', handleResponsiveTable);
+        </script>
+        <script>
+            function isValidDateFormat(dateStr) {
+                const regex = /^\d{2}-\d{2}-\d{4}$/;
+                return regex.test(dateStr);
             }
 
-            // Auto-submit form when date changes
-            document.addEventListener('DOMContentLoaded', function () {
-                const dateInputs = document.querySelectorAll('input[type="date"]');
-                dateInputs.forEach(input => {
-                    input.addEventListener('change', function () {
-                        // Optional: Auto-submit form when date changes
-                        // this.form.submit();
-                    });
-                });
+            function parseDate_ddmmyyyy(dateStr) {
+                const parts = dateStr.split("-");
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // Tháng trong JS bắt đầu từ 0
+                const year = parseInt(parts[2], 10);
+                return new Date(year, month, day);
+            }
 
-                // Add loading state to filter button
-                const filterForm = document.querySelector('.filter-form');
-                if (filterForm) {
-                    filterForm.addEventListener('submit', function () {
-                        const submitBtn = this.querySelector('button[type="submit"]');
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Filtering...';
-                        submitBtn.disabled = true;
-                    });
+            function validateForm() {
+                const fromDate = document.getElementById("fromDate").value;
+                const toDate = document.getElementById("toDate").value;
+
+                if (fromDate && !isValidDateFormat(fromDate)) {
+                    alert("From Date phải đúng định dạng dd-MM-yyyy.");
+                    return false;
                 }
-            });
 
-            // Print functionality
-            function printInvoiceList() {
-                window.print();
-            }
-
-            // Responsive table handling
-            function handleResponsiveTable() {
-                const table = document.querySelector('.table-responsive');
-                if (window.innerWidth < 768) {
-                    table.style.fontSize = '0.875rem';
-                } else {
-                    table.style.fontSize = '1rem';
+                if (toDate && !isValidDateFormat(toDate)) {
+                    alert("To Date phải đúng định dạng dd-MM-yyyy.");
+                    return false;
                 }
+
+                if (fromDate && toDate) {
+                    const from = parseDate_ddmmyyyy(fromDate);
+                    const to = parseDate_ddmmyyyy(toDate);
+                    if (from > to) {
+                        alert("From Date không được sau To Date.");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        </script>
+        <script>
+            function isValidDateFormat(dateStr) {
+                const regex = /^\d{2}-\d{2}-\d{4}$/;
+                return regex.test(dateStr);
             }
 
-            window.addEventListener('resize', handleResponsiveTable);
-            document.addEventListener('DOMContentLoaded', handleResponsiveTable);
+            function parseDate_ddmmyyyy(dateStr) {
+                const parts = dateStr.split("-");
+                return new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+
+            function validateForm() {
+                const customerName = document.getElementById("customerName").value.trim();
+                const fromDate = document.getElementById("fromDate").value;
+                const toDate = document.getElementById("toDate").value;
+
+                // Validate name
+                if (customerName.length > 100) {
+                    alert("Tên khách hàng không được vượt quá 100 ký tự.");
+                    return false;
+                }
+
+                const unsafePattern = /[<>\\\/]/;
+                if (unsafePattern.test(customerName)) {
+                    alert("Tên khách hàng chứa ký tự không hợp lệ.");
+                    return false;
+                }
+
+                // Validate date format
+                if (fromDate && !isValidDateFormat(fromDate)) {
+                    alert("From Date phải đúng định dạng dd-MM-yyyy.");
+                    return false;
+                }
+
+                if (toDate && !isValidDateFormat(toDate)) {
+                    alert("To Date phải đúng định dạng dd-MM-yyyy.");
+                    return false;
+                }
+
+                // Validate date logic
+                if (fromDate && toDate) {
+                    const from = parseDate_ddmmyyyy(fromDate);
+                    const to = parseDate_ddmmyyyy(toDate);
+                    if (from > to) {
+                        alert("From Date không được sau To Date.");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        </script>
+
+
+        <script>
+            flatpickr("#fromDate", {dateFormat: "d-m-Y"});
+            flatpickr("#toDate", {dateFormat: "d-m-Y"});
         </script>
     </body>
 </html>
