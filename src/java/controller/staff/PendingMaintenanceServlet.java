@@ -4,6 +4,7 @@ package controller.staff;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+import DAO.MaintenanceRequestDAO1;
 import DAO.ManageRoomDAO;
 import DAO.RoomDAO;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.List;
 import model.Account;
 import model.MaintenanceRequest;
@@ -78,14 +80,21 @@ public class PendingMaintenanceServlet extends HttpServlet {
 
         int offset = (page - 1) * pageSize;
         int limit = pageSize;
-        ManageRoomDAO dao = new ManageRoomDAO();
+        MaintenanceRequestDAO1 dao = new MaintenanceRequestDAO1();
         HttpSession session = request.getSession();
         Account acc = (Account) session.getAttribute("account");
 
         int accountID = acc.getAccountID(); // từ session
-        List<MaintenanceRequest> list = dao.getMaintenanceRequests(search, sort, offset, limit, accountID);
+        List<MaintenanceRequest> list = null;
+        int totalCount = 0;
 
-        int totalCount = dao.countMaintenanceRequests(search, accountID);
+        try {
+            list = dao.getPendingRequestsForStaff(search, sort, offset, limit, accountID);
+            totalCount = dao.countPendingRequestsForStaff(search, accountID);
+        } catch (SQLException e) {
+            
+            request.setAttribute("error", "Đã xảy ra lỗi cơ sở dữ liệu khi tải danh sách!");
+        }
 
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
@@ -107,7 +116,7 @@ public class PendingMaintenanceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response); // Xử lý tìm kiếm hoặc lọc qua GET
     }
 
     /**

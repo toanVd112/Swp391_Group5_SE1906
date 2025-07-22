@@ -6,7 +6,8 @@ package controller.staff;
  */
 
 
-import DAO.ManageRoomDAO;
+import DAO.MaintenanceRequestDAO1;
+
 import DAO.RoomDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +16,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -71,9 +75,42 @@ public class ResolveMaintenanceRequestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        int requestID = Integer.parseInt(request.getParameter("requestID"));
-        ManageRoomDAO dao = new ManageRoomDAO();
-        dao.markAsResolved(requestID);
+        int requestID;
+        try {
+            requestID = Integer.parseInt(request.getParameter("requestID"));
+        } catch (NumberFormatException e) {
+            Logger.getLogger(ResolveMaintenanceRequestServlet.class.getName()).log(Level.SEVERE, "Lỗi chuyển đổi requestID: " + e.getMessage(), e);
+            request.setAttribute("error", "ID yêu cầu không hợp lệ!");
+            response.sendRedirect(request.getContextPath() + "/pendingMaintenance");
+            return;
+        }
+
+        MaintenanceRequestDAO1 maintenanceDAO = new MaintenanceRequestDAO1();
+        RoomDAO roomDAO = new RoomDAO();
+
+        try {
+            // Lấy RoomID từ yêu cầu
+            int roomID = maintenanceDAO.getRequestRoomID(requestID);
+            if (roomID == -1) {
+                request.setAttribute("error", "Không tìm thấy phòng liên quan đến yêu cầu!");
+                response.sendRedirect(request.getContextPath() + "/pendingMaintenance");
+                return;
+            }
+
+            // Đánh dấu yêu cầu là hoàn tất
+            boolean success = maintenanceDAO.completeRequest(requestID);
+            if (success) {
+                // Cập nhật trạng thái phòng thành Available
+                roomDAO.updateRoomStatus(roomID, "Available");
+                request.setAttribute("success", "Yêu cầu đã được hoàn tất và phòng đã được cập nhật!");
+            } else {
+                request.setAttribute("error", "Không thể hoàn tất yêu cầu.");
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ResolveMaintenanceRequestServlet.class.getName()).log(Level.SEVERE, "Lỗi SQL khi hoàn tất yêu cầu: " + e.getMessage(), e);
+            request.setAttribute("error", "Đã xảy ra lỗi cơ sở dữ liệu!");
+        }
+
         response.sendRedirect(request.getContextPath() + "/pendingMaintenance");
     }
 

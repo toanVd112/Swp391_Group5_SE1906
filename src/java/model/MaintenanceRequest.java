@@ -19,8 +19,9 @@ public class MaintenanceRequest {
     private String description;
     private boolean isResolved;
     private Timestamp resolutionDate;
+    private int roomNumber;
 
-    public MaintenanceRequest(int requestID, int roomID, int staffID, Timestamp requestDate, String description, boolean isResolved, Timestamp resolutionDate) {
+    public MaintenanceRequest(int requestID, int roomID, int staffID, Timestamp requestDate, String description, boolean isResolved, Timestamp resolutionDate, int roomNumber) {
         this.requestID = requestID;
         this.roomID = roomID;
         this.staffID = staffID;
@@ -28,7 +29,10 @@ public class MaintenanceRequest {
         this.description = description;
         this.isResolved = isResolved;
         this.resolutionDate = resolutionDate;
+        this.roomNumber = roomNumber;
     }
+
+    
 
     public MaintenanceRequest() {
     }
@@ -88,6 +92,14 @@ public class MaintenanceRequest {
 
     public void setResolutionDate(Timestamp resolutionDate) {
         this.resolutionDate = resolutionDate;
+    }
+
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(int roomNumber) {
+        this.roomNumber = roomNumber;
     }
     
     

@@ -8,12 +8,16 @@ import model.Room;
 import model.RoomInspectionReport;
 import model.RoomType;
 import model.RoomTypeOccupancy;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
  * @author Arcueid
  */
 public class RoomDAO {
-
+    private static final Logger LOGGER = Logger.getLogger(RoomDAO.class.getName());
     // --- Lấy danh sách phòng có lọc, sắp xếp, phân trang ---
     public List<Room> getRooms(Integer floor, Integer typeId, String sortFloor, String sortPrice, int offset, int limit) {
         List<Room> list = new ArrayList<>();
@@ -322,8 +326,14 @@ public class RoomDAO {
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, roomID);
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.warning("Không có dòng nào được cập nhật cho RoomID: " + roomID);
+            } else {
+                LOGGER.info("Cập nhật trạng thái thành công cho RoomID: " + roomID);
+            }
         } catch (Exception e) {
+            LOGGER.severe("Lỗi khi cập nhật trạng thái cho RoomID " + roomID + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -359,5 +369,35 @@ public class RoomDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    // --- Lấy danh sách phòng sẵn sàng ---
+    public List<Room> getAvailableRooms() throws SQLException {
+        List<Room> list = new ArrayList<>();
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail, rt.MaxGuests "
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
+                + "WHERE r.Status = 'Available'";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                RoomType roomType = new RoomType(
+                        rs.getInt("RoomTypeID"),
+                        rs.getString("TypeName"),
+                        rs.getString("Description"),
+                        rs.getDouble("BasePrice"),
+                        rs.getString("RoomTypeImage"),
+                        rs.getString("RoomDetail"),
+                        rs.getInt("MaxGuests")
+                );
+                Room room = new Room(
+                        rs.getInt("RoomID"),
+                        rs.getString("RoomNumber"),
+                        rs.getInt("Floor"),
+                        rs.getString("Status"),
+                        roomType
+                );
+                list.add(room);
+            }
+        }
+        return list;
     }
 }

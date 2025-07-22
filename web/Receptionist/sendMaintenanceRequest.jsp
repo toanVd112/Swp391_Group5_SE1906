@@ -15,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Gửi Yêu Cầu Bảo Trì</title>
+        <title>G?i Y�u C?u B?o Tr�</title>
 
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
@@ -397,15 +397,21 @@ textarea.form-control {
                                 <strong>Error:</strong> ${error}
                             </div>
                         </c:if>
+                        <c:if test="${not empty success}">
+                            <div class="success-message">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Success:</strong> ${success}
+                            </div>
+                        </c:if>
 
                         <form method="post" action="${pageContext.request.contextPath}/sendMaintenanceRequest" class="maintenance-form">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="roomID" class="form-label">
+                                    <label for="roomNumber" class="form-label">
                                         <i class="fas fa-door-open me-1"></i>
                                         Room Number
                                     </label>
-                                    <input type="number" name="roomID" id="roomID" class="form-control" required />
+                                    <input type="number" name="roomNumber" id="roomNumber" class="form-control" required />
                                 </div>
 
                                 <div class="form-group">
@@ -480,7 +486,7 @@ textarea.form-control {
                                             <tr>
                                                 <td class="request-id">#${r.requestID}</td>
                                                 <td>
-                                                    <span class="room-badge">Room ${r.roomID}</span>
+                                                    <span class="room-badge">Room ${r.roomNumber}</span>
                                                 </td>
                                                 <td class="staff-info">
                                                     <c:choose>

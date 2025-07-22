@@ -325,7 +325,8 @@ public class ManageRoomDAO {
                         rs.getTimestamp("RequestDate"),
                         rs.getString("Description"),
                         rs.getBoolean("IsResolved"),
-                        rs.getTimestamp("ResolutionDate")
+                        rs.getTimestamp("ResolutionDate"),
+                        rs.getInt("RoomNumber")
                 );
                 list.add(r);
             }

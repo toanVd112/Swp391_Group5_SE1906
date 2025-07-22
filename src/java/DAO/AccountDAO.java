@@ -346,15 +346,18 @@ public class AccountDAO extends DBConnect {
 
     public List<Account> getAccountsByRole(String role) throws SQLException {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM accounts WHERE Role = ?";
+        String sql = "SELECT AccountID, Username, Role " +
+                     "FROM Accounts " +
+                     "WHERE Role = ? AND IsActive = TRUE";
         try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, role);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Account acc = new Account();
-                acc.setAccountID(rs.getInt("AccountID"));
-                acc.setUsername(rs.getString("Username"));
-                list.add(acc);
+                    acc.setAccountID(rs.getInt("AccountID"));
+                    acc.setUsername(rs.getString("Username"));
+                    acc.setRole(rs.getString("Role"));
+                    list.add(acc);
             }
         }
         return list;

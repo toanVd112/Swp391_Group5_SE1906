@@ -90,12 +90,20 @@
     </head>
     <body>
         <div class="imain-content">
-            <h2>Danh sách yêu cầu bảo trì đang chờ xử lý</h2>
+            <h2>Maintenance Request List</h2>
 
+            <!-- Hi?n th? th�ng b�o th�nh c�ng ho?c l?i -->
+            <c:if test="${not empty success}">
+                <p class="message-success">${success}</p>
+            </c:if>
+            <c:if test="${not empty error}">
+                <p class="message-error">${error}</p>
+            </c:if>
+            
             <form method="get" action="${pageContext.request.contextPath}/pendingMaintenance">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <div>
-                        <input type="text" name="search" placeholder="Tìm ghi chú..." value="${param.search}" 
+                        <input type="text" name="search" placeholder="T�m ghi ch�..." value="${param.search}" 
                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
                         <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
                         <a href="pendingMaintenance" 
@@ -115,7 +123,7 @@
             </form>
 
             <c:if test="${empty pendingRequests}">
-                <p>Hiện tại không có yêu cầu bảo trì nào đang chờ xử lý.</p>
+                <p>There are currently no pending maintenance requests.</p>
             </c:if>
 
             <c:if test="${not empty pendingRequests}">
@@ -123,23 +131,23 @@
                     <thead>
                         <tr>
                             <th>Request ID</th>
-                            <th>Room ID</th>
-                            <th>Ngày yêu cầu</th>
-                            <th>Mô tả</th>
-                            <th>Thao tác</th>
+                            <th>Room Number</th>
+                            <th>Request date</th>
+                            <th>Description</th>
+                            <th>Update</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="req" items="${pendingRequests}">
                             <tr>
                                 <td>${req.requestID}</td>
-                                <td>${req.roomID}</td>
+                                <td>${req.roomNumber}</td>
                                 <td>${req.requestDate}</td>
                                 <td>${req.description}</td>
                                 <td>
                                     <form action="${pageContext.request.contextPath}/resolveMaintenanceRequest" method="post">
                                         <input type="hidden" name="requestID" value="${req.requestID}" />
-                                        <button type="submit" class="btn-submit">Hoàn thành</button>
+                                        <button type="submit" class="btn-submit">Complete</button>
                                     </form>
                                 </td>
                             </tr>
@@ -147,7 +155,7 @@
                     </tbody>
                 </table>
 
-                <!-- Phân trang -->
+                <!-- Ph�n trang -->
                 <div class="pagination">
                     <ul>
                         <c:if test="${currentPage > 1}">
