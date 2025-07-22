@@ -14,7 +14,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
 import model.RoomInspectionReport;
 
@@ -94,6 +96,14 @@ public class PendingCheckout extends HttpServlet {
 
         int totalItems = dao.countPendingRequests(keyword);
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        Map<Integer, String> roomMap = new HashMap<>();
+        try{
+            roomMap = dao.getRoomIdToRoomNumberMap();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        request.setAttribute("roomMap",roomMap);
 
         // Gửi dữ liệu đến JSP
         request.setAttribute("pendingRequests", list);

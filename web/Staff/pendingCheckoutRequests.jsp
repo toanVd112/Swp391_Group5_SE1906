@@ -119,7 +119,7 @@
                         <tr>
                             <th>Report ID</th>
                             <th>Booking ID</th>
-                            <th>Room ID</th>
+                            <th>Room Number</th>
                             <th>Request date</th>
                             <th>Note</th>
                             <th>Operation</th>
@@ -130,7 +130,7 @@
                             <tr>
                                 <td>${report.reportID}</td>
                                 <td>${report.bookingID}</td>
-                                <td>${report.roomID}</td>
+                                <td>${roomMap[report.roomID]}</td>
                                 <td>${report.inspectionTime}</td>
                                 <td>${report.notes}</td>
                                 <td>

@@ -29,22 +29,12 @@
 
             <div class="form-card">
                 <form action="${pageContext.request.contextPath}/roomInspection" method="post" class="inspection-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="bookingId" class="form-label">
-                                <i class="fas fa-calendar-alt me-1"></i>
-                                Booking ID
-                            </label>
-                            <input type="number" id="bookingId" name="bookingId" class="form-control" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="roomId" class="form-label">
-                                <i class="fas fa-door-open me-1"></i>
-                                Room ID
-                            </label>
-                            <input type="number" id="roomId" name="roomId" class="form-control" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="roomNumber" class="form-label">
+                            <i class="fas fa-door-open me-1"></i>
+                            Room Number
+                        </label>
+                        <input type="text" id="roomNumber" name="roomNumber" class="form-control" required placeholder="e.g., A101">
                     </div>
 
                     <div class="form-row">
@@ -113,7 +103,7 @@
                             <tr>
                                 <th><i class="fas fa-hashtag me-1"></i>Report ID</th>
                                 <th><i class="fas fa-calendar me-1"></i>Booking ID</th>
-                                <th><i class="fas fa-door-open me-1"></i>Room ID</th>
+                                <th><i class="fas fa-door-open me-1"></i>Room Number</th>
                                 <th><i class="fas fa-clock me-1"></i>Inspection Time</th>
                                 <th><i class="fas fa-user me-1"></i>Inspector</th>
                                 <th><i class="fas fa-check-circle me-1"></i>Status</th>
@@ -126,7 +116,9 @@
                                     <td class="report-id">#${report.reportID}</td>
                                     <td>${report.bookingID}</td>
                                     <td>
-                                        <span class="room-badge">Room ${report.roomID}</span>
+                                        <span class="room-badge">
+                                            ${roomMap[report.roomID]}
+                                        </span>
                                     </td>
                                     <td class="inspection-time">
                                         <c:choose>

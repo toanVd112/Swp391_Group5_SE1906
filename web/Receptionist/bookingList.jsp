@@ -49,7 +49,7 @@
     </head>
     <body class="bg-light">
         <div class="container py-4">
-            <h2 class="mb-4">Danh sách Booking</h2>
+            <h2 class="mb-4">Booking List</h2>
             <form method="get" action="bookingList" class="mb-4">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -81,7 +81,7 @@
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Pay</th>
-                        <th>Cập nhật</th>
+                        <th>Update</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,7 +132,7 @@
                                             </c:when>
                                         </c:choose>
                                     </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
                                 </form>
                             </td>
                         </tr>

@@ -82,6 +82,62 @@ public class RoomInspectionReportDAO {
         return null;
     }
 
+    public int getRoomIdByRoomNumber(String roomNumber) throws SQLException {
+        String sql = "SELECT RoomID FROM rooms WHERE RoomNumber = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roomNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("RoomID");
+            } else {
+                throw new SQLException("Không tìm thấy phòng có số: " + roomNumber);
+            }
+        }
+    }
+
+    public Map<Integer, String> getRoomIdToRoomNumberMap() throws SQLException {
+        Map<Integer, String> map = new HashMap<>();
+        String sql = "SELECT RoomID, RoomNumber FROM rooms";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getInt("RoomID"), rs.getString("RoomNumber"));
+            }
+        }
+        return map;
+    }
+
+    public int getActiveBookingIdByRoomNumber(String roomNumber) throws SQLException {
+        String sql = """
+        SELECT b.BookingID
+        FROM bookings b
+        JOIN bookingdetails bd ON b.BookingID = bd.BookingID
+        JOIN rooms r ON bd.RoomID = r.RoomID
+        WHERE r.RoomNumber = ? AND b.Status = 'Active'
+        """;
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roomNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("BookingID");
+            } else {
+                throw new SQLException("Không có booking nào đang 'Active' cho phòng " + roomNumber);
+            }
+        }
+    }
+
+    public int getCurrentBookingIdByRoomId(int roomId) throws SQLException {
+        String sql = "SELECT BookingID FROM bookings WHERE RoomID = ? ";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, roomId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("BookingID");
+            } else {
+                throw new SQLException("Không có booking nào đang ở trạng thái 'Active' cho RoomID: " + roomId);
+            }
+        }
+    }
+
     public String getUsernameByStaffID(int staffID) throws SQLException {
         String username = null;
         String sql = "SELECT Username FROM Accounts WHERE AccountID = ?";
@@ -120,7 +176,7 @@ public class RoomInspectionReportDAO {
 //            e.printStackTrace();
 //        }
         //}
-            RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
+        RoomInspectionReportDAO dao = new RoomInspectionReportDAO();
         System.out.println(dao.getUsernameByStaffID(40));
     }
 }

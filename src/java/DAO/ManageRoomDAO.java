@@ -518,4 +518,15 @@ public class ManageRoomDAO {
         }
         return 0;
     }
+
+    public Map<Integer, String> getRoomIdToRoomNumberMap() throws SQLException {
+        Map<Integer, String> map = new HashMap<>();
+        String sql = "SELECT RoomID, RoomNumber FROM rooms";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getInt("RoomID"), rs.getString("RoomNumber"));
+            }
+        }
+        return map;
+    }
 }

@@ -23,31 +23,34 @@ public class RoomInspectionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    try {
-        AccountDAO accountDao = new AccountDAO();
-        List<Account> staffList = accountDao.getAccountsByRole("Staff");
-        request.setAttribute("staffList", staffList);
+            throws ServletException, IOException {
 
-        // Lấy toàn bộ báo cáo
-        List<RoomInspectionReport> reports = dao.getAll();
-        request.setAttribute("reports", reports);
+        try {
+            Map<Integer, String> roomMap = dao.getRoomIdToRoomNumberMap();
+            request.setAttribute("roomMap", roomMap);
+            AccountDAO accountDao = new AccountDAO();
+            List<Account> staffList = accountDao.getAccountsByRole("Staff");
+            request.setAttribute("staffList", staffList);
 
-        // Tạo map staffID → Username
-        Map<Integer, String> staffMap = new HashMap<>();
-        for (Account staff : staffList) {
-            staffMap.put(staff.getAccountID(), staff.getUsername());
+            // Lấy toàn bộ báo cáo
+            List<RoomInspectionReport> reports = dao.getAll();
+            request.setAttribute("reports", reports);
+
+            // Tạo map staffID → Username
+            Map<Integer, String> staffMap = new HashMap<>();
+            for (Account staff : staffList) {
+                staffMap.put(staff.getAccountID(), staff.getUsername());
+            }
+            request.setAttribute("staffMap", staffMap);
+
+            // Forward
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi khi tải danh sách yêu cầu!");
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
         }
-        request.setAttribute("staffMap", staffMap);
-
-        // Forward
-        request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
-    } catch (SQLException e) {
-        e.printStackTrace();
-        request.setAttribute("error", "Lỗi khi tải danh sách yêu cầu!");
-        request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
     }
-}
 
 //
     @Override
@@ -57,11 +60,17 @@ public class RoomInspectionServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         try {
-            int bookingId = Integer.parseInt(request.getParameter("bookingId"));
-            int roomId = Integer.parseInt(request.getParameter("roomId"));
+            String roomNumber = request.getParameter("roomNumber");
             String notes = request.getParameter("notes");
             int staffId = Integer.parseInt(request.getParameter("staffId"));
 
+            // 1. Lấy RoomID từ RoomNumber
+            int roomId = dao.getRoomIdByRoomNumber(roomNumber);
+
+            // 2. Lấy BookingID từ RoomNumber có trạng thái 'Active'
+            int bookingId = dao.getActiveBookingIdByRoomNumber(roomNumber);
+
+            // 3. Tạo báo cáo
             RoomInspectionReport report = new RoomInspectionReport(bookingId, roomId);
             report.setStaffID(staffId);
             report.setNotes(notes);
@@ -71,33 +80,25 @@ public class RoomInspectionServlet extends HttpServlet {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            try {
-                AccountDAO accountDao = new AccountDAO();
-                List<Account> staffList = accountDao.getAccountsByRole("Staff");
-                request.setAttribute("staffList", staffList);
-
-                request.setAttribute("reports", dao.getAll()); // load lại danh sách báo cáo nếu cần
-            } catch (Exception ex) {
-                ex.printStackTrace(); // log thêm lỗi phụ
-            }
-
-            request.setAttribute("error", "Lỗi khi thêm yêu cầu!");
-            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
-
+            handleError(request, response, "Không thể gửi yêu cầu: " + e.getMessage());
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            try {
-                AccountDAO accountDao = new AccountDAO();
-                List<Account> staffList = accountDao.getAccountsByRole("Staff");
-                request.setAttribute("staffList", staffList);
-                request.setAttribute("reports", dao.getAll());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-            request.setAttribute("error", "Dữ liệu đầu vào không hợp lệ!");
-            request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
+            handleError(request, response, "Dữ liệu đầu vào không hợp lệ!");
         }
+    }
+
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String message)
+            throws ServletException, IOException {
+        try {
+            AccountDAO accountDao = new AccountDAO();
+            List<Account> staffList = accountDao.getAccountsByRole("Staff");
+            request.setAttribute("staffList", staffList);
+            request.setAttribute("reports", dao.getAll());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        request.setAttribute("error", message);
+        request.getRequestDispatcher("Receptionist/reception.jsp?page=roomInspection.jsp").forward(request, response);
     }
 
     @Override
