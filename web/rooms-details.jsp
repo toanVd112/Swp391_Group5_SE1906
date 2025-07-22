@@ -314,6 +314,190 @@
                     height: 100px;
                 }
             }
+            /* Feedback Section Styles */
+            .feedback-section {
+                margin-top: 30px;
+                padding: 20px;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+
+            .feedback-form {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .rating-input {
+                margin: 15px 0;
+            }
+
+            .rating-stars {
+                display: flex;
+                gap: 5px;
+                margin: 10px 0;
+            }
+
+            .rating-stars .star {
+                font-size: 24px;
+                color: #ddd;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+
+            .rating-stars .star:hover,
+            .rating-stars .star.active {
+                color: #ffd700;
+            }
+
+            .feedback-item {
+                background: white;
+                padding: 20px;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                display: flex;
+                gap: 15px;
+            }
+
+            .feedback-avatar {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #ddd;
+            }
+
+            .feedback-content {
+                flex: 1;
+            }
+
+            .feedback-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 8px;
+            }
+
+            .feedback-name {
+                font-weight: bold;
+                color: #333;
+            }
+
+            .feedback-rating {
+                color: #ffd700;
+                font-size: 16px;
+            }
+
+            .feedback-date {
+                color: #999;
+                font-size: 12px;
+                margin-left: auto;
+            }
+
+            .feedback-comment {
+                color: #555;
+                line-height: 1.6;
+                margin-top: 10px;
+            }
+
+            .rating-summary {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                margin-bottom: 20px;
+                padding: 20px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .overall-rating {
+                text-align: center;
+            }
+
+            .rating-number {
+                font-size: 48px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .rating-stars-large {
+                color: #ffd700;
+                font-size: 20px;
+                margin: 5px 0;
+            }
+
+            .rating-count {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .rating-breakdown {
+                flex: 1;
+            }
+
+            .rating-bar-item {
+                display: flex;
+                align-items: center;
+                margin: 8px 0;
+            }
+
+            .rating-label {
+                width: 60px;
+                font-size: 14px;
+                color: #666;
+            }
+
+            .rating-bar {
+                flex: 1;
+                height: 8px;
+                background: #f0f0f0;
+                border-radius: 4px;
+                margin: 0 10px;
+                overflow: hidden;
+            }
+
+            .rating-fill {
+                height: 100%;
+                background: #ffd700;
+                transition: width 0.3s ease;
+            }
+
+            .rating-number-small {
+                width: 40px;
+                text-align: right;
+                font-size: 14px;
+                color: #666;
+            }
+
+            .alert {
+                padding: 15px;
+                margin-bottom: 20px;
+                border: 1px solid transparent;
+                border-radius: 4px;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .no-reviews {
+                text-align: center;
+                color: #999;
+                font-style: italic;
+                padding: 40px;
+            }
         </style>
     </head>
     <body id="bg">
@@ -452,7 +636,7 @@
                                     <li><a href="javascript:;">Blog <i class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu">
                                             <li><a href="blog-classic-grid.html">Blog Classic</a></li>
-                                            <li><a href="blog-classic-sidebar.html">Blog Classic Sidebar</a></li>
+                                            <li><a href="edit-feedback">Blog Classic Sidebar</a></li>
                                             <li><a href="blog-list-sidebar.html">Blog List Sidebar</a></li>
                                             <li><a href="blog-standard-sidebar.html">Blog Standard Sidebar</a></li>
                                             <li><a href="blog-details.html">Blog Details</a></li>
@@ -623,12 +807,12 @@
                                                         <c:when test="${not empty amenities}">
                                                             <c:forEach var="a" items="${amenities}">
                                                                 <li><i class="${fn:escapeXml(a.icon)}"></i> ${fn:escapeXml(a.amenityName)}</li>
-                                                            </c:forEach>
-                                                        </c:when>
-                                                        <c:otherwise>
+                                                                </c:forEach>
+                                                            </c:when>
+                                                            <c:otherwise>
                                                             <li class="no-data">No amenities to display.</li>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                 </ul>
                                             </div>
 
@@ -752,462 +936,469 @@
                                         </div>
                                     </div>
 
-                                    <!-- 🔽 START FEEDBACK BLOCK -->
-                                    <div class="section" id="instructor">
-                                        <h4>Feedback</h4>
-                                        <div class="review-bx">
+                                    <!-- Updated Feedback Section -->
+                                    <div class="feedback-section" id="instructor">
+                                        <h4>Guest Reviews</h4>
 
-                                            <!-- ✅ ERROR NOTIFICATION if user tries to submit feedback without booking -->
-                                            <c:if test="${param.error == 'unauthorized'}">
-                                                <p class="text-danger mt-2">⚠️ You must have booked this room type to submit a review.</p>
-                                            </c:if>
+                                        <!-- Success/Error Messages -->
+                                        <c:if test="${not empty successMessage}">
+                                            <div class="alert alert-success">
+                                                <i class="fa fa-check-circle"></i> ${successMessage}
+                                            </div>
+                                        </c:if>
 
-                                            <!-- ✅ FEEDBACK FORM: always displayed if logged in -->
-                                            <c:if test="${sessionScope.user != null}">
-                                                <div class="submit-feedback-box mt-4">
-                                                    <h5>Submit Your Review</h5>
-                                                    <form action="submit-feedback" method="post" class="feedback-form">
-                                                        <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
-                                                        <input type="hidden" name="bookingID" value="${bookingID}" />
+                                        <c:if test="${not empty errorMessage}">
+                                            <div class="alert alert-danger">
+                                                <i class="fa fa-exclamation-circle"></i> ${errorMessage}
+                                            </div>
+                                        </c:if>
 
-                                                        <div class="form-group">
-                                                            <label>Select Rating:</label>
-                                                            <select name="rating" class="form-control" required>
-                                                                <option value="5">★★★★★ - Excellent</option>
-                                                                <option value="4">★★★★ - Good</option>
-                                                                <option value="3">★★★ - Average</option>
-                                                                <option value="2">★★ - Poor</option>
-                                                                <option value="1">★ - Very Poor</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Comment:</label>
-                                                            <textarea name="comment" class="form-control" rows="4" required placeholder="Enter your feedback..."></textarea>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <p>Information to display with review:</p>
-                                                            <label><input type="checkbox" name="showEmail" checked> Email</label>
-                                                            <label><input type="checkbox" name="showFacebook" checked> Facebook</label>
-                                                            <label><input type="checkbox" name="showInstagram" checked> Instagram</label>
-                                                        </div>
-
-                                                        <button type="submit" class="btn btn-primary">Submit Review</button>
-                                                    </form>
+                                        <!-- Rating Summary -->
+                                        <c:if test="${totalReviews > 0}">
+                                            <div class="rating-summary">
+                                                <div class="overall-rating">
+                                                    <div class="rating-number">
+                                                        <fmt:formatNumber value="${avgRating}" maxFractionDigits="1"/>
+                                                    </div>
+                                                    <div class="rating-stars-large">
+                                                        <c:forEach begin="1" end="5" var="i">
+                                                            <span style="color: ${i <= avgRating ? '#ffd700' : '#ddd'}">★</span>
+                                                        </c:forEach>
+                                                    </div>
+                                                    <div class="rating-count">${totalReviews} reviews</div>
                                                 </div>
-                                            </c:if>
 
-                                            <c:if test="${sessionScope.user == null}">
-                                                <p class="text-muted mt-3">Please <a href="login.jsp">log in</a> to submit a review.</p>
-                                            </c:if>
+                                                <div class="rating-breakdown">
+                                                    <c:forEach begin="1" end="5" var="star">
+                                                        <div class="rating-bar-item">
+                                                            <div class="rating-label">${6-star} star</div>
+                                                            <div class="rating-bar">
+                                                                <div class="rating-fill" 
+                                                                     style="width: ${totalReviews > 0 ? (ratingDistribution[6-star-1] * 100) / totalReviews : 0}%"></div>
+                                                            </div>
+                                                            <div class="rating-number-small">${ratingDistribution[6-star-1]}</div>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:if>
 
-                                            <!-- ✅ FEEDBACK LIST -->
-                                            <hr/>
+                                        <!-- Feedback Form -->
+                                        <c:if test="${sessionScope.account != null}">
+                                            <c:choose>
+                                                <c:when test="${canSubmitFeedback}">
+                                                    <div class="feedback-form">
+                                                        <h5>Submit Your Review</h5>
+                                                        <form action="submit-feedback" method="post">
+                                                            <input type="hidden" name="roomTypeID" value="${roomType.roomTypeID}" />
+                                                            <input type="hidden" name="bookingID" value="${bookingID}" />
+                                                            <input type="hidden" name="rating" id="selectedRating" value="5" />
+
+                                                            <div class="rating-input">
+                                                                <label>Your Rating:</label>
+                                                                <div class="rating-stars" id="ratingStars">
+                                                                    <span class="star active" data-rating="1">★</span>
+                                                                    <span class="star active" data-rating="2">★</span>
+                                                                    <span class="star active" data-rating="3">★</span>
+                                                                    <span class="star active" data-rating="4">★</span>
+                                                                    <span class="star active" data-rating="5">★</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="comment">Your Review:</label>
+                                                                <textarea name="comment" id="comment" class="form-control" rows="4" 
+                                                                          placeholder="Share your experience with this room..."></textarea>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label>
+                                                                    <input type="checkbox" name="isAnonymous" value="true">
+                                                                    Submit anonymously
+                                                                </label>
+                                                            </div>
+
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="fa fa-paper-plane"></i> Submit Review
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="alert alert-info">
+                                                        <i class="fa fa-info-circle"></i> 
+                                                        You need to complete a booking for this room type to submit a review.
+                                                    </div>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:if>
+
+                                        <c:if test="${sessionScope.user == null}">
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-sign-in-alt"></i> 
+                                                Please <a href="login.jsp">log in</a> to submit a review.
+                                            </div>
+                                        </c:if>
+
+                                        <!-- Feedback List -->
+                                        <div class="feedback-list">
                                             <c:choose>
                                                 <c:when test="${not empty feedbacks}">
-                                                    <c:forEach var="fb" items="${feedbacks}">
-                                                        <div class="instructor-bx m-b30">
-                                                            <div class="instructor-info">
-                                                                <h6>${empty fb.fullName ? 'Anonymous' : fn:escapeXml(fb.fullName)}</h6>
+                                                    <c:forEach var="feedback" items="${feedbacks}">
+                                                        <div class="feedback-item">
+                                                            <img src="${feedback.displayAvatar}" 
+                                                                 alt="${feedback.userName}" 
+                                                                 class="feedback-avatar"
+                                                                 onerror="this.src='/images/default-avatar.png'" />
 
-                                                                <ul class="cours-star list-inline m-tb10">
-                                                                    <c:forEach var="i" begin="1" end="5">
-                                                                        <li class="${i <= fb.rating ? 'active' : ''}"><i class="fa fa-star"></i></li>
-                                                                    </c:forEach>
-                                                                </ul>
-
-                                                                <p class="m-b5">${empty fb.comment ? 'No comment' : fn:escapeXml(fb.comment)}</p>
-
-                                                                <div class="m-tb5">
-                                                                    <c:if test="${fb.showEmail}">
-                                                                        <i class="fa fa-envelope"></i> ${empty fb.email ? 'Hidden' : fn:escapeXml(fb.email)}<br/>
-                                                                    </c:if>
-                                                                    <c:if test="${fb.showFacebook}">
-                                                                        <i class="fa fa-facebook"></i> ${empty fb.facebook ? 'Hidden' : fn:escapeXml(fb.facebook)}<br/>
-                                                                    </c:if>
-                                                                    <c:if test="${fb.showInstagram}">
-                                                                        <i class="fa fa-instagram"></i> ${empty fb.instagram ? 'Hidden' : fn:escapeXml(fb.instagram)}<br/>
-                                                                    </c:if>
+                                                            <div class="feedback-content">
+                                                                <div class="feedback-header">
+                                                                    <span class="feedback-name">${feedback.userName}</span>
+                                                                    <span class="feedback-rating">
+                                                                        <c:forEach begin="1" end="5" var="i">
+                                                                            <span style="color: ${i <= feedback.rating ? '#ffd700' : '#ddd'}">★</span>
+                                                                        </c:forEach>
+                                                                    </span>
+                                                                    <span class="feedback-date">
+                                                                        <fmt:formatDate value="${feedback.feedbackDate}" pattern="MMM dd, yyyy" />
+                                                                    </span>
                                                                 </div>
 
-                                                                <small class="text-muted">
+                                                                <div class="feedback-comment">
                                                                     <c:choose>
-                                                                        <c:when test="${not empty fb.feedbackDate}">
-                                                                            <fmt:formatDate value="${fb.feedbackDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                                        <c:when test="${not empty feedback.comment}">
+                                                                            ${fn:escapeXml(feedback.comment)}
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <span class="text-warning">Date not specified</span>
+                                                                            <em>No comment provided</em>
                                                                         </c:otherwise>
                                                                     </c:choose>
-                                                                </small>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </c:forEach>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <p class="text-muted">This room has no reviews yet.</p>
+                                                    <div class="no-reviews">
+                                                        <i class="fa fa-comments" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                                                        <p>No reviews yet. Be the first to review this room!</p>
+                                                    </div>
                                                 </c:otherwise>
                                             </c:choose>
                                         </div>
                                     </div>
-                                    <!-- 🔼 END FEEDBACK BLOCK -->
+                                    <!-- contact area END -->
+                                </div>
+                                <!-- Content END-->
 
-                                    <div class="" id="reviews">
-                                        <h4>Reviews</h4>
-                                        <div class="review-bx">
-                                            <div class="all-review">
-                                                <h2 class="rating-type">3</h2>
-                                                <ul class="cours-star">
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li class="active"><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                    <li><i class="fa fa-star"></i></li>
-                                                </ul>
-                                                <span>3 Ratings</span>
+                                <!-- Footer ==== -->
+                                <footer>
+                                    <div class="footer-top">
+                                        <div class="pt-exebar">
+                                            <div class="container">
+                                                <div class="d-flex align-items-stretch">
+                                                    <div class="pt-logo mr-auto">
+                                                        <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
+                                                    </div>
+                                                    <div class="pt-social-link">
+                                                        <ul class="list-inline m-a0">
+                                                            <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+                                                            <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
+                                                            <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+                                                            <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="pt-btn-join">
+                                                        <a href="#" class="btn ">Join Now</a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="review-bar">
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>5 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:90%;"></div>
+                                        </div>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
+                                                    <div class="widget">
+                                                        <h5 class="footer-title">Sign Up For A Newsletter</h5>
+                                                        <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                                                        <div class="subscribe-form m-b20">
+                                                            <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
+                                                                <div class="ajax-message"></div>
+                                                                <div class="input-group">
+                                                                    <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
+                                                                    <span class="input-group-btn">
+                                                                        <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
+                                                                    </span> 
+                                                                </div>
+                                                            </form>
                                                         </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>150</div>
                                                     </div>
                                                 </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>4 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:70%;"></div>
+                                                <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                                            <div class="widget footer_widget">
+                                                                <h5 class="footer-title">Company</h5>
+                                                                <ul>
+                                                                    <li><a href="Home">Home</a></li>
+                                                                    <li><a href="about-1.html">About</a></li>
+                                                                    <li><a href="faq-1.jsp">FAQs</a></li>
+                                                                    <li><a href="contact-1.html">Contact</a></li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>140</div>
+                                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                                            <div class="widget footer_widget">
+                                                                <h5 class="footer-title">Get In Touch</h5>
+                                                                <ul>
+                                                                    <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
+                                                                    <li><a href="blog-classic-grid.html">Blog</a></li>
+                                                                    <li><a href="portfolio.html">Portfolio</a></li>
+                                                                    <li><a href="event.html">Event</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                                                            <div class="widget footer_widget">
+                                                                <h5 class="footer-title">Rooms</h5>
+                                                                <ul>
+                                                                    <li><a href="roomlist">Rooms</a></li>
+                                                                    <li><a href="rooms-details.html">Details</a></li>
+                                                                    <li><a href="membership.html">Membership</a></li>
+                                                                    <li><a href="profile.html">Profile</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>3 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:50%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>120</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>2 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:40%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>110</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bar-bx">
-                                                    <div class="side">
-                                                        <div>1 star</div>
-                                                    </div>
-                                                    <div class="middle">
-                                                        <div class="bar-container">
-                                                            <div class="bar-5" style="width:20%;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="side right">
-                                                        <div>80</div>
+                                                <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                                                    <div class="widget widget_gallery gallery-grid-4">
+                                                        <h5 class="footer-title">Our Gallery</h5>
+                                                        <ul class="magnific-image">
+                                                            <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
+                                                            <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
+                                                        </ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="footer-bottom">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </footer>
+                                <!-- Footer END ==== -->
+                                <button class="back-to-top fa fa-chevron-up" ></button>
                             </div>
-                        </div>
-                    </div>
-                    <!-- contact area END -->
-                </div>
-                <!-- Content END-->
+                            <!-- External JavaScripts -->
+                            <script src="assets/js/jquery.min.js"></script>
+                            <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
+                            <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
+                            <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
+                            <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
+                            <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
+                            <script src="assets/vendors/counter/waypoints-min.js"></script>
+                            <script src="assets/vendors/counter/counterup.min.js"></script>
+                            <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
+                            <script src="assets/vendors/masonry/masonry.js"></script>
+                            <script src="assets/vendors/masonry/filter.js"></script>
+                            <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
+                            <script src="assets/js/jquery.scroller.js"></script>
+                            <script src="assets/js/functions.js"></script>
+                            <script src="assets/js/contact.js"></script>
+                            <script src="assets/vendors/switcher/switcher.js"></script>
+                            <script src="assets/js/hotel-cart.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                <!-- Footer ==== -->
-                <footer>
-                    <div class="footer-top">
-                        <div class="pt-exebar">
-                            <div class="container">
-                                <div class="d-flex align-items-stretch">
-                                    <div class="pt-logo mr-auto">
-                                        <a href="Home"><img src="assets/images/logo-white.png" alt=""/></a>
-                                    </div>
-                                    <div class="pt-social-link">
-                                        <ul class="list-inline m-a0">
-                                            <li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-                                            <li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-                                            <li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-                                            <li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="pt-btn-join">
-                                        <a href="#" class="btn ">Join Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
-                                    <div class="widget">
-                                        <h5 class="footer-title">Sign Up For A Newsletter</h5>
-                                        <p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
-                                        <div class="subscribe-form m-b20">
-                                            <form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
-                                                <div class="ajax-message"></div>
-                                                <div class="input-group">
-                                                    <input name="email" required="required"  class="form-control" placeholder="Your Email Address" type="email">
-                                                    <span class="input-group-btn">
-                                                        <button name="submit" value="Submit" type="submit" class="btn"><i class="fa fa-arrow-right"></i></button>
-                                                    </span> 
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-5 col-md-7 col-sm-12">
-                                    <div class="row">
-                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                            <div class="widget footer_widget">
-                                                <h5 class="footer-title">Company</h5>
-                                                <ul>
-                                                    <li><a href="Home">Home</a></li>
-                                                    <li><a href="about-1.html">About</a></li>
-                                                    <li><a href="faq-1.jsp">FAQs</a></li>
-                                                    <li><a href="contact-1.html">Contact</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                            <div class="widget footer_widget">
-                                                <h5 class="footer-title">Get In Touch</h5>
-                                                <ul>
-                                                    <li><a href="http://educhamp.themetrades.com/admin/Home">Dashboard</a></li>
-                                                    <li><a href="blog-classic-grid.html">Blog</a></li>
-                                                    <li><a href="portfolio.html">Portfolio</a></li>
-                                                    <li><a href="event.html">Event</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                                            <div class="widget footer_widget">
-                                                <h5 class="footer-title">Rooms</h5>
-                                                <ul>
-                                                    <li><a href="roomlist">Rooms</a></li>
-                                                    <li><a href="rooms-details.html">Details</a></li>
-                                                    <li><a href="membership.html">Membership</a></li>
-                                                    <li><a href="profile.html">Profile</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
-                                    <div class="widget widget_gallery gallery-grid-4">
-                                        <h5 class="footer-title">Our Gallery</h5>
-                                        <ul class="magnific-image">
-                                            <li><a href="assets/images/gallery/pic1.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic1.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic2.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic2.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic3.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic3.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic4.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic4.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic5.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic5.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic6.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic6.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic7.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic7.jpg" alt=""></a></li>
-                                            <li><a href="assets/images/gallery/pic8.jpg" class="magnific-anchor"><img src="assets/images/gallery/pic8.jpg" alt=""></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="footer-bottom">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-                <!-- Footer END ==== -->
-                <button class="back-to-top fa fa-chevron-up" ></button>
-            </div>
-            <!-- External JavaScripts -->
-            <script src="assets/js/jquery.min.js"></script>
-            <script src="assets/vendors/bootstrap/js/popper.min.js"></script>
-            <script src="assets/vendors/bootstrap/js/bootstrap.min.js"></script>
-            <script src="assets/vendors/bootstrap-select/bootstrap-select.min.js"></script>
-            <script src="assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js"></script>
-            <script src="assets/vendors/magnific-popup/magnific-popup.js"></script>
-            <script src="assets/vendors/counter/waypoints-min.js"></script>
-            <script src="assets/vendors/counter/counterup.min.js"></script>
-            <script src="assets/vendors/imagesloaded/imagesloaded.js"></script>
-            <script src="assets/vendors/masonry/masonry.js"></script>
-            <script src="assets/vendors/masonry/filter.js"></script>
-            <script src="assets/vendors/owl-carousel/owl.carousel.js"></script>
-            <script src="assets/js/jquery.scroller.js"></script>
-            <script src="assets/js/functions.js"></script>
-            <script src="assets/js/contact.js"></script>
-            <script src="assets/vendors/switcher/switcher.js"></script>
-            <script src="assets/js/hotel-cart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                            <script>
+                                                                        const checkinRaw = "${param.checkin}";
+                                                                        flatpickr("#checkin", {
+                                                                            dateFormat: "d/m/Y",
+                                                                            defaultDate: checkinRaw ? new Date(checkinRaw) : null
+                                                                        });
 
-            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-            <script>
-                const checkinRaw = "${param.checkin}";
-                flatpickr("#checkin", {
-                    dateFormat: "d/m/Y",
-                    defaultDate: checkinRaw ? new Date(checkinRaw) : null
-                });
+                                                                        const checkoutRaw = "${param.checkout}";
+                                                                        flatpickr("#checkout", {
+                                                                            dateFormat: "d/m/Y",
+                                                                            defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
+                                                                        });
+                            </script>
+                            <script>
+                                const checkinInput = document.getElementById('checkin');
+                                const checkoutInput = document.getElementById('checkout');
+                                checkinInput.addEventListener('change', validateDates);
+                                checkoutInput.addEventListener('change', validateDates);
+                                function parseDate(dateStr) {
+                                    // format: dd/MM/yyyy
+                                    const parts = dateStr.split('/');
+                                    const day = parseInt(parts[0], 10);
+                                    const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
+                                    const year = parseInt(parts[2], 10);
+                                    return new Date(year, month, day);
+                                }
 
-                const checkoutRaw = "${param.checkout}";
-                flatpickr("#checkout", {
-                    dateFormat: "d/m/Y",
-                    defaultDate: checkoutRaw ? new Date(checkoutRaw) : null
-                });
-            </script>
-            <script>
-                const checkinInput = document.getElementById('checkin');
-                const checkoutInput = document.getElementById('checkout');
-                checkinInput.addEventListener('change', validateDates);
-                checkoutInput.addEventListener('change', validateDates);
-                function parseDate(dateStr) {
-                    // format: dd/MM/yyyy
-                    const parts = dateStr.split('/');
-                    const day = parseInt(parts[0], 10);
-                    const month = parseInt(parts[1], 10) - 1; // JS month: 0-11
-                    const year = parseInt(parts[2], 10);
-                    return new Date(year, month, day);
-                }
+                                function validateDates() {
+                                    const checkin = parseDate(checkinInput.value);
+                                    const checkout = parseDate(checkoutInput.value);
+                                    if (checkin && checkout && checkout <= checkin) {
+                                        alert('❌ Check-out date must be after check-in date.');
+                                        checkoutInput.value = '';
+                                    }
+                                }
 
-                function validateDates() {
-                    const checkin = parseDate(checkinInput.value);
-                    const checkout = parseDate(checkoutInput.value);
-                    if (checkin && checkout && checkout <= checkin) {
-                        alert('❌ Check-out date must be after check-in date.');
-                        checkoutInput.value = '';
-                    }
-                }
+                                function validateForm() {
+                                    const checkin = parseDate(checkinInput.value);
+                                    const checkout = parseDate(checkoutInput.value);
+                                    if (checkout <= checkin) {
+                                        alert('❌ Check-out date must be after check-in date.');
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                            </script>
+                            <script>
+                                // Initialize: Hide modal on page load
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    const modal = document.getElementById("galleryModal");
+                                    if (modal) {
+                                        modal.style.display = "none";
+                                        modal.setAttribute('aria-hidden', 'true');
+                                    }
+                                });
 
-                function validateForm() {
-                    const checkin = parseDate(checkinInput.value);
-                    const checkout = parseDate(checkoutInput.value);
-                    if (checkout <= checkin) {
-                        alert('❌ Check-out date must be after check-in date.');
-                        return false;
-                    }
-                    return true;
-                }
-            </script>
-            <script>
-                // Initialize: Hide modal on page load
-                document.addEventListener('DOMContentLoaded', () => {
-                    const modal = document.getElementById("galleryModal");
-                    if (modal) {
-                        modal.style.display = "none";
-                        modal.setAttribute('aria-hidden', 'true');
-                    }
-                });
+                                function filterCategory(cat, button) {
+                                    console.log("Filtering category:", cat);
+                                    const tabs = document.querySelectorAll(".category-tabs button");
+                                    const items = document.querySelectorAll("#galleryImages .gallery-item");
 
-                function filterCategory(cat, button) {
-                    console.log("Filtering category:", cat);
-                    const tabs = document.querySelectorAll(".category-tabs button");
-                    const items = document.querySelectorAll("#galleryImages .gallery-item");
+                                    if (!items.length) {
+                                        console.warn("No gallery items found.");
+                                        return;
+                                    }
 
-                    if (!items.length) {
-                        console.warn("No gallery items found.");
-                        return;
-                    }
+                                    tabs.forEach(tab => {
+                                        tab.classList.remove("active");
+                                        tab.setAttribute('aria-pressed', 'false');
+                                    });
 
-                    tabs.forEach(tab => {
-                        tab.classList.remove("active");
-                        tab.setAttribute('aria-pressed', 'false');
-                    });
+                                    if (button) {
+                                        button.classList.add("active");
+                                        button.setAttribute('aria-pressed', 'true');
+                                    }
 
-                    if (button) {
-                        button.classList.add("active");
-                        button.setAttribute('aria-pressed', 'true');
-                    }
+                                    items.forEach(item => {
+                                        const itemCategories = (item.getAttribute('data-category') || 'uncategorized').split(',').map(c => c.trim()).filter(c => c);
+                                        console.log("Item categories:", itemCategories);
+                                        item.style.display = (cat === 'all' || itemCategories.includes(cat)) ? 'block' : 'none';
+                                    });
+                                }
 
-                    items.forEach(item => {
-                        const itemCategories = (item.getAttribute('data-category') || 'uncategorized').split(',').map(c => c.trim()).filter(c => c);
-                        console.log("Item categories:", itemCategories);
-                        item.style.display = (cat === 'all' || itemCategories.includes(cat)) ? 'block' : 'none';
-                    });
-                }
+                                function openGallery(category) {
+                                    const modal = document.getElementById("galleryModal");
+                                    if (!modal) {
+                                        console.error("Modal element not found!");
+                                        return;
+                                    }
+                                    modal.style.display = "block";
+                                    modal.setAttribute('aria-hidden', 'false');
+                                    console.log("Opening modal with category:", category);
 
-                function openGallery(category) {
-                    const modal = document.getElementById("galleryModal");
-                    if (!modal) {
-                        console.error("Modal element not found!");
-                        return;
-                    }
-                    modal.style.display = "block";
-                    modal.setAttribute('aria-hidden', 'false');
-                    console.log("Opening modal with category:", category);
+                                    let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
+                                    if (!button) {
+                                        console.warn(`Category "${category}" not found, falling back to "all"`);
+                                        button = document.querySelector(`.category-tabs button[data-category="all"]`);
+                                        category = "all";
+                                    }
 
-                    let button = document.querySelector(`.category-tabs button[data-category="${category}"]`);
-                    if (!button) {
-                        console.warn(`Category "${category}" not found, falling back to "all"`);
-                        button = document.querySelector(`.category-tabs button[data-category="all"]`);
-                        category = "all";
-                    }
+                                    if (!button) {
+                                        console.error("No category buttons found in the gallery.");
+                                        return;
+                                    }
 
-                    if (!button) {
-                        console.error("No category buttons found in the gallery.");
-                        return;
-                    }
+                                    filterCategory(category, button);
 
-                    filterCategory(category, button);
+                                    setTimeout(() => {
+                                        document.addEventListener('click', handleClickOutside);
+                                    }, 0);
+                                    document.addEventListener('keydown', handleKeyboard);
+                                }
 
-                    setTimeout(() => {
-                        document.addEventListener('click', handleClickOutside);
-                    }, 0);
-                    document.addEventListener('keydown', handleKeyboard);
-                }
+                                function closeGallery() {
+                                    const modal = document.getElementById("galleryModal");
+                                    if (modal) {
+                                        modal.style.display = "none";
+                                        modal.setAttribute('aria-hidden', 'true');
+                                    }
+                                    document.removeEventListener('click', handleClickOutside);
+                                    document.removeEventListener('keydown', handleKeyboard);
+                                }
 
-                function closeGallery() {
-                    const modal = document.getElementById("galleryModal");
-                    if (modal) {
-                        modal.style.display = "none";
-                        modal.setAttribute('aria-hidden', 'true');
-                    }
-                    document.removeEventListener('click', handleClickOutside);
-                    document.removeEventListener('keydown', handleKeyboard);
-                }
+                                function handleClickOutside(event) {
+                                    const modalContent = document.querySelector("#galleryModal .modal-content");
+                                    if (modalContent && !modalContent.contains(event.target)) {
+                                        closeGallery();
+                                    }
+                                }
 
-                function handleClickOutside(event) {
-                    const modalContent = document.querySelector("#galleryModal .modal-content");
-                    if (modalContent && !modalContent.contains(event.target)) {
-                        closeGallery();
-                    }
-                }
+                                function handleKeyboard(event) {
+                                    if (event.key === "Escape") {
+                                        closeGallery();
+                                    }
+                                }
 
-                function handleKeyboard(event) {
-                    if (event.key === "Escape") {
-                        closeGallery();
-                    }
-                }
-            </script>
-    </body>
-</html>
+
+                                // Rating stars functionality
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const stars = document.querySelectorAll('#ratingStars .star');
+                                    const ratingInput = document.getElementById('selectedRating');
+
+                                    stars.forEach(star => {
+                                        star.addEventListener('click', function () {
+                                            const rating = this.getAttribute('data-rating');
+                                            ratingInput.value = rating;
+
+                                            stars.forEach((s, index) => {
+                                                if (index < rating) {
+                                                    s.classList.add('active');
+                                                } else {
+                                                    s.classList.remove('active');
+                                                }
+                                            });
+                                        });
+
+                                        star.addEventListener('mouseover', function () {
+                                            const rating = this.getAttribute('data-rating');
+                                            stars.forEach((s, index) => {
+                                                if (index < rating) {
+                                                    s.style.color = '#ffd700';
+                                                } else {
+                                                    s.style.color = '#ddd';
+                                                }
+                                            });
+                                        });
+                                    });
+
+                                    document.getElementById('ratingStars').addEventListener('mouseleave', function () {
+                                        const currentRating = ratingInput.value;
+                                        stars.forEach((s, index) => {
+                                            if (index < currentRating) {
+                                                s.style.color = '#ffd700';
+                                            } else {
+                                                s.style.color = '#ddd';
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+                            </body>
+                            </html>

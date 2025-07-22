@@ -871,20 +871,24 @@ public class BookingDAO {
         }
     }
 
-    public boolean updateBookingStatus(int bookingID, String status) {
-        String sql = "UPDATE bookings SET Status = ? WHERE BookingID = ?";
-        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, status);
-            ps.setInt(2, bookingID);
-            int rowsUpdated = ps.executeUpdate();
-
-            return rowsUpdated > 0; // ✅ true nếu có bản ghi bị cập nhật
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false; // ❌ lỗi thì trả về false
-        }
+  public boolean updateBookingStatus(int bookingID, String status) {
+    String sql;
+    if ("Completed".equalsIgnoreCase(status)) {
+        sql = "UPDATE bookings SET Status = ?, ActualCheckOutTime = NOW() WHERE BookingID = ?";
+    } else {
+        sql = "UPDATE bookings SET Status = ? WHERE BookingID = ?";
     }
+
+    try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, status);
+        ps.setInt(2, bookingID);
+        int rowsUpdated = ps.executeUpdate();
+        return rowsUpdated > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 
     public List<Integer> getRoomIDsByBookingID(int bookingID) {
         List<Integer> list = new ArrayList<>();

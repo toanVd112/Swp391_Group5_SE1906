@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import DAO.FeedbackDAO;
+import DAO.UserDao;
 import jakarta.servlet.http.*;
 import model.Account;
 import model.Feedback;
@@ -62,7 +63,7 @@ public class SubmitFeedbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.sendRedirect("roomlist");
     }
 
     /**
@@ -78,47 +79,69 @@ public class SubmitFeedbackServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("user");
+       Account account = (Account) session.getAttribute("account");
 
-        // ✅ Kiểm tra đăng nhập
+        // Check if user is logged in
         if (account == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        int roomTypeID = -1; // Khởi tạo để dùng khi redirect lỗi
+        int roomTypeID = -1;
 
         try {
-            int userID = account.getAccountID();
-            int bookingID = Integer.parseInt(request.getParameter("bookingID"));  // Có thể là 0 nếu không dùng
+            // Get parameters
+            int bookingID = Integer.parseInt(request.getParameter("bookingID"));
             roomTypeID = Integer.parseInt(request.getParameter("roomTypeID"));
+            int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
+            boolean isAnonymous = "true".equals(request.getParameter("isAnonymous"));
 
-            // ✅ Đã tạm bỏ phần rating
-            int rating = 0;
+            // Validate rating
+            if (rating < 1 || rating > 5) {
+                response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=invalid_rating");
+                return;
+            }
 
-            boolean showEmail = request.getParameter("showEmail") != null;
-            boolean showFacebook = request.getParameter("showFacebook") != null;
-            boolean showInstagram = request.getParameter("showInstagram") != null;
+            // Get user details
+            UserDao userDao = new UserDao();
+            User user = userDao.getUserByAccountId(account.getAccountID());
 
-            Feedback fb = new Feedback();
-            fb.setUserID(userID);
-            fb.setBookingID(bookingID);
-            fb.setRating(rating);
-            fb.setComment(comment);
-            fb.setShowEmail(showEmail);
-            fb.setShowFacebook(showFacebook);
-            fb.setShowInstagram(showInstagram);
+            if (user == null) {
+                response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=user_not_found");
+                return;
+            }
 
-            FeedbackDAO dao = new FeedbackDAO();
-            dao.insertFeedback(fb);
+            // Check if user can submit feedback
+            FeedbackDAO feedbackDAO = new FeedbackDAO();
+            if (!feedbackDAO.canSubmitFeedback(bookingID, user.getUserId())) {
+                response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=unauthorized");
+                return;
+            }
 
-            // ✅ Redirect thành công
-            response.sendRedirect("RoomDetail?id=" + roomTypeID + "&success=true");
+            // Create feedback object
+            Feedback feedback = new Feedback();
+            feedback.setBookingID(bookingID);
+            feedback.setUserID(user.getUserId());
+            feedback.setRoomTypeID(roomTypeID);
+            feedback.setRating(rating);
+            feedback.setComment(comment);
+            feedback.setAnonymous(isAnonymous);
 
+            // Submit feedback
+            boolean success = feedbackDAO.submitFeedback(feedback);
+
+            if (success) {
+                response.sendRedirect("RoomDetail?id=" + roomTypeID + "&success=true");
+            } else {
+                response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=submission_failed");
+            }
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=invalid_parameters");
         } catch (Exception e) {
             e.printStackTrace();
-            // ✅ Redirect lại với id hợp lệ để tránh lỗi "id=0"
             response.sendRedirect("RoomDetail?id=" + roomTypeID + "&error=500");
         }
     }

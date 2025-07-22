@@ -10,7 +10,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>${totalRooms != null ? totalRooms : 0}</h3>
-            <p>PHÒNG</p>
+            <p>Rooms</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -19,7 +19,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>4</h3>
-            <p>TẦNG</p>
+            <p>Availiable left</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -28,7 +28,7 @@
         </div>
         <div class="rs-stat-info">
             <h3>${roomTypes != null ? roomTypes.size() : 0}</h3>
-            <p>LOẠI PHÒNG</p>
+            <p>Types</p>
         </div>
     </div>
     <div class="rs-stat-card">
@@ -37,15 +37,15 @@
         </div>
         <div class="rs-stat-info">
             <h3>0</h3>
-            <p>PHÒNG ĐÃ ĐẶT HÔM NAY</p>
+            <p>Booked</p>
         </div>
     </div>
 </div>
 
 <div class="rs-page-header">
-    <h1 class="rs-page-title">Quản lý phòng</h1>
+    <h1 class="rs-page-title">Manager Room</h1>
     <a href="${pageContext.request.contextPath}/AddEditRoomServlet" class="rs-add-btn">
-        <i class="fas fa-plus"></i> Thêm phòng
+        <i class="fas fa-plus"></i> Add
     </a>
 </div>
 
@@ -66,7 +66,7 @@
         <!-- Top Controls Row -->
         <div class="rs-top-controls">
             <div class="rs-show-entries">
-                <label>Hiển thị</label>
+                <label>Show</label>
                 <select onchange="changePageSize(this.value)">
                     <option value="5" ${pageSize == 5 ? 'selected' : ''}>5</option>
                     <option value="10" ${pageSize == 10 ? 'selected' : ''}>10</option>
