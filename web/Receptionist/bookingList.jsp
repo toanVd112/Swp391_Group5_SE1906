@@ -106,9 +106,31 @@
                                     <input type="hidden" name="page" value="${currentPage}">
 
                                     <select name="status" class="form-select form-select-sm me-2">
-                                        <c:forEach var="option" items="${statusList}">
-                                            <option value="${option}" ${b.status == option ? 'selected' : ''}>${option}</option>
-                                        </c:forEach>
+                                        <c:choose>
+                                            <c:when test="${b.status == 'Pending'}">
+                                                <option value="Pending" selected>Pending</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                                <option value="Upcoming">Upcoming</option>
+                                            </c:when>
+                                            <c:when test="${b.status == 'Upcoming'}">
+                                                <option value="Upcoming" selected>Upcoming</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                                <option value="Active">Active</option>
+                                            </c:when>
+                                            <c:when test="${b.status == 'Active'}">
+                                                <option value="Active" selected>Active</option>
+                                                <option value="Completed">Completed</option>
+                                            </c:when>
+                                            <c:when test="${b.status == 'Completed'}">
+                                                <option value="Completed" selected disabled>Completed</option>
+                                            </c:when>
+                                            <c:when test="${b.status == 'Cancelled'}">
+                                                <option value="Cancelled" selected disabled>Cancelled</option>
+                                            </c:when>
+                                            <c:when test="${b.status == 'Expired'}">
+                                                <option value="Expired" selected disabled>Expired</option>
+                                            </c:when>
+                                        </c:choose>
                                     </select>
                                     <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
                                 </form>

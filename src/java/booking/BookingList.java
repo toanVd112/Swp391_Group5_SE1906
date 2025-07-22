@@ -92,7 +92,7 @@ public class BookingList extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String bookingID_raw = request.getParameter("bookingID");
-        String status = request.getParameter("status");
+        String newStatus = request.getParameter("status");
 
         // Lấy lại các tham số phân trang và lọc
         String search = request.getParameter("search");
@@ -102,41 +102,66 @@ public class BookingList extends HttpServlet {
         int pageSize = 5;
 
         BookingDAO dao = new BookingDAO();
+        String message = null;
 
-        // Cập nhật trạng thái booking
         try {
             int bookingID = Integer.parseInt(bookingID_raw);
-            dao.updateBookingStatus1(bookingID, status);
+
+            // ✅ Lấy trạng thái hiện tại từ DB
+            String currentStatus = dao.getBookingStatus(bookingID);
+
+            // ✅ Kiểm tra chuyển trạng thái có hợp lệ không
+            if (isValidTransition(currentStatus, newStatus)) {
+                dao.updateBookingStatus1(bookingID, newStatus);
+                message = "Cập nhật trạng thái thành công.";
+            } else {
+                message = "Không thể chuyển trạng thái từ '" + currentStatus + "' sang '" + newStatus + "'";
+            }
+
         } catch (NumberFormatException e) {
-            e.printStackTrace(); // hoặc log lỗi
+            e.printStackTrace();
+            message = "Lỗi dữ liệu booking ID.";
         }
 
-        // Tính lại danh sách + phân trang
+        // Load lại danh sách booking
         int totalBookings = dao.countAllBookings(search);
         int totalPages = (int) Math.ceil((double) totalBookings / pageSize);
 
         List<Booking> bookingList = dao.getBookingsWithPaging(search, sort, page, pageSize);
         List<String> statusList = Arrays.asList("Pending", "Upcoming", "Active", "Completed", "Cancelled", "Expired");
 
-        // Gửi dữ liệu lại cho JSP
         request.setAttribute("bookingList", bookingList);
         request.setAttribute("statusList", statusList);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", page);
-        request.setAttribute("param.search", search); // để dùng lại trong input value
-        request.setAttribute("param.sort", sort);     // để giữ sort selected
+        request.setAttribute("param.search", search);
+        request.setAttribute("param.sort", sort);
+        request.setAttribute("message", message); // ✅ Gửi thông báo
 
         request.getRequestDispatcher("Receptionist/reception.jsp?page=bookingList.jsp").forward(request, response);
-    
-}
 
-/**
- * Returns a short description of the servlet.
- *
- * @return a String containing servlet description
- */
-@Override
-public String getServletInfo() {
+    }
+
+    boolean isValidTransition(String currentStatus, String newStatus) {
+        switch (currentStatus) {
+            case "Pending":
+                return newStatus.equals("Cancelled") || newStatus.equals("Upcoming");
+            case "Upcoming":
+                return newStatus.equals("Cancelled") || newStatus.equals("Active");
+            case "Active":
+                return newStatus.equals("Completed");
+            default:
+                return false; // Completed, Cancelled, Expired không cho chuyển nữa
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

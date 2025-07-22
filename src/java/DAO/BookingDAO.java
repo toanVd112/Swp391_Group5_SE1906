@@ -738,43 +738,43 @@ public class BookingDAO {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
- try {
-        BookingDAO bookingDAO = new BookingDAO(); // giả sử bạn đã có DAO này
-        int userId = 6; // userID giả định (phải tồn tại trong bảng accounts)
-        String checkin = "2025-08-01";
-        String checkout = "2025-08-03";
-        int guests = 2;
-        String status = "Completed";
-        double baseTotal = 200.0;
+        try {
+            BookingDAO bookingDAO = new BookingDAO(); // giả sử bạn đã có DAO này
+            int userId = 6; // userID giả định (phải tồn tại trong bảng accounts)
+            String checkin = "2025-08-01";
+            String checkout = "2025-08-03";
+            int guests = 2;
+            String status = "Completed";
+            double baseTotal = 200.0;
 
-        for (int i = 0; i < 10; i++) {
-            String name = "Test Customer " + (i + 1);
-            String email = "test" + (i + 1) + "@example.com";
-            String phone = "09000000" + i;
-            double total = baseTotal + i * 10;
+            for (int i = 0; i < 10; i++) {
+                String name = "Test Customer " + (i + 1);
+                String email = "test" + (i + 1) + "@example.com";
+                String phone = "09000000" + i;
+                double total = baseTotal + i * 10;
 
-            BookingResult result = bookingDAO.insertBooking(
-                userId,
-                checkin,
-                checkout,
-                guests,
-                status,
-                name,
-                email,
-                phone,
-                total
-            );
+                BookingResult result = bookingDAO.insertBooking(
+                        userId,
+                        checkin,
+                        checkout,
+                        guests,
+                        status,
+                        name,
+                        email,
+                        phone,
+                        total
+                );
 
-            if (result != null) {
-                System.out.println("✅ Inserted booking with ID: " + result.getBookingID()+
-                        " | Token: " + result.getBookingToken());
-            } else {
-                System.out.println("❌ Failed to insert booking #" + (i + 1));
+                if (result != null) {
+                    System.out.println("✅ Inserted booking with ID: " + result.getBookingID()
+                            + " | Token: " + result.getBookingToken());
+                } else {
+                    System.out.println("❌ Failed to insert booking #" + (i + 1));
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
     }
 
     public int getServicePriceByID(int serviceID) throws SQLException {
@@ -1057,4 +1057,17 @@ public class BookingDAO {
         }
     }
 
+    public String getBookingStatus(int bookingID) {
+        String sql = "SELECT Status FROM bookings WHERE BookingID = ?";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookingID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Status");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
