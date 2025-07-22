@@ -66,10 +66,24 @@
                     <i class="fas fa-clipboard-list"></i>
                     <span>Room Inspection Reports</span>
                 </a>
-                     <a href="${pageContext.request.contextPath}/LoadInvoiceDataServlet" class="menu-item" data-page="Create invoice">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Create invoice</span>
-                </a>
+                <div class="menu-item dropdown" data-page="invoice">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Invoice</span>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="${pageContext.request.contextPath}/InvoiceListServlet" class="dropdown-item" data-page="listinvoice">
+                            <i class="fas fa-list"></i>
+                            <span>List Invoice</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/LoadInvoiceDataServlet" class="dropdown-item" data-page="createinvoice">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Create Invoice</span>
+                        </a>
+                    </div>
+                </div>
+
             </c:if>
 
             <c:if test="${role eq 'Staff'}">
