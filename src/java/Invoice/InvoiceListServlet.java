@@ -67,7 +67,11 @@ public class InvoiceListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy tham số lọc từ form
-        String customerName = request.getParameter("customerName");
+        String customer = request.getParameter("customerName");
+        String customerName = null;
+        if(customer!=null){
+            customerName=customer.trim();
+        }
         String fromDateStr = request.getParameter("fromDate");
         String toDateStr = request.getParameter("toDate");
         String status = request.getParameter("paymentStatus");
