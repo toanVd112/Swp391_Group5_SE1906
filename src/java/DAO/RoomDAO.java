@@ -327,4 +327,37 @@ public class RoomDAO {
             e.printStackTrace();
         }
     }
+    
+    // --- Lấy thông tin phòng dựa trên RoomNumber ---
+    public Room getRoomByNumber(String roomnumber) {
+        String sql = "SELECT r.*, rt.RoomTypeID, rt.Name AS TypeName, rt.Description, rt.BasePrice, rt.RoomTypeImage, rt.RoomDetail, rt.MaxGuests "
+                + "FROM rooms r JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID "
+                + "WHERE r.RoomNumber = ?";
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roomnumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    RoomType roomType = new RoomType(
+                            rs.getInt("RoomTypeID"),
+                            rs.getString("TypeName"),
+                            rs.getString("Description"),
+                            rs.getDouble("BasePrice"),
+                            rs.getString("RoomTypeImage"),
+                            rs.getString("RoomDetail"),
+                            rs.getInt("MaxGuests")
+                    );
+                    return new Room(
+                            rs.getInt("RoomID"),
+                            rs.getString("RoomNumber"),
+                            rs.getInt("Floor"),
+                            rs.getString("Status"),
+                            roomType
+                    );
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
