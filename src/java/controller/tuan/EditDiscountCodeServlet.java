@@ -105,8 +105,8 @@ public class EditDiscountCodeServlet extends HttpServlet {
                 errorMsg.append("Discount must be non-negative.\n");
             } else if ("1".equals(type) && discountPercent > 99) {
                 errorMsg.append("Percentage discount must be between 0.00 and 99.00.\n");
-            } else if ("2".equals(type) && discountPercent > 999.99) {
-                errorMsg.append("Fixed amount discount must be between 0.00 and 999.99.\n");
+            } else if ("2".equals(type) && discountPercent > 999.999) {
+                errorMsg.append("Fixed amount discount must be between 0.00 and 999.999.\n");
             }
         } catch (NumberFormatException e) {
             errorMsg.append("Invalid discount value.\n");

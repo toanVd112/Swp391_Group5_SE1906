@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class addService extends HttpServlet {
 
     // Regex for service name: letters (including Vietnamese), numbers, spaces, hyphens, underscores
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}0-9\\s-_]{3,100}$");
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}0-9\\s-_]{3,64}$");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -5,37 +5,20 @@
         <group>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/addDiscountCode.jsp</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/RevenueDAO.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/model/RevenueStats.java</file>
+            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/ServiceDAO.java</file>
+            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/EditDiscountCodeServlet.java</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/model/Service.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/model/RoomTypeOccupancy.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/sidebar.jsp</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/AddDiscountCodeServlet.java</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/ServiceListServlet.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/StaffDAO.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/MaintenanceRequestDAO1.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/manager.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/model/DiscountCode.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/addService.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/DiscountCodeList.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/addService.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/ServiceToggleServlet.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/ServiceDAO.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/RevenueStats.jsp</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/DiscountCodeListServlet.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/editAccount.jsp</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/IsDuplicatedServiceName.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/RoomDAO.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/RoomOccupancyServlet.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/RoomOccupancy.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/RevenueStatsServlet.java</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/editService.java</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/editDiscountCode.jsp</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/editService.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/toggleService.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/DBConnect.java</file>
             <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/ServiceList.jsp</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/DiscountCodeDAO.java</file>
-            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/DAO/RoomTypeDAO.java</file>
+            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/src/java/controller/tuan/addService.java</file>
+            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/DiscountCodeList.jsp</file>
+            <file>file:/C:/Users/admin/Desktop/Swp391_Group5_SE1906/web/Manager/addService.jsp</file>
         </group>
     </open-files>
 </project-private>

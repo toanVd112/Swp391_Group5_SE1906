@@ -31,14 +31,7 @@
                     <i class="fas fa-tag"></i>
                     <span>Discount Code List</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/roomoccupancy" class="menu-item" data-page="roomoccupancy">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Room Occupancy</span>
-                </a>
-                <a href="${pageContext.request.contextPath}/revenuestats" class="menu-item" data-page="revenuestats">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Revenue Statistics</span>
-                </a>
+                
                 <a href="${pageContext.request.contextPath}/ListRoomsServlet" class="menu-item" data-page="ListRoomsServlet">
                     <i class="fas fa-building"></i>
                     <span>View Room Status</span>
@@ -100,14 +93,7 @@
                             <i class="fas fa-chart-bar"></i>
                             <span>Room Occupancy</span>
                         </a>
-                        <a href="${pageContext.request.contextPath}/bookingtrends" class="dropdown-item" data-page="bookingtrends">
-                            <i class="fas fa-chart-area"></i>
-                            <span>Booking Trends</span>
-                        </a>
-                        <a href="${pageContext.request.contextPath}/customerdemographics" class="dropdown-item" data-page="customerdemographics">
-                            <i class="fas fa-users"></i>
-                            <span>Customer Demographics</span>
-                        </a>
+                        
                     </c:if>
                     <c:if test="${role eq 'Receptionist'}">
                         <a href="${pageContext.request.contextPath}/bookingtrends" class="dropdown-item" data-page="bookingtrends">

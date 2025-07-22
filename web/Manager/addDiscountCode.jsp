@@ -72,8 +72,8 @@
                 discountPercentInput.setAttribute('max', '99');
                 discountPercentFeedback.textContent = 'Discount must be between 0.00 and 99.00 for Percentage.';
             } else {
-                discountPercentInput.setAttribute('max', '999.99');
-                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 999.99 for Fixed Amount.';
+                discountPercentInput.setAttribute('max', '999.999');
+                discountPercentFeedback.textContent = 'Discount must be between 0.00 and 999.999 for Fixed Amount.';
             }
         }
 

@@ -36,4 +36,9 @@ public class RevenueStats {
     public void setType(String type) {
         this.type = type;
     }
+
+    // Thêm phương thức toLocaleString cho JSP
+    public String getAmountFormatted() {
+        return String.format("%,.0f", amount).replace(",", ".") + " VND";
+    }
 }

@@ -16,17 +16,19 @@ public class RevenueDAO {
     public List<RevenueStats> getRoomRevenueByType(String startDate, String endDate, String groupBy) {
         List<RevenueStats> revenueList = new ArrayList<>();
         String groupByClause = switch (groupBy) {
-            case "day" -> "DATE(i.PaymentDate)";
-            case "month" -> "DATE_FORMAT(i.PaymentDate, '%Y-%m')";
-            case "year" -> "YEAR(i.PaymentDate)";
+            case "day" -> "DATE(i.IssuedDate)";
+            case "month" -> "DATE_FORMAT(i.IssuedDate, '%Y-%m')";
+            case "year" -> "YEAR(i.IssuedDate)";
             default -> "rt.Name";
         };
+        
         String sql = "SELECT " + groupByClause + " AS category, SUM(i.TotalAmount) AS totalRevenue " +
                      "FROM invoices i " +
                      "JOIN bookings b ON i.BookingID = b.BookingID " +
-                     "JOIN rooms r ON b.RoomID = r.RoomID " +
+                     "JOIN bookingdetails bd ON b.BookingID = bd.BookingID " +
+                     "JOIN rooms r ON bd.RoomID = r.RoomID " +
                      "JOIN roomtypes rt ON r.RoomTypeID = rt.RoomTypeID " +
-                     "WHERE i.Paid = 1 AND i.PaymentDate BETWEEN ? AND ? " +
+                     "WHERE i.PaymentStatus = 'PAID' AND i.IssuedDate BETWEEN ? AND ? " +
                      "GROUP BY " + groupByClause;
 
         try (Connection conn = DBConnect.getConnection();
@@ -38,6 +40,7 @@ public class RevenueDAO {
                     RevenueStats stats = new RevenueStats();
                     stats.setCategory(rs.getString("category"));
                     stats.setAmount(rs.getDouble("totalRevenue"));
+                    stats.setType("Room");
                     revenueList.add(stats);
                 }
             }
@@ -56,7 +59,7 @@ public class RevenueDAO {
             case "year" -> "YEAR(su.UsageDate)";
             default -> "s.ServiceType";
         };
-        String sql = "SELECT " + groupByClause + " AS category, SUM(su.Quantity * s.Price) AS totalRevenue " +
+        String sql = "SELECT " + groupByClause + " AS category, SUM(su.SubTotal) AS totalRevenue " +
                      "FROM serviceusage su " +
                      "JOIN services s ON su.ServiceID = s.ServiceID " +
                      "WHERE su.UsageDate BETWEEN ? AND ? " +
@@ -68,11 +71,10 @@ public class RevenueDAO {
             ps.setString(2, endDate);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String category = rs.getString("category");
-                    if (category == null) category = "Other";
                     RevenueStats stats = new RevenueStats();
-                    stats.setCategory(category);
+                    stats.setCategory(rs.getString("category") != null ? rs.getString("category") : "Other");
                     stats.setAmount(rs.getDouble("totalRevenue"));
+                    stats.setType("Service");
                     revenueList.add(stats);
                 }
             }
