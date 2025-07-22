@@ -302,7 +302,7 @@
                                                 class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu">
                                             <li><a href="blog-classic-grid.html">Blog Classic</a></li>
-                                            <li><a href="blog-classic-sidebar.html">Blog Classic
+                                            <li><a href="edit-feedback">Blog Classic
                                                     Sidebar</a></li>
                                             <li><a href="blog-list-sidebar.html">Blog List Sidebar</a>
                                             </li>

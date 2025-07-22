@@ -23,11 +23,11 @@
         <meta name="robots" content="" />
 
         <!-- DESCRIPTION -->
-        <meta name="description" content="Khách s?n Hoang Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
+        <meta name="description" content="Khï¿½ch s?n Hoang Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
 
         <!-- OG -->
-        <meta property="og:title" content="Khách s?n Hoang Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
-        <meta property="og:description" content="Khách s?n Hoang Nam - Chu?i khách s?n l?n nh?t mi?n b?c" />
+        <meta property="og:title" content="Khï¿½ch s?n Hoang Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
+        <meta property="og:description" content="Khï¿½ch s?n Hoang Nam - Chu?i khï¿½ch s?n l?n nh?t mi?n b?c" />
         <meta property="og:image" content="" />
         <meta name="format-detection" content="telephone=no">
 
@@ -64,7 +64,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
         <style>
-            /* Thêm CSS tùy ch?nh n?u c?n */
+            /* Thï¿½m CSS tï¿½y ch?nh n?u c?n */
         </style>
 
     </head>
@@ -202,7 +202,7 @@
                                     <li><a href="javascript:;">Blog <i class="fa fa-chevron-down"></i></a>
                                         <ul class="sub-menu">
                                             <li><a href="blog-classic-grid.html">Blog Classic</a></li>
-                                            <li><a href="blog-classic-sidebar.html">Blog Classic Sidebar</a></li>
+                                            <li><a href="edit-feedback">Blog Classic Sidebar</a></li>
                                             <li><a href="blog-list-sidebar.html">Blog List Sidebar</a></li>
                                             <li><a href="blog-standard-sidebar.html">Blog Standard Sidebar</a></li>
                                             <li><a href="blog-details.html">Blog Details</a></li>
@@ -732,7 +732,7 @@
                     const checkout = checkoutInput.value.trim();
 
                     if (!isValidDateFormat(checkin) || !isValidDateFormat(checkout)) {
-                        console.log("? Ch?a ?? ngày h?p l?, ch?a g?i fetch");
+                        console.log("? Ch?a ?? ngï¿½y h?p l?, ch?a g?i fetch");
                         return;
                     }
 

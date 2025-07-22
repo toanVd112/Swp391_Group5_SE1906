@@ -125,7 +125,6 @@ public class InvoiceDAO {
         String sql = "SELECT i.BookingID, b.ContactName AS CustomerName, i.IssuedDate, i.TotalAmount "
                 + "FROM invoices i "
                 + "JOIN bookings b ON i.BookingID = b.BookingID "
-              
                 + "ORDER BY i.IssuedDate DESC "
                 + "LIMIT ?";
 
@@ -149,32 +148,174 @@ public class InvoiceDAO {
         return list;
     }
 
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args) throws SQLException {
         InvoiceDAO dao = new InvoiceDAO();
-        LocalDateTime now = LocalDateTime.now();
+//        try {
+//            InvoiceDAO dao = new InvoiceDAO();
+//            LocalDateTime now = LocalDateTime.now();
+//
+//            for (int i = 0; i < 10; i++) {
+//                Invoice invoice = new Invoice();
+//                invoice.setBookingId(170 + i); // Tăng bookingId mỗi dòng
+//                invoice.setRoomTotal(100.0 + i * 10); // Tăng tiền để dễ phân biệt
+//                invoice.setServiceTotal(20.0); // giữ nguyên
+//                invoice.setDiscountCode(null);
+//                invoice.setDiscountPercent(0);
+//                invoice.setTotalAmount(invoice.getRoomTotal() + invoice.getServiceTotal());
+//                invoice.setPaymentStatus("PAID");
+//                invoice.setNote("Test insert #" + (i + 1));
+//                invoice.setIssuedDate(now.minusDays(i)); // Mỗi dòng lùi ngày một chút
+//                invoice.setIssuedBy(49);
+//
+//                dao.insertInvoice(invoice);
+//                System.out.println("✅ Inserted invoice for BookingID: " + invoice.getBookingId());
+//            }
+//
+//        } catch (Exception e) {
+//            System.out.println("❌ Error inserting invoices:");
+//            e.printStackTrace();
+//        }
+//        String customerName = ""; // có thể null
+//        Date fromDate = Date.valueOf(LocalDate.of(2024, 1, 1));
+//        Date toDate = Date.valueOf(LocalDate.of(2025, 12, 31));
+//        String status = "Paid"; // hoặc null
+//
+//        List<Invoice> result = dao.filterInvoices(customerName, fromDate, toDate, status);
+//
+//        for (Invoice inv : result) {
+//            System.out.println("Invoice ID: " + inv.getInvoiceId());
+//            System.out.println("Booking ID: " + inv.getBookingId());
+//            System.out.println("Issued Date: " + inv.getIssuedDate());
+//            System.out.println("Room Total: " + inv.getRoomTotal());
+//            System.out.println("Service Total: " + inv.getServiceTotal());
+//            System.out.println("Discount Code: " + inv.getDiscountCode());
+//            System.out.println("Discount %: " + inv.getDiscountPercent());
+//            System.out.println("Total Amount: " + inv.getTotalAmount());
+//            System.out.println("Payment Status: " + inv.getPaymentStatus());
+//            System.out.println("Note: " + inv.getNote());
+//            System.out.println("-----------------------------");
+//        }
+//
+//        if (result.isEmpty()) {
+//            System.out.println("Không tìm thấy hóa đơn nào phù hợp.");
+//        }
+Invoice inv = dao.getInvoiceById(23); // thay bằng ID thật
 
-        for (int i = 0; i < 10; i++) {
-            Invoice invoice = new Invoice();
-            invoice.setBookingId(141 + i); // Tăng bookingId mỗi dòng
-            invoice.setRoomTotal(100.0 + i * 10); // Tăng tiền để dễ phân biệt
-            invoice.setServiceTotal(20.0); // giữ nguyên
-            invoice.setDiscountCode(null);
-            invoice.setDiscountPercent(0);
-            invoice.setTotalAmount(invoice.getRoomTotal() + invoice.getServiceTotal());
-            invoice.setPaymentStatus("PAID");
-            invoice.setNote("Test insert #" + (i + 1));
-            invoice.setIssuedDate(now.minusDays(i)); // Mỗi dòng lùi ngày một chút
-            invoice.setIssuedBy(49);
+    if (inv != null) {
+        System.out.println("InvoiceID: " + inv.getInvoiceId());
+        System.out.println("BookingID: " + inv.getBookingId());
+        System.out.println("CustomerName: " + inv.getCustomerName());
+    } else {
+        System.out.println("Invoice NOT FOUND");
+    }
 
-            dao.insertInvoice(invoice);
-            System.out.println("✅ Inserted invoice for BookingID: " + invoice.getBookingId());
+    }
+
+    public List<Invoice> filterInvoices(String customerName, Date fromDate, Date toDate, String paymentStatus) throws SQLException {
+        List<Invoice> list = new ArrayList<>();
+        Connection conn = DBConnect.getConnection();
+        StringBuilder sql = new StringBuilder(
+                "SELECT i.*, b.ContactName "
+                + "FROM invoices i "
+                + "JOIN bookings b ON i.BookingID = b.BookingID "
+                + "WHERE 1 = 1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (customerName != null && !customerName.trim().isEmpty()) {
+            sql.append(" AND b.ContactName LIKE ?");
+            params.add("%" + customerName + "%");
+        }
+        if (fromDate != null) {
+            sql.append(" AND i.IssuedDate >= ?");
+            params.add(fromDate);
+        }
+        if (toDate != null) {
+            sql.append(" AND i.IssuedDate <= ?");
+            params.add(toDate);
+        }
+        if (paymentStatus != null && !paymentStatus.trim().isEmpty()) {
+            sql.append(" AND i.PaymentStatus = ?");
+            params.add(paymentStatus);
         }
 
-    } catch (Exception e) {
-        System.out.println("❌ Error inserting invoices:");
-        e.printStackTrace();
+        sql.append(" ORDER BY i.IssuedDate DESC");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Invoice inv = mapInvoice(rs);
+                inv.setCustomerName(rs.getString("ContactName")); // Tạm dùng trường `note` để gắn tên khách nếu không muốn đổi model
+                list.add(inv);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
-        
+
+    private Invoice mapInvoice(ResultSet rs) throws SQLException {
+        Invoice inv = new Invoice();
+
+        inv.setInvoiceId(rs.getInt("InvoiceID"));
+        inv.setBookingId(rs.getInt("BookingID"));
+        inv.setIssuedBy(rs.getInt("IssuedBy"));
+        inv.setIssuedDate(rs.getTimestamp("IssuedDate").toLocalDateTime());
+        inv.setRoomTotal(rs.getDouble("RoomTotal"));
+        inv.setServiceTotal(rs.getDouble("ServiceTotal"));
+        inv.setDiscountCode(rs.getString("DiscountCode"));
+        inv.setDiscountPercent(rs.getInt("DiscountPercent"));
+        inv.setTotalAmount(rs.getDouble("TotalAmount"));
+        inv.setPaymentStatus(rs.getString("PaymentStatus"));
+        inv.setNote(rs.getString("Note"));
+
+        return inv;
     }
+
+    public Invoice getInvoiceById(int invoiceId) {
+        String sql = "SELECT i.*, b.ContactName "
+                + "FROM invoices i "
+                + "JOIN bookings b ON i.BookingID = b.BookingID "
+             
+                + "WHERE i.InvoiceID = ?";
+
+        try (Connection conn = DBConnect.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, invoiceId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Invoice inv = new Invoice();
+                inv.setInvoiceId(rs.getInt("InvoiceID"));
+                inv.setBookingId(rs.getInt("BookingID"));
+                inv.setIssuedBy(rs.getInt("IssuedBy"));
+                inv.setIssuedDate(rs.getTimestamp("IssuedDate").toLocalDateTime());
+                inv.setRoomTotal(rs.getDouble("RoomTotal"));
+                inv.setServiceTotal(rs.getDouble("ServiceTotal"));
+                inv.setDiscountCode(rs.getString("DiscountCode"));
+                inv.setDiscountPercent(rs.getInt("DiscountPercent"));
+                inv.setTotalAmount(rs.getDouble("TotalAmount"));
+                inv.setPaymentStatus(rs.getString("PaymentStatus"));
+                inv.setNote(rs.getString("Note"));
+
+                // Set tên khách hàng
+                inv.setCustomerName(rs.getString("ContactName"));
+
+                return inv;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }

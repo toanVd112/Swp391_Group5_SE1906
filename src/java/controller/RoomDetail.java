@@ -2,6 +2,7 @@ package controller;
 
 import DAO.FeedbackDAO;
 import DAO.RoomDetailDAO;
+import DAO.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import model.Account;
 import model.Feedback;
+import model.User;
 
 @WebServlet(name = "RoomDetail", urlPatterns = {"/RoomDetail"})
 public class RoomDetail extends HttpServlet {
@@ -39,67 +41,113 @@ public class RoomDetail extends HttpServlet {
 
             RoomDetailDAO roomDao = new RoomDetailDAO();
             FeedbackDAO feedbackDAO = new FeedbackDAO();
+            UserDao userDao = new UserDao();
 
+            // Get room type details
             RoomType roomType = roomDao.getRoomTypeDetailById(roomTypeId);
             if (roomType == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy loại phòng");
                 return;
             }
 
+            // Get room availability and categories
             int availableRooms = roomDao.getAvailableRoomsCount(roomTypeId);
             List<String> categories = roomDao.getCategoriesByRoomTypeId(roomTypeId);
 
+            // Get feedback data using updated FeedbackDAO
             List<Feedback> feedbacks;
             double avgRating;
-            Map<Integer, Integer> ratingMap;
+            int[] ratingDistribution;
+            int totalReviews = 0;
 
             try {
-                feedbacks = feedbackDAO.getFeedbacksByRoomType(roomTypeId);
-                avgRating = feedbackDAO.getAverageRatingByRoomType(roomTypeId);
-                ratingMap = feedbackDAO.getRatingDistribution(roomTypeId);
+                feedbacks = feedbackDAO.getFeedbackByRoomType(roomTypeId);
+                avgRating = feedbackDAO.getAverageRating(roomTypeId);
+                ratingDistribution = feedbackDAO.getRatingDistribution(roomTypeId);
+
+                // Calculate total reviews
+                for (int count : ratingDistribution) {
+                    totalReviews += count;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 feedbacks = java.util.Collections.emptyList();
                 avgRating = 0.0;
-                ratingMap = java.util.Collections.emptyMap();
+                ratingDistribution = new int[5];
             }
 
+            // Check user login and booking status
             boolean hasBooked = false;
+            boolean canSubmitFeedback = false;
             Integer bookingID = null;
+            User currentUser = null;
 
             HttpSession session = request.getSession(false);
             if (session != null) {
-                // Đồng bộ với LoginCustomerServlet: sessionScope.user = Account
-                Object obj = session.getAttribute("user");
+               Object obj = session.getAttribute("account"); 
 
                 if (obj instanceof Account) {
                     Account account = (Account) obj;
-                    int userID = account.getAccountID();
 
-                    bookingID = feedbackDAO.getAnyBookingIDForUser(userID, roomTypeId);
-                    hasBooked = bookingID != null;
+                    try {
+                        // Get user details
+                        currentUser = userDao.getUserByAccountId(account.getAccountID());
 
-                    // Duy trì "user" trong sessionScope để JSP nhận diện
+                        if (currentUser != null) {
+                            // Check if user has any completed bookings for this room type
+                            List<Feedback> reviewableBookings = feedbackDAO.getReviewableBookings(currentUser.getUserId());
+
+                            for (Feedback reviewable : reviewableBookings) {
+                                if (reviewable.getRoomTypeID() == roomTypeId) {
+                                    hasBooked = true;
+                                    canSubmitFeedback = true;
+                                    bookingID = reviewable.getBookingID();
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    // Keep user in session
                     session.setAttribute("user", account);
-
-                    // Truyền bookingID để JSP hiển thị
-                    request.setAttribute("bookingID", bookingID != null ? bookingID : "");
+                    request.setAttribute("currentUser", currentUser);
                 }
             }
 
-            // Truyền toàn bộ dữ liệu cần thiết sang JSP
+            // Set all attributes for JSP
             request.setAttribute("roomType", roomType);
             request.setAttribute("images", roomType.getImages());
             request.setAttribute("availableRooms", availableRooms);
             request.setAttribute("amenities", roomType.getAmenities());
             request.setAttribute("categories", categories);
             request.setAttribute("feedbacks", feedbacks);
-            request.setAttribute("avgRating", avgRating);
-            request.setAttribute("ratingMap", ratingMap);
+            request.setAttribute("avgRating", Math.round(avgRating * 10.0) / 10.0);
+            request.setAttribute("ratingDistribution", ratingDistribution);
+            request.setAttribute("totalReviews", totalReviews);
             request.setAttribute("hasBookedThisRoomType", hasBooked);
+            request.setAttribute("canSubmitFeedback", canSubmitFeedback);
             request.setAttribute("bookingID", bookingID);
-            request.setAttribute("error", request.getParameter("error"));
-            request.setAttribute("success", request.getParameter("success"));
+
+            // Handle success/error messages
+            String error = request.getParameter("error");
+            String success = request.getParameter("success");
+            if (error != null) {
+                switch (error) {
+                    case "unauthorized":
+                        request.setAttribute("errorMessage", "You must have completed a booking for this room type to submit a review.");
+                        break;
+                    case "500":
+                        request.setAttribute("errorMessage", "An error occurred while submitting your review. Please try again.");
+                        break;
+                    default:
+                        request.setAttribute("errorMessage", "An error occurred.");
+                }
+            }
+            if ("true".equals(success)) {
+                request.setAttribute("successMessage", "Your review has been submitted successfully!");
+            }
 
             request.getRequestDispatcher("/rooms-details.jsp").forward(request, response);
 
