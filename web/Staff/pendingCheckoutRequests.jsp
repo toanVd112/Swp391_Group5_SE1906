@@ -85,10 +85,10 @@
     </head>
     <body>
         <div class="imain-content">
-            <h2>Danh sách yêu cầu kiểm tra phòng đang chờ xử lý</h2>
+            <h2>List of pending room inspection requests</h2>
 
             <c:if test="${empty pendingRequests}">
-                <p>Hiện tại không có yêu cầu kiểm tra nào đang chờ xử lý.</p>
+                <p>There are currently no pending test requests.</p>
             </c:if>
 
             <c:if test="${not empty pendingRequests}">
@@ -120,9 +120,9 @@
                             <th>Report ID</th>
                             <th>Booking ID</th>
                             <th>Room ID</th>
-                            <th>Ngày yêu cầu</th>
-                            <th>Ghi chú</th>
-                            <th>Thao tác</th>
+                            <th>Request date</th>
+                            <th>Note</th>
+                            <th>Operation</th>
                         </tr>
                     </thead>
                     <tbody>

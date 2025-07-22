@@ -102,10 +102,10 @@
         <div class="container py-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap">
-                    <h1 class="h4 mb-0">Quản lý <strong>Tài khoản</strong></h1>
+                    <h1 class="h4 mb-0">Manage<strong>Account</strong></h1>
                     <button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#addAccountModal">
-                        <i class="fas fa-plus me-2"></i>Thêm tài khoản
+                        <i class="fas fa-plus me-2"></i> Add New
                     </button>
                 </div>
 
@@ -162,13 +162,13 @@
                                     <th width="40"><input type="checkbox" id="selectAll"
                                                           class="form-check-input"></th>
                                     <th>ID</th>
-                                    <th>Tên đăng nhập</th>
-                                    <th>Mật khẩu</th>
-                                    <th>Vai trò</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày tạo</th>
+                                    <th>Use Name</th>
+                                    <th>Password</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
                                     <th>Email</th>
-                                    <th>Thao tác</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -267,14 +267,14 @@
                 <div class="modal-dialog">
                     <form action="addAccount" method="post" id="accountForm" class="modal-content" novalidate>
                         <div class="modal-header">
-                            <h5 class="modal-title">Thêm tài khoản mới</h5>
+                            <h5 class="modal-title">Add New Account</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Tên đăng nhập <span
+                                <label for="username" class="form-label">Use Name <span
                                         class="text-danger">*</span></label>
                                 <input type="text"
                                        class="form-control ${not empty usernameError ? 'is-invalid' : ''}"
@@ -291,7 +291,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label">Mật khẩu <span
+                                <label for="password" class="form-label">PassWord <span
                                         class="text-danger">*</span></label>
                                 <input type="password"
                                        class="form-control ${not empty passwordError ? 'is-invalid' : ''}"
@@ -316,11 +316,11 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="role" class="form-label">Vai trò <span
+                                <label for="role" class="form-label">Role <span
                                         class="text-danger">*</span></label>
                                 <select class="form-select ${not empty roleError ? 'is-invalid' : ''}" id="role"
                                         name="role" required>
-                                    <option value="">-- Chọn vai trò --</option>
+                                    <option value="">-- Chose Role --</option>
                                     <option value="Receptionist" ${role=='Receptionist' ? 'selected' : '' }>Lễ tân
                                     </option>
                                     <option value="Staff" ${role=='Staff' ? 'selected' : '' }>Nhân viên</option>
@@ -331,15 +331,15 @@
                             <div class="mb-3">
                                 <label for="isActive" class="form-label">Trạng thái hoạt động</label>
                                 <select class="form-select" id="isActive" name="isActive">
-                                    <option value="true" selected>Hoạt động</option>
-                                    <option value="false">Không hoạt động</option>
+                                    <option value="true" selected>Active</option>
+                                    <option value="false">inActive</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button type="submit" class="btn btn-success">Thêm tài khoản</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Add accounts</button>
                         </div>
                     </form>
                 </div>
