@@ -46,7 +46,7 @@ public class FeedbackDAO {
         String sql = "SELECT COUNT(*) FROM bookings b "
                 + "WHERE b.BookingID = ? AND b.UserID = ? "
                 + "AND b.Status = 'Completed' "
-                + "AND b.ActualCheckOutTime IS NOT NULL "
+                
                 + "AND NOT EXISTS (SELECT 1 FROM feedback f WHERE f.BookingID = ?)";
 
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -172,7 +172,7 @@ public class FeedbackDAO {
                 + "JOIN bookingdetails bd ON b.BookingID = bd.BookingID "
                 + "JOIN roomtypes rt ON bd.RoomTypeID = rt.RoomTypeID "
                 + "WHERE b.UserID = ? AND b.Status = 'Completed' "
-                + "AND b.ActualCheckOutTime IS NOT NULL "
+               
                 + "AND NOT EXISTS (SELECT 1 FROM feedback f WHERE f.BookingID = b.BookingID) "
                 + "ORDER BY b.CheckOutDate DESC";
 
