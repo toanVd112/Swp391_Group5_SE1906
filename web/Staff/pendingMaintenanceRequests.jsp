@@ -92,7 +92,7 @@
         <div class="imain-content">
             <h2>Maintenance Request List</h2>
 
-            <!-- Hi?n th? thông báo thành công ho?c l?i -->
+            <!-- Hi?n th? th?ng b?o th?nh c?ng ho?c l?i -->
             <c:if test="${not empty success}">
                 <p class="message-success">${success}</p>
             </c:if>
@@ -103,7 +103,7 @@
             <form method="get" action="${pageContext.request.contextPath}/pendingMaintenance">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <div>
-                        <input type="text" name="search" placeholder="Tìm ghi chú..." value="${param.search}" 
+                        <input type="text" name="search" placeholder="Enter Room Number" value="${param.search}" 
                                style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
                         <button type="submit" style="padding: 8px 12px; border-radius: 5px; background-color: #3498db; color: white; border: none;">Search</button>
                         <a href="pendingMaintenance" 
@@ -155,7 +155,7 @@
                     </tbody>
                 </table>
 
-                <!-- Phân trang -->
+                <!-- Ph?n trang -->
                 <div class="pagination">
                     <ul>
                         <c:if test="${currentPage > 1}">

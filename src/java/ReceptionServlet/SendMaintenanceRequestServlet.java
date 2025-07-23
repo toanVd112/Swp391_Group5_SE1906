@@ -38,6 +38,18 @@ public class SendMaintenanceRequestServlet extends HttpServlet {
         MaintenanceRequestDAO1 maintenanceDAO = new MaintenanceRequestDAO1();
         AccountDAO accountDAO = new AccountDAO();
 
+        // Validation: Kiểm tra không có 2 dấu space liên tiếp
+        if (description != null && description.matches(".*\\s{2,}.*")) {
+            request.setAttribute("error", "Description cannot contain two or more consecutive spaces!");
+            try {
+                setRequestAttributes(request);
+            } catch (SQLException ex) {
+                Logger.getLogger(SendMaintenanceRequestServlet.class.getName()).log(Level.SEVERE, "Lỗi khi đặt thuộc tính request: " + ex.getMessage(), ex);
+            }
+            request.getRequestDispatcher("Receptionist/reception.jsp?page=sendMaintenanceRequest.jsp").forward(request, response);
+            return;
+        }
+        
         try {
             // Kiểm tra phòng có tồn tại không
             Room room = roomDAO.getRoomByNumber(roomNumber);
