@@ -27,7 +27,7 @@ import model.MaintenanceRequest;
 
 @WebServlet("/sendMaintenanceRequest")
 public class SendMaintenanceRequestServlet extends HttpServlet {
-
+    private static final int PAGE_SIZE = 5; // Số yêu cầu mỗi tr
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String roomNumber = request.getParameter("roomNumber");
@@ -156,6 +156,19 @@ public class SendMaintenanceRequestServlet extends HttpServlet {
         RoomDAO roomDAO = new RoomDAO();
         MaintenanceRequestDAO1 maintenanceDAO = new MaintenanceRequestDAO1();
 
+        // Xử lý tham số phân trang
+        int page = 1;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
+        int offset = (page - 1) * PAGE_SIZE;
+        int limit = PAGE_SIZE;
+        
         request.setAttribute("staffList", accountDAO.getAccountsByRole("Staff"));
         Map<Integer, String> staffMap = new HashMap<>();
         for (Account acc : (List<Account>) request.getAttribute("staffList")) {

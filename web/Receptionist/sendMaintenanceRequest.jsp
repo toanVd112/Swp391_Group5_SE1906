@@ -15,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>G?i Yêu C?u B?o Trì</title>
+        <title>G?i Y?u C?u B?o Tr?</title>
 
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <style>
@@ -541,6 +541,22 @@ textarea.form-control {
                                     </tbody>
                                 </table>
                             </div>
+                            <!-- Phân trang -->
+                    <div class="pagination">
+                        <ul>
+                            <c:if test="${currentPage > 1}">
+                                <li><a href="sendMaintenanceRequest?page=${currentPage - 1}">Prev</a></li>
+                            </c:if>
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <li class="${i == currentPage ? 'active' : ''}">
+                                    <a href="sendMaintenanceRequest?page=${i}">${i}</a>
+                                </li>
+                            </c:forEach>
+                            <c:if test="${currentPage < totalPages}">
+                                <li><a href="sendMaintenanceRequest?page=${currentPage + 1}">Next</a></li>
+                            </c:if>
+                        </ul>
+                    </div>
                         </c:if>
                     </div>
                 </div>

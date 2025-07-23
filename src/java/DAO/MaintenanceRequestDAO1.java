@@ -163,20 +163,39 @@ public class MaintenanceRequestDAO1 {
     
     public List<MaintenanceRequest> getPendingRequestsForStaff(String search, String sort, int offset, int limit, int staffID) throws SQLException {
         List<MaintenanceRequest> requests = new ArrayList<>();
-        String sql = "SELECT mr.*, r.RoomNumber " +
-                     "FROM MaintenanceRequests mr " +
-                     "JOIN rooms r ON mr.RoomID = r.RoomID " +
-                     "WHERE mr.StaffID = ? AND mr.IsResolved = FALSE " +
-                     "AND (mr.Description LIKE ? OR r.RoomNumber LIKE ?) " +
-                     (sort != null && !sort.isEmpty() ? "ORDER BY " + sort : "") +
-                     " LIMIT ? OFFSET ?";
+        StringBuilder sql = new StringBuilder(
+            "SELECT mr.*, r.RoomNumber " +
+            "FROM MaintenanceRequests mr " +
+            "JOIN rooms r ON mr.RoomID = r.RoomID " +
+            "WHERE mr.StaffID = ? AND mr.IsResolved = FALSE "
+        );
+
+        // Thêm điều kiện tìm kiếm
+        if (search != null && !search.isEmpty()) {
+            sql.append("AND (mr.Description LIKE ? OR r.RoomNumber LIKE ?) ");
+        }
+
+        // Thêm sắp xếp theo RequestDate
+        if (sort != null && !sort.isEmpty()) {
+            sql.append("ORDER BY mr.RequestDate ").append(sort.equals("asc") ? "ASC" : "DESC ");
+        }
+
+        // Thêm phân trang
+        sql.append("LIMIT ? OFFSET ?");
+
         try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, staffID);
-            ps.setString(2, "%" + (search != null ? search : "") + "%");
-            ps.setString(3, "%" + (search != null ? search : "") + "%");
-            ps.setInt(4, limit);
-            ps.setInt(5, offset);
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, staffID);
+
+            if (search != null && !search.isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+
+            ps.setInt(paramIndex++, limit);
+            ps.setInt(paramIndex++, offset);
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     MaintenanceRequest request = new MaintenanceRequest(
@@ -195,21 +214,32 @@ public class MaintenanceRequestDAO1 {
         }
         return requests;
     }
-
+    
     public int countPendingRequestsForStaff(String search, int staffID) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total " +
-                     "FROM MaintenanceRequests mr " +
-                     "JOIN rooms r ON mr.RoomID = r.RoomID " +
-                     "WHERE mr.StaffID = ? AND mr.IsResolved = FALSE " +
-                     "AND (mr.Description LIKE ? OR r.RoomNumber LIKE ?)";
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(*) " +
+            "FROM MaintenanceRequests mr " +
+            "JOIN rooms r ON mr.RoomID = r.RoomID " +
+            "WHERE mr.StaffID = ? AND mr.IsResolved = FALSE "
+        );
+
+        if (search != null && !search.isEmpty()) {
+            sql.append("AND (mr.Description LIKE ? OR r.RoomNumber LIKE ?) ");
+        }
+
         try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, staffID);
-            ps.setString(2, "%" + (search != null ? search : "") + "%");
-            ps.setString(3, "%" + (search != null ? search : "") + "%");
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, staffID);
+
+            if (search != null && !search.isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("total");
+                    return rs.getInt(1);
                 }
             }
         }

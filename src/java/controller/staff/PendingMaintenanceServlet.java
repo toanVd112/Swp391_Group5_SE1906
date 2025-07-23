@@ -84,15 +84,20 @@ public class PendingMaintenanceServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Account acc = (Account) session.getAttribute("account");
 
-        int accountID = acc.getAccountID(); // từ session
+        if (acc == null || !"Staff".equals(acc.getRole())) {
+            response.sendRedirect("../login.jsp");
+            return;
+        }
+
+        int staffID = acc.getAccountID();
         List<MaintenanceRequest> list = null;
         int totalCount = 0;
 
         try {
-            list = dao.getPendingRequestsForStaff(search, sort, offset, limit, accountID);
-            totalCount = dao.countPendingRequestsForStaff(search, accountID);
+            list = dao.getPendingRequestsForStaff(search, sort, offset, limit, staffID);
+            totalCount = dao.countPendingRequestsForStaff(search, staffID);
         } catch (SQLException e) {
-            
+//            Logger.getLogger(PendingMaintenanceRequestsServlet.class.getName()).log(Level.SEVERE, "Lỗi SQL khi lấy danh sách yêu cầu: " + e.getMessage(), e);
             request.setAttribute("error", "Đã xảy ra lỗi cơ sở dữ liệu khi tải danh sách!");
         }
 
