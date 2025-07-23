@@ -1049,7 +1049,7 @@
                                                             <img src="${feedback.displayAvatar}" 
                                                                  alt="${feedback.userName}" 
                                                                  class="feedback-avatar"
-                                                                 onerror="this.src='/images/default-avatar.png'" />
+                                                                 onerror="this.src='assets/images/default-avatar.png'" />
 
                                                             <div class="feedback-content">
                                                                 <div class="feedback-header">

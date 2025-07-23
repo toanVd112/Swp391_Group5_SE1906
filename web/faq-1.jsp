@@ -466,7 +466,7 @@
                                         <div class="widget footer_widget">
                                             <h5 class="footer-title">Company</h5>
                                             <ul>
-                                                <li><a href="index.jsp">Home</a></li>
+                                                <li><a href="Home">Home</a></li>
                                                 <li><a href="about-1.html">About</a></li>
                                                 <li><a href="faq-1.jsp">FAQs</a></li>
                                                 <li><a href="contact-1.html">Contact</a></li>

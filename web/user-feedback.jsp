@@ -377,7 +377,7 @@
                     <div class="container">
                         <ul class="list-inline">
                             <li><a href="#">Home</a></li>
-                            <li>Blog Classic Sidebar</li>
+                            <li>My Feedback</li>
                         </ul>
                     </div>
                 </div>

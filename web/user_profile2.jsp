@@ -437,6 +437,11 @@
                         </svg>
                         Change Password
                     </a>
+                        <div class="profile-menu-item">
+    <a href="edit-feedback" class="btn btn-outline-primary">
+        <i class="fas fa-star"></i> My Reviews
+    </a>
+</div>
                     </div>
                 </form>
             </div>
